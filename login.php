@@ -45,7 +45,8 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h4 class="text-dark mb-4">Bem vindo!</h4>
+                                        
+                                        <div> <h3  class="text-dark mb-4"><span>ASSET MANAGEMENT</span></h3></div>
                                     </div>
                                     <form class="user">
                                         <div class="form-group"><input class="form-control form-control-user" type="email"  id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email" required></div>
@@ -75,7 +76,7 @@
                 <div class="col-sm-6 col-md-3 item">
                     <h3>Serviços</h3>
                     <ul>
-                        <li><a href="#">Auditoria de T.I</a></li>
+                        <li><a href="#">Gestão de ativos de T.I</a></li>
                     </ul>
                 </div><!-- End: Services -->
                 <!-- Start: About -->

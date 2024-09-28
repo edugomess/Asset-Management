@@ -1,4 +1,3 @@
-
 <?php
 include 'conexao.php';
 
@@ -18,19 +17,32 @@ $nivelUsuario = $_POST['nivelUsuario'];
 $unidade = $_POST['unidade'];
 $status = $_POST['status'];
 
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, centroDeCusto, matricula, telefone, senha, confirmarSenha, nivelUsuario, unidade, status)
-    VALUES ('$nome', '$sobrenome', '$usuarioAD', '$funcao', '$dataNascimento', '$email', '$centroDeCusto', '$matricula', '$telefone', '$senha', '$confirmarSenha', '$nivelUsuario', '$unidade', '$status')";
+// Verifica se as senhas coincidem
+if ($senha !== $confirmarSenha) {
+    echo "<script>alert('As senhas não coincidem.');</script>";
+    exit();
+}
 
-$inserir = mysqli_query($conn, $sql);
+// Aplica SHA-1 na senha
+$senhaHash = sha1($senha);
 
-if ($inserir) {
+// Prepara a consulta
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuario, $unidade, $status);
+
+if ($stmt->execute()) {
     echo "<script>
             alert('Usuário cadastrado com sucesso!');
             window.location.href = 'usuarios.php';
           </script>";
     exit();
 } else {
-    echo "Erro ao inserir dados: " . mysqli_error($conn);
+    echo "Erro ao inserir dados: " . $stmt->error;
 }
 
+$stmt->close();
+$conn->close();
 ?>

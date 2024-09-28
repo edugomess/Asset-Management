@@ -160,9 +160,10 @@
                     <div class="container-fluid">
                         <h3 class="text-dark mb-1">Cadastro de Fornecedor</h3>
                     </div><!-- Start: Multi-row Form -->
+                    <form action="inserir_fornecedor.php" method="post">
+
                     <form>
                         <!-- Start: 2-column form row -->
-                        <form action="inserir_fornecedor.php" method="post">
                         <div class="form-row">
                             <div class="col-sm-6 col-xl-4 offset-xl-1">
                                 <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"type="text" placeholder="Nome da Empresa"></div>
@@ -194,7 +195,7 @@
                             <div class="col-sm-3 col-xl-3">
                                 <div class="form-group"><label></label><input class="form-control" name="site" type="text" placeholder="Site"></div>
                             </div>
-                            <div class="col-xl-1"><select class="form-control" name="situacao" style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
+                            <div class="col-xl-1"><select class="form-control" name="status" style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
                                     <optgroup label="Situação">
                                         <option value="Ativo">Ativo</option>
                                         <option value="Inativo">Inativo</option>

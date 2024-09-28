@@ -32,6 +32,7 @@
 </head>
 
 <body class="bg-gradient-primary" style="background: rgb(44,64,74);">
+<form action="autenticador.php" method="post">   
     <div class="container pulse animated">
         <div class="row justify-content-center">
             <div class="col-md-9 col-lg-12 col-xl-10">
@@ -47,8 +48,8 @@
                                         <h4 class="text-dark mb-4">Bem vindo!</h4>
                                     </div>
                                     <form class="user">
-                                        <div class="form-group"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email"></div>
-                                        <div class="form-group"><input class="form-control form-control-user" type="password" id="exampleInputPassword" placeholder="Senha" name="password" style="border-radius: 8px;"></div>
+                                        <div class="form-group"><input class="form-control form-control-user" type="email"  id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email" required></div>
+                                        <div class="form-group"><input class="form-control form-control-user" type="password"  id="exampleInputPassword" placeholder="Senha" name="senha" style="border-radius: 8px;" required></div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
                                                 <div class="form-check"><input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1"><label class="form-check-label custom-control-label" for="formCheck-1">Lembrar-me</label></div>

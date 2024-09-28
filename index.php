@@ -31,7 +31,14 @@
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
 
-<body id="page-top">
+<body></body>
+<?php
+//$usuario = if(!isset($_session['usuario'])) {
+   // header('location login.php');
+//}
+
+//?>
+<div id="page-top">
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">

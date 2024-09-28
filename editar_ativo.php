@@ -61,6 +61,9 @@ $id = intval($id);
                     <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/login.php"><i class="far fa-user-circle"></i><span>Login</span></a></li>
                 </ul>
+
+
+                
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
@@ -162,74 +165,102 @@ $id = intval($id);
                         </ul>
                     </div>
                 </nav>
-                <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Editar Ativo</h3>
-                </div><!-- Start: Multi-row Form -->
-                <form action="inserir_equipamento.php" method="post">
+                <form action="atualizar_equipamento.php" method="post">
+    <input type="hidden" name="id" value="<?php echo $id; ?>"> <!-- ID do ativo a ser atualizado -->
+    <div class="form-row">
+        <div class="col-sm-12 col-xl-2 offset-xl-1">
+            <div class="form-group">
+                <label>Categoria</label>
+                <select class="form-control" name="categoria" required>
+                    <optgroup label="Categoria">
+                        <option value="" selected>Selecione a Categoria</option>
+                        <option value="Notebook" <?php echo ($categoria == 'Notebook') ? 'selected' : ''; ?>>Notebook</option>
+                        <option value="Monitor" <?php echo ($categoria == 'Monitor') ? 'selected' : ''; ?>>Monitor</option>
+                        <!-- Adicione as outras opções aqui, usando o mesmo padrão -->
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-6 offset-xl-1">
+            <div class="form-group">
+                <label>Fabricante</label>
+                <input class="form-control" name="fabricante" type="text" value="<?php echo $fabricante; ?>" required>
+            </div>
+        </div>
+    </div>
 
-                                        
-                <?php
-                        include 'conexao.php';
+    <div class="form-row">
+        <div class="col-sm-6 col-xl-4 offset-xl-1">
+            <div class="form-group">
+                <label>Modelo</label>
+                <input class="form-control" name="modelo" type="text" value="<?php echo $modelo; ?>" required>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-4 offset-xl-1">
+            <div class="form-group">
+                <label>Tag</label>
+                <input class="form-control" name="tag" type="text" value="<?php echo $tag; ?>" required>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-4 offset-xl-1">
+            <div class="form-group">
+                <label>Host Name</label>
+                <input class="form-control" name="hostName" type="text" value="<?php echo $hostName; ?>" required>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-4 offset-xl-1">
+            <div class="form-group">
+                <label>IP</label>
+                <input class="form-control" name="ip" type="text" value="<?php echo $ip; ?>" required>
+            </div>
+        </div>
+    </div>
 
-                        $sql = "SELECT * FROM ativos WHERE id_asset = $id";
-                        $result = mysqli_query($conn, $sql);
-                        while($row = mysqli_fetch_assoc($result)) {
-                                                                     
-                
-                        ?>
+    <div class="form-row">
+        <div class="col-sm-4 col-xl-2 offset-xl-1">
+            <div class="form-group">
+                <label>MAC Adress</label>
+                <input class="form-control" name="macAdress" type="text" value="<?php echo $macAdress; ?>" required>
+            </div>
+        </div>
+        <div class="col-sm-4 col-xl-1">
+            <label>Status</label>
+            <select class="form-control" name="status" required>
+                <option value="Ativo" <?php echo ($status == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
+                <option value="Inativo" <?php echo ($status == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
+            </select>
+        </div>
+        <div class="col-xl-1">
+            <label>Data de Ativação</label>
+            <input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao; ?>" required>
+        </div>
+        <div class="col-sm-6 col-xl-4 offset-xl-1">
+            <div class="form-group">
+                <label>Centro de Custo</label>
+                <input class="form-control" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto; ?>" required>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Start: 1-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group"><label>Categoria</label><select class="form-control" name="categoria" required="">
-                                    <optgroup label="Categoria">
-                                        <option value="" selected="">Desktop</option>
-                                        <option value="Desktop">Notebook</option>
-                                        <option value="Monitor">Monitor</option>
-                                        <option value="Teclado">Teclado</option>
-                                        <option value="Mouse">Mouse</option>
-                                        <option value="Totem">Totem</option>
-                                        <option value="Impressora">Impressora</option>
-                                        <option value="Multifuncional">Multifuncional</option>
-                                        <option value="Telefone">Telefone</option>
-                                        <option value="Etiquetadora">Etiquetadora</option>
-                                        <option value="MS365">MS365</option>
-                                    </optgroup>
-                                </select></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-6 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="fabricante"  type="text" placeholder="Fabricante" required=""></div>
-                        </div>
-                    </div><!-- End: 1-column form row -->
-                    <!-- Start: 2-column form row -->
-                     
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" placeholder="Modelo" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" placeholder="Tag" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" placeholder="Host Name" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="ip" type="text" placeholder="IP" required=""></div>
-                        </div>
-                    </div><!-- End: 2-column form row -->
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row" style="height: 80px;">
-                        <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group"><input class="form-control" name="macAdress" type="text" placeholder="MAC Adress" required="" style="margin-top: 24px;"></div>
-                        </div>
-                        <div class="col-sm-4 col-xl-1">
-    <select class="form-control" name="status" required style="margin-top: 24px;">
-        <optgroup label="Situação">
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-        </optgroup>
-    </select>
-</div>
+    <div class="form-row">
+        <div class="col-sm-4 col-xl-5 offset-xl-1">
+            <div class="form-group">
+                <label>Imagem</label>
+                <input class="form-control-file" name="imagem" type="file" accept="image/*">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="col-sm-3 col-xl-9 offset-xl-1">
+            <textarea class="form-control" name="descricao" placeholder="Descrição..." required><?php echo $descricao; ?></textarea>
+        </div>
+        <div class="col-xl-4 offset-xl-4">
+            <button class="btn btn-success btn-block" type="submit" style="background: rgb(44,64,74);">Atualizar</button>
+        </div>
+    </div>
+</form>
+
                         <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" placeholder="Data de Entrada" required="" style="margin-top: 24px;"></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
@@ -246,7 +277,7 @@ $id = intval($id);
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button></div>
                         
                     </div><!-- End: 4-column form row -->
-                    <?php } ?>
+                    
                 </form><!-- End: Multi-row Form -->
                 <!-- Start: Simple footer by krissy -->
                 <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">

@@ -23,7 +23,7 @@ $conn->close();
 
 echo "<script>
         if (confirm('Isso irá apagar um registro! Deseja continuar?')) {
-            window.location.href = 'fornecedor.php';
+            window.location.href = 'fornecedores.php';
         } else {
             window.location.href = 'outrapagina.php'; // Altere para a página desejada
         }

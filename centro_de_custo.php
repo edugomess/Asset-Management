@@ -220,8 +220,8 @@ $result = mysqli_query($conn, $sql);
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>
-                        <a class='btn btn-warning' href='editar_usuario.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_usuario.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
+                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-edit'></i></a>
+                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
             }

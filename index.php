@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+// Verifique se o usuário já está logado
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+    header('Location: dashboard.php'); // Redireciona para a página principal
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
 
@@ -32,12 +43,21 @@
 </head>
 
 <body></body>
-<?php
-//$usuario = if(!isset($_session['usuario'])) {
-   // header('location login.php');
+//<?php
+
+
+//session_start();
+
+// Verifique se o usuário está logado
+//if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    //session_destroy(); // Destrói a sessão
+    //header('Location: index.php'); // Redireciona para a página de login
+    //exit;
 //}
 
+//echo 'Bem-vindo, ' . $_SESSION['email'] . '!';
 //?>
+
 <div id="page-top">
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: rgb(44,64,74);">

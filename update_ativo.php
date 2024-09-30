@@ -3,7 +3,13 @@
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = $_POST['id'];
+    if (isset($_POST['id_asset'])) {
+        $id_asset = $_POST['id_asset'];
+    } else {
+        echo "id_asset não está definido.";
+        exit;
+    }
+
     $categoria = $_POST['categoria'];
     $fabricante = $_POST['fabricante'];
     $modelo = $_POST['modelo'];
@@ -22,14 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Atualizar no banco de dados
-    $query = "UPDATE equipamentos SET categoria='$categoria', fabricante='$fabricante', modelo='$modelo', tag='$tag', hostName='$hostName', ip='$ip', macAdress='$macAdress', status='$status', dataAtivacao='$dataAtivacao', centroDeCusto='$centroDeCusto', descricao='$descricao' WHERE id='$id'";
+    $query = "UPDATE ativos 
+    SET categoria='$categoria', 
+        fabricante='$fabricante', 
+        modelo='$modelo', 
+        tag='$tag', 
+        hostName='$hostName', 
+        ip='$ip', 
+        macAdress='$macAdress', 
+        status='$status', 
+        dataAtivacao='$dataAtivacao', 
+        centroDeCusto='$centroDeCusto', 
+        descricao='$descricao' 
+    WHERE id_asset = '$id_asset'";
 
-    if (mysqli_query($conexao, $query)) {
+    if (mysqli_query($conn, $query)) {
         echo "Equipamento atualizado com sucesso!";
     } else {
-        echo "Erro ao atualizar: " . mysqli_error($conexao);
+        echo "Erro ao atualizar: " . mysqli_error($conn);
     }
 
-    mysqli_close($conexao);
+    mysqli_close($conn);
 }
 ?>

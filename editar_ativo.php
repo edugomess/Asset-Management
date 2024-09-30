@@ -165,11 +165,28 @@ $id = intval($id);
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Editar Ativo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="inserir_equipamento.php" method="post">
+                <form action="update_ativo.php" method="post">
+    <?php
+    $sql = "SELECT * FROM ativos WHERE id_asset = '$id'";
+    $result = mysqli_query($conn, $sql);
+    while ($array = mysqli_fetch_array($result)) {
+        echo "<input type='hidden' name='id_asset' value='" . $array['id_asset'] . "'>";
+        
+        $categoria = $array['categoria'];
+        $fabricante = $array['fabricante'];
+        $modelo = $array['modelo'];
+        $tag = $array['tag'];
+        $hostName = $array['hostName'];
+        $ip = $array['ip'];
+        $macAdress = $array['macAdress'];
+        $status = $array['status'];
+        $dataAtivacao = $array['dataAtivacao'];
+        $centroDeCusto = $array['centroDeCusto'];
+    ?>
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="categoria" required="">
+                            <div class="form-group"><label></label><select class="form-control" name="categoria" value="<?php echo $categoria?>">>
                                     <optgroup label="Categoria">
                                         <option value="" selected="">Selecione a Categoria</option>
                                         <option value="Desktop">Notebook</option>
@@ -186,41 +203,41 @@ $id = intval($id);
                                 </select></div>
                         </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="fabricante" type="text" placeholder="Fabricante" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="fabricante" type="text"  value="<?php echo $fabricante?>"></div>
                         </div>
                     </div><!-- End: 1-column form row -->
                     <!-- Start: 2-column form row -->
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" placeholder="Modelo" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" value="<?php echo $modelo?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" placeholder="Tag" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" value="<?php echo $tag?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" placeholder="Host Name" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" value="<?php echo $hostName?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="ip" type="text" placeholder="IP" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="ip" type="text" value="<?php echo $ip?>"></div>
                         </div>
                     </div><!-- End: 2-column form row -->
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group"><input class="form-control" name="macAdress" type="text" placeholder="MAC Adress" required="" style="margin-top: 24px;"></div>
+                            <div class="form-group"><input class="form-control" name="macAdress" type="text" value="<?php echo $macAdress?>"style="margin-top: 24px;"></div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
-    <select class="form-control" name="status" required style="margin-top: 24px" required="";>
+    <select class="form-control" name="status" required style="margin-top: 24px" value="<?php echo $status?>">>
         <optgroup label="Status" >
             <option value="Ativo">Ativo</option>
             <option value="Inativo">Inativo</option>
         </optgroup>
     </select>
 </div>
-                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" placeholder="Data de Entrada" required="" style="margin-top: 24px;"></div>
+                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;"></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="centroDeCusto" type="text" placeholder="Centro de custo" required=""></div>
+                            <div class="form-group"><label></label><input class="form-control" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>"></div>
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
@@ -229,9 +246,9 @@ $id = intval($id);
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
-                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button></div>
-                        
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  value="<?php echo $descricao?>" style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
+                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
+                      <?php } ?>  
                     </div><!-- End: 4-column form row -->
                 </form><!-- End: Multi-row Form -->
                 <!-- Start: Simple footer by krissy -->

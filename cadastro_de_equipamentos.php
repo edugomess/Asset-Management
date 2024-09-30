@@ -160,6 +160,7 @@
                     <h3 class="text-dark mb-1">Cadastro de Ativo</h3>
                 </div><!-- Start: Multi-row Form -->
                 <form action="inserir_equipamento.php" method="post">
+                
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-2 offset-xl-1">

@@ -43,7 +43,7 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
 </head>
 
 <body></body>
-//<?php
+<?php
 
 
 //session_start();

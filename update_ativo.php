@@ -10,15 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    $categoria = $_POST['categoria'];
     $fabricante = $_POST['fabricante'];
     $modelo = $_POST['modelo'];
-    $tag = $_POST['tag'];
     $hostName = $_POST['hostName'];
     $ip = $_POST['ip'];
-    $macAdress = $_POST['macAdress'];
     $status = $_POST['status'];
-    $dataAtivacao = $_POST['dataAtivacao'];
+    $macAdress = $_POST['macAdress'];
     $centroDeCusto = $_POST['centroDeCusto'];
     $descricao = $_POST['descricao'];
 
@@ -29,25 +26,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Atualizar no banco de dados
     $query = "UPDATE ativos 
-    SET categoria='$categoria', 
+    SET  
         fabricante='$fabricante', 
         modelo='$modelo', 
-        tag='$tag', 
         hostName='$hostName', 
         ip='$ip', 
-        macAdress='$macAdress', 
         status='$status', 
-        dataAtivacao='$dataAtivacao', 
+        macAdress='$macAdress',
         centroDeCusto='$centroDeCusto', 
         descricao='$descricao' 
     WHERE id_asset = '$id_asset'";
 
-    if (mysqli_query($conn, $query)) {
-        echo "Equipamento atualizado com sucesso!";
-    } else {
-        echo "Erro ao atualizar: " . mysqli_error($conn);
-    }
+    $update = mysqli_query($conn, $query); // Corrigido aqui de $sql para $query
 
-    mysqli_close($conn);
+    if ($update) {
+        echo "<script>
+                alert('Ativo atualizado com sucesso!');
+                window.location.href = 'equipamentos.php';
+              </script>";
+        exit();
+    } else {
+        echo "Erro ao atualizar dados: " . mysqli_error($conn);
+    }
 }
 ?>

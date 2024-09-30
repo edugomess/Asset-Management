@@ -186,7 +186,7 @@ $id = intval($id);
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="categoria" value="<?php echo $categoria?>">>
+                            <div class="form-group"><label></label><select class="form-control" name="categoria" value="<?php echo $categoria?>"disabled>
                                     <optgroup label="Categoria">
                                         <option value="" selected="">Selecione a Categoria</option>
                                         <option value="Desktop">Notebook</option>
@@ -212,7 +212,7 @@ $id = intval($id);
                             <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" value="<?php echo $modelo?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" value="<?php echo $tag?>"></div>
+                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" value="<?php echo $tag?>"disabled></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" value="<?php echo $hostName?>"></div>
@@ -234,7 +234,7 @@ $id = intval($id);
         </optgroup>
     </select>
 </div>
-                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;"></div>
+                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group"><label></label><input class="form-control" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>"></div>

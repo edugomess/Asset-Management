@@ -1,3 +1,8 @@
+<?PHP
+include 'conexao.php';
+$id = isset($_GET['id']) ? $_GET['id'] : 0;
+$id = intval($id);
+?>
 <!DOCTYPE html>
 <html>
 

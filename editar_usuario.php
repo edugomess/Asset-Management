@@ -1,3 +1,9 @@
+
+<?PHP
+include 'conexao.php';
+$id = isset($_GET['id']) ? $_GET['id'] : 0;
+$id = intval($id);
+?>
 <!DOCTYPE html>
 <html>
 
@@ -165,22 +171,43 @@
                 </form><!-- End: TR Form -->
                 <!-- Start: Multi-row Form -->
                 <form action="inserir_usuario.php" method="post">
+                <?php
+    $sql = "SELECT * FROM usuarios WHERE id_usuarios = '$id'";
+    $result = mysqli_query($conn, $sql);
+    while ($array = mysqli_fetch_array($result)) {
+        echo "<input type='hidden' name='id_usuarios' value='" . $array['id_usuarios'] . "'>";
+        
+        $nome = $array['nome'];
+        $sobrenome = $array['sobrenome'];
+        $usuarioAD = $array['usuarioAD'];
+        $funcao = $array['funcao'];
+        $dataNascimento = $array['dataNascimento'];
+        $email = $array['email'];
+        $centroDeCusto = $array['centroDeCusto'];
+        $matricula = $array['matricula'];
+        $telefone = $array['telefone'];
+        $senha = $array['senha'];
+        $confirmarSenha = $array['confirmarSenha'];
+        $nivelUsuario = $array['nivelUsuario'];
+        $unidade = $array['unidade'];
+        $status = $array['Status'];
+    ?>
     <!-- Start: 2-column form row -->
     <div class="form-row" style="height: 78px;">
         <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="nome" type="text" placeholder="Nome" required="">
+                <input class="form-control" name="nome" type="text" value="<?php echo $nome?>"
             </div>
         </div>
         <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="sobrenome" type="text" placeholder="Sobrenome" required="">
+                <input class="form-control" name="sobrenome" type="text"  value="<?php echo $sobrenome?>">
             </div>
         </div>
         <div class="col-xl-2 offset-xl-1">
-            <input class="form-control" name="usuarioAD" type="text" placeholder="Usuário AD" required="" style="margin-top: 24px;">
+            <input class="form-control" name="usuarioAD" type="text"  value="<?php echo $usuarioAD?>" style="margin-top: 24px;">
         </div>
         <div class="w-100"></div>
         <div class="w-100"></div>
@@ -189,16 +216,16 @@
     <!-- Start: 3-column form row -->
     <div class="form-row">
         <div class="col-sm-4 offset-lg-1 offset-xl-1">
-            <input class="form-control" name="funcao" type="text" placeholder="Função" required="" style="padding: 6px; margin-top: 24px;">
+            <input class="form-control" name="funcao" type="text"  value="<?php echo $funcao?>" style="padding: 6px; margin-top: 24px;">
         </div>
         <div class="col-xl-3">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="dataNascimento" type="date" required="">
+                <input class="form-control" name="dataNascimento" type="date"  value="<?php echo $dataNascimento?>">
             </div>
         </div>
         <div class="col-xl-3 offset-xl-0">
-            <input class="form-control" name="email" type="email" placeholder="Email" required="" style="margin-top: 24px;">
+            <input class="form-control" name="email" type="email"  value="<?php echo $email?>" style="margin-top: 24px;">
         </div>
         <div class="col-sm-4 col-xl-1 offset-lg-1 offset-xl-0">
             <div class="form-group"><label></label></div>
@@ -210,19 +237,19 @@
         <div class="col-sm-4 offset-lg-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="centroDeCusto" type="text" placeholder="Centro de Custo" required="">
+                <input class="form-control" name="centroDeCusto" type="text"  value="<?php echo $centroDeCusto?>">
             </div>
         </div>
         <div class="col-xl-1 offset-lg-1 offset-xl-0">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="matricula" type="text" placeholder="Matrícula" inputmode="numeric" required="">
+                <input class="form-control" name="matricula" type="text"  value="<?php echo $matricula?>" inputmode="numeric">
             </div>
         </div>
         <div class="col-xl-3">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="telefone" type="text" inputmode="tel" placeholder="Telefone (99) 99999-9999" required="">
+                <input class="form-control" name="telefone" type="text" inputmode="tel" value="<?php echo $telefone?>">
             </div>
         </div>
         <div class="col-xl-2" style="margin-top: 23px;">
@@ -241,13 +268,13 @@
         <div class="col-sm-2 col-xl-4 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="senha" type="password" placeholder="Senha" required="">
+                <input class="form-control" name="senha" type="password"  value="<?php echo $senha?>">
             </div>
         </div>
         <div class="col-sm-2 col-xl-4 offset-xl-2">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="confirmarSenha" type="password" placeholder="Confirmação de Senha" required="">
+                <input class="form-control" name="confirmarSenha" type="password"  value="<?php echo $conformarSenha?>">
                 <small></small>
             </div>
         </div>
@@ -257,7 +284,7 @@
     <div class="form-row" style="height: 78px;">
         <div class="col-xl-3 offset-xl-1">
             <label></label>
-            <select class="form-control" name="nivelUsuario" required="" style="margin: 23px 0;">
+            <select class="form-control" name="nivelUsuario"  value="<?php echo $nivelUsuario?>" style="margin: 23px 0;">
                 <optgroup label="Tipo de Usuário">
                     <option value="1">Administrador</option>
                     <option value="2">Suporte</option>
@@ -267,7 +294,7 @@
         </div>
         <div class="col-xl-3 offset-xl-1">
             <label></label>
-            <select class="form-control" name="unidade" required="" style="margin: 23px 0;">
+            <select class="form-control" name="unidade"  value="<?php echo $unidade?>" style="margin: 23px 0;">
                 <optgroup label="Unidade">
                     <option value="FLMA" selected="">FLMA</option>
                     <option value="IRSSL">IRSSL</option>
@@ -281,7 +308,7 @@
         </div>
         <div class="col-sm-3 col-xl-2 offset-xl-1">
             <label></label>
-            <select class="form-control" name="status" required="" style="margin: 23px 0;">
+            <select class="form-control" name="status"  value="<?php echo $status?>" style="margin: 23px 0;">
                 <optgroup label="Situação">
                     <option value="Ativo" selected="">Ativo</option>
                     <option value="Inativo">Inativo</option>

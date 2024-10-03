@@ -3,21 +3,27 @@
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['id_asset'])) {
-        $id_asset = $_POST['id_asset'];
+    if (isset($_POST['id_usuarios'])) {
+        $id_usuarios = $_POST['id_usuarios'];
     } else {
         echo "id_asset não está definido.";
         exit;
     }
 
-    $fabricante = $_POST['fabricante'];
-    $modelo = $_POST['modelo'];
-    $hostName = $_POST['hostName'];
-    $ip = $_POST['ip'];
-    $status = $_POST['status'];
-    $macAdress = $_POST['macAdress'];
+    $nome = $_POST['nome'];
+    $sobrenome = $_POST['sobrenome'];
+    $usuarioAD = $_POST['usuarioAD'];
+    $funcao = $_POST['funcao'];
+    $dataNascimento = $_POST['dataNascimento'];
+    $email = $_POST['email'];
     $centroDeCusto = $_POST['centroDeCusto'];
-    $descricao = $_POST['descricao'];
+    $matricula = $_POST['matricula'];
+    $telefone = $_POST['telefone'];
+    $senha = $_POST['senha'];
+    $confirmarSenha = $_POST['confirmaSenha'];
+    $nivelUsuario = $_POST['nivelUsuario'];
+    $unidade = $_POST['unidade'];
+    $status = $_POST['status'];
 
     // Verificar se foi enviada uma nova imagem
     if (!empty($_FILES['imagem']['name'])) {
@@ -25,24 +31,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Atualizar no banco de dados
-    $query = "UPDATE ativos 
+    $query = "UPDATE usuarios 
     SET  
-        fabricante='$fabricante', 
-        modelo='$modelo', 
-        hostName='$hostName', 
-        ip='$ip', 
-        status='$status', 
-        macAdress='$macAdress',
-        centroDeCusto='$centroDeCusto', 
-        descricao='$descricao' 
-    WHERE id_asset = '$id_asset'";
+         
+    nome ='$nome',
+    sobrenome = '$sobrenome',
+    usuarioAD = '$usuarioAD',
+    funcao = '$funcao',
+    dataNascimento = '$dataNascimento',
+    email = '$email',
+    centroDeCusto = '$centroDeCusto',
+    matricula = '$matricula',
+    telefone = '$telefone',
+    senha = '$senha',
+    confirmarSenha = '$confirmaSenha',
+    nivelUsuario = '$nivelUsuario',
+    unidade = '$unidade',
+    status = '$status',
+    WHERE id_usuarios = '$id_usuarios'";
 
     $update = mysqli_query($conn, $query); // Corrigido aqui de $sql para $query
 
     if ($update) {
         echo "<script>
-                alert('Ativo atualizado com sucesso!');
-                window.location.href = 'equipamentos.php';
+                alert('Usuário atualizado com sucesso!');
+                window.location.href = 'usuarios.php';
               </script>";
         exit();
     } else {

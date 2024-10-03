@@ -164,14 +164,14 @@ $id = intval($id);
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Cadastro de usuário</h3>
+                    <h3 class="text-dark mb-1">Editar Usuário</h3>
                 </div><!-- Start: TR Form -->
                 <form class="register-form">
                     <fieldset></fieldset>
                 </form><!-- End: TR Form -->
                 <!-- Start: Multi-row Form -->
                 <form action="inserir_usuario.php" method="post">
-                <?php
+    <?php
     $sql = "SELECT * FROM usuarios WHERE id_usuarios = '$id'";
     $result = mysqli_query($conn, $sql);
     while ($array = mysqli_fetch_array($result)) {
@@ -190,60 +190,55 @@ $id = intval($id);
         $confirmarSenha = $array['confirmarSenha'];
         $nivelUsuario = $array['nivelUsuario'];
         $unidade = $array['unidade'];
-        $status = $array['Status'];
+        $status = $array['status'];
     ?>
     <!-- Start: 2-column form row -->
     <div class="form-row" style="height: 78px;">
         <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="nome" type="text" value="<?php echo $nome?>"
+                <input class="form-control" name="nome" type="text" value="<?php echo $nome?>">
             </div>
         </div>
         <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="sobrenome" type="text"  value="<?php echo $sobrenome?>">
+                <input class="form-control" name="sobrenome" type="text" value="<?php echo $sobrenome?>">
             </div>
         </div>
         <div class="col-xl-2 offset-xl-1">
-            <input class="form-control" name="usuarioAD" type="text"  value="<?php echo $usuarioAD?>" style="margin-top: 24px;">
+            <input class="form-control" name="usuarioAD" type="text" value="<?php echo $usuarioAD?>" style="margin-top: 24px;">
         </div>
-        <div class="w-100"></div>
-        <div class="w-100"></div>
     </div><!-- End: 2-column form row -->
-    
+
     <!-- Start: 3-column form row -->
     <div class="form-row">
         <div class="col-sm-4 offset-lg-1 offset-xl-1">
-            <input class="form-control" name="funcao" type="text"  value="<?php echo $funcao?>" style="padding: 6px; margin-top: 24px;">
+            <input class="form-control" name="funcao" type="text" value="<?php echo $funcao?>" style="padding: 6px; margin-top: 24px;">
         </div>
         <div class="col-xl-3">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="dataNascimento" type="date"  value="<?php echo $dataNascimento?>">
+                <input class="form-control" name="dataNascimento" type="date" value="<?php echo $dataNascimento?>">
             </div>
         </div>
         <div class="col-xl-3 offset-xl-0">
-            <input class="form-control" name="email" type="email"  value="<?php echo $email?>" style="margin-top: 24px;">
-        </div>
-        <div class="col-sm-4 col-xl-1 offset-lg-1 offset-xl-0">
-            <div class="form-group"><label></label></div>
+            <input class="form-control" name="email" type="email" value="<?php echo $email?>" style="margin-top: 24px;">
         </div>
     </div><!-- End: 3-column form row -->
-    
+
     <!-- Start: 3-column form row -->
     <div class="form-row">
         <div class="col-sm-4 offset-lg-1 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="centroDeCusto" type="text"  value="<?php echo $centroDeCusto?>">
+                <input class="form-control" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>">
             </div>
         </div>
         <div class="col-xl-1 offset-lg-1 offset-xl-0">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="matricula" type="text"  value="<?php echo $matricula?>" inputmode="numeric">
+                <input class="form-control" name="matricula" type="text" value="<?php echo $matricula?>" inputmode="numeric">
             </div>
         </div>
         <div class="col-xl-3">
@@ -262,19 +257,20 @@ $id = intval($id);
             </select>
         </div>
     </div><!-- End: 3-column form row -->
+
     
     <!-- Start: 5-column form row -->
     <div class="form-row" style="height: 108px;">
         <div class="col-sm-2 col-xl-4 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="senha" type="password"  value="<?php echo $senha?>">
+                <input class="form-control" name="senha" type="password"  placeholder="Senha" value="<?php echo $senha?>">
             </div>
         </div>
         <div class="col-sm-2 col-xl-4 offset-xl-2">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="confirmarSenha" type="password"  value="<?php echo $conformarSenha?>">
+                <input class="form-control" name="confirmarSenha" type="password"  placeholder="Confirmar Senha" value="<?php echo $confirmarSenha?>">
                 <small></small>
             </div>
         </div>
@@ -314,16 +310,18 @@ $id = intval($id);
                     <option value="Inativo">Inativo</option>
                 </optgroup>
             </select>
+            
         </div>
     </div><!-- End: 4-column form row -->
     
     <!-- Start: 6-column form row -->
     <div class="form-row" style="margin-top: 50px;">
         <div class="col-lg-4 col-xl-4 offset-lg-4 offset-xl-4" style="border-radius: 15px;">
-            <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;">Cadastrar</button>
+            <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;">Atualizar</button>
         </div>
     </div><!-- End: 6-column form row -->
-</form><!-- End: Multi-row Form -->
+    <?php } ?>
+</form>
 
             </div><!-- Start: Simple footer by krissy -->
             <section class="text-center footer" style="background: rgb(34,40,39);">
@@ -349,7 +347,7 @@ $id = intval($id);
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     
-    //<script>
+    <script>
 
         function passwordvalidation (input){ 
 	        if (input.value != document.getElementById('Senha').value) {

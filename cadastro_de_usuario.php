@@ -158,7 +158,7 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Cadastro de usuário</h3>
+                    <h3 class="text-dark mb-1">Cadastro de Usuário</h3>
                 </div><!-- Start: TR Form -->
                 <form class="register-form">
                     <fieldset></fieldset>

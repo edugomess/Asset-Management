@@ -170,7 +170,7 @@ $id = intval($id);
                     <fieldset></fieldset>
                 </form><!-- End: TR Form -->
                 <!-- Start: Multi-row Form -->
-                <form action="inserir_usuario.php" method="post">
+                <form action="update_usuario.php" method="post">
     <?php
     $sql = "SELECT * FROM usuarios WHERE id_usuarios = '$id'";
     $result = mysqli_query($conn, $sql);
@@ -207,7 +207,7 @@ $id = intval($id);
             </div>
         </div>
         <div class="col-xl-2 offset-xl-1">
-            <input class="form-control" name="usuarioAD" type="text" value="<?php echo $usuarioAD?>" style="margin-top: 24px;">
+            <input class="form-control" name="usuarioAD" type="text" style="margin-top: 24px;"value="<?php echo $usuarioAD?>">
         </div>
     </div><!-- End: 2-column form row -->
 
@@ -264,13 +264,13 @@ $id = intval($id);
         <div class="col-sm-2 col-xl-4 offset-xl-1">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="senha" type="password"  placeholder="Senha" value="<?php echo $senha?>">
+                <input class="form-control" name="senha" type="password" placeholder='Senha' value="" disabled>
             </div>
         </div>
         <div class="col-sm-2 col-xl-4 offset-xl-2">
             <div class="form-group">
                 <label></label>
-                <input class="form-control" name="confirmarSenha" type="password"  placeholder="Confirmar Senha" value="<?php echo $confirmarSenha?>">
+                <input class="form-control" name="confirmarSenha" type="password" placeholder='Confirmar Senha'value=""disabled>
                 <small></small>
             </div>
         </div>

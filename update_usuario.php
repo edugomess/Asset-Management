@@ -1,15 +1,8 @@
 <?php
-// Conexão com o banco de dados
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['id_usuarios'])) {
-        $id_usuarios = $_POST['id_usuarios'];
-    } else {
-        echo "id_asset não está definido.";
-        exit;
-    }
-
+    $id_usuarios = $_POST['id_usuarios'];
     $nome = $_POST['nome'];
     $sobrenome = $_POST['sobrenome'];
     $usuarioAD = $_POST['usuarioAD'];
@@ -19,47 +12,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $centroDeCusto = $_POST['centroDeCusto'];
     $matricula = $_POST['matricula'];
     $telefone = $_POST['telefone'];
-    $senha = $_POST['senha'];
-    $confirmarSenha = $_POST['confirmaSenha'];
-    $nivelUsuario = $_POST['nivelUsuario'];
-    $unidade = $_POST['unidade'];
-    $status = $_POST['status'];
+    $senha = $_POST['senha']; // Nova senha enviada no formulário
 
-    // Verificar se foi enviada uma nova imagem
-    if (!empty($_FILES['imagem']['name'])) {
-        // Processar a imagem (salvar no servidor, etc.)
+    // Verificar se o usuarioAD já existe no banco de dados, exceto para o próprio usuário
+    $query_check = "SELECT id_usuarios FROM usuarios WHERE usuarioAD = '$usuarioAD' AND id_usuarios != '$id_usuarios'";
+    $result_check = mysqli_query($conn, $query_check);
+
+    if (mysqli_num_rows($result_check) > 0) {
+        echo "<script>
+                alert('Erro: O nome de usuário AD já está em uso. Escolha outro.');
+                window.history.back();
+              </script>";
+        exit();
     }
 
-    // Atualizar no banco de dados
-    $query = "UPDATE usuarios 
-    SET  
-         
-    nome ='$nome',
-    sobrenome = '$sobrenome',
-    usuarioAD = '$usuarioAD',
-    funcao = '$funcao',
-    dataNascimento = '$dataNascimento',
-    email = '$email',
-    centroDeCusto = '$centroDeCusto',
-    matricula = '$matricula',
-    telefone = '$telefone',
-    senha = '$senha',
-    confirmarSenha = '$confirmaSenha',
-    nivelUsuario = '$nivelUsuario',
-    unidade = '$unidade',
-    status = '$status',
-    WHERE id_usuarios = '$id_usuarios'";
+    // Verificar se foi fornecida uma nova senha
+    if (!empty($senha)) {
+        // Aplicar hashing na senha antes de atualizar
+        $senha_hashed = password_hash($senha, PASSWORD_DEFAULT);
 
-    $update = mysqli_query($conn, $query); // Corrigido aqui de $sql para $query
+        // Atualizar no banco de dados incluindo a senha
+        $query_update = "UPDATE usuarios 
+                         SET nome='$nome', 
+                             sobrenome='$sobrenome', 
+                             usuarioAD='$usuarioAD', 
+                             funcao='$funcao', 
+                             dataNascimento='$dataNascimento', 
+                             email='$email', 
+                             centroDeCusto='$centroDeCusto', 
+                             matricula='$matricula', 
+                             telefone='$telefone',
+                             senha='$senha_hashed' 
+                         WHERE id_usuarios = '$id_usuarios'";
+    } else {
+        // Se a senha não foi alterada, não atualize o campo de senha
+        $query_update = "UPDATE usuarios 
+                         SET nome='$nome', 
+                             sobrenome='$sobrenome', 
+                             usuarioAD='$usuarioAD', 
+                             funcao='$funcao', 
+                             dataNascimento='$dataNascimento', 
+                             email='$email', 
+                             centroDeCusto='$centroDeCusto', 
+                             matricula='$matricula', 
+                             telefone='$telefone' 
+                         WHERE id_usuarios = '$id_usuarios'";
+    }
 
-    if ($update) {
+    if (mysqli_query($conn, $query_update)) {
         echo "<script>
                 alert('Usuário atualizado com sucesso!');
                 window.location.href = 'usuarios.php';
               </script>";
-        exit();
     } else {
-        echo "Erro ao atualizar dados: " . mysqli_error($conn);
+        echo 'Erro ao atualizar dados: ' . mysqli_error($conn);
     }
 }
 ?>

@@ -1,5 +1,7 @@
 
- <?php
+
+
+<?php
 include 'conexao.php';
 
 $categoria = $_POST['categoria'];

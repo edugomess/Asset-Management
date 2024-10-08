@@ -3,21 +3,20 @@
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['id_asset'])) {
-        $id_asset = $_POST['id_asset'];
+    if (isset($_POST['id_fornecedor'])) {
+        $id_fornecedor = $_POST['id_fornecedor'];
     } else {
-        echo "id_asset não está definido.";
+        echo 'id_fornecedor não está definido.';
         exit;
     }
 
-    $fabricante = $_POST['fabricante'];
-    $modelo = $_POST['modelo'];
-    $hostName = $_POST['hostName'];
-    $ip = $_POST['ip'];
+    $nomeEmpresa = $_POST['nomeEmpresa'];
+    $cnpj = $_POST['cnpj'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
+    $servico = $_POST['servico'];
+    $site = $_POST['site'];
     $status = $_POST['status'];
-    $macAdress = $_POST['macAdress'];
-    $centroDeCusto = $_POST['centroDeCusto'];
-    $descricao = $_POST['descricao'];
 
     // Verificar se foi enviada uma nova imagem
     if (!empty($_FILES['imagem']['name'])) {
@@ -25,24 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Atualizar no banco de dados
-    $query = "UPDATE ativos 
+    $query = "UPDATE fornecedor 
     SET  
-        fabricante='$fabricante', 
-        modelo='$modelo', 
-        hostName='$hostName', 
-        ip='$ip', 
-        status='$status', 
-        macAdress='$macAdress',
-        centroDeCusto='$centroDeCusto', 
-        descricao='$descricao' 
-    WHERE id_asset = '$id_asset'";
+        nomeEmpresa='$nomeEmpresa', 
+        cnpj='$cnpj', 
+        email='$email', 
+        telefone='$telefone', 
+        servico='$servico', 
+        site='$site',
+        status='$status'
+    WHERE id_fornecedor = '$id_fornecedor'";  // Removi a vírgula extra aqui
 
-    $update = mysqli_query($conn, $query); // Corrigido aqui de $sql para $query
+    $update = mysqli_query($conn, $query);
 
     if ($update) {
         echo "<script>
-                alert('Ativo atualizado com sucesso!');
-                window.location.href = 'equipamentos.php';
+                alert('Fornecedor atualizado com sucesso!');
+                window.location.href = 'fornecedores.php';
               </script>";
         exit();
     } else {

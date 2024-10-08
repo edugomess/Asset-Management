@@ -163,27 +163,41 @@ $id = intval($id);
                 </nav>
                 <div id="content-1">
                     <div class="container-fluid">
-                        <h3 class="text-dark mb-1">Cadastro de Fornecedor</h3>
+                        <h3 class="text-dark mb-1">Editar Fornecedor</h3>
                     </div><!-- Start: Multi-row Form -->
-                    <form action="inserir_fornecedor.php" method="post">
+                    <form action="update_fornecedor.php" method="post">
+                    <?php
+    $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
+    $result = mysqli_query($conn, $sql);
+    while ($array = mysqli_fetch_array($result)) {
+        echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
+        
+        $nomeEmpresa = $array['nomeEmpresa'];
+        $cnpj = $array['cnpj'];
+        $email = $array['email'];
+        $telefone = $array['telefone'];
+        $servico = $array['servico'];
+        $site = $array['site'];
+        $status = $array['status'];
+    ?>
 
                     <form>
                         <!-- Start: 2-column form row -->
                         <div class="form-row">
                             <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"type="text" placeholder="Nome da Empresa"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"type="text" type="text" value="<?php echo $nomeEmpresa?>"></div>
                             </div>
                             <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="cnpj" type="text" placeholder="CNPJ"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="cnpj" type="text" type="text" value="<?php echo $cnpj?>"></div>
                             </div>
                         </div><!-- End: 2-column form row -->
                         <!-- Start: 3-column form row -->
                         <div class="form-row">
                             <div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="email" type="email" placeholder="E-mail"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="email" type="email" type="text" value="<?php echo $email?>"></div>
                             </div>
                             <div class="col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="telefone" type="tel" placeholder="Telefone (99) 99999-9999"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="telefone" type="tel" type="text" value="<?php echo $telefone?>"></div>
                             </div>
                             <div class="col-sm-2 offset-xl-0">
                                 <div class="form-group"><label></label></div>
@@ -192,15 +206,15 @@ $id = intval($id);
                         <!-- Start: 4-column form row -->
                         <div class="form-row">
                             <div div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="servico" type="text" placeholder="Serviço"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="servico" type="text"type="text" value="<?php echo $servico?>"></div>
                             </div>
                             <div class="col-sm-3 col-xl-1">
                                 <div class="form-group"></div>
                             </div>
                             <div class="col-sm-3 col-xl-3">
-                                <div class="form-group"><label></label><input class="form-control" name="site" type="text" placeholder="Site"></div>
+                                <div class="form-group"><label></label><input class="form-control" name="site" type="text" type="text" value="<?php echo $site?>"></div>
                             </div>
-                            <div class="col-xl-1"><select class="form-control" name="status" style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
+                            <div class="col-xl-1"><select class="form-control" name="status" type="text" value="<?php echo $status?>"style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
                                     <optgroup label="Situação">
                                         <option value="Ativo">Ativo</option>
                                         <option value="Inativo">Inativo</option>
@@ -209,11 +223,12 @@ $id = intval($id);
                         </div><!-- End: 4-column form row -->
                         <!-- Start: 6-column form row -->
                         <div class="form-row">
-                            <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button></div>
+                            <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
                         </div><!-- End: 6-column form row -->
                     </form><!-- End: Multi-row Form -->
                 </div>
             </div>
+            <?php } ?>
             <footer class="sticky-footer" style="background: transparent; padding: 0;">
     <!-- Start: Simple footer by krissy -->
     <section class="text-center footer" style="padding: 10px; margin-top: 70px;">

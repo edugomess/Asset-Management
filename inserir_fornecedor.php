@@ -17,7 +17,7 @@ $inserir = mysqli_query($conn, $sql);
 
 if ($inserir) {
     echo "<script>
-            alert('Usuário cadastrado com sucesso!');
+            alert('Fornecedor cadastrado com sucesso!');
             window.location.href = 'fornecedores.php';
           </script>";
     exit();

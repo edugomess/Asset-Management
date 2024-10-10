@@ -291,13 +291,13 @@ $id = intval($id);
             <label></label>
             <select class="form-control" name="unidade"  value="<?php echo $unidade?>" style="margin: 23px 0;">
                 <optgroup label="Unidade">
-                    <option value="FLMA" selected="">FLMA</option>
-                    <option value="IRSSL">IRSSL</option>
-                    <option value="HGG">HGG</option>
-                    <option value="HMJ">HMJ</option>
-                    <option value="HRJ">HRJ</option>
-                    <option value="HMIMJ">HMIMJ</option>
-                    <option value="HRR">HRR</option>
+                <option value="FLMA" selected="">São Paulo</option>
+                    <option value="IRSSL">Rio de Janeiro</option>
+                    <option value="HGG">Miami</option>
+                    <option value="HMJ">Cidade do México</option>
+                    <option value="HRJ">Londres</option>
+                    <option value="HMIMJ">Paris</option>
+                    <option value="HRR">Barcelona</option>
                 </optgroup>
             </select>
         </div>

@@ -21,14 +21,6 @@ if ($result) {
 // Fecha a conexão
 $conn->close();
 
-echo "<script>
-        if (confirm('Isso irá apagar um registro! Deseja continuar?')) {
-            window.location.href = 'equipamentos.php';
-        } else {
-            window.location.href = 'index.php'; // Altere para a página desejada
-        }
-      </script>";
-exit();
-?>
+
 
 

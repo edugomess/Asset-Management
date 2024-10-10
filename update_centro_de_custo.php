@@ -3,21 +3,20 @@
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['id_asset'])) {
-        $id_asset = $_POST['id_asset'];
+    if (isset($_POST['id_centro_de_custo'])) {
+        $id_centro_de_custo = $_POST['id_centro_de_custo'];
     } else {
         echo "id_asset não está definido.";
         exit;
     }
 
-    $fabricante = $_POST['fabricante'];
-    $modelo = $_POST['modelo'];
-    $hostName = $_POST['hostName'];
-    $ip = $_POST['ip'];
+    $nomeSetor = $_POST['nomeSetor'];
+    $codigo = $_POST['codigo'];
+    $ramal = $_POST['ramal'];
+    $unidade = $_POST['unidade'];
+    $emailGestor = $_POST['emailGestor'];
+    $gestor = $_POST['gestor'];
     $status = $_POST['status'];
-    $macAdress = $_POST['macAdress'];
-    $centroDeCusto = $_POST['centroDeCusto'];
-    $descricao = $_POST['descricao'];
 
     // Verificar se foi enviada uma nova imagem
     if (!empty($_FILES['imagem']['name'])) {
@@ -25,24 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Atualizar no banco de dados
-    $query = "UPDATE ativos 
+    $query = "UPDATE centro_de_custo 
     SET  
-        fabricante='$fabricante', 
-        modelo='$modelo', 
-        hostName='$hostName', 
-        ip='$ip', 
-        status='$status', 
-        macAdress='$macAdress',
-        centroDeCusto='$centroDeCusto', 
-        descricao='$descricao' 
-    WHERE id_asset = '$id_asset'";
+        nomeSetor='$nomeSetor', 
+        codigo='$codigo', 
+        ramal='$ramal', 
+        unidade='$unidade', 
+        emailGestor='$emailGestor', 
+        gestor='gestor',
+        status='$cstatus',  
+    WHERE id_centro_de_custo = '$id_centro_de_custo'";
 
     $update = mysqli_query($conn, $query); // Corrigido aqui de $sql para $query
 
     if ($update) {
         echo "<script>
                 alert('Ativo atualizado com sucesso!');
-                window.location.href = 'equipamentos.php';
+                window.location.href = 'centro_de_custo.php';
               </script>";
         exit();
     } else {

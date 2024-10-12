@@ -18,12 +18,6 @@
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css">
-
-
-
-
-
-    
     <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">

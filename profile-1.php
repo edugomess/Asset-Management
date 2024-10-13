@@ -45,11 +45,11 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard </span></a><a class="nav-link" href="/blank-3.html"><i class="fa fa-money"></i><span>Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/table-1.html"><i class="fas fa-table"></i><span>Usuários </span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/table-2.html"><i class="fas fa-table"></i><span>Clientes </span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/table-3.html"><i class="fas fa-table"></i><span>Fornecedores </span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/table-4.html"><i class="fas fa-table"></i><span>Produtos </span></a><a class="nav-link" href="/table.html"><i class="fa fa-list"></i><span>Relatórios</span></a><a class="nav-link" href="/blank-4.html"><i class="fa fa-support"></i><span>Suporte</span></a><a class="nav-link" href="/login.html"><i class="far fa-user-circle"></i><span>Login</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a class="nav-link" href="/blank-3.html"><i class="fa fa-money"></i><span>Início</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/table-1.html"><i class="fas fa-table"></i><span>Usuários</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/table-2.html"><i class="fas fa-table"></i><span>Cliente</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/table-3.html"><i class="fas fa-table"></i><span>Fornecedore</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/table-4.html"><i class="fas fa-table"></i><span>Produtos</span></a><a class="nav-link" href="/table.html"><i class="fa fa-list"></i><span>Relatórios</span></a><a class="nav-link" href="/blank-4.html"><i class="fa fa-support"></i><span>Suporte</span></a><a class="nav-link" href="/login.html"><i class="far fa-user-circle"></i><span>Login</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>

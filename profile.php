@@ -136,7 +136,7 @@
                                             </div>
                                             <div class="font-weight-bold">
                                                 <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
-                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                                <p class="small text-gray-500 mb-0">Chicken  · 2w</p>
                                             </div>
                                         </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
                                     </div>
@@ -155,7 +155,7 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Profile</h3>
+                    <h3 class="text-dark mb-4">Profile  </h3>
                     <div class="row mb-3">
                         <div class="col-lg-4">
                             <div class="card mb-3">

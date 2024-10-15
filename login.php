@@ -45,7 +45,7 @@
                                 <div class="p-5">
                                     <div class="text-center">
                                         
-                                        <div> <h3  class="text-dark mb-4"><span><strong>     ASSET MANAGEMENT</strong></span></h3></div>
+                                        <div> <h3  class="text-dark mb-4"><span><strong>ASSET MANAGEMENT</strong></span></h3></div>
                                     </div>
                                     <form class="user">
                                         <div class="form-group"><input class="form-control form-control-user" type="email"  id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email" required></div>

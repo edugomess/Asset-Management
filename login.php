@@ -82,7 +82,7 @@
                 <div class="col-sm-6 col-md-3 item">
                     <h3>Suporte</h3>
                     <ul>
-                        <li><a href="#">(11)99999-9999    </a></li>
+                        <li><a href="#">(11)99999-9999</a></li>
                     </ul>
                 </div><!-- End: About -->
                 <!-- Start: Footer Text -->

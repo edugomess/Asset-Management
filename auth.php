@@ -1,19 +1,10 @@
-
 <?php
 session_start();
 
-// Se o usuário já está logado, redirecione-o para o dashboard
-if (isset($_SESSION['id_usuarios'])) {
-    header("Location: dashboard.php");
+// Verifique se o usuário está logado
+if (!isset($_SESSION['id_usuarios'])) {
+    // Se não estiver logado, redirecione para a página de login
+    header("Location: login.php");
     exit();
-}
-
-// Código de autenticação do login
-if ($login_valido) {
-    $_SESSION['id_usuarios'] = $id_do_usuario; // Armazene o ID do usuário na sessão
-    header("Location: dashboard.php"); // Redirecione para a página principal
-    exit();
-} else {
-    echo "Login ou senha inválidos";
 }
 ?>

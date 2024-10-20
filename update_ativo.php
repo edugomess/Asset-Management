@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "id_asset não está definido.";
         exit;
     }
-
+    $categoria = $_POST['categoria'];
     $fabricante = $_POST['fabricante'];
     $modelo = $_POST['modelo'];
     $hostName = $_POST['hostName'];
@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Atualizar no banco de dados
     $query = "UPDATE ativos 
     SET  
+        categoria='$categoria',
         fabricante='$fabricante', 
         modelo='$modelo', 
         hostName='$hostName', 

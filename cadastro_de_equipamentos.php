@@ -162,42 +162,75 @@
                 
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="categoria" required="">
-                                    <optgroup label="Categoria">
-                                        <option value="" selected="">Selecione a Categoria</option>
-                                        <option value="Desktop">Notebook</option>
-                                        <option value="Monitor">Monitor</option>
-                                        <option value="Teclado">Teclado</option>
-                                        <option value="Mouse">Mouse</option>
-                                        <option value="Totem">Totem</option>
-                                        <option value="Impressora">Impressora</option>
-                                        <option value="Multifuncional">Multifuncional</option>
-                                        <option value="Telefone">Telefone</option>
-                                        <option value="Etiquetadora">Etiquetadora</option>
-                                        <option value="MS365">MS365</option>
-                                    </optgroup>
-                                </select></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-6 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="fabricante" type="text" placeholder="Fabricante" required=""></div>
-                        </div>
-                    </div><!-- End: 1-column form row -->
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" placeholder="Modelo" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" placeholder="Tag" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" placeholder="Host Name" required=""></div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="ip" type="text" placeholder="IP" required=""></div>
-                        </div>
-                    </div><!-- End: 2-column form row -->
+    <div class="col-sm-12 col-xl-2 offset-xl-1">
+        <div class="form-group">
+            <label>Categoria</label>
+            <select class="form-control" name="categoria" required="">
+                <optgroup label="Categoria">
+                    <option value="" selected="">Outro</option>
+                    <?php
+// Conectar ao banco de dados
+include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
+
+$sql = "SELECT categoria FROM categoria";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Saída dos dados de cada linha
+    while ($row = $result->fetch_assoc()) {
+        echo '<option value="'.$row['categoria'].'">'.$row['categoria'].'</option>';
+    }
+} else {
+    echo '<option value="">Nenhuma categoria encontrada</option>';
+}
+$conn->close();
+?>
+
+                </optgroup>
+            </select>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-6 offset-xl-1">
+        <div class="form-group">
+            <label></label>
+            <input class="form-control" name="fabricante" type="text" placeholder="Fabricante" required="">
+        </div>
+    </div>
+</div><!-- End: 1-column form row -->
+
+<!-- Start: 2-column form row -->
+<div class="form-row">
+    <div class="col-sm-6 col-xl-4 offset-xl-1">
+        <div class="form-group">
+            <label></label>
+            <input class="form-control" name="modelo" type="text" placeholder="Modelo" required="">
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-4 offset-xl-1">
+        <div class="form-group">
+            <label></label>
+            <input class="form-control" name="tag" type="text" placeholder="Tag" required="">
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-4 offset-xl-1">
+        <div class="form-group">
+            <label></label>
+            <input class="form-control" name="hostName" type="text" placeholder="Host Name" required="">
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-4 offset-xl-1">
+        <div class="form-group">
+            <label></label>
+            <input class="form-control" name="ip" type="text" placeholder="IP" required="">
+        </div>
+    </div>
+</div><!-- End: 2-column form row -->
+
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">

@@ -184,23 +184,41 @@ $id = intval($id);
     ?>
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="categoria" value="<?php echo $categoria?>"disabled>
-                                    <optgroup label="Categoria">
-                                        <option value="" selected="">Selecione a Categoria</option>
-                                        <option value="Desktop">Notebook</option>
-                                        <option value="Monitor">Monitor</option>
-                                        <option value="Teclado">Teclado</option>
-                                        <option value="Mouse">Mouse</option>
-                                        <option value="Totem">Totem</option>
-                                        <option value="Impressora">Impressora</option>
-                                        <option value="Multifuncional">Multifuncional</option>
-                                        <option value="Telefone">Telefone</option>
-                                        <option value="Etiquetadora">Etiquetadora</option>
-                                        <option value="MS365">MS365</option>
-                                    </optgroup>
-                                </select></div>
-                        </div>
+    <div class="col-sm-12 col-xl-2 offset-xl-1">
+      
+                    <div class="form-group">
+    <label>Categoria</label>
+    <select class="form-control" name="categoria" required="">
+        <optgroup label="Categoria">
+            <option value="<?php echo $categoria?>"></option>
+            <?php
+            // Conectar ao banco de dados
+            include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+
+            // Verificar conexão
+            if ($conn->connect_error) {
+                die("Conexão falhou: " . $conn->connect_error);
+            }
+
+            $sql = "SELECT categoria FROM categoria";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                // Saída dos dados de cada linha
+                while ($row = $result->fetch_assoc()) {
+                    $selected = ($row['categoria'] == $categoriaAtual) ? ' selected' : '';
+                    echo '<option value="'.$row['categoria'].'"'.$selected.'>'.$row['categoria'].'</option>';
+                }
+            } else {
+                echo '<option value="">Nenhuma categoria encontrada</option>';
+            }
+            $conn->close();
+            ?>
+        </optgroup>
+    </select>
+</div>
+
+    </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
                             <div class="form-group"><label></label><input class="form-control" name="fabricante" type="text"  value="<?php echo $fabricante?>"></div>
                         </div>

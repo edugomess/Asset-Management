@@ -167,7 +167,7 @@
             <label>Categoria</label>
             <select class="form-control" name="categoria" required="">
                 <optgroup label="Categoria">
-                    <option value="" selected="">Outro</option>
+                    
                     <?php
 // Conectar ao banco de dados
 include 'conexao.php'; // Lembre-se do ponto e vírgula aqui

@@ -182,6 +182,23 @@ $id = intval($id);
         $dataAtivacao = $array['dataAtivacao'];
         $centroDeCusto = $array['centroDeCusto'];
     ?>
+    <?php
+// Conectar ao banco de dados
+include 'conexao.php';
+
+// ID do registro a ser editado
+$id_categoria = $_GET['id']; // Ou qualquer método que você esteja usando para obter o ID
+
+// Buscar a categoria atual do registro
+$sqlAtual = "SELECT categoria FROM categoria WHERE id = $categoria";
+$resultAtual = $conn->query($sqlAtual);
+if ($resultAtual->num_rows > 0) {
+    $rowAtual = $resultAtual->fetch_assoc();
+    $categoriaAtual = $rowAtual['categoria'];
+} else {
+    $categoriaAtual = "";
+}
+?>
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
     <div class="col-sm-12 col-xl-2 offset-xl-1">

@@ -252,6 +252,7 @@ $id = intval($id);
         </optgroup>
     </select>
 </div>
+
                         <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">

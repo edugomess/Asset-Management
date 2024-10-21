@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $matricula = $_POST['matricula'];
     $telefone = $_POST['telefone'];
     $senha = $_POST['senha']; // Nova senha enviada no formulário
+    $unidade = $_POST['unidade']; // Nova unidade enviada no formulário
     
     // Verificar se o usuarioAD já existe no banco de dados, exceto para o próprio usuário
     $query_check = "SELECT id_usuarios FROM usuarios WHERE usuarioAD = '$usuarioAD' AND id_usuarios != '$id_usuarios'";
@@ -42,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              centroDeCusto='$centroDeCusto', 
                              matricula='$matricula', 
                              telefone='$telefone',
+                             unidade='$unidade', 
                              senha='$senha_hashed' 
-                             
                          WHERE id_usuarios = '$id_usuarios'";
     } else {
         // Se a senha não foi alterada, não atualize o campo de senha
@@ -56,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              email='$email', 
                              centroDeCusto='$centroDeCusto', 
                              matricula='$matricula', 
-                             telefone='$telefone' 
-                             
+                             telefone='$telefone',
+                             unidade='$unidade'
                          WHERE id_usuarios = '$id_usuarios'";
     }
 

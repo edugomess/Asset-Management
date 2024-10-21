@@ -268,7 +268,8 @@
         </div>
         <div class="col-xl-3 offset-xl-1">
             <label></label>
-            <select class="form-control" name="unidade" required="" style="margin: 23px 0;">
+            <label></label>
+            <select class="form-control" name="unidade" required=""style="margin: 23px 0;">
                 <optgroup label="Unidade">
                 <?php
 // Conectar ao banco de dados

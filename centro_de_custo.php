@@ -201,7 +201,7 @@ $result = mysqli_query($conn, $sql);
         <th>Setor</th>
         <th>Código</th>
         <th>Ramal</th>
-        <th>UnidadeGestor</th>
+        <th>Unidade</th>
         <th>E-mail Gestor</th>
         <th>Gestor</th>
             <th></th>
@@ -234,7 +234,7 @@ $result = mysqli_query($conn, $sql);
         <th>Setor</th>
         <th>Código</th>
         <th>Ramal</th>
-        <th>UnidadeGestor</th>
+        <th>Unidade</th>
         <th>E-mail Gestor</th>
         <th>Gestor</th>
             <th></th>

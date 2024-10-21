@@ -290,13 +290,28 @@ $id = intval($id);
             <label></label>
             <select class="form-control" name="unidade"  value="<?php echo $unidade?>" style="margin: 23px 0;">
                 <optgroup label="Unidade">
-                <option value="FLMA" selected="">São Paulo</option>
-                    <option value="IRSSL">Rio de Janeiro</option>
-                    <option value="HGG">Miami</option>
-                    <option value="HMJ">Cidade do México</option>
-                    <option value="HRJ">Londres</option>
-                    <option value="HMIMJ">Paris</option>
-                    <option value="HRR">Barcelona</option>
+                <?php
+// Conectar ao banco de dados
+include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
+
+$sql = "SELECT unidade FROM unidade";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Saída dos dados de cada linha
+    while ($row = $result->fetch_assoc()) {
+        echo '<option value="'.$row['unidade'].'">'.$row['unidade'].'</option>';
+    }
+} else {
+    echo '<option value="">Nenhuma unidade encontrada</option>';
+}
+$conn->close();
+?>
                 </optgroup>
             </select>
         </div>

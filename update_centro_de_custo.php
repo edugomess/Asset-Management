@@ -1,11 +1,14 @@
+
+
 <?php
 // Conexão com o banco de dados
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Verificar se o ID foi recebido corretamente
-    if (!isset($_POST['id_centro_de_custo']) || empty($_POST['id_centro_de_custo'])) {
-        echo "ID do centro de custo não está definido ou está vazio.";
+    if (isset($_POST['id_centro_de_custo'])) {
+        $id_centro_de_custo = $_POST['id_centro_de_custo'];
+    } else {
+        echo 'id_centro_de_custo não está definido.';
         exit;
     }
 
@@ -18,23 +21,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gestor = $_POST['gestor'];
     $status = $_POST['status'];
 
+    // Verificar se foi enviada uma nova imagem
+    if (!empty($_FILES['imagem']['name'])) {
+        // Processar a imagem (salvar no servidor, etc.)
+    }
+
     // Atualizar no banco de dados
     $query = "UPDATE centro_de_custo 
-              SET  
-                  nomeSetor='$nomeSetor', 
+    SET  
+        nomeSetor='$nomeSetor', 
                   codigo='$codigo', 
                   ramal='$ramal', 
                   unidade='$unidade', 
                   emailGestor='$emailGestor', 
                   gestor='$gestor', 
                   status='$status' 
-              WHERE id_centro_de_custo = '$id_centro_de_custo'";
+    WHERE id_centro_de_custo = '$id_centro_de_custo'";
+    
 
     $update = mysqli_query($conn, $query);
 
     if ($update) {
         echo "<script>
-                alert('Centro de custo atualizado com sucesso!');
+                alert('Fornecedor atualizado com sucesso!');
                 window.location.href = 'centro_de_custo.php';
               </script>";
         exit();
@@ -43,4 +52,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-

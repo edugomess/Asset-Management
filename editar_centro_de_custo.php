@@ -197,7 +197,7 @@ $id = intval($id);
                             </div>
                         </div>
                         <div class="col-sm-3 col-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="unidade"value="<?php echo $unidade?>" >
+                            <div class="form-group"><label></label><select class="form-control" name="unidade"value="">
                             <optgroup label="Unidade">
                 <?php
 // Conectar ao banco de dados

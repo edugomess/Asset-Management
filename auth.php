@@ -1,4 +1,4 @@
-<?php
+  <?php
 session_start();
 
 // Verifique se o usuário está logado

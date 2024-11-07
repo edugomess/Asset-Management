@@ -28,11 +28,6 @@ class PDF extends FPDF {
         $this->Cell(30, 10, 'Modelo', 1);
         $this->Cell(20, 10, 'Tag', 1);
         $this->Cell(30, 10, 'Host Name', 1);
-        $this->Cell(30, 10, 'IP', 1);
-        $this->Cell(30, 10, 'MAC Address', 1);
-        $this->Cell(20, 10, 'Status', 1);
-        $this->Cell(30, 10, 'Data Ativacao', 1);
-        $this->Cell(30, 10, 'Centro de Custo', 1);
         $this->Ln();
     }
 
@@ -64,11 +59,6 @@ if ($result->num_rows > 0) {
         $pdf->Cell(30, 10, htmlspecialchars($row['modelo']), 1);
         $pdf->Cell(20, 10, htmlspecialchars($row['tag']), 1);
         $pdf->Cell(30, 10, htmlspecialchars($row['hostName']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['ip']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['macAdress']), 1);
-        $pdf->Cell(20, 10, htmlspecialchars($row['status']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['dataAtivacao']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['centroDeCusto']), 1);
         $pdf->Ln();
     }
 } else {

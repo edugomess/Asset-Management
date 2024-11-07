@@ -1,5 +1,4 @@
 <?php
-
 require('fpdf/fpdf.php');
 
 // Inclui o arquivo de conexão com o banco de dados

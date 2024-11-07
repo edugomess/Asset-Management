@@ -53,7 +53,7 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
 // Consulta para buscar dados da tabela ativo
-$query = "SELECT categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto FROM ativo";
+$query = "SELECT categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto FROM ativos";
 $result = $conn->query($query);
 
 // Verifica se há dados e adiciona ao PDF

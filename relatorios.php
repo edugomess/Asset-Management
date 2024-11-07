@@ -1,3 +1,6 @@
+<?PHP
+include 'conexao.php';
+?>
 <!DOCTYPE html>
 <html>
 

@@ -1,4 +1,4 @@
- <?PHP
+<?PHP
 include 'conexao.php';
 ?>
 <!DOCTYPE html>

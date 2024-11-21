@@ -1,21 +1,6 @@
 <?php
 include 'conexao.php';
 
-$nome = $_POST['nome'];
-$sobrenome = $_POST['sobrenome'];
-$usuarioAD = $_POST['usuarioAD'];
-$funcao = $_POST['funcao'];
-$dataNascimento = $_POST['dataNascimento'];
-$email = $_POST['email'];
-$centroDeCusto = $_POST['centroDeCusto'];
-$matricula = $_POST['matricula'];
-$telefone = $_POST['telefone'];
-$tipoContrato = $_POST['tipoContrato'];
-$senha = $_POST['senha'];
-$confirmarSenha = $_POST['confirmarSenha'];
-$nivelUsuario = $_POST['nivelUsuario'];
-$unidade = $_POST['unidade'];
-$status = $_POST['status'];
 
 // Verifica se as senhas coincidem
 if ($senha !== $confirmarSenha) {

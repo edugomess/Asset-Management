@@ -16,6 +16,7 @@ $confirmarSenha = $_POST['confirmarSenha'];
 $nivelUsuario = $_POST['nivelUsuario'];
 $unidade = $_POST['unidade'];
 $status = $_POST['status'];
+
 // Verifica se as senhas coincidem
 if ($senha !== $confirmarSenha) {
     echo "<script>alert('As senhas não coincidem.');</script>";

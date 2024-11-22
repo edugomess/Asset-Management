@@ -1,4 +1,4 @@
-<?PHP
+ <?PHP
 include 'conexao.php';
 ?>
 <!DOCTYPE html>
@@ -168,7 +168,7 @@ include 'conexao.php';
                             <div class="row">
                             <div class="col-md-6 col-xl-2"><a href="relatorio_ativo.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Ativos</button></a></div>
 
-                                <div class="col-md-6 col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" href="relatorio_ativo.php" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Usuários</button></a></div>
+                            <div class="col-md-6 col-xl-2"><a href="relatorio_centro_de_custo.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Centro de Custo</button></a></div>
                                 <div class="col-md-6 col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Fornecedores</button></div>
                                 <div class="col-md-6 col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Centro de custo</button></div>
                                 <div class="col-md-6 col-xl-2 text-nowrap">

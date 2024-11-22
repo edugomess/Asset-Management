@@ -1,4 +1,4 @@
-Ajustar relatorio
+
 <?php
 require('fpdf/fpdf.php');
 
@@ -17,17 +17,16 @@ class PDF extends FPDF {
         // Define a fonte
         $this->SetFont('Arial', 'B', 12);
         // Título
-        $this->Cell(0, 10, 'Relatorio de Ativos', 0, 1, 'C');
+        $this->Cell(0, 10, 'Relatorio de Centro de Custo', 0, 1, 'C');
         // Linha abaixo do cabeçalho
         $this->Ln(10);
 
         // Cabeçalho da tabela
         $this->SetFont('Arial', 'B', 10);
-        $this->Cell(30, 10, 'Categoria', 1);
-        $this->Cell(30, 10, 'Fabricante', 1);
-        $this->Cell(30, 10, 'Modelo', 1);
-        $this->Cell(20, 10, 'Tag', 1);
-        $this->Cell(30, 10, 'Host Name', 1);
+        $this->Cell(60, 10, 'Setor', 1);
+        $this->Cell(40, 10, 'Unidade', 1);
+        $this->Cell(30, 10, 'Gestor', 1);
+        $this->Cell(30, 10, 'Codigo', 1);
         $this->Ln();
     }
 
@@ -38,27 +37,29 @@ class PDF extends FPDF {
         // Fonte Arial itálico 8
         $this->SetFont('Arial', 'I', 8);
         // Número da página
-        $this->Cell(0, 10, 'Pagina ' . $this->PageNo(), 0, 0, 'C');
+        $this->Cell(0, 10, 'Página ' . $this->PageNo(), 0, 0, 'C');
     }
 }
+
+// Evita qualquer saída antes de gerar o PDF
+ob_start();
 
 // Cria um novo PDF
 $pdf = new PDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
-// Consulta para buscar dados da tabela ativo
-$query = "SELECT categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto FROM ativos";
+// Consulta para buscar dados da tabela centro_de_custo
+$query = "SELECT nomeSetor, unidade, gestor, codigo FROM centro_de_custo";
 $result = $conn->query($query);
 
 // Verifica se há dados e adiciona ao PDF
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $pdf->Cell(30, 10, htmlspecialchars($row['categoria']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['fabricante']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['modelo']), 1);
-        $pdf->Cell(20, 10, htmlspecialchars($row['tag']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['hostName']), 1);
+        $pdf->Cell(60, 10, $row['nomeSetor'], 1);
+        $pdf->Cell(40, 10, $row['unidade'], 1);
+        $pdf->Cell(30, 10, $row['gestor'], 1);
+        $pdf->Cell(30, 10, $row['codigo'], 1);
         $pdf->Ln();
     }
 } else {
@@ -67,6 +68,9 @@ if ($result->num_rows > 0) {
 
 // Fecha a conexão com o banco de dados
 $conn->close();
+
+// Limpa qualquer saída no buffer antes de enviar o PDF
+ob_end_clean();
 
 // Gera o PDF no navegador
 $pdf->Output();

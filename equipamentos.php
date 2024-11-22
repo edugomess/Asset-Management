@@ -240,6 +240,7 @@ $result = mysqli_query($conn, $sql);
                     <td>" . htmlspecialchars($row['dataAtivacao']) . "</td>
                     <td>" . htmlspecialchars($row['centroDeCusto']) . "</td>
                     <td>
+                    
                         <a class='btn btn-dark' href='checkout_ativo.php?id=" . $row['id_asset'] . "'>Atribuir  <i class='fas fa-address-card'></i></a>
                         <a class='btn btn-warning' href='editar_ativo.php?id=" . $row['id_asset'] . "'><i class='fas fa-edit'></i></a>
                         <a class='btn btn-danger' href='apagar_ativo.php?id=" . $row['id_asset'] . "'><i class='fas fa-trash'></i></a>

@@ -1,5 +1,4 @@
 
-ajustar relatório
 <?php
 require('fpdf/fpdf.php');
 
@@ -11,6 +10,11 @@ if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
 
+// Função para converter texto UTF-8 para ISO-8859-1
+function utf8_to_iso88591($text) {
+    return iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $text);
+}
+
 // Cria uma classe PDF personalizada que estende a FPDF
 class PDF extends FPDF {
     // Cabeçalho do PDF
@@ -18,17 +22,16 @@ class PDF extends FPDF {
         // Define a fonte
         $this->SetFont('Arial', 'B', 12);
         // Título
-        $this->Cell(0, 10, 'Relatorio de Ativos', 0, 1, 'C');
+        $this->Cell(0, 10, utf8_to_iso88591('Relatório de Usuários'), 0, 1, 'C');
         // Linha abaixo do cabeçalho
         $this->Ln(10);
 
         // Cabeçalho da tabela
         $this->SetFont('Arial', 'B', 10);
-        $this->Cell(30, 10, 'Categoria', 1);
-        $this->Cell(30, 10, 'Fabricante', 1);
-        $this->Cell(30, 10, 'Modelo', 1);
-        $this->Cell(20, 10, 'Tag', 1);
-        $this->Cell(30, 10, 'Host Name', 1);
+        $this->Cell(40, 10, utf8_to_iso88591('Nome'), 1);
+        $this->Cell(40, 10, utf8_to_iso88591('Usuário AD'), 1);
+        $this->Cell(60, 10, utf8_to_iso88591('E-Mail'), 1);
+        $this->Cell(50, 10, utf8_to_iso88591('Função'), 1);
         $this->Ln();
     }
 
@@ -39,36 +42,42 @@ class PDF extends FPDF {
         // Fonte Arial itálico 8
         $this->SetFont('Arial', 'I', 8);
         // Número da página
-        $this->Cell(0, 10, 'Pagina ' . $this->PageNo(), 0, 0, 'C');
+        $this->Cell(0, 10, utf8_to_iso88591('Página ') . $this->PageNo(), 0, 0, 'C');
     }
 }
+
+// Inicia o buffer de saída para evitar que qualquer saída anterior atrapalhe o PDF
+ob_start();
 
 // Cria um novo PDF
 $pdf = new PDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
-// Consulta para buscar dados da tabela ativo
-$query = "SELECT categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto FROM ativos";
+// Consulta para buscar dados da tabela usuarios
+$query = "SELECT nome, usuarioAD, email, funcao FROM usuarios";
 $result = $conn->query($query);
 
 // Verifica se há dados e adiciona ao PDF
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $pdf->Cell(30, 10, htmlspecialchars($row['categoria']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['fabricante']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['modelo']), 1);
-        $pdf->Cell(20, 10, htmlspecialchars($row['tag']), 1);
-        $pdf->Cell(30, 10, htmlspecialchars($row['hostName']), 1);
+        $pdf->Cell(40, 10, utf8_to_iso88591($row['nome']), 1);
+        $pdf->Cell(40, 10, utf8_to_iso88591($row['usuarioAD']), 1);
+        $pdf->Cell(60, 10, utf8_to_iso88591($row['email']), 1);
+        $pdf->Cell(50, 10, utf8_to_iso88591($row['funcao']), 1);
         $pdf->Ln();
     }
 } else {
-    $pdf->Cell(0, 10, 'Nenhum ativo encontrado.', 1, 1, 'C');
+    $pdf->Cell(0, 10, utf8_to_iso88591('Nenhum usuário encontrado.'), 1, 1, 'C');
 }
 
 // Fecha a conexão com o banco de dados
 $conn->close();
 
+// Limpa qualquer saída no buffer antes de enviar o PDF
+ob_end_clean();
+
 // Gera o PDF no navegador
 $pdf->Output();
 ?>
+

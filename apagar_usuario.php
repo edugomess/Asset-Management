@@ -13,7 +13,7 @@ $result = mysqli_query($conn, "DELETE FROM usuarios WHERE id_usuarios = $id");
 
 // Verifica se a consulta foi bem-sucedida
 if ($result) {
-    echo "Usuário deletado com sucesso";
+    echo "Centro de custo deletado com sucesso";
 } else {
     echo "Erro ao deletar registro: " . mysqli_error($conn);
 }
@@ -25,7 +25,7 @@ echo "<script>
         if (confirm('Isso irá apagar um registro! Deseja continuar?')) {
             window.location.href = 'usuarios.php';
         } else {
-            window.location.href = 'index.php'; // Altere para a página desejada
+            window.location.href = 'outrapagina.php'; // Altere para a página desejada
         }
       </script>";
 exit();

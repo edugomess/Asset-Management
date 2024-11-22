@@ -13,7 +13,7 @@ $result = mysqli_query($conn, "DELETE FROM ativos WHERE id_asset = $id");
 
 // Verifica se a consulta foi bem-sucedida
 if ($result) {
-    echo "Registro deletado com sucesso";
+    echo "Centro de custo deletado com sucesso";
 } else {
     echo "Erro ao deletar registro: " . mysqli_error($conn);
 }
@@ -21,6 +21,15 @@ if ($result) {
 // Fecha a conexão
 $conn->close();
 
+echo "<script>
+        if (confirm('Isso irá apagar um registro! Deseja continuar?')) {
+            window.location.href = 'equipamentos.php';
+        } else {
+            window.location.href = 'outrapagina.php'; // Altere para a página desejada
+        }
+      </script>";
+exit();
+?>
 
 
 

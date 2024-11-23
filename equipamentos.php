@@ -290,13 +290,13 @@ $result = mysqli_query($conn, $sql);
                             // Exibe o botão de desatribuir ou atribuir
                             if ($assigned_to) {
                                 // Se o ativo já tem um usuário atribuído, exibe o botão "Desatribuir"
-                                echo "<button class='btn btn-danger' onclick='unassignUser(" . $row['id_asset'] . ")'>
-                                        Desatribuir <i class='fas fa-times'></i>
+                                echo "<button class='btn btn-dark' onclick='unassignUser(" . $row['id_asset'] . ")'>
+                                        Entrada <i class='fas fa-address-card'></i>
                                       </button>";
                             } else {
                                 // Caso contrário, exibe o botão "Atribuir"
-                                echo "<button class='btn btn-dark' onclick='openAssignModal(" . $row['id_asset'] . ")'>
-                                        Atribuir <i class='fas fa-address-card'></i>
+                                echo "<button class='btn btn-info' onclick='openAssignModal(" . $row['id_asset'] . ")'>
+                                        Saída <i class='fas fa-address-card'></i>
                                       </button>";
                             }
                             ?>

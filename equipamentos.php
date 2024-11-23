@@ -358,22 +358,41 @@ $result = mysqli_query($conn, $sql);
     }
 
     function assignUser(userId) {
-        fetch('assign_asset.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ assetId: currentAssetId, userId }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Ativo atribuído com sucesso!');
-                    closeAssignModal();
-                    location.reload();
-                } else {
-                    alert('Erro ao atribuir ativo.');
-                }
-            });
+    if (!currentAssetId || !userId) {
+        alert("Erro: Ativo ou usuário não selecionado.");
+        return;
     }
+
+    // Realiza a requisição para atribuir o ativo
+    fetch('assign_asset.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            assetId: currentAssetId,
+            userId: userId
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erro ao atribuir o ativo");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Ativo atribuído com sucesso!');
+                closeAssignModal();
+                location.reload(); // Recarrega a página para atualizar os dados
+            } else {
+                alert('Erro ao atribuir ativo: ' + (data.message || 'Erro desconhecido'));
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao atribuir ativo:", error);
+            alert("Erro ao atribuir ativo. Tente novamente.");
+        });
+}
+
 </script>
 
 

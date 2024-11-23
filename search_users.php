@@ -1,18 +1,32 @@
 <?php
-include 'conexao.php';
+include 'conexao.php'; // Inclui a conexão com o banco de dados
 
-$query = $_GET['query'];
-$sql = "SELECT id_usuarios, nome FROM usuarios WHERE nome LIKE ?";
-$stmt = $conn->prepare($sql);
-$search = "%$query%";
-$stmt->bind_param('s', $search);
-$stmt->execute();
-$result = $stmt->get_result();
+header('Content-Type: application/json');
 
-$users = [];
-while ($row = $result->fetch_assoc()) {
-    $users[] = $row;
+// Obtenha o texto da pesquisa
+$query = isset($_GET['query']) ? mysqli_real_escape_string($conn, $_GET['query']) : '';
+
+// Verifique se há uma entrada de pesquisa
+if (!empty($query)) {
+    // Consulte os usuários no banco de dados
+    $sql = "SELECT id, nome FROM usuarios WHERE nome LIKE '%$query%' LIMIT 10";
+    $result = mysqli_query($conn, $sql);
+
+    $users = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $users[] = [
+                'id' => $row['id'],
+                'name' => $row['nome']
+            ];
+        }
+    }
+
+    // Retorne os resultados como JSON
+    echo json_encode($users);
+} else {
+    echo json_encode([]); // Retorna vazio se não houver query
 }
 
-echo json_encode($users);
+mysqli_close($conn);
 ?>

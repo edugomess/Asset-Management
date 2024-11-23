@@ -208,112 +208,175 @@ $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>
 
-<table class="table my-0" id="dataTable">
-    <thead>
-        <tr>
-            <th>Categoria</th>
-            <th>Fabricante</th>
-            <th>Modelo</th>
-            <th>Tag</th>
-            <th>HostName</th>
-            <th>IP</th>
-            <th>MAC Address</th>
-            <th>Status</th>
-            <th>Data de Ativação</th>
-            <th>Centro de Custo</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>
-                    <td>" . htmlspecialchars($row['categoria']) . "</td>
-                    <td>" . htmlspecialchars($row['fabricante']) . "</td>
-                    <td>" . htmlspecialchars($row['modelo']) . "</td>
-                    <td>" . htmlspecialchars($row['tag']) . "</td>
-                    <td>" . htmlspecialchars($row['hostName']) . "</td>
-                    <td>" . htmlspecialchars($row['ip']) . "</td>
-                    <td>" . htmlspecialchars($row['macAdress']) . "</td>
-                    <td>" . htmlspecialchars($row['status']) . "</td>
-                    <td>" . htmlspecialchars($row['dataAtivacao']) . "</td>
-                    <td>" . htmlspecialchars($row['centroDeCusto']) . "</td>
-                    <td>
-                    
-                        <a class='btn btn-dark' href='checkout_ativo.php?id=" . $row['id_asset'] . "'>Atribuir  <i class='fas fa-address-card'></i></a>
-                        <a class='btn btn-warning' href='editar_ativo.php?id=" . $row['id_asset'] . "'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_ativo.php?id=" . $row['id_asset'] . "'><i class='fas fa-trash'></i></a>
-                    </td>
-                </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-        }
-        ?>
-    </tbody>
-    <thead>
-        <tr>
-            <th>Categoria</th>
-            <th>Fabricante</th>
-            <th>Modelo</th>
-            <th>Tag</th>
-            <th>HostName</th>
-            <th>IP</th>
-            <th>MAC Address</th>
-            <th>Status</th>
-            <th>Data de Ativação</th>
-            <th>Centro de Custo</th>
-            <th></th>
-        </tr>
-    </thead>
-</table>
 
-<div class="pagination justify-content-start">
-    <nav>
-    <ul class="pagination">
-    <?php
-    // Previous Page Link
-    if ($current_page > 1) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-    }
 
-    // Page Links
-    for ($page = 1; $page <= $total_pages; $page++) {
-        if ($page == $current_page) {
-            echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-        } else {
-            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
-        }
-    }
+            <div class="table-responsive mt-2">
+                <table class="table my-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Fabricante</th>
+                            <th>Modelo</th>
+                            <th>Tag</th>
+                            <th>HostName</th>
+                            <th>IP</th>
+                            <th>MAC Address</th>
+                            <th>Status</th>
+                            <th>Data de Ativação</th>
+                            <th>Centro de Custo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        include 'conexao.php';
 
-    // Next Page Link
-    if ($current_page < $total_pages) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-    }
-    ?>
-</ul>
+                        // Define a paginação
+                        $results_per_page = 10;
+                        $sql = "SELECT COUNT(*) AS total FROM ativos";
+                        $result = mysqli_query($conn, $sql);
+                        $row = mysqli_fetch_assoc($result);
+                        $total_results = $row['total'];
+                        $total_pages = ceil($total_results / $results_per_page);
+                        $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                        $start_from = ($current_page - 1) * $results_per_page;
 
-    </nav>
+                        // Consulta os ativos
+                        $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
+                        $result = mysqli_query($conn, $sql);
+
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<tr>
+                                    <td>" . htmlspecialchars($row['categoria']) . "</td>
+                                    <td>" . htmlspecialchars($row['fabricante']) . "</td>
+                                    <td>" . htmlspecialchars($row['modelo']) . "</td>
+                                    <td>" . htmlspecialchars($row['tag']) . "</td>
+                                    <td>" . htmlspecialchars($row['hostName']) . "</td>
+                                    <td>" . htmlspecialchars($row['ip']) . "</td>
+                                    <td>" . htmlspecialchars($row['macAdress']) . "</td>
+                                    <td>" . htmlspecialchars($row['status']) . "</td>
+                                    <td>" . htmlspecialchars($row['dataAtivacao']) . "</td>
+                                    <td>" . htmlspecialchars($row['centroDeCusto']) . "</td>
+                                    <td>
+                                        <button class='btn btn-dark' onclick='openAssignModal(" . $row['id_asset'] . ")'>
+                                            Atribuir <i class='fas fa-address-card'></i>
+                                        </button>
+                                        <a class='btn btn-warning' href='editar_ativo.php?id=" . $row['id_asset'] . "'>
+                                            <i class='fas fa-edit'></i>
+                                        </a>
+                                        <a class='btn btn-danger' href='apagar_ativo.php?id=" . $row['id_asset'] . "'>
+                                            <i class='fas fa-trash'></i>
+                                        </a>
+                                    </td>
+                                </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination justify-content-start">
+                <nav>
+                    <ul class="pagination">
+                        <?php
+                        if ($current_page > 1) {
+                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+                        }
+
+                        for ($page = 1; $page <= $total_pages; $page++) {
+                            if ($page == $current_page) {
+                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                            } else {
+                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                            }
+                        }
+
+                        if ($current_page < $total_pages) {
+                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                        }
+                        ?>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
 </div>
 
-
-<?php
-mysqli_close($conn);
-?>
-
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Modal -->
+<div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Atribuir Ativo ao Usuário</h5>
+                <button type="button" class="close" onclick="closeAssignModal()">&times;</button>
             </div>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-    <!-- Start: Simple footer by krissy -->
-    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-        <!-- Start: Footer text -->
-        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-    </section><!-- End: Simple footer by krissy -->
+            <div class="modal-body">
+                <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..." oninput="searchUsers()">
+                <ul id="userList" class="list-group mt-2"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentAssetId = null;
+
+    function openAssignModal(assetId) {
+        currentAssetId = assetId;
+        document.getElementById('assignModal').style.display = 'block';
+    }
+
+    function closeAssignModal() {
+        document.getElementById('assignModal').style.display = 'none';
+        document.getElementById('userList').innerHTML = '';
+        document.getElementById('userSearch').value = '';
+    }
+
+    function searchUsers() {
+        const query = document.getElementById('userSearch').value;
+
+        fetch(`search_users.php?query=${query}`)
+            .then(response => response.json())
+            .then(users => {
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = user.name;
+                    li.onclick = () => assignUser(user.id);
+                    userList.appendChild(li);
+                });
+            });
+    }
+
+    function assignUser(userId) {
+        fetch('assign_asset.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assetId: currentAssetId, userId }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Ativo atribuído com sucesso!');
+                    closeAssignModal();
+                    location.reload();
+                } else {
+                    alert('Erro ao atribuir ativo.');
+                }
+            });
+    }
+</script>
+
+
 </footer>
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

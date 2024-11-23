@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-
+<style> .btn-tamanho-fixo { width: 150px; } </style>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -290,14 +290,12 @@ $result = mysqli_query($conn, $sql);
                             // Exibe o botão de desatribuir ou atribuir
                             if ($assigned_to) {
                                 // Se o ativo já tem um usuário atribuído, exibe o botão "Desatribuir"
-                                echo "<button class='btn btn-dark' onclick='unassignUser(" . $row['id_asset'] . ")'>
-                                        Entrada <i class='fas fa-address-card'></i>
-                                      </button>";
-                            } else {
-                                // Caso contrário, exibe o botão "Atribuir"
-                                echo "<button class='btn btn-info' onclick='openAssignModal(" . $row['id_asset'] . ")'>
-                                        Saída <i class='fas fa-address-card'></i>
-                                      </button>";
+                                echo "<button class='btn btn-dark btn-tamanho-fixo' 
+                                onclick='unassignUser(" . $row['id_asset'] . ")'> 
+                                Desatribuir <i class='fas fa-address-card'></i> </button>"; } 
+                                else { echo "<button class='btn btn-info btn-tamanho-fixo' 
+                                    onclick='openAssignModal(" . $row['id_asset'] . ")'> 
+                                    Atribuir <i class='fas fa-address-card'></i> </button>";
                             }
                             ?>
                             <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>

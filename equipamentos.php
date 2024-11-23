@@ -206,99 +206,261 @@ $start_from = ($current_page - 1) * $results_per_page;
 // Fetch the selected results from the database
 $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
+
+include 'conexao.php';
+
+// Define how many results you want per page
+$results_per_page = 10;
+
+// Find out the number of results in the database
+$sql = "SELECT COUNT(*) AS total FROM ativos";
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_assoc($result);
+$total_results = $row['total'];
+
+// Determine number of pages needed
+$total_pages = ceil($total_results / $results_per_page);
+
+// Determine the current page number from the URL, if not set default to 1
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+// Calculate the starting limit for the records
+$start_from = ($current_page - 1) * $results_per_page;
+
+// Fetch the selected results from the database
+$sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
+$result = mysqli_query($conn, $sql);
 ?>
 
 
 
-            <div class="table-responsive mt-2">
-                <table class="table my-0" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Categoria</th>
-                            <th>Fabricante</th>
-                            <th>Modelo</th>
-                            <th>Tag</th>
-                            <th>HostName</th>
-                            <th>IP</th>
-                            <th>MAC Address</th>
-                            <th>Status</th>
-                            <th>Data de Ativação</th>
-                            <th>Centro de Custo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        include 'conexao.php';
+<div class="table-responsive mt-2">
+    <table class="table my-0" id="dataTable">
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Fabricante</th>
+                <th>Modelo</th>
+                <th>Tag</th>
+                <th>HostName</th>
+                <th>IP</th>
+                <th>MAC Address</th>
+                <th>Status</th>
+                <th>Data de Ativação</th>
+                <th>Centro de Custo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            include 'conexao.php';
 
-                        // Define a paginação
-                        $results_per_page = 10;
-                        $sql = "SELECT COUNT(*) AS total FROM ativos";
-                        $result = mysqli_query($conn, $sql);
-                        $row = mysqli_fetch_assoc($result);
-                        $total_results = $row['total'];
-                        $total_pages = ceil($total_results / $results_per_page);
-                        $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                        $start_from = ($current_page - 1) * $results_per_page;
+            // Define a paginação
+            $results_per_page = 10;
+            $sql = "SELECT COUNT(*) AS total FROM ativos";
+            $result = mysqli_query($conn, $sql);
+            $row = mysqli_fetch_assoc($result);
+            $total_results = $row['total'];
+            $total_pages = ceil($total_results / $results_per_page);
+            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $start_from = ($current_page - 1) * $results_per_page;
 
-                        // Consulta os ativos
-                        $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
-                        $result = mysqli_query($conn, $sql);
+            // Consulta os ativos
+            $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
+            $result = mysqli_query($conn, $sql);
 
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                echo "<tr>
-                                    <td>" . htmlspecialchars($row['categoria']) . "</td>
-                                    <td>" . htmlspecialchars($row['fabricante']) . "</td>
-                                    <td>" . htmlspecialchars($row['modelo']) . "</td>
-                                    <td>" . htmlspecialchars($row['tag']) . "</td>
-                                    <td>" . htmlspecialchars($row['hostName']) . "</td>
-                                    <td>" . htmlspecialchars($row['ip']) . "</td>
-                                    <td>" . htmlspecialchars($row['macAdress']) . "</td>
-                                    <td>" . htmlspecialchars($row['status']) . "</td>
-                                    <td>" . htmlspecialchars($row['dataAtivacao']) . "</td>
-                                    <td>" . htmlspecialchars($row['centroDeCusto']) . "</td>
-                                    <td>
-                                        <button class='btn btn-dark' onclick='openAssignModal(" . $row['id_asset'] . ")'>
-                                            Atribuir <i class='fas fa-address-card'></i>
-                                        </button>
-                                        <a class='btn btn-warning' href='editar_ativo.php?id=" . $row['id_asset'] . "'>
-                                            <i class='fas fa-edit'></i>
-                                        </a>
-                                        <a class='btn btn-danger' href='apagar_ativo.php?id=" . $row['id_asset'] . "'>
-                                            <i class='fas fa-trash'></i>
-                                        </a>
-                                    </td>
-                                </tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="pagination justify-content-start">
-                <nav>
-                    <ul class="pagination">
-                        <?php
-                        if ($current_page > 1) {
-                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-                        }
-
-                        for ($page = 1; $page <= $total_pages; $page++) {
-                            if ($page == $current_page) {
-                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+            if (mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Verifique se o ativo já tem um usuário atribuído
+                    $assigned_to = $row['assigned_to']; // Supondo que 'assigned_to' seja o campo que armazena o id do usuário atribuído
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                        <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                        <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                        <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                        <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                        <td><?php echo htmlspecialchars($row['ip']); ?></td>
+                        <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                        <td><?php echo htmlspecialchars($row['status']); ?></td>
+                        <td><?php echo htmlspecialchars($row['dataAtivacao']); ?></td>
+                        <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                        <td>
+                            <?php
+                            // Exibe o botão de desatribuir ou atribuir
+                            if ($assigned_to) {
+                                // Se o ativo já tem um usuário atribuído, exibe o botão "Desatribuir"
+                                echo "<button class='btn btn-danger' onclick='unassignUser(" . $row['id_asset'] . ")'>
+                                        Desatribuir <i class='fas fa-times'></i>
+                                      </button>";
                             } else {
-                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                                // Caso contrário, exibe o botão "Atribuir"
+                                echo "<button class='btn btn-dark' onclick='openAssignModal(" . $row['id_asset'] . ")'>
+                                        Atribuir <i class='fas fa-address-card'></i>
+                                      </button>";
                             }
-                        }
+                            ?>
+                            <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+                                <i class='fas fa-edit'></i>
+                            </a>
+                            <a class='btn btn-danger' href='apagar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+                                <i class='fas fa-trash'></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php
+                }
+            } else {
+                echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
 
-                        if ($current_page < $total_pages) {
-                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                        }
-                        ?>
+<div class="pagination justify-content-start">
+    <nav>
+        <ul class="pagination">
+            <?php
+            if ($current_page > 1) {
+                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+            }
+
+            for ($page = 1; $page <= $total_pages; $page++) {
+                if ($page == $current_page) {
+                    echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                } else {
+                    echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                }
+            }
+
+            if ($current_page < $total_pages) {
+                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+            }
+            ?>
+        </ul>
+    </nav>
+</div>
+
+<script>
+    // Função para desatribuir o usuário
+    function unassignUser(assetId) {
+        if (confirm('Tem certeza que deseja desatribuir este ativo?')) {
+            fetch('unassign_asset.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_asset: assetId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Ativo desatribuído com sucesso!');
+                    location.reload(); // Recarrega a página para refletir as mudanças
+                } else {
+                    alert('Erro ao desatribuir o ativo.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao tentar desatribuir o ativo:', error);
+            });
+        }
+    }
+</script>
+
+
+<!-- Modal -->
+<div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Atribuir Ativo ao Usuário</h5>
+                <button type="button" class="close" onclick="closeAssignModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..." oninput="searchUsers()">
+                <ul id="userList" class="list-group mt-2"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentAssetId = null;
+
+// Função para abrir o modal e passar o id do ativo
+function openAssignModal(assetId) {
+    currentAssetId = assetId;
+    document.getElementById('assignModal').style.display = 'block';
+}
+
+// Função para fechar o modal
+function closeAssignModal() {
+    document.getElementById('assignModal').style.display = 'none';
+    document.getElementById('userList').innerHTML = '';
+    document.getElementById('userSearch').value = '';
+}
+
+// Função para buscar usuários enquanto digita
+function searchUsers() {
+    const query = document.getElementById('userSearch').value;
+
+    fetch(`search_users.php?query=${query}`)
+        .then(response => response.json())
+        .then(users => {
+            console.log(users);  // Verifique a resposta da busca
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';  // Limpa a lista de usuários
+
+            if (users.length === 0) {
+                userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
+            } else {
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = user.name;
+                    li.onclick = () => assignUser(user.id, user.name);  // Atribuindo evento de clique
+                    userList.appendChild(li);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erro na busca de usuários:', error);
+        });
+}
+
+// Função para atribuir o usuário ao ativo
+function assignUser(userId, userName) {
+    // Exibe um alerta com o nome do usuário clicado
+    alert(`Atribuindo ativo ao usuário: ${userName}`);
+
+    fetch('assign_asset.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando as variáveis com os nomes corretos
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Ativo atribuído com sucesso!');
+            closeAssignModal();
+            window.location.reload(); // Garantir reload usando window.location
+        } else {
+            alert('Erro ao atribuir ativo.');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao tentar atribuir o ativo:', error);
+    });
+}
+
+</script>
+
+
+
+
                     </ul>
                 </nav>
             </div>

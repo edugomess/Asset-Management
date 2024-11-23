@@ -328,72 +328,76 @@ $result = mysqli_query($conn, $sql);
 <script>
     let currentAssetId = null;
 
-    function openAssignModal(assetId) {
-        currentAssetId = assetId;
-        document.getElementById('assignModal').style.display = 'block';
-    }
+// Função para abrir o modal e passar o id do ativo
+function openAssignModal(assetId) {
+    currentAssetId = assetId;
+    document.getElementById('assignModal').style.display = 'block';
+}
 
-    function closeAssignModal() {
-        document.getElementById('assignModal').style.display = 'none';
-        document.getElementById('userList').innerHTML = '';
-        document.getElementById('userSearch').value = '';
-    }
+// Função para fechar o modal
+function closeAssignModal() {
+    document.getElementById('assignModal').style.display = 'none';
+    document.getElementById('userList').innerHTML = '';
+    document.getElementById('userSearch').value = '';
+}
 
-    function searchUsers() {
-        const query = document.getElementById('userSearch').value;
+// Função para buscar usuários enquanto digita
+function searchUsers() {
+    const query = document.getElementById('userSearch').value;
 
-        fetch(`search_users.php?query=${query}`)
-            .then(response => response.json())
-            .then(users => {
-                const userList = document.getElementById('userList');
-                userList.innerHTML = '';
+    fetch(`search_users.php?query=${query}`)
+        .then(response => response.json())
+        .then(users => {
+            console.log(users);  // Verifique a resposta da busca
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';  // Limpa a lista de usuários
+
+            if (users.length === 0) {
+                userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
+            } else {
                 users.forEach(user => {
                     const li = document.createElement('li');
                     li.className = 'list-group-item';
                     li.textContent = user.name;
-                    li.onclick = () => assignUser(user.id);
+                    li.onclick = () => assignUser(user.id, user.name);  // Atribuindo evento de clique
                     userList.appendChild(li);
                 });
-            });
-    }
-
-    function assignUser(userId) {
-    if (!currentAssetId || !userId) {
-        alert("Erro: Ativo ou usuário não selecionado.");
-        return;
-    }
-
-    // Realiza a requisição para atribuir o ativo
-    fetch('assign_asset.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            assetId: currentAssetId,
-            userId: userId
-        }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro ao atribuir o ativo");
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert('Ativo atribuído com sucesso!');
-                closeAssignModal();
-                location.reload(); // Recarrega a página para atualizar os dados
-            } else {
-                alert('Erro ao atribuir ativo: ' + (data.message || 'Erro desconhecido'));
             }
         })
         .catch(error => {
-            console.error("Erro ao atribuir ativo:", error);
-            alert("Erro ao atribuir ativo. Tente novamente.");
+            console.error('Erro na busca de usuários:', error);
         });
 }
 
+// Função para atribuir o usuário ao ativo
+function assignUser(userId, userName) {
+    // Exibe um alerta com o nome do usuário clicado
+    alert(`Atribuindo ativo ao usuário: ${userName}`);
+
+    fetch('assign_asset.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando as variáveis com os nomes corretos
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Ativo atribuído com sucesso!');
+            closeAssignModal();
+            window.location.reload(); // Garantir reload usando window.location
+        } else {
+            alert('Erro ao atribuir ativo.');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao tentar atribuir o ativo:', error);
+    });
+}
+
 </script>
+
+
+
 
 
 </footer>

@@ -1,42 +1,46 @@
 <?php
-include 'conexao.php';  // Certifique-se de que a conexão com o banco de dados esteja correta
+// Conectar ao banco de dados
+include 'conexao.php';
 
-// Lê os dados JSON enviados via POST
+// Receber os dados JSON enviados pelo fetch
 $data = json_decode(file_get_contents('php://input'), true);
 
-// Verifica se os dados foram recebidos corretamente
-if ($data === null) {
-    echo json_encode(['success' => false, 'message' => 'Dados inválidos ou ausentes']);
-    exit;
-}
+if (isset($data['id_asset'])) {
+    $id_asset = $data['id_asset'];
 
-$id_asset = $data['id_asset']; // Acessa o id do ativo
+    // Consultar o ativo a ser vendido
+    $query = "SELECT * FROM ativos WHERE id_asset = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $id_asset);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-// Verifica se o ID do ativo está presente
-if (!isset($id_asset)) {
-    echo json_encode(['success' => false, 'message' => 'ID do ativo não encontrado']);
-    exit;
-}
+    if ($result->num_rows > 0) {
+        // Transferir o ativo para a tabela "venda"
+        $ativo = $result->fetch_assoc();
+        $queryVenda = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto, descricao)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmtVenda = $conn->prepare($queryVenda);
+        $stmtVenda->bind_param('sssssssssss',
+            $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], $ativo['tag'], $ativo['hostName'], $ativo['ip'], $ativo['macAdress'], $ativo['status'], $ativo['dataAtivacao'], $ativo['centroDeCusto'], $ativo['descricao']);
+        if ($stmtVenda->execute()) {
+            // Remover o ativo da tabela "ativos"
+            $queryDelete = "DELETE FROM ativos WHERE id_asset = ?";
+            $stmtDelete = $conn->prepare($queryDelete);
+            $stmtDelete->bind_param('i', $id_asset);
+            $stmtDelete->execute();
 
-// Transferir o ativo para a tabela "venda" e removê-lo da tabela "ativos"
-$sql = "INSERT INTO venda (id_asset, categoria, fabricante, modelo, status) 
-        SELECT id_asset, categoria, fabricante, modelo, status 
-        FROM ativos WHERE id_asset = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $id_asset);
-
-if ($stmt->execute()) {
-    // Exclui o ativo da tabela 'ativos'
-    $sql_delete = "DELETE FROM ativos WHERE id_asset = ?";
-    $stmt_delete = $conn->prepare($sql_delete);
-    $stmt_delete->bind_param('i', $id_asset);
-    $stmt_delete->execute();
-
-    echo json_encode(['success' => true]);
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao transferir o ativo para a tabela de venda.']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
+    }
+    $stmt->close();
+    $conn->close();
 } else {
-    echo json_encode(['success' => false, 'message' => 'Erro ao vender o ativo.']);
+    echo json_encode(['success' => false, 'message' => 'ID do ativo não fornecido.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>
+

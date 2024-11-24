@@ -185,30 +185,26 @@
                                     <?php
 include 'conexao.php';
 
-// Define a paginação
+// Definir o número de resultados por página
 $results_per_page = 10;
+
+// Verificar o número de resultados no banco de dados
 $sql = "SELECT COUNT(*) AS total FROM ativos";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
 $total_results = $row['total'];
+
+// Determinar o número de páginas necessárias
 $total_pages = ceil($total_results / $results_per_page);
+
+// Determinar a página atual a partir da URL, se não definida, assume 1
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+// Calcular o limite de registros para a consulta
 $start_from = ($current_page - 1) * $results_per_page;
 
-// Consulta os ativos e os dados do usuário associado
-$sql = "
-    SELECT 
-        ativos.*, 
-        usuarios.nome AS nome_usuario, 
-        usuarios.sobrenome, 
-        usuarios.usuarioAD, 
-        usuarios.email, 
-        usuarios.funcao, 
-        usuarios.centroDeCusto
-    FROM ativos
-    LEFT JOIN usuarios ON ativos.assigned_to = usuarios.id_usuarios
-    LIMIT $start_from, $results_per_page
-";
+// Consultar os ativos
+$sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -233,57 +229,55 @@ $result = mysqli_query($conn, $sql);
             <?php
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $assigned_to = $row['assigned_to']; // ID do usuário atribuído
+                    $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
                     ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['categoria']) ?></td>
-                        <td><?= htmlspecialchars($row['fabricante']) ?></td>
-                        <td><?= htmlspecialchars($row['modelo']) ?></td>
-                        <td><?= htmlspecialchars($row['tag']) ?></td>
-                        <td><?= htmlspecialchars($row['hostName']) ?></td>
-                        <td><?= htmlspecialchars($row['ip']) ?></td>
-                        <td><?= htmlspecialchars($row['macAdress']) ?></td>
-                        <td><?= htmlspecialchars($row['status']) ?></td>
+                        <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                        <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                        <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                        <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                        <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                        <td><?php echo htmlspecialchars($row['ip']); ?></td>
+                        <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                        <td><?php echo htmlspecialchars($row['status']); ?></td>
                         <td>
-                            <?php if ($assigned_to): ?>
-                                <a href="#" 
-                                   onclick="openUserDetailsModal(
-                                       '<?= htmlspecialchars($row['nome_usuario']) ?>',
-                                       '<?= htmlspecialchars($row['sobrenome']) ?>',
-                                       '<?= htmlspecialchars($row['usuarioAD']) ?>',
-                                       '<?= htmlspecialchars($row['email']) ?>',
-                                       '<?= htmlspecialchars($row['funcao']) ?>',
-                                       '<?= htmlspecialchars($row['centroDeCusto']) ?>',
-                                       <?= $row['id_asset'] ?>
-                                   )">
-                                    <?= htmlspecialchars($row['nome_usuario']) ?> <?= htmlspecialchars($row['sobrenome']) ?>
-                                </a>
-                            <?php else: ?>
-                                <span>Não atribuído</span>
-                            <?php endif; ?>
+                            <?php 
+                            if ($assigned_to) {
+                                // Buscar os detalhes do usuário atribuído diretamente
+                                $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
+                                $result_user = mysqli_query($conn, $sql_user);
+                                if ($result_user && mysqli_num_rows($result_user) > 0) {
+                                    $user = mysqli_fetch_assoc($result_user);
+                                    echo "<a href='#' onclick='showUserModal(" . $assigned_to . ", \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\")'>" . htmlspecialchars($user['nome']) . "</a>";
+                                }
+                            } else {
+                                echo "Não Atribuído";
+                            }
+                            ?>
                         </td>
-                        <td><?= htmlspecialchars($row['centroDeCusto']) ?></td>
+                        <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                         <td>
-                            <?php if ($assigned_to): ?>
-                                <button class="btn btn-dark btn-tamanho-fixo" 
-                                        onclick="unassignUser(<?= $row['id_asset'] ?>)">
-                                    Desatribuir <i class="fas fa-address-card"></i>
-                                </button>
-                            <?php else: ?>
-                                <button class="btn btn-info btn-tamanho-fixo" 
-                                        onclick="openAssignModal(<?= $row['id_asset'] ?>)">
-                                    Atribuir <i class="fas fa-address-card"></i>
-                                </button>
-                            <?php endif; ?>
-                            <a class="btn btn-warning" href="editar_ativo.php?id=<?= $row['id_asset'] ?>">
-                                <i class="fas fa-edit"></i>
+                            <?php
+                            // Exibe o botão de desatribuir ou atribuir
+                            if ($assigned_to) {
+                                echo "<button class='btn btn-dark btn-tamanho-fixo' 
+                                onclick='unassignUser(" . $row['id_asset'] . ")'> 
+                                Desatribuir <i class='fas fa-address-card'></i> </button>"; 
+                            } else { 
+                                echo "<button class='btn btn-info btn-tamanho-fixo' 
+                                onclick='openAssignModal(" . $row['id_asset'] . ")'> 
+                                Atribuir <i class='fas fa-address-card'></i> </button>";
+                            }
+                            ?>
+                            <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+                                <i class='fas fa-edit'></i>
                             </a>
-                            <a class="btn btn-danger" href="apagar_ativo.php?id=<?= $row['id_asset'] ?>">
-                                <i class="fas fa-trash"></i>
+                            <a class='btn btn-danger' href='apagar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+                                <i class='fas fa-trash'></i>
                             </a>
                         </td>
                     </tr>
-                    <?php
+            <?php
                 }
             } else {
                 echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
@@ -293,88 +287,30 @@ $result = mysqli_query($conn, $sql);
     </table>
 </div>
 
-<div class="pagination justify-content-start">
-    <nav>
-        <ul class="pagination">
-            <?php
-            if ($current_page > 1) {
-                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-            }
 
-            for ($page = 1; $page <= $total_pages; $page++) {
-                if ($page == $current_page) {
-                    echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
-                } else {
-                    echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
-                }
-            }
-
-            if ($current_page < $total_pages) {
-                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-            }
-            ?>
-        </ul>
-    </nav>
-</div>
-
-<!-- Modal para detalhes do usuário -->
-<div id="userDetailsModal" class="modal fade" tabindex="-1" role="dialog">
+<!-- Modal para exibir os dados do usuário -->
+<div id="userModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detalhes do Usuário</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="close" onclick="closeUserModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p><strong>Nome:</strong> <span id="modalUserName"></span></p>
-                <p><strong>Sobrenome:</strong> <span id="modalUserSurname"></span></p>
-                <p><strong>Usuário AD:</strong> <span id="modalUserAD"></span></p>
-                <p><strong>Email:</strong> <span id="modalUserEmail"></span></p>
-                <p><strong>Função:</strong> <span id="modalUserRole"></span></p>
-                <p><strong>Centro de Custo:</strong> <span id="modalUserCostCenter"></span></p>
+                <div id="userDetails">
+                    <!-- Aqui os detalhes do usuário serão carregados -->
+                </div>
             </div>
             <div class="modal-footer">
-                <button id="sellItemButton" type="button" class="btn btn-success" onclick="sellItem()">Vender Item</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-danger" onclick="sellAsset(<?php echo json_encode($row['id_asset']); ?>)">Vender Ativo</button>
+
+                <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Fechar</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-function openUserDetailsModal(name, surname, usuarioAD, email, role, costCenter, assetId) {
-    document.getElementById('modalUserName').textContent = name;
-    document.getElementById('modalUserSurname').textContent = surname;
-    document.getElementById('modalUserAD').textContent = usuarioAD;
-    document.getElementById('modalUserEmail').textContent = email;
-    document.getElementById('modalUserRole').textContent = role;
-    document.getElementById('modalUserCostCenter').textContent = costCenter;
-
-    const sellButton = document.getElementById('sellItemButton');
-    sellButton.setAttribute('data-asset-id', assetId);
-
-    const modal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
-    modal.show();
-}
-
-function sellItem() {
-    const sellButton = document.getElementById('sellItemButton');
-    const assetId = sellButton.getAttribute('data-asset-id');
-    alert('Item com ID ' + assetId + ' foi vendido!');
-}
-
-function openAssignModal(assetId) {
-    alert('Abrir modal para atribuir usuário ao ativo com ID: ' + assetId);
-}
-
-function unassignUser(assetId) {
-    if (confirm('Tem certeza que deseja desatribuir este usuário?')) {
-        alert('Usuário desatribuído do ativo com ID: ' + assetId);
-    }
-}
-</script>
-
-<!-- Modal -->
+<!-- Modal para atribuir ativo -->
 <div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -394,51 +330,87 @@ function unassignUser(assetId) {
 </div>
 
 <script>
+// Função para abrir o modal e carregar os dados do usuário
+function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto) {
+    const userDetails = `
+        <p><strong>Nome:</strong> ${nome} ${sobrenome}</p>
+        <p><strong>Usuário AD:</strong> ${usuarioAD}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Centro de Custo:</strong> ${centroDeCusto}</p>
+    `;
+    document.getElementById('userDetails').innerHTML = userDetails;
+    document.getElementById('userModal').style.display = 'block';
+}
+
+// Função para fechar o modal
+function closeUserModal() {
+    document.getElementById('userModal').style.display = 'none';
+}
+
+// Função para desatribuir o usuário (não vende o ativo, apenas desatribui)
+function unassignUser(assetId) {
+    if (confirm('Tem certeza que deseja desatribuir este usuário do ativo?')) {
+        fetch('unassign_asset.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_asset: assetId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Usuário desatribuído com sucesso!');
+                location.reload(); // Recarrega a página para refletir as mudanças
+            } else {
+                alert('Erro ao desatribuir o usuário: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao tentar desatribuir o usuário:', error);
+        });
+    }
+}
+
+// Função para vender o ativo (transferir para a tabela "venda")
+function sellAsset(assetId) {
+    if (confirm('Tem certeza que deseja vender este ativo?')) {
+        fetch('vender_ativo.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Ativo vendido com sucesso!');
+                location.reload(); // Recarrega a página para refletir as mudanças
+            } else {
+                alert('Erro ao vender o ativo: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao tentar vender o ativo:', error);
+        });
+    }
+}
+
+
+
+
+// Função para abrir o modal de atribuição
+function openAssignModal(assetId) {
+    currentAssetId = assetId;
+    document.getElementById('assignModal').style.display = 'block';
+}
+
 // Função para fechar o modal de atribuição
 function closeAssignModal() {
     document.getElementById('assignModal').style.display = 'none';
-}
-
-// Função para pesquisar usuários no modal de atribuição
-function searchUsers() {
-    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-    const userList = document.getElementById('userList');
-    userList.innerHTML = ''; // Limpar lista de usuários
-
-    // Aqui você pode adicionar um código para buscar usuários do banco de dados.
-    const users = [
-        { id: 1, name: 'João Silva', email: 'joao.silva@exemplo.com' },
-        { id: 2, name: 'Maria Oliveira', email: 'maria.oliveira@exemplo.com' },
-        // Adicione mais usuários conforme necessário
-    ];
-
-    // Filtrando os usuários com base no termo de busca
-    const filteredUsers = users.filter(user => 
-        user.name.toLowerCase().includes(searchTerm) || 
-        user.email.toLowerCase().includes(searchTerm)
-    );
-
-    // Adicionando os usuários encontrados na lista
-    filteredUsers.forEach(user => {
-        const listItem = document.createElement('li');
-        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-        listItem.innerHTML = `${user.name} - ${user.email} 
-            <button class="btn btn-primary btn-sm" onclick="assignUser(${user.id})">Atribuir</button>`;
-        userList.appendChild(listItem);
-    });
-}
-
-// Função para atribuir o usuário ao ativo
-function assignUser(userId) {
-    const assetId = 123; // Aqui, substitua com o ID real do ativo que você deseja atribuir
-    alert('Usuário com ID ' + userId + ' foi atribuído ao ativo com ID: ' + assetId);
-    closeAssignModal();
+    document.getElementById('userList').innerHTML = '';
+    document.getElementById('userSearch').value = '';
 }
 </script>
-
-
-
-
 
                     </ul>
                 </nav>
@@ -460,7 +432,7 @@ function assignUser(userId) {
                 <ul id="userList" class="list-group mt-2"></ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Fechar</button>
             </div>
         </div>
     </div>
@@ -480,6 +452,7 @@ function closeAssignModal() {
     document.getElementById('assignModal').style.display = 'none';
     document.getElementById('userList').innerHTML = '';
     document.getElementById('userSearch').value = '';
+    window.location.reload();
 }
 
 // Função para buscar usuários enquanto digita
@@ -515,30 +488,32 @@ function assignUser(userId, userName) {
     // Exibe um alerta com o nome do usuário clicado
     alert(`Atribuindo ativo ao usuário: ${userName}`);
 
+    // Faz a requisição para atribuir o ativo ao usuário
     fetch('assign_asset.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando as variáveis com os nomes corretos
+        body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando o id do ativo e o id do usuário
     })
-    .then(response => response.json())
+    .then(response => response.json()) // Converte a resposta para JSON
     .then(data => {
         if (data.success) {
+            // Se a atribuição foi bem-sucedida, exibe um alerta de sucesso
             alert('Ativo atribuído com sucesso!');
-            closeAssignModal();
-            window.location.reload(); // Garantir reload usando window.location
+            closeAssignModal(); // Fecha o modal de atribuição
+            window.location.reload(); // Recarrega a página para refletir as mudanças
         } else {
+            // Se houver algum erro na atribuição, exibe um alerta de erro
             alert('Erro ao atribuir ativo.');
         }
     })
     .catch(error => {
+        // Se houver algum erro na requisição, exibe um erro no console
         console.error('Erro ao tentar atribuir o ativo:', error);
     });
 }
 
+
 </script>
-
-
-
 
 
 </footer>

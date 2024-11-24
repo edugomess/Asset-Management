@@ -13,8 +13,8 @@ $dataAtivacao = $_POST['dataAtivacao'];
 $centroDeCusto = $_POST['centroDeCusto'];
 $descricao = $_POST['descricao'];
 
-$sql = "INSERT INTO ativos (categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto, descricao)
-        VALUES ('$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$ip', '$macAdress', '$status', '$dataAtivacao', '$centroDeCusto', '$descricao')";
+$sql = "INSERT INTO ativos (categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, centroDeCusto, descricao)
+        VALUES ('$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$ip', '$macAdress', '$status', '$centroDeCusto', '$descricao')";
 
 $inserir = mysqli_query($conn, $sql);
 

@@ -246,9 +246,9 @@ $result = mysqli_query($conn, $sql);
                 <th>IP</th>
                 <th>MAC Address</th>
                 <th>Status</th>
-                <th>Data de Ativação</th>
+                <th>Usuário</th>
                 <th>Centro de Custo</th>
-                <th>Ações</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -335,6 +335,15 @@ $result = mysqli_query($conn, $sql);
             if ($current_page < $total_pages) {
                 echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
             }
+
+            // Consulta os ativos com o nome do usuário
+            $sql = "
+                SELECT ativos.*, usuarios.nome AS nome 
+                FROM ativos
+                LEFT JOIN usuarios ON ativos.assigned_to = usuarios.id_usuarios
+                LIMIT $start_from, $results_per_page
+            ";
+            $result = mysqli_query($conn, $sql);
             ?>
         </ul>
     </nav>

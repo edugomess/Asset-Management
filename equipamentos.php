@@ -374,8 +374,6 @@ function unassignUser(assetId) {
 }
 </script>
 
-
-
 <!-- Modal -->
 <div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -389,82 +387,55 @@ function unassignUser(assetId) {
                 <ul id="userList" class="list-group mt-2"></ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Fechar</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let currentAssetId = null;
-
-// Função para abrir o modal e passar o id do ativo
-function openAssignModal(assetId) {
-    currentAssetId = assetId;
-    document.getElementById('assignModal').style.display = 'block';
-}
-
-// Função para fechar o modal
+// Função para fechar o modal de atribuição
 function closeAssignModal() {
     document.getElementById('assignModal').style.display = 'none';
-    document.getElementById('userList').innerHTML = '';
-    document.getElementById('userSearch').value = '';
 }
 
-// Função para buscar usuários enquanto digita
+// Função para pesquisar usuários no modal de atribuição
 function searchUsers() {
-    const query = document.getElementById('userSearch').value;
+    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+    const userList = document.getElementById('userList');
+    userList.innerHTML = ''; // Limpar lista de usuários
 
-    fetch(`search_users.php?query=${query}`)
-        .then(response => response.json())
-        .then(users => {
-            console.log(users);  // Verifique a resposta da busca
-            const userList = document.getElementById('userList');
-            userList.innerHTML = '';  // Limpa a lista de usuários
+    // Aqui você pode adicionar um código para buscar usuários do banco de dados.
+    const users = [
+        { id: 1, name: 'João Silva', email: 'joao.silva@exemplo.com' },
+        { id: 2, name: 'Maria Oliveira', email: 'maria.oliveira@exemplo.com' },
+        // Adicione mais usuários conforme necessário
+    ];
 
-            if (users.length === 0) {
-                userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
-            } else {
-                users.forEach(user => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item';
-                    li.textContent = user.name;
-                    li.onclick = () => assignUser(user.id, user.name);  // Atribuindo evento de clique
-                    userList.appendChild(li);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Erro na busca de usuários:', error);
-        });
-}
+    // Filtrando os usuários com base no termo de busca
+    const filteredUsers = users.filter(user => 
+        user.name.toLowerCase().includes(searchTerm) || 
+        user.email.toLowerCase().includes(searchTerm)
+    );
 
-// Função para atribuir o usuário ao ativo
-function assignUser(userId, userName) {
-    // Exibe um alerta com o nome do usuário clicado
-    alert(`Atribuindo ativo ao usuário: ${userName}`);
-
-    fetch('assign_asset.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando as variáveis com os nomes corretos
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Ativo atribuído com sucesso!');
-            closeAssignModal();
-            window.location.reload(); // Garantir reload usando window.location
-        } else {
-            alert('Erro ao atribuir ativo.');
-        }
-    })
-    .catch(error => {
-        console.error('Erro ao tentar atribuir o ativo:', error);
+    // Adicionando os usuários encontrados na lista
+    filteredUsers.forEach(user => {
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        listItem.innerHTML = `${user.name} - ${user.email} 
+            <button class="btn btn-primary btn-sm" onclick="assignUser(${user.id})">Atribuir</button>`;
+        userList.appendChild(listItem);
     });
 }
 
+// Função para atribuir o usuário ao ativo
+function assignUser(userId) {
+    const assetId = 123; // Aqui, substitua com o ID real do ativo que você deseja atribuir
+    alert('Usuário com ID ' + userId + ' foi atribuído ao ativo com ID: ' + assetId);
+    closeAssignModal();
+}
 </script>
+
 
 
 

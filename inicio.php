@@ -304,6 +304,7 @@ $result = mysqli_query($conn, $sql);
 
 <script>
 function sellAsset(assetId) {
+    console.log('Asset ID recebido:', assetId); // Adicione este console.log para depuração.
     if (confirm('Tem certeza que deseja vender este ativo?')) {
         fetch('vender_ativo.php', {
             method: 'POST',
@@ -324,6 +325,7 @@ function sellAsset(assetId) {
         });
     }
 }
+
 </script>
 
 <?php

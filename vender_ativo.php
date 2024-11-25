@@ -1,46 +1,76 @@
 <?php
-// Conectar ao banco de dados
+
 include 'conexao.php';
 
-// Receber os dados JSON enviados pelo fetch
-$data = json_decode(file_get_contents('php://input'), true);
+// Configurar cabeçalho para JSON
+header('Content-Type: application/json');
 
-if (isset($data['id_asset'])) {
+try {
+    // Receber os dados enviados via POST
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    if (!isset($data['id_asset'])) {
+        throw new Exception('ID do ativo não fornecido.');
+    }
+
     $id_asset = $data['id_asset'];
 
-    // Consultar o ativo a ser vendido
-    $query = "SELECT * FROM ativos WHERE id_asset = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $id_asset);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Buscar os dados do ativo na tabela `ativos`
+    $sql_select = "SELECT * FROM ativos WHERE id_asset = ?";
+    $stmt_select = $conn->prepare($sql_select);
+    $stmt_select->bind_param('i', $id_asset);
+    $stmt_select->execute();
+    $result = $stmt_select->get_result();
 
-    if ($result->num_rows > 0) {
-        // Transferir o ativo para a tabela "venda"
-        $ativo = $result->fetch_assoc();
-        $queryVenda = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto, descricao)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmtVenda = $conn->prepare($queryVenda);
-        $stmtVenda->bind_param('sssssssssss',
-            $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], $ativo['tag'], $ativo['hostName'], $ativo['ip'], $ativo['macAdress'], $ativo['status'], $ativo['dataAtivacao'], $ativo['centroDeCusto'], $ativo['descricao']);
-        if ($stmtVenda->execute()) {
-            // Remover o ativo da tabela "ativos"
-            $queryDelete = "DELETE FROM ativos WHERE id_asset = ?";
-            $stmtDelete = $conn->prepare($queryDelete);
-            $stmtDelete->bind_param('i', $id_asset);
-            $stmtDelete->execute();
-
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao transferir o ativo para a tabela de venda.']);
-        }
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
+    if ($result->num_rows === 0) {
+        throw new Exception('Ativo não encontrado.');
     }
-    $stmt->close();
-    $conn->close();
-} else {
-    echo json_encode(['success' => false, 'message' => 'ID do ativo não fornecido.']);
-}
-?>
 
+    $asset = $result->fetch_assoc();
+
+    // Inserir os dados do ativo na tabela `venda`
+    $sql_insert = "INSERT INTO venda ( categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, assigned_to, centroDeCusto, data_venda) 
+                   VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    $stmt_insert = $conn->prepare($sql_insert);
+    $stmt_insert->bind_param(
+        'isssssssis',
+        
+        $asset['categoria'],
+        $asset['fabricante'],
+        $asset['modelo'],
+        $asset['tag'],
+        $asset['hostName'],
+        $asset['ip'],
+        $asset['macAdress'],
+        $asset['status'],
+        $asset['assigned_to'],
+        $asset['centroDeCusto']
+    );
+    $stmt_insert->execute();
+
+    if ($stmt_insert->affected_rows === 0) {
+        throw new Exception('Erro ao inserir ativo na tabela de vendas.');
+    }
+
+    // Só depois de inserir, remova da tabela `ativos`
+    $sql_delete = "DELETE FROM ativos WHERE id_asset = ?";
+    $stmt_delete = $conn->prepare($sql_delete);
+    $stmt_delete->bind_param('i', $id_asset);
+    $stmt_delete->execute();
+
+    if ($stmt_delete->affected_rows === 0) {
+        throw new Exception('Erro ao remover ativo da tabela de ativos.');
+    }
+
+    // Retornar sucesso
+    echo json_encode(['success' => true]);
+} catch (Exception $e) {
+    // Retornar erro
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+}
+
+// Fechar a conexão
+$conn->close();
+
+
+?>

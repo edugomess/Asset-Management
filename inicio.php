@@ -304,18 +304,19 @@ $result = mysqli_query($conn, $sql);
 
 <script>
 function sellAsset(assetId) {
-    console.log('Asset ID recebido:', assetId); // Adicione este console.log para depuração.
     if (confirm('Tem certeza que deseja vender este ativo?')) {
         fetch('vender_ativo.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_asset: assetId })
         })
+        
         .then(response => response.json())
         .then(data => {
+            
             if (data.success) {
                 alert('Ativo vendido com sucesso!');
-                location.reload();
+                location.reload(); // Atualiza a página para refletir as mudanças
             } else {
                 alert('Erro ao vender o ativo: ' + data.message);
             }
@@ -325,6 +326,7 @@ function sellAsset(assetId) {
         });
     }
 }
+
 
 </script>
 

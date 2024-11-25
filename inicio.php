@@ -62,18 +62,23 @@
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar...">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
-                            </div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                                    <form class="form-inline mr-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
-                                        </div>
-                                    </form>
+                            <form class="form-inline mr-auto navbar-search w-100" method="GET" action="">
+    <div class="input-group">
+        <input class="bg-light form-control border-0 small" type="text" name="search" placeholder="Search for ..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" onkeyup="searchItems()">
+        <div class="input-group-append">
+            <button class="btn btn-primary py-0" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+</form>
+
+<!-- Lista de itens encontrados -->
+<div class="search-results mt-2">
+    <ul id="search-results-list">
+        <!-- Os resultados da pesquisa serão listados aqui -->
+    </ul>
+</div>
+
+
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
@@ -236,7 +241,7 @@ $result = mysqli_query($conn, $sql);
                                     </td>
                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                     <td>
-                                        <button class="btn btn-danger" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
+                                        <button class="btn btn-success" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
                                             Vender
                                         </button>
                                     </td>

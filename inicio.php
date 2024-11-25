@@ -156,75 +156,154 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Início</h3>
-                </div><!-- Start: Multi-row Form -->
-                <form>
-                    <!-- Start: 1-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-12 col-xl-3 offset-xl-1">
-                            <div class="form-group"><input class="form-control" type="search" placeholder="Código do Produto" style="margin-top: 23px;"><input class="form-control" type="search" placeholder="Filtro de Ar - K&amp;N" style="margin-top: 23px;"></div>
-                        </div>
-                        <div class="col-sm-4 col-xl-1 offset-xl-0"><input class="form-control" type="number" placeholder="Qntd." min="0" max="999999999" required="" style="margin-top: 23px;"><input class="form-control" type="text" placeholder="R$ 299,00" style="margin-top: 23px;"></div>
-                        <div class="col-sm-3 col-xl-2" style="margin-top: 23px;width: 100px;height: 100px;">
-                            <div class="d-flex justify-content-center align-items-center rounded" style="height: 100px;background-color: rgb(231,231,231);width: 100px;"><span style="color: rgb(166,166,166);font-weight: bold;">150 x 150</span></div>
-                        </div>
-                        <div class="col-xl-1 offset-xl-0" style="padding: 0px;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: #006d66;border-radius: 10px;padding: 30px;border-width: 0px;height: 40px;margin-top: 24px;padding-top: 0px;padding-right: 12px;padding-bottom: 6px;padding-left: 12px;">Adicionar</button></div>
-                    </div><!-- End: 1-column form row -->
+                
                     <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-2 col-xl-2 offset-xl-1" style="width: 166px;">
-                            <div class="form-group">
-                                <!-- Start: Image Placeholder -->
-                                <div class="mx-auto" style="width:150px"></div><!-- End: Image Placeholder -->
-                            </div>
-                        </div>
-                    </div><!-- End: 4-column form row -->
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-1 offset-xl-0"></div>
-                        <div class="col-xl-2"><input class="form-control" type="text" placeholder="Desconto %" style="margin-top: 23px;height: 40px;"></div>
-                        <div class="col-xl-2 offset-xl-1"><input class="form-control" type="text" placeholder="R$ 598,00" style="margin-top: 23px;height: 40px;"></div>
-                        <div class="col-xl-1 offset-xl-1" style="padding: 0px;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 40px;margin-top: 24px;padding-top: 0px;">Pagar</button></div>
-                    </div><!-- End: 2-column form row -->
-                    <!-- Start: 6-column form row -->
-                    <div class="form-row">
-                        <div class="col">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Produto</th>
-                                            <th>Categoria</th>
-                                            <th>Quantidade</th>
-                                            <th>Preço Unitário</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td>Filtro de Ar</td>
-                                            <td>Performance</td>
-                                            <td>2</td>
-                                            <td>R$299,00</td>
-                                            <td style="width: 150px;height: 50px;padding: 0px;margin-top: 0px;margin-right: 0px;padding-top: 0px;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: #a32638;border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 40px;margin-top: 24px;width: 120px;">Limpar</button></td>
-                                        </tr>
-                                        <tr></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div><!-- End: 6-column form row -->
-                </form><!-- End: Multi-row Form -->
+                    <?php
+include 'conexao.php';
+
+// Definir o número de resultados por página
+$results_per_page = 10;
+
+// Verificar o número de resultados atribuídos no banco de dados
+$sql = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_assoc($result);
+$total_results = $row['total'];
+
+// Determinar o número de páginas necessárias
+$total_pages = ceil($total_results / $results_per_page);
+
+// Determinar a página atual a partir da URL, se não definida, assume 1
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+// Calcular o limite de registros para a consulta
+$start_from = ($current_page - 1) * $results_per_page;
+
+// Consultar os ativos atribuídos
+$sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
+$result = mysqli_query($conn, $sql);
+?>
+
+<div class="container-fluid">
+    <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="row">
+                
             </div>
-            <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
-                <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px;margin-top: 70px;">
-                    <!-- Start: Footer text -->
-                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-                </section><!-- End: Simple footer by krissy -->
-            </footer>
+
+            <div class="table-responsive mt-2">
+                <table class="table my-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Fabricante</th>
+                            <th>Modelo</th>
+                            <th>Tag</th>
+                            <th>HostName</th>
+                            <th>IP</th>
+                            <th>MAC Address</th>
+                            <th>Usuário</th>
+                            <th>Centro de Custo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $assigned_to = $row['assigned_to'];
+                                ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['ip']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                    <td>
+                                        <?php
+                                        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
+                                        $result_user = mysqli_query($conn, $sql_user);
+                                        if ($result_user && mysqli_num_rows($result_user) > 0) {
+                                            $user = mysqli_fetch_assoc($result_user);
+                                            echo htmlspecialchars($user['nome']);
+                                        } else {
+                                            echo "Não encontrado";
+                                        }
+                                        ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
+                                            Vender
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php
+                            }
+                        } else {
+                            echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination justify-content-start">
+                <ul class="pagination">
+                    <?php
+                    if ($current_page > 1) {
+                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+                    }
+                    for ($page = 1; $page <= $total_pages; $page++) {
+                        if ($page == $current_page) {
+                            echo "<li class='page-item active'><a class='btn btn-dark'>$page</a></li>";
+                        } else {
+                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+                        }
+                    }
+                    if ($current_page < $total_pages) {
+                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sellAsset(assetId) {
+    if (confirm('Tem certeza que deseja vender este ativo?')) {
+        fetch('vender_ativo.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_asset: assetId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Ativo vendido com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro ao vender o ativo: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao tentar vender o ativo:', error);
+        });
+    }
+}
+</script>
+
+<?php
+mysqli_close($conn);
+?>
+
+
+          
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

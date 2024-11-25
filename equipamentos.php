@@ -219,7 +219,6 @@ $result = mysqli_query($conn, $sql);
                 <th>HostName</th>
                 <th>IP</th>
                 <th>MAC Address</th>
-                <th>Status</th>
                 <th>Usuário</th>
                 <th>Centro de Custo</th>
                 <th>Ações</th>
@@ -239,7 +238,6 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                         <td><?php echo htmlspecialchars($row['ip']); ?></td>
                         <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                        <td><?php echo htmlspecialchars($row['status']); ?></td>
                         <td>
                             <?php 
                             if ($assigned_to) {
@@ -248,7 +246,9 @@ $result = mysqli_query($conn, $sql);
                                 $result_user = mysqli_query($conn, $sql_user);
                                 if ($result_user && mysqli_num_rows($result_user) > 0) {
                                     $user = mysqli_fetch_assoc($result_user);
-                                    echo "<a href='#' onclick='showUserModal(" . $assigned_to . ", \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\")'>" . htmlspecialchars($user['nome']) . "</a>";
+                                    echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ")'>" . htmlspecialchars($user['nome']) . "</a>";
+
+
                                 }
                             } else {
                                 echo "Não Atribuído";
@@ -302,7 +302,8 @@ $result = mysqli_query($conn, $sql);
                 </div>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-danger" onclick="sellAsset(<?php echo json_encode($row['id_asset']); ?>)">Vender Ativo</button>
+            <button type="button" class="btn btn-danger" id="sellAssetButton" data-id="">Vender Ativo</button>
+
 
                 <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Fechar</button>
             </div>
@@ -330,8 +331,7 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script>
-// Função para abrir o modal e carregar os dados do usuário
-function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto) {
+function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto, assetId) {
     const userDetails = `
         <p><strong>Nome:</strong> ${nome} ${sobrenome}</p>
         <p><strong>Usuário AD:</strong> ${usuarioAD}</p>
@@ -339,8 +339,15 @@ function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto)
         <p><strong>Centro de Custo:</strong> ${centroDeCusto}</p>
     `;
     document.getElementById('userDetails').innerHTML = userDetails;
+
+    // Configura o ID do ativo no botão
+    const sellButton = document.getElementById('sellAssetButton');
+    sellButton.setAttribute('data-id', assetId);
+
+    // Exibe o modal
     document.getElementById('userModal').style.display = 'block';
 }
+
 
 // Função para fechar o modal
 function closeUserModal() {
@@ -371,13 +378,14 @@ function unassignUser(assetId) {
 }
 
 // Função para vender o ativo (transferir para a tabela "venda")
-function sellAsset(assetId) {
+function sellAsset() {
+    const sellButton = document.getElementById('sellAssetButton');
+    const assetId = sellButton.getAttribute('data-id');
+
     if (confirm('Tem certeza que deseja vender este ativo?')) {
         fetch('vender_ativo.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
         })
         .then(response => response.json())
@@ -394,6 +402,7 @@ function sellAsset(assetId) {
         });
     }
 }
+
 
 
 

@@ -288,6 +288,39 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 
+<div class="pagination justify-content-start">
+    <nav>
+    <ul class="pagination">
+    <?php
+    // Previous Page Link
+    if ($current_page > 1) {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+    }
+
+    // Page Links
+    for ($page = 1; $page <= $total_pages; $page++) {
+        if ($page == $current_page) {
+            echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
+        } else {
+            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+        }
+    }
+
+    // Next Page Link
+    if ($current_page < $total_pages) {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+    }
+    ?>
+</ul>
+    </nav>
+</div>
+
+
+<?php
+mysqli_close($conn);
+?>
+
+
 <!-- Modal para exibir os dados do usuário -->
 <div id="userModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -524,38 +557,6 @@ function assignUser(userId, userName) {
 
 </script>
 
-<div class="pagination justify-content-start">
-    <nav>
-    <ul class="pagination">
-    <?php
-    // Previous Page Link
-    if ($current_page > 1) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-    }
-
-    // Page Links
-    for ($page = 1; $page <= $total_pages; $page++) {
-        if ($page == $current_page) {
-            echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-        } else {
-            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
-        }
-    }
-
-    // Next Page Link
-    if ($current_page < $total_pages) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-    }
-    ?>
-</ul>
-
-    </nav>
-</div>
-
-
-<?php
-mysqli_close($conn);
-?>
 </footer>
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

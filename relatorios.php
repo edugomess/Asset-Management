@@ -1,14 +1,3 @@
- 
- <?php
-session_start(); // Inicia a sessão
-
-// Verifica se o usuário está logado
-if (!isset($_SESSION['id_usuarios'])) {
-    // Se não estiver logado, redireciona para a página de login
-    header("Location: login.php");
-    exit();
-}
-?>
 
  <?PHP
 include 
@@ -183,7 +172,7 @@ include
 
                             <div class="col-md-6 col-xl-2"><a href="relatorio_centro_de_custo.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Centro de Custo</button></a></div>
                             <div class="col-md-6 col-xl-2"><a href="relatorio_usuario.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Usuário</button></a></div>
-                                <div class="col-md-6 col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Centro de custo</button></div>
+                                <div class="col-md-6 col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Vendidos</button></div>
                                 <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">MS365</button>
                                 </div>

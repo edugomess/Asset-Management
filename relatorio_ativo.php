@@ -32,6 +32,7 @@ class PDF extends FPDF {
         $this->Cell(30, 10, utf8_to_iso88591('Modelo'), 1);
         $this->Cell(20, 10, utf8_to_iso88591('Tag'), 1);
         $this->Cell(30, 10, utf8_to_iso88591('Host Name'), 1);
+        $this->Cell(30, 10, utf8_to_iso88591('Valor'), 1);
         $this->Ln();
     }
 
@@ -55,7 +56,7 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
 // Consulta para buscar dados da tabela ativo
-$query = "SELECT categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto FROM ativos";
+$query = "SELECT categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto FROM ativos";
 $result = $conn->query($query);
 
 // Verifica se há dados e adiciona ao PDF
@@ -66,6 +67,7 @@ if ($result->num_rows > 0) {
         $pdf->Cell(30, 10, utf8_to_iso88591($row['modelo']), 1);
         $pdf->Cell(20, 10, utf8_to_iso88591($row['tag']), 1);
         $pdf->Cell(30, 10, utf8_to_iso88591($row['hostName']), 1);
+        $pdf->Cell(30, 10, utf8_to_iso88591($row['valor']), 1);
         $pdf->Ln();
     }
 } else {

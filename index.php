@@ -1,13 +1,3 @@
-<?php
-session_start();
-
-// Verifique se o usuário já está logado
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
-    header('Location: dashboard.php'); // Redireciona para a página principal
-    exit;
-}
-?>
-
 
 <!DOCTYPE html>
 <html>

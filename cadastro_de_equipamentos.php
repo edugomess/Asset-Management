@@ -1,13 +1,4 @@
-<?php
-session_start(); // Inicia a sessão
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['usuario_id'])) {
-    // Se não estiver logado, redireciona para a página de login
-    header("Location: login.php");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
 

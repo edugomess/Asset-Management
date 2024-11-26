@@ -210,6 +210,10 @@ $result = mysqli_query($conn, $sql);
 ?>
 <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
     <div class="card shadow">
+    <div class="col-md-6 col-xl-3 text-nowrap">
+    <div 
+        id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;" href="/ativos_vendidos.php">Vendidos</a>
+    </div>                             
         <div class="card-body">
             <div class="table-responsive mt-2">
                 <table class="table my-0" id="dataTable">
@@ -296,6 +300,7 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script>
+    
 // Função para vender o ativo (transferir para a tabela "venda")
 function sellAsset(assetId) {
     if (confirm('Tem certeza que deseja vender este ativo?')) {

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fabricante = $_POST['fabricante'];
     $modelo = $_POST['modelo'];
     $hostName = $_POST['hostName'];
-    $ip = $_POST['ip'];
+    $valor = $_POST['valor'];
     $status = $_POST['status'];
     $macAdress = $_POST['macAdress'];
     $centroDeCusto = $_POST['centroDeCusto'];
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         fabricante='$fabricante', 
         modelo='$modelo', 
         hostName='$hostName', 
-        ip='$ip', 
+        valor='$valor', 
         status='$status', 
         macAdress='$macAdress',
         centroDeCusto='$centroDeCusto', 

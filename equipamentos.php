@@ -1,3 +1,13 @@
+<?php
+session_start(); // Inicia a sessão
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
+    // Se não estiver logado, redireciona para a página de login
+    header("Location: login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html>
 <style> .btn-tamanho-fixo { width: 130px; } </style>
@@ -217,7 +227,7 @@ $result = mysqli_query($conn, $sql);
                 <th>Modelo</th>
                 <th>Tag</th>
                 <th>HostName</th>
-                <th>IP</th>
+                <th>Valor</th>
                 <th>MAC Address</th>
                 <th>Usuário</th>
                 <th>Centro de Custo</th>
@@ -236,7 +246,7 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                         <td><?php echo htmlspecialchars($row['tag']); ?></td>
                         <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                        <td><?php echo htmlspecialchars($row['ip']); ?></td>
+                        <td><?php echo htmlspecialchars($row['valor']); ?></td>
                         <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                         <td>
                             <?php 

@@ -176,7 +176,7 @@ $id = intval($id);
         $modelo = $array['modelo'];
         $tag = $array['tag'];
         $hostName = $array['hostName'];
-        $ip = $array['ip'];
+        $valor = $array['valor'];
         $macAdress = $array['macAdress'];
         $status = $array['status'];
         $dataAtivacao = $array['dataAtivacao'];
@@ -221,31 +221,31 @@ $id = intval($id);
 
     </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="fabricante" type="text"  value="<?php echo $fabricante?>"></div>
+                            <div class="form-group"><label>Fabricante</label><input class="form-control" label= "Fabricante" name="fabricante" type="text"  value="<?php echo $fabricante?>"></div>
                         </div>
                     </div><!-- End: 1-column form row -->
                     <!-- Start: 2-column form row -->
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="modelo" type="text" value="<?php echo $modelo?>"></div>
+                            <div class="form-group"><label>Modelo</label><input class="form-control" label= "Modelo" name="modelo" type="text" value="<?php echo $modelo?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="tag" type="text" value="<?php echo $tag?>"disabled></div>
+                            <div class="form-group"><label>TAG</label><input class="form-control" label= "TAG" name="tag" type="text" value="<?php echo $tag?>"disabled></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="hostName" type="text" value="<?php echo $hostName?>"></div>
+                            <div class="form-group"><label>HostName</label><input class="form-control" label= "HostName" name="hostName" type="text" value="<?php echo $hostName?>"></div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="ip" type="text" value="<?php echo $ip?>"></div>
+                            <div class="form-group"><label>Valor</label><input class="form-control" label= "Valor" name="valor" type="step" value="<?php echo $valor?>"></div>
                         </div>
                     </div><!-- End: 2-column form row -->
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group"><input class="form-control" name="macAdress" type="text" value="<?php echo $macAdress?>"style="margin-top: 24px;"></div>
+                            <div class="form-group"><label>MacAdress</label><input class="form-control" label= "MacAdress" name="macAdress" type="text" value="<?php echo $macAdress?>"style="margin-top: 24px;"></div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
-    <select class="form-control" name="status" required style="margin-top: 24px" value="<?php echo $status?>">>
+    <select class="form-control" name="status" required style="margin-top: 57px" value="<?php echo $status?>">>
         <optgroup label="Status" >
             <option value="Ativo">Ativo</option>
             <option value="Inativo">Inativo</option>
@@ -253,10 +253,10 @@ $id = intval($id);
     </select>
 </div>
 
-                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
+                        <div class="col-xl-1"><label>Data de Cadastro</label><input class="form-control" label= "Data do Cadastro" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>"></div>
+                            <div class="form-group"><label>Centro de Custo</label><input class="form-control" label= "Centro de Custo" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>"></div>
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
@@ -273,7 +273,7 @@ $id = intval($id);
                 <!-- Start: Simple footer by krissy -->
                 <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
                 <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px;margin-top: 70px;">
+                <section class="text-center footer" style="padding: 10px;margin-top: 100px;">
                     <!-- Start: Footer text -->
                     <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
                 </section><!-- End: Simple footer by krissy -->

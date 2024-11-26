@@ -1,38 +1,38 @@
 <?php
 session_start();
+if (!session_start()) {
+    die("Erro ao iniciar a sessão.");
+}
+
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    // Prepara a consulta para evitar SQL Injection
-    $stmt = $conn->prepare("SELECT * FROM usuarios WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    // Consulta ao banco de dados
+    $query = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('ss', $email, $senha);
     $stmt->execute();
-    $resultado = $stmt->get_result();
+    $result = $stmt->get_result();
 
-    if ($resultado->num_rows > 0) {
-        $usuario = $resultado->fetch_assoc();
-        
-        // Verifica a senha usando SHA-1
-        if ($usuario['senha'] === sha1($senha)) {
-            // Armazena informações na sessão
-            $_SESSION['id_usuarios'] = $usuario['id'];
-            $_SESSION['email'] = $usuario['email'];
-            // Redireciona para a página inicial ou dashboard
-            header("Location: index.php");
-            exit();
-        } else {
-            echo "<script>alert('Senha incorreta. Tente novamente.');
-             window.location.href = 'login.php';</script>";
+    if ($result->num_rows > 0) {
+        // Usuário encontrado
+        $user = $result->fetch_assoc();
+        $_SESSION['id_usuarios'] = $user['id'];
+        $_SESSION['email'] = $email;
+
+        if (!isset($_SESSION['id_usuarios'])) {
+            die("Erro: Sessão não armazenada.");
         }
-    } else {
-        echo "<script>alert('Email não encontrado.');
-        window.location.href = 'login.php';</script>";
-    }
 
-    $stmt->close();
-    $conn->close();
+        header("Location: inicio.php"); // Redireciona para a página inicial
+        exit();
+    } else {
+        // Credenciais inválidas
+        $_SESSION['error'] = "Usuário ou senha inválidos.";
+        header("Location: login.php"); // Retorna à página de login
+        exit();
+    }
 }
-?>

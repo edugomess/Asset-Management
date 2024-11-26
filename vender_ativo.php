@@ -1,4 +1,14 @@
 <?php
+session_start(); // Inicia a sessão
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
+    // Se não estiver logado, redireciona para a página de login
+    header("Location: login.php");
+    exit();
+}
+?>
+<?php
 include 'conexao.php';
 
 // Configurar cabeçalho para JSON
@@ -27,11 +37,11 @@ try {
     if ($result->num_rows > 0) {
         // Transferir o ativo para a tabela "venda"
         $ativo = $result->fetch_assoc();
-        $queryVenda = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, dataAtivacao, centroDeCusto, descricao)
+        $queryVenda = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto, descricao)
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtVenda = $conn->prepare($queryVenda);
         $stmtVenda->bind_param('sssssssssss',
-            $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], $ativo['tag'], $ativo['hostName'], $ativo['ip'], $ativo['macAdress'], $ativo['status'], $ativo['dataAtivacao'], $ativo['centroDeCusto'], $ativo['descricao']);
+            $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], $ativo['tag'], $ativo['hostName'], $ativo['valor'], $ativo['macAdress'], $ativo['status'], $ativo['dataAtivacao'], $ativo['centroDeCusto'], $ativo['descricao']);
         if ($stmtVenda->execute()) {
             // Remover o ativo da tabela "ativos"
             $queryDelete = "DELETE FROM ativos WHERE id_asset = ?";

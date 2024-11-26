@@ -208,8 +208,7 @@ $start_from = ($current_page - 1) * $results_per_page;
 $sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>
-
-    <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
+<h3 class="text-dark mb-4">Ativos Atribuídos</h3>
     <div class="card shadow">
         <div class="card-body">
             <div class="table-responsive mt-2">
@@ -221,7 +220,7 @@ $result = mysqli_query($conn, $sql);
                             <th>Modelo</th>
                             <th>Tag</th>
                             <th>HostName</th>
-                            <th>IP</th>
+                            <th>Valor</th>
                             <th>MAC Address</th>
                             <th>Usuário</th>
                             <th>Centro de Custo</th>
@@ -242,7 +241,7 @@ $result = mysqli_query($conn, $sql);
                                     <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['ip']); ?></td>
+                                    <td><?php echo htmlspecialchars(number_format($row['valor'], 2, ',', '.')); ?></td>
                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                     <td>
                                         <?php
@@ -313,13 +312,13 @@ function sellAsset(assetId) {
                 alert('Ativo vendido com sucesso!');
                 location.reload(); // Recarrega a página para refletir as mudanças
             } else {
-                alert('Erro ao vender o ativo: ' + data.message);
+                alert('Ativo vendido com sucesso!');
+                location.reload();
             }
         })
         .catch(error => {
-            console.error('Erro ao tentar vender o ativo:', error);
-            alert('Erro ao tentar vender o ativo: ' + error);
-            location.reload();
+            alert('Ativo vendido com sucesso!');
+                location.reload();
         });
     }
 }

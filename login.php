@@ -1,3 +1,8 @@
+<?php
+session_start();
+$error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
+unset($_SESSION['error']); // Limpa a mensagem de erro após exibí-la
+?>
 <!DOCTYPE html>
 <html>
 
@@ -30,36 +35,51 @@
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
+
+
 <body class="bg-gradient-primary" style="background: rgb(44,64,74);">
-<form action="autenticador.php" method="post">   
-    <div class="container pulse animated">
-        <div class="row justify-content-center">
-            <div class="col-md-9 col-lg-12 col-xl-10">
-                <div class="card shadow-lg o-hidden border-0 my-5">
-                    <div class="card-body p-0">
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-flex">
-                                <div class="flex-grow-1 bg-login-image" style="background: url(&quot;/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90&quot;) center / cover no-repeat;"></div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        
-                                        <div> <h3  class="text-dark mb-4"><span><strong>ASSET MANAGEMENT</strong></span></h3></div>
-                                    </div>
-                                    <form class="user">
-                                        <div class="form-group"><input class="form-control form-control-user" type="email"  id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email" required></div>
-                                        <div class="form-group"><input class="form-control form-control-user" type="password"  id="exampleInputPassword" placeholder="Senha" name="senha" style="border-radius: 8px;" required></div>
+    <form action="autenticador.php" method="post">
+        <div class="container pulse animated">
+            <div class="row justify-content-center">
+                <div class="col-md-9 col-lg-12 col-xl-10">
+                    <div class="card shadow-lg o-hidden border-0 my-5">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-6 d-none d-lg-flex">
+                                    <div class="flex-grow-1 bg-login-image" style="background: url(&quot;/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90&quot;) center / cover no-repeat;"></div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <div>
+                                                <h3 class="text-dark mb-4"><span><strong>ASSET MANAGEMENT</strong></span></h3>
+                                            </div>
+                                        </div>
+                                        <?php if ($error): ?>
+                                            <div class="alert alert-danger" role="alert">
+                                                <?php echo htmlspecialchars($error); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="form-group">
+                                            <input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email ..." name="email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control form-control-user" type="password" id="exampleInputPassword" placeholder="Senha" name="senha" style="border-radius: 8px;" required>
+                                        </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
-                                                <div class="form-check"><input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1"><label class="form-check-label custom-control-label" for="formCheck-1">Lembrar-me</label></div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1">
+                                                    <label class="form-check-label custom-control-label" for="formCheck-1">Lembrar-me</label>
+                                                </div>
                                             </div>
-                                        </div><button class="btn btn-primary btn-block text-white btn-user" type="submit" style="background: rgb(44,64,74);">Entrar</button>
+                                        </div>
+                                        <button class="btn btn-primary btn-block text-white btn-user" type="submit" style="background: rgb(44,64,74);">Entrar</button>
                                         <hr>
-                                        <hr>
-                                    </form>
-                                    <div class="text-center"><a class="small" href="forgot-password.html" style="border-color: rgb(44,64,74);border-top-color: rgb(78,;border-right-color: 115,;border-bottom-color: 223);border-left-color: 115,;">Esqueceu a senha?</a></div>
-                                    <div class="text-center"></div>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" href="forgot-password.html" style="border-color: rgb(44,64,74);">Esqueceu a senha?</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -67,8 +87,12 @@
                 </div>
             </div>
         </div>
-    </div><!-- Start: Footer Dark -->
-    <footer class="footer-dark", style="padding: 20px; padding-top: 0px," >
+    </form>
+</body>
+
+
+
+    <footer class="footer-dark", style="padding: 25px; padding-top: 0px," >
         <div class="container">
             <div class="row">
                 <!-- Start: Services -->

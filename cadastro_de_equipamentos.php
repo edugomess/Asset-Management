@@ -1,3 +1,13 @@
+<?php
+session_start(); // Inicia a sessão
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
+    // Se não estiver logado, redireciona para a página de login
+    header("Location: login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
 
@@ -226,7 +236,7 @@ $conn->close();
     <div class="col-sm-6 col-xl-4 offset-xl-1">
         <div class="form-group">
             <label></label>
-            <input class="form-control" name="ip" type="text" placeholder="IP" required="">
+            <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' " required="">
         </div>
     </div>
 </div><!-- End: 2-column form row -->
@@ -264,7 +274,7 @@ $conn->close();
                 <!-- Start: Simple footer by krissy -->
                 <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
                 <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px;margin-top: 70px;">
+                <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
                     <!-- Start: Footer text -->
                     <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
                 </section><!-- End: Simple footer by krissy -->

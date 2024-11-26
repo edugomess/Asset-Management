@@ -1,7 +1,8 @@
 <?php
 session_start();
 $error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
-unset($_SESSION['error']); // Limpa a mensagem de erro após exibí-la
+unset($_SESSION['error']);
+ // Limpa a mensagem de erro após exibí-la
 ?>
 <!DOCTYPE html>
 <html>

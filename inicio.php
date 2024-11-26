@@ -1,4 +1,3 @@
-
 <?php
 include 'conexao.php';
 
@@ -210,14 +209,9 @@ $sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $r
 $result = mysqli_query($conn, $sql);
 ?>
 
-<div class="container-fluid">
     <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
     <div class="card shadow">
         <div class="card-body">
-            <div class="row">
-                
-            </div>
-
             <div class="table-responsive mt-2">
                 <table class="table my-0" id="dataTable">
                     <thead>
@@ -303,27 +297,35 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script>
+// Função para vender o ativo (transferir para a tabela "venda")
 function sellAsset(assetId) {
     if (confirm('Tem certeza que deseja vender este ativo?')) {
         fetch('vender_ativo.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_asset: assetId })
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 alert('Ativo vendido com sucesso!');
-                location.reload();
+                location.reload(); // Recarrega a página para refletir as mudanças
             } else {
                 alert('Erro ao vender o ativo: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Erro ao tentar vender o ativo:', error);
+            alert('Erro ao tentar vender o ativo: ' + error);
+            location.reload();
         });
     }
 }
+
+
+
 </script>
 
 <?php

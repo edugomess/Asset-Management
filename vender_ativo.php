@@ -1,5 +1,4 @@
 <?php
-
 include 'conexao.php';
 
 // Configurar cabeçalho para JSON
@@ -28,13 +27,15 @@ try {
 
     $asset = $result->fetch_assoc();
 
-    // Inserir os dados do ativo na tabela `venda`
-    $sql_insert = "INSERT INTO venda ( categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, assigned_to, centroDeCusto, data_venda) 
-                   VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    // Inserir os dados do ativo na tabela `vendas`
+    $sql_insert = "INSERT INTO venda (id_asset, categoria, fabricante, modelo, tag, hostName, ip, macAdress, status, assigned_to, centroDeCusto, data_venda) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
     $stmt_insert = $conn->prepare($sql_insert);
+    
+    // Vincular os parâmetros para a query de inserção
     $stmt_insert->bind_param(
-        'isssssssis',
-        
+        'issssssssis',
+        $id_asset,  // Passando id_asset corretamente
         $asset['categoria'],
         $asset['fabricante'],
         $asset['modelo'],
@@ -46,20 +47,18 @@ try {
         $asset['assigned_to'],
         $asset['centroDeCusto']
     );
-    $stmt_insert->execute();
 
-    if ($stmt_insert->affected_rows === 0) {
-        throw new Exception('Erro ao inserir ativo na tabela de vendas.');
+    if (!$stmt_insert->execute()) {
+        throw new Exception('Erro ao inserir ativo na tabela venda: ' . $stmt_insert->error);
     }
 
-    // Só depois de inserir, remova da tabela `ativos`
+    // Após inserir, remova da tabela `ativos`
     $sql_delete = "DELETE FROM ativos WHERE id_asset = ?";
     $stmt_delete = $conn->prepare($sql_delete);
     $stmt_delete->bind_param('i', $id_asset);
-    $stmt_delete->execute();
 
-    if ($stmt_delete->affected_rows === 0) {
-        throw new Exception('Erro ao remover ativo da tabela de ativos.');
+    if (!$stmt_delete->execute()) {
+        throw new Exception('Erro ao remover ativo da tabela ativos: ' . $stmt_delete->error);
     }
 
     // Retornar sucesso
@@ -71,6 +70,4 @@ try {
 
 // Fechar a conexão
 $conn->close();
-
-
 ?>

@@ -1,36 +1,10 @@
-
-<?php
-include 'conexao.php';
-
-// Verifica se o ID do ativo foi passado para transferir os dados
-if (isset($_GET['id'])) {
-    $ativoId = $_GET['id'];
-
-    // Transfere o ativo para a tabela 'venda'
-    $sql = "INSERT INTO venda (categoria, modelo, tag) 
-            SELECT categoria, modelo, tag FROM ativos WHERE id = '$ativoId'";
-
-    if (mysqli_query($conn, $sql)) {
-        // Remove o ativo da tabela 'ativos'
-        $deleteSql = "DELETE FROM ativos WHERE id = '$ativoId'";
-        if (mysqli_query($conn, $deleteSql)) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false]);
-        }
-    } else {
-        echo json_encode(['success' => false]);
-    }
-    exit;
-}
-?>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title>Table - Brand</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -69,11 +43,11 @@ if (isset($_GET['id'])) {
                         </svg></div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
-                <hr class="sidebar-divider my-0">
+               <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                 <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
@@ -182,156 +156,142 @@ if (isset($_GET['id'])) {
                     </div>
                 </nav>
                 <div class="container-fluid">
-                
-                    <!-- Start: 4-column form row -->
-                    <?php
+                    <h3 class="text-dark mb-4">Vendidos</h3>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 col-xl-3 text-nowrap">
+                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;" href="/inicio.php">Voltar</a>
+                                </div>
+                                <div class="col-md-6 col-xl-9">
+                                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..."></label></div>
+                                </div>
+                            </div>
+                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                <table class="table my-0" id="dataTable">
+                                    <tbody>
+                                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info" >
+<?php
 include 'conexao.php';
 
-// Definir o número de resultados por página
+// Define how many results you want per page
 $results_per_page = 10;
 
-// Verificar o número de resultados atribuídos no banco de dados
-$sql = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
+// Find out the number of results in the database (for vendidos status)
+$sql = "SELECT COUNT(*) AS total FROM venda";
 $result = mysqli_query($conn, $sql);
 $row = mysqli_fetch_assoc($result);
 $total_results = $row['total'];
 
-// Determinar o número de páginas necessárias
+// Determine number of pages needed
 $total_pages = ceil($total_results / $results_per_page);
 
-// Determinar a página atual a partir da URL, se não definida, assume 1
+// Determine the current page number from the URL, if not set default to 1
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Calcular o limite de registros para a consulta
+// Calculate the starting limit for the records
 $start_from = ($current_page - 1) * $results_per_page;
 
-// Consultar os ativos atribuídos
-$sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
+// Fetch the selected results from the database (ativos vendidos)
+$sql = "SELECT * FROM venda LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>
 
-<div class="container-fluid">
-    <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
-    <div class="card shadow">
-        <div class="card-body">
-            <div class="row">
-                
-            </div>
-
-            <div class="table-responsive mt-2">
-                <table class="table my-0" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Categoria</th>
-                            <th>Fabricante</th>
-                            <th>Modelo</th>
-                            <th>Tag</th>
-                            <th>HostName</th>
-                            <th>IP</th>
-                            <th>MAC Address</th>
-                            <th>Usuário</th>
-                            <th>Centro de Custo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
+<table class="table my-0" id="dataTable">
+    <thead>
+        <tr>
+            <th>Categoria</th>
+            <th>Fabricante</th>
+            <th>Modelo</th>
+            <th>Tag</th>
+            <th>HostName</th>
+            <th>MAC Address</th>
+            <th>Usuário</th>
+            <th>Data da Venda</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                // Retrieve the user who is assigned to the asset
+                $assigned_to = $row['assigned_to'];
+                $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
+                $result_user = mysqli_query($conn, $sql_user);
+                $user_name = "Não atribuído";
+                if ($result_user && mysqli_num_rows($result_user) > 0) {
+                    $user = mysqli_fetch_assoc($result_user);
+                    $user_name = htmlspecialchars($user['nome']);
+                }
+                ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                    <td><?php echo $user_name; ?></td>
+                    <td><?php echo htmlspecialchars($row['data_venda']); ?></td>
                     
-                        <?php
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $assigned_to = $row['assigned_to'];
-                                ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['ip']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                    <td>
-                                        <?php
-                                        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
-                                        $result_user = mysqli_query($conn, $sql_user);
-                                        if ($result_user && mysqli_num_rows($result_user) > 0) {
-                                            $user = mysqli_fetch_assoc($result_user);
-                                            echo htmlspecialchars($user['nome']);
-                                        } else {
-                                            echo "Não encontrado";
-                                        }
-                                        ?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
-                                    <td>
-                                        <button class="btn btn-success" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
-                                            Vender
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php
-                            }
-                        } else {
-                            echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="pagination justify-content-start">
-                <ul class="pagination">
-                    <?php
-                    if ($current_page > 1) {
-                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-                    }
-                    for ($page = 1; $page <= $total_pages; $page++) {
-                        if ($page == $current_page) {
-                            echo "<li class='page-item active'><a class='btn btn-dark'>$page</a></li>";
-                        } else {
-                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
-                        }
-                    }
-                    if ($current_page < $total_pages) {
-                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                    }
-                    ?>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function sellAsset(assetId) {
-    if (confirm('Tem certeza que deseja vender este ativo?')) {
-        fetch('vender_ativo.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_asset: assetId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Ativo vendido com sucesso!');
-                location.reload();
-            } else {
-                alert('Erro ao vender o ativo: ' + data.message);
+                </tr>
+            <?php
             }
-        })
-        .catch(error => {
-            console.error('Erro ao tentar vender o ativo:', error);
-        });
-    }
-}
-</script>
+        } else {
+            echo "<tr><td colspan='11'>Nenhum ativo vendido encontrado.</td></tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
+<div class="pagination justify-content-start">
+    <nav>
+        <ul class="pagination">
+            <?php
+            // Previous Page Link
+            if ($current_page > 1) {
+                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+            }
+
+            // Page Links
+            for ($page = 1; $page <= $total_pages; $page++) {
+                if ($page == $current_page) {
+                    echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
+                } else {
+                    echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+                }
+            }
+
+            // Next Page Link
+            if ($current_page < $total_pages) {
+                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+            }
+            ?>
+        </ul>
+    </nav>
+</div>
 
 <?php
 mysqli_close($conn);
 ?>
+    </tr>
+                                    </tbody>
+                                    
+                                </table>
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="sticky-footer" style="background: transparent; padding: 0;">
+    <!-- Start: Simple footer by krissy -->
+    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
+        <!-- Start: Footer text -->
+        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+    </section><!-- End: Simple footer by krissy -->
+</footer>
 
-          
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

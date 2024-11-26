@@ -68,7 +68,7 @@
             </div>
         </div>
     </div><!-- Start: Footer Dark -->
-    <footer class="footer-dark", style="padding: 5px; padding-top: 0px," >
+    <footer class="footer-dark", style="padding: 20px; padding-top: 0px," >
         <div class="container">
             <div class="row">
                 <!-- Start: Services -->

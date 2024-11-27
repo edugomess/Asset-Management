@@ -257,23 +257,42 @@ $result = mysqli_query($conn, $sql);
                         </td>
                         <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                         <td>
-                            <?php
-                            // Exibe o botão de desatribuir ou atribuir
-                            if ($assigned_to) {
-                                echo "<button class='btn btn-dark btn-tamanho-fixo' 
-                                onclick='unassignUser(" . $row['id_asset'] . ")'> 
-                                Desatribuir <i class='fas fa-address-card'></i> </button>"; 
-                            } else { 
-                                echo "<button class='btn btn-info btn-tamanho-fixo' 
-                                onclick='openAssignModal(" . $row['id_asset'] . ")'> 
-                                Atribuir <i class='fas fa-address-card'></i> </button>";
-                            }
-                            ?>
-                            <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
-                                <i class='fas fa-edit'></i>
-                            </a>
-                            <a class='btn btn-danger' href='apagar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
-                                <i class='fas fa-trash'></i>
+                          
+    <?php
+    // Exibe o botão de desatribuir ou atribuir
+    if ($assigned_to) {
+        echo "<button class='btn btn-dark btn-tamanho-fixo' 
+        onclick='unassignUser(" . $row['id_asset'] . ")'> 
+        Desatribuir <i class='fas fa-address-card'></i> </button>"; 
+    } else { 
+        echo "<button class='btn btn-info btn-tamanho-fixo' 
+        onclick='openAssignModal(" . $row['id_asset'] . ")'> 
+        Atribuir <i class='fas fa-address-card'></i> </button>";
+    }
+    ?>
+    <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+        <i class='fas fa-edit'></i>
+    
+    <td>
+    
+    <?php
+    // Verifica o status atual do ativo no banco de dados
+    $newStatus = ($row['status'] === 'ativo') ? 'inativo' : 'ativo'; // Define o novo status baseado no atual
+    $btnClass = ($row['status'] === 'ativo') ? 'btn-danger' : 'btn-success'; // Classe do botão
+    $btnLabel = ($row['status'] === 'ativo') ? 'Inativar' : 'Ativar'; // Texto do botão
+    ?>
+    <button class="btn <?php echo $btnClass; ?>" 
+        onclick="toggleStatus(<?php echo $row['id_asset']; ?>, '<?php echo $newStatus; ?>', this)">
+        <?php echo $btnLabel; ?> <i class="fas fa-power-off"></i>
+    </button>
+
+
+    </a>
+</td>
+
+
+
+
                             </a>
                         </td>
                     </tr>
@@ -554,8 +573,39 @@ function assignUser(userId, userName) {
     });
 }
 
-
+function toggleStatus(assetId, newStatus, button) {
+    // Confirmação antes de realizar a alteração
+    if (confirm(`Tem certeza que deseja alterar o status para "${newStatus}"?`)) {
+        fetch('alterar_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_asset: assetId, status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Altera o texto e a classe do botão com base no novo status
+                if (newStatus === 'ativo') {
+                    button.textContent = 'Ativar';
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-success');
+                } else {
+                    button.textContent = 'Inativar';
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-danger');
+                }
+                alert('Status atualizado com sucesso!');
+            } else {
+                alert('Erro ao atualizar o status: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao tentar atualizar o status:', error);
+        });
+    }
+}
 </script>
+
 
 </footer>
 

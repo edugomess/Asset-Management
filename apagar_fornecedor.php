@@ -21,14 +21,24 @@ if ($result) {
 // Fecha a conexão
 $conn->close();
 
+
+
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+} else {
+    die("ID não fornecido.");
+}
+
+// Exibir a mensagem de confirmação
 echo "<script>
         if (confirm('Isso irá apagar um registro! Deseja continuar?')) {
-            window.location.href = 'fornecedores.php';
+            window.location.href = 'confirmar_exclusao.php?id=$id'; // Redireciona para confirmar exclusão
         } else {
-            window.location.href = 'outrapagina.php'; // Altere para a página desejada
+            window.location.href = 'fornecedores.php'; // Redireciona para a página desejada
         }
       </script>";
 exit();
 ?>
+
 
 

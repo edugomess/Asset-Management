@@ -7,6 +7,20 @@
     .btn-edit {
         width: 50px; /* Metade da largura */
     }
+    .btn-medium {
+        width: 100px; /* Metade da largura */
+    }
+    <style>
+    .badge-success {
+        background-color: #28a745 !important; /* Verde para ativo */
+        color: #fff !important; /* Texto branco */
+    }
+    .badge-danger {
+        background-color: #dc3545 !important; /* Vermelho para inativo */
+        color: #fff !important; /* Texto branco */
+    }
+</style>
+
 </style>
 
 <head>
@@ -226,6 +240,7 @@ $result = mysqli_query($conn, $sql);
                 <th>MAC Address</th>
                 <th>Centro de Custo</th>
                 <th>Usuário</th>
+                <th>Status</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -244,6 +259,7 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo htmlspecialchars($row['valor']); ?></td>
                         <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                         <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+
                         <td>
     <?php 
     if ($assigned_to) {
@@ -259,7 +275,10 @@ $result = mysqli_query($conn, $sql);
     }
     ?>
 </td>
-
+<td> <!-- Exibe o status com cor de fundo condicional --> <span class="badge 
+<?php echo ($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger';?>"> 
+<?php echo htmlspecialchars(ucfirst($row['status']));
+  ?> </span> </td>
 <td>
     <!-- Disposição dos botões lado a lado com o mesmo tamanho -->
     <div class="d-flex align-items-center">
@@ -288,7 +307,7 @@ $result = mysqli_query($conn, $sql);
         $btnClass = ($row['status'] === 'ativo') ? 'btn-danger' : 'btn-success'; // Classe do botão
         $btnLabel = ($row['status'] === 'ativo') ? 'Inativar' : 'Ativar'; // Texto do botão
         ?>
-        <button class="btn <?php echo $btnClass; ?> btn-tamanho-fixo" 
+        <button class="btn <?php echo $btnClass; ?> btn-medium" 
             onclick="toggleStatus(<?php echo $row['id_asset']; ?>, '<?php echo $newStatus; ?>', this)">
             <?php echo $btnLabel; ?> <i class="fas fa-power-off"></i>
         </button>

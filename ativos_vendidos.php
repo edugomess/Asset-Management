@@ -205,7 +205,7 @@ $result = mysqli_query($conn, $sql);
             <th>Fabricante</th>
             <th>Modelo</th>
             <th>Tag</th>
-            <th>HostName</th>
+            <th>Valor</th>
             <th>MAC Address</th>
             <th>Usuário</th>
             <th>Data da Venda</th>
@@ -230,7 +230,7 @@ $result = mysqli_query($conn, $sql);
                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                     <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
-                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                    <td><?php echo htmlspecialchars($row['valor']); ?></td>
                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                     <td><?php echo $user_name; ?></td>
                     <td><?php echo htmlspecialchars($row['data_venda']); ?></td>

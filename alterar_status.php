@@ -1,33 +1,33 @@
 <?php
 include 'conexao.php';
 
-// Configura o cabeçalho da resposta como JSON
-header('Content-Type: application/json');
+$data = json_decode(file_get_contents('php://input'), true);
 
-try {
-    // Recebe os dados enviados via POST
-    $data = json_decode(file_get_contents('php://input'), true);
+if (isset($data['id_asset']) && isset($data['status'])) {
+    $id_asset = $data['id_asset'];
+    $newStatus = $data['status'];
 
-    if (!isset($data['id_asset'], $data['status'])) {
-        throw new Exception('Dados incompletos.');
+    $query = "UPDATE ativos SET status = ? WHERE id_asset = ?";
+    $stmt = $conn->prepare($query);
+    if ($stmt === false) {
+        die('prepare() failed: ' . htmlspecialchars($conn->error));
     }
 
-    $id_asset = intval($data['id_asset']);
-    $status = $data['status'];
-
-    // Atualiza o status no banco de dados
-    $sql = "UPDATE ativos SET status = ? WHERE id_asset = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('si', $status, $id_asset);
-
-    if (!$stmt->execute()) {
-        throw new Exception('Erro ao atualizar o status: ' . $stmt->error);
+    $bind = $stmt->bind_param('si', $newStatus, $id_asset);
+    if ($bind === false) {
+        die('bind_param() failed: ' . htmlspecialchars($stmt->error));
     }
 
-    echo json_encode(['success' => true]);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    $exec = $stmt->execute();
+    if ($exec) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Erro ao atualizar o status: ' . htmlspecialchars($stmt->error)]);
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo json_encode(['success' => false, 'message' => 'Dados inválidos']);
 }
-
-$conn->close();
 ?>

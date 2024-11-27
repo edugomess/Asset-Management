@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
-<style> .btn-tamanho-fixo { width: 130px; } </style>
+<style>
+    .btn-tamanho-fixo { 
+        width: 130px; 
+    }
+    .btn-edit {
+        width: 50px; /* Metade da largura */
+    }
+</style>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -168,9 +176,6 @@
                                 <div class="col-md-6 col-xl-3 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 23px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;" href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
                                 </div>
-                                <div class="col-md-6 col-xl-9">
-                                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..."></label></div>
-                                </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
                                 <table class="table my-0" id="dataTable">
@@ -219,8 +224,8 @@ $result = mysqli_query($conn, $sql);
                 <th>HostName</th>
                 <th>Valor</th>
                 <th>MAC Address</th>
-                <th>Usuário</th>
                 <th>Centro de Custo</th>
+                <th>Usuário</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -238,60 +243,57 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                         <td><?php echo htmlspecialchars($row['valor']); ?></td>
                         <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                        <td>
-                            <?php 
-                            if ($assigned_to) {
-                                // Buscar os detalhes do usuário atribuído diretamente
-                                $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
-                                $result_user = mysqli_query($conn, $sql_user);
-                                if ($result_user && mysqli_num_rows($result_user) > 0) {
-                                    $user = mysqli_fetch_assoc($result_user);
-                                    echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ")'>" . htmlspecialchars($user['nome']) . "</a>";
-
-
-                                }
-                            } else {
-                                echo "Não Atribuído";
-                            }
-                            ?>
-                        </td>
                         <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                         <td>
-                          
-    <?php
-    // Exibe o botão de desatribuir ou atribuir
+    <?php 
     if ($assigned_to) {
-        echo "<button class='btn btn-dark btn-tamanho-fixo' 
-        onclick='unassignUser(" . $row['id_asset'] . ")'> 
-        Desatribuir <i class='fas fa-address-card'></i> </button>"; 
-    } else { 
-        echo "<button class='btn btn-info btn-tamanho-fixo' 
-        onclick='openAssignModal(" . $row['id_asset'] . ")'> 
-        Atribuir <i class='fas fa-address-card'></i> </button>";
+        // Buscar os detalhes do usuário atribuído diretamente
+        $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
+        $result_user = mysqli_query($conn, $sql_user);
+        if ($result_user && mysqli_num_rows($result_user) > 0) {
+            $user = mysqli_fetch_assoc($result_user);
+            echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ")'>" . htmlspecialchars($user['nome']) . "</a>";
+        }
+    } else {
+        echo "Não Atribuído";
     }
     ?>
-    <a class='btn btn-warning' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
-        <i class='fas fa-edit'></i>
-    
-    <td>
-    
-    <?php
-    // Verifica o status atual do ativo no banco de dados
-    $newStatus = ($row['status'] === 'ativo') ? 'inativo' : 'ativo'; // Define o novo status baseado no atual
-    $btnClass = ($row['status'] === 'ativo') ? 'btn-danger' : 'btn-success'; // Classe do botão
-    $btnLabel = ($row['status'] === 'ativo') ? 'Inativar' : 'Ativar'; // Texto do botão
-    ?>
-    <button class="btn <?php echo $btnClass; ?>" 
-        onclick="toggleStatus(<?php echo $row['id_asset']; ?>, '<?php echo $newStatus; ?>', this)">
-        <?php echo $btnLabel; ?> <i class="fas fa-power-off"></i>
-    </button>
-
-
-    </a>
 </td>
 
+<td>
+    <!-- Disposição dos botões lado a lado com o mesmo tamanho -->
+    <div class="d-flex align-items-center">
+        <!-- Botão de Atribuir ou Desatribuir (tamanho fixo de 130px) -->
+        <?php
+        if ($assigned_to) {
+            echo "<button class='btn btn-dark btn-tamanho-fixo mr-2' 
+            onclick='unassignUser(" . $row['id_asset'] . ")'> 
+            Desatribuir <i class='fas fa-address-card'></i> </button>"; 
+        } else { 
+            echo "<button class='btn btn-info btn-tamanho-fixo mr-2' 
+            onclick='openAssignModal(" . $row['id_asset'] . ")'> 
+            Atribuir <i class='fas fa-address-card'></i> </button>";
+        }
+        ?>
 
+        <!-- Botão de Editar (tamanho fixo de 130px, mas como botão pequeno, será mais estreito) -->
+        <a class='btn btn-warning btn-edit mr-2' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
+            <i class='fas fa-edit'></i>
+        </a>
 
+        <!-- Botão de Ativar/Desativar (tamanho fixo de 130px) -->
+        <?php
+        // Verifica o status atual do ativo no banco de dados
+        $newStatus = ($row['status'] === 'ativo') ? 'inativo' : 'ativo'; // Define o novo status baseado no atual
+        $btnClass = ($row['status'] === 'ativo') ? 'btn-danger' : 'btn-success'; // Classe do botão
+        $btnLabel = ($row['status'] === 'ativo') ? 'Inativar' : 'Ativar'; // Texto do botão
+        ?>
+        <button class="btn <?php echo $btnClass; ?> btn-tamanho-fixo" 
+            onclick="toggleStatus(<?php echo $row['id_asset']; ?>, '<?php echo $newStatus; ?>', this)">
+            <?php echo $btnLabel; ?> <i class="fas fa-power-off"></i>
+        </button>
+    </div>
+</td>
 
                             </a>
                         </td>
@@ -573,38 +575,31 @@ function assignUser(userId, userName) {
     });
 }
 
-function toggleStatus(assetId, newStatus, button) {
-    // Confirmação antes de realizar a alteração
-    if (confirm(`Tem certeza que deseja alterar o status para "${newStatus}"?`)) {
-        fetch('alterar_status.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_asset: assetId, status: newStatus })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Altera o texto e a classe do botão com base no novo status
-                if (newStatus === 'ativo') {
-                    button.textContent = 'Ativar';
-                    button.classList.remove('btn-danger');
-                    button.classList.add('btn-success');
-                } else {
-                    button.textContent = 'Inativar';
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-danger');
-                }
-                alert('Status atualizado com sucesso!');
-            } else {
-                alert('Erro ao atualizar o status: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao tentar atualizar o status:', error);
-        });
-    }
+
+function toggleStatus(id, newStatus, button) {
+    fetch('alterar_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id_asset: id, status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Atualizar a classe e o texto do botão
+            button.className = (newStatus === 'ativo') ? 'btn btn-danger' : 'btn btn-success';
+            button.innerHTML = (newStatus === 'ativo') ? 'Inativar <i class="fas fa-power-off"></i>' : 'Ativar <i class="fas fa-power-off"></i>';
+        } else {
+            alert('Erro ao atualizar o status');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
 }
 </script>
+
 
 
 </footer>

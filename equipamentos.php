@@ -301,16 +301,7 @@ $result = mysqli_query($conn, $sql);
         </a>
 
         <!-- Botão de Ativar/Desativar (tamanho fixo de 130px) -->
-        <?php
-        // Verifica o status atual do ativo no banco de dados
-        $newStatus = ($row['status'] === 'ativo') ? 'inativo' : 'ativo'; // Define o novo status baseado no atual
-        $btnClass = ($row['status'] === 'ativo') ? 'btn-danger' : 'btn-success'; // Classe do botão
-        $btnLabel = ($row['status'] === 'ativo') ? 'Inativar' : 'Ativar'; // Texto do botão
-        ?>
-        <button class="btn <?php echo $btnClass; ?> btn-medium" 
-            onclick="toggleStatus(<?php echo $row['id_asset']; ?>, '<?php echo $newStatus; ?>', this)">
-            <?php echo $btnLabel; ?> <i class="fas fa-power-off"></i>
-        </button>
+        
     </div>
 </td>
 

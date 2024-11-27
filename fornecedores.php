@@ -205,7 +205,7 @@ $result = mysqli_query($conn, $sql);
             <th>E-Mail</th>
             <th>Telefone</th>
             <th>Serviço</th>
-            <th>Status</th>
+            <th>CNPJ</th>
             <th></th>
         </tr>
     </thead>
@@ -218,7 +218,7 @@ $result = mysqli_query($conn, $sql);
                       <td>" . htmlspecialchars($row['email']) . "</td>
                       <td>" . htmlspecialchars($row['telefone']) . "</td>
                       <td>" . htmlspecialchars($row['servico']) . "</td>
-                      <td>" . htmlspecialchars($row['status']) . "</td>
+                      <td>" . htmlspecialchars($row['cnpj']) . "</td>
                       <td>
                         <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-edit'></i></a>
                         <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-trash'></i></a>
@@ -236,7 +236,7 @@ $result = mysqli_query($conn, $sql);
             <th>E-Mail</th>
             <th>Telefone</th>
             <th>Serviço</th>
-            <th>Status</th>
+            <th>CNPJ</th>
             <th></th>
         </tr>
     </thead>

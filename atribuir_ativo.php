@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Busca o ID do usuário baseado no nome fornecido
     $query_usuario = "SELECT id FROM usuarios WHERE nome = ?";
+
     $stmt = $conn->prepare($query_usuario);
 
     if (!$stmt) {

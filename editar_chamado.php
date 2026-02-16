@@ -15,7 +15,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
         $msg = '<div class="alert alert-danger"><strong>Erro:</strong> Para alterar o status (sair de "Aberto"), é obrigatório atribuir um <strong>Responsável</strong> ao chamado.</div>';
     }
     else {
-        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id WHERE id = $id_chamado";
+        // Lógica para data_fechamento
+        $fechamento_sql = "";
+        $status_fechados = ['Resolvido', 'Fechado', 'Cancelado'];
+
+        if (in_array($novo_status, $status_fechados)) {
+            // Se já tiver data de fechamento, mantemos? Por enquanto, atualizamos para NOW() para garantir último fechamento
+            // Ou melhor, so atualiza se estiver NULL ou mudando de aberto para fechado.
+            // Simplificando: atualizar sempre que fechar.
+            $fechamento_sql = ", data_fechamento = NOW()";
+        }
+        else {
+            // Se reabrir, limpar data
+            $fechamento_sql = ", data_fechamento = NULL";
+        }
+
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id $fechamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
             $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';

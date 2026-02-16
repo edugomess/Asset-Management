@@ -217,6 +217,7 @@ $categorias_interesse = [
     'Impressoras' => ['icon' => 'fas fa-print', 'color' => 'warning', 'label' => 'Impressoras']
 ];
 
+
 // Query genérica para pegar todas as categorias e contagens
 $sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
                                        FROM ativos GROUP BY categoria";
@@ -228,6 +229,51 @@ if ($res_ativos) {
     }
 }
 
+// SLA Ranking Logic
+$sql_ranking = "SELECT 
+    r.nome, r.sobrenome, r.id_usuarios, r.foto_perfil,
+    COUNT(*) as total,
+    SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) as met_sla
+FROM chamados c
+JOIN usuarios r ON c.responsavel_id = r.id_usuarios
+WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado')
+AND c.data_fechamento >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+GROUP BY r.id_usuarios
+ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) / COUNT(*)) DESC";
+$res_ranking = mysqli_query($conn, $sql_ranking);
+$ranking_data = [];
+if ($res_ranking) {
+    while ($row = mysqli_fetch_assoc($res_ranking)) {
+        $row['percentage'] = ($row['total'] > 0) ? round(($row['met_sla'] / $row['total']) * 100) : 0;
+        $ranking_data[] = $row;
+    }
+}
+// Chart Data Logic (Restored)
+// Donut Chart - Status Distribution
+$query = "SELECT status, count(*) as number FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') GROUP BY status";
+$result = mysqli_query($conn, $query);
+$data = [];
+$total_ativos = 0;
+while ($row = mysqli_fetch_array($result)) {
+    $data[$row['status']] = $row['number'];
+    $total_ativos += $row['number'];
+}
+$data_string = implode(",", [
+    isset($data['Aberto']) ? $data['Aberto'] : 0,
+    isset($data['Em Andamento']) ? $data['Em Andamento'] : 0,
+    isset($data['Pendente']) ? $data['Pendente'] : 0
+]);
+
+// Line Chart - Closed Tickets per Month
+$closed_query = "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) GROUP BY MONTH(data_fechamento)";
+$closed_result = mysqli_query($conn, $closed_query);
+$closed_data = array_fill(1, 12, 0); // Initialize all months to 0
+while ($row = mysqli_fetch_array($closed_result)) {
+    $closed_data[$row['month']] = $row['count'];
+}
+$closed_string = implode(",", $closed_data);
+
+
 // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
 // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
 // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
@@ -236,14 +282,13 @@ if ($res_ativos) {
 // ou manter o layout fixo e preencher com o que encontrar.
 // Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
 
-// Card 1: Computadores (Desktops)
-$total_pc = isset($dados_ativos['Computadores']) ? $dados_ativos['Computadores']['total'] : 0;
-$disp_pc = isset($dados_ativos['Computadores']) ? $dados_ativos['Computadores']['disponiveis'] : 0;
+// Card 1: Desktops
+$total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
+$disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
 
-// Card 2: Laptops (Se não tiver categoria separada, pode ser 0 ou junto com computadores)
-// Ajuste: Se 'Notebooks' ou 'Laptops' existir no banco
-$total_note = isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : (isset($dados_ativos['Laptops']) ? $dados_ativos['Laptops']['total'] : 0);
-$disp_note = isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : (isset($dados_ativos['Laptops']) ? $dados_ativos['Laptops']['disponiveis'] : 0);
+// Card 2: Notebooks
+$total_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['total'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : 0);
+$disp_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['disponiveis'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : 0);
 
 // Card 3: Periféricos (Mouse, Teclado, Monitor, etc - Somar tudo que não for PC/Note/Impressora?)
 // Ou pegar categorias específicas. Vamos pegar 'Monitores' e 'Periféricos'
@@ -263,7 +308,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>Computadores</span></div>
+                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>Desktops</span></div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_pc; ?></span>
                                                 <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_pc; ?> / <?php echo $total_pc; ?>)</span>
@@ -322,7 +367,8 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                 </div>
                             </div>
                         </div>
-                    </div><!-- Start: Chart -->
+                    </div>
+                    <!-- Start: Charts -->
                     <div class="row">
                         <div class="col-lg-7 col-xl-8">
                             <div class="card shadow mb-4">
@@ -360,7 +406,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                 </div>
                             </div>
                         </div>
-                    </div><!-- End: Chart -->
+                    </div><!-- End: Charts -->
                     <div class="row">
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow mb-4">
@@ -444,6 +490,59 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                             </div>
                         </div>
                     </div>
+                    <!-- Start: SLA Ranking -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA (Último Mês) - Melhores Técnicos</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Responsável</th>
+                                                    <th>Chamados Resolvidos</th>
+                                                    <th>Dentro do Prazo (< 10min)</th>
+                                                    <th>% SLA Atingido</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($ranking_data as $rank): ?>
+                                                <tr>
+                                                    <td class="align-middle">
+                                                        <img class="img-profile rounded-circle" style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;" src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
+                                                        <?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?>
+                                                    </td>
+                                                    <td class="align-middle"><?php echo $rank['total']; ?></td>
+                                                    <td class="align-middle"><?php echo $rank['met_sla']; ?></td>
+                                                    <td class="align-middle">
+                                                        <div class="progress" style="height: 20px;">
+                                                            <?php
+    $color = 'bg-danger';
+    if ($rank['percentage'] >= 80)
+        $color = 'bg-success';
+    elseif ($rank['percentage'] >= 50)
+        $color = 'bg-warning';
+?>
+                                                            <div class="progress-bar <?php echo $color; ?>" role="progressbar" style="width: <?php echo $rank['percentage']; ?>%" aria-valuenow="<?php echo $rank['percentage']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $rank['percentage']; ?>%</div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <?php
+endforeach; ?>
+                                                <?php if (empty($ranking_data)): ?>
+                                                <tr><td colspan="4" class="text-center">Nenhum chamado finalizado no último mês.</td></tr>
+                                                <?php
+endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End: SLA Ranking -->
                 </div>
             </div>
             <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">

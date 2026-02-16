@@ -32,21 +32,49 @@
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
 
-<body></body>
+<body id="page-top">
 <?php
+include 'conexao.php';
 
+// Contagem de Chamados
+$count_aberto = 0;
+$count_andamento = 0;
+$count_pendente = 0;
 
-//session_start();
+$res = mysqli_query($conn, "SELECT COUNT(*) as total FROM chamados WHERE status = 'Aberto'");
+if ($res && $row = mysqli_fetch_assoc($res))
+    $count_aberto = $row['total'];
 
-// Verifique se o usuário está logado
-//if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    //session_destroy(); // Destrói a sessão
-    //header('Location: index.php'); // Redireciona para a página de login
-    //exit;
-//}
+$res = mysqli_query($conn, "SELECT COUNT(*) as total FROM chamados WHERE status = 'Em Andamento'");
+if ($res && $row = mysqli_fetch_assoc($res))
+    $count_andamento = $row['total'];
 
-//echo 'Bem-vindo, ' . $_SESSION['email'] . '!';
-//?>
+$res = mysqli_query($conn, "SELECT COUNT(*) as total FROM chamados WHERE status = 'Pendente'");
+if ($res && $row = mysqli_fetch_assoc($res))
+    $count_pendente = $row['total'];
+
+// Preparar dados para o gráfico de Rosca
+$data_values = [$count_aberto, $count_andamento, $count_pendente];
+$data_string = implode(',', $data_values);
+
+// Contagem de Chamados Fechados por Mês (Linha)
+$closed_per_month = array_fill(1, 12, 0); // Array [1=>0, 2=>0, ..., 12=>0]
+$year_current = date('Y');
+
+$sql_closed = "SELECT MONTH(data_abertura) as mes, COUNT(*) as total 
+               FROM chamados 
+               WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') 
+               AND YEAR(data_abertura) = '$year_current' 
+               GROUP BY MONTH(data_abertura)";
+
+$res_closed = mysqli_query($conn, $sql_closed);
+if ($res_closed) {
+    while ($row = mysqli_fetch_assoc($res_closed)) {
+        $closed_per_month[$row['mes']] = $row['total'];
+    }
+}
+$closed_string = implode(',', array_values($closed_per_month));
+?>
 
 <div id="page-top">
     <div id="wrapper">
@@ -69,6 +97,7 @@
                     <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -237,33 +266,36 @@
                         <div class="col-lg-7 col-xl-8">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center" style="background: rgb(248, 249, 252);">
-                                    <h6 class="text-primary font-weight-bold m-0">Ativações Mês</h6>
+                                    <h6 class="text-primary font-weight-bold m-0">Chamados Finalizados (Mês)</h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
-                                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another action</a>
-                                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something else here</a>
+                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item" href="chamados.php?filtro_status=finalizados">&nbsp;Ver Finalizados</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="chart-area"><canvas data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Jan&quot;,&quot;Fev&quot;,&quot;Mar&quot;,&quot;Abr&quot;,&quot;Mai&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Ago&quot;,&quot;Set&quot;,&quot;Out&quot;,&quot;Nov&quot;,&quot;Dez&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Earnings&quot;,&quot;fill&quot;:true,&quot;data&quot;:[&quot;10000&quot;,&quot;5000&quot;,&quot;15000&quot;,&quot;15000&quot;,&quot;10000&quot;,&quot;10000&quot;,&quot;20000&quot;,&quot;20000&quot;,&quot;15000&quot;,&quot;15000&quot;,&quot;25000&quot;],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgba(78, 115, 223, 1)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas></div>
+                                    <div class="chart-area"><canvas data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Jan&quot;,&quot;Fev&quot;,&quot;Mar&quot;,&quot;Abr&quot;,&quot;Mai&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Ago&quot;,&quot;Set&quot;,&quot;Out&quot;,&quot;Nov&quot;,&quot;Dez&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Chamados&quot;,&quot;fill&quot;:true,&quot;data&quot;:[<?php echo $closed_string; ?>],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgba(78, 115, 223, 1)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-5 col-xl-4">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="text-primary font-weight-bold m-0">Categoria de Ativos</h6>
+                                    <h6 class="text-primary font-weight-bold m-0">Status dos Chamados</h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false" data-toggle="dropdown" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
-                                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" href="#">&nbsp;Action</a><a class="dropdown-item" href="#">&nbsp;Another action</a>
-                                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">&nbsp;Something else here</a>
+                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item" href="chamados.php">&nbsp;Ver Chamados</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="chart-area"><canvas data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Direct&quot;,&quot;Social&quot;,&quot;Referral&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#191d23&quot;,&quot;#57707a&quot;,&quot;#7b919c&quot;],&quot;borderColor&quot;:[&quot;#989daa&quot;,&quot;#c5bac4&quot;,&quot;#dedcdc&quot;],&quot;data&quot;:[&quot;50&quot;,&quot;30&quot;,&quot;15&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}}}"></canvas></div>
-                                    <div class="text-center small mt-4"><span class="mr-2"><i class="fas fa-circle text-primary"></i>Mec</span><span class="mr-2"><i class="fas fa-circle text-primary"></i>Per</span><span class="mr-2"><i class="fas fa-circle text-success"></i>Aca</span></div>
+                                    <div class="chart-area" style="position: relative;">
+                                        <canvas data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Aberto&quot;,&quot;Em Andamento&quot;,&quot;Pendente&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.7rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
+                                            <?php echo $count_aberto; ?>
+                                        </div>
+                                    </div>
+                                    <div class="text-center small mt-4"><span class="mr-2"><i class="fas fa-circle text-primary"></i> Aberto</span><span class="mr-2"><i class="fas fa-circle text-info"></i> Em And.</span><span class="mr-2"><i class="fas fa-circle text-warning"></i> Pendente</span></div>
                                 </div>
                             </div>
                         </div>

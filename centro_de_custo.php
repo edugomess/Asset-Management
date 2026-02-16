@@ -1,4 +1,7 @@
-
+<?php
+include 'auth.php';
+include 'conexao.php';
+?>
 <!DOCTYPE html>
 <html>
 
@@ -147,8 +150,8 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Eduardo Gomes</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -171,7 +174,8 @@
                            
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info" >
                                     <?php
-include 'conexao.php';
+// include 'auth.php'; -- Moved to top
+// include 'conexao.php'; -- Moved to top
 
 // Define how many results you want per page
 $results_per_page = 10;
@@ -210,9 +214,9 @@ $result = mysqli_query($conn, $sql);
     </thead>
     <tbody>
         <?php
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>
+if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>
                     <td>" . htmlspecialchars($row['nomeSetor']) . "</td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
@@ -224,11 +228,12 @@ $result = mysqli_query($conn, $sql);
                         <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-        }
-        ?>
+    }
+}
+else {
+    echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
+}
+?>
     </tbody>
     <thead>
         <tr>
@@ -247,25 +252,26 @@ $result = mysqli_query($conn, $sql);
     <nav>
     <ul class="pagination">
     <?php
-    // Previous Page Link
-    if ($current_page > 1) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-    }
+// Previous Page Link
+if ($current_page > 1) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+}
 
-    // Page Links
-    for ($page = 1; $page <= $total_pages; $page++) {
-        if ($page == $current_page) {
-            echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-        } else {
-            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
-        }
+// Page Links
+for ($page = 1; $page <= $total_pages; $page++) {
+    if ($page == $current_page) {
+        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
     }
+    else {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+    }
+}
 
-    // Next Page Link
-    if ($current_page < $total_pages) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-    }
-    ?>
+// Next Page Link
+if ($current_page < $total_pages) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+}
+?>
 </ul>
 
     </nav>
@@ -276,10 +282,7 @@ $result = mysqli_query($conn, $sql);
 mysqli_close($conn);
 ?>
                             
-                                        </tr>
-                                    </tbody>
-                                    
-                                </table>
+
                            
                             </div>
                         </div>

@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include 'conexao.php';
 
 // Verifica se o ID do ativo foi passado para transferir os dados
@@ -14,10 +15,12 @@ if (isset($_GET['id'])) {
         $deleteSql = "DELETE FROM ativos WHERE id = '$ativoId'";
         if (mysqli_query($conn, $deleteSql)) {
             echo json_encode(['success' => true]);
-        } else {
+        }
+        else {
             echo json_encode(['success' => false]);
         }
-    } else {
+    }
+    else {
         echo json_encode(['success' => false]);
     }
     exit;
@@ -171,8 +174,8 @@ if (isset($_GET['id'])) {
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Eduardo Gomes</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -212,7 +215,7 @@ $result = mysqli_query($conn, $sql);
     <div class="card shadow">
     <div class="col-md-6 col-xl-3 text-nowrap">
     <div 
-        id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;" href="/ativos_vendidos.php">Vendidos</a>
+        id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;" href="/ativos_doados.php">Doações</a>
     </div>                             
         <div class="card-body">
             <div class="table-responsive mt-2">
@@ -235,10 +238,10 @@ $result = mysqli_query($conn, $sql);
 
                     
                         <?php
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $assigned_to = $row['assigned_to'];
-                                ?>
+if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $assigned_to = $row['assigned_to'];
+?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
@@ -249,29 +252,31 @@ $result = mysqli_query($conn, $sql);
                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                     <td>
                                         <?php
-                                        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
-                                        $result_user = mysqli_query($conn, $sql_user);
-                                        if ($result_user && mysqli_num_rows($result_user) > 0) {
-                                            $user = mysqli_fetch_assoc($result_user);
-                                            echo htmlspecialchars($user['nome']);
-                                        } else {
-                                            echo "Não encontrado";
-                                        }
-                                        ?>
+        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
+        $result_user = mysqli_query($conn, $sql_user);
+        if ($result_user && mysqli_num_rows($result_user) > 0) {
+            $user = mysqli_fetch_assoc($result_user);
+            echo htmlspecialchars($user['nome']);
+        }
+        else {
+            echo "Não encontrado";
+        }
+?>
                                     </td>
                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                     <td>
                                         <button class="btn btn-success" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
-                                            Vender
+                                            Doar
                                         </button>
                                     </td>
                                 </tr>
                             <?php
-                            }
-                        } else {
-                            echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
-                        }
-                        ?>
+    }
+}
+else {
+    echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
+}
+?>
                     </tbody>
                 </table>
             </div>
@@ -279,20 +284,21 @@ $result = mysqli_query($conn, $sql);
             <div class="pagination justify-content-start">
                 <ul class="pagination">
                     <?php
-                    if ($current_page > 1) {
-                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-                    }
-                    for ($page = 1; $page <= $total_pages; $page++) {
-                        if ($page == $current_page) {
-                            echo "<li class='page-item active'><a class='btn btn-dark'>$page</a></li>";
-                        } else {
-                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
-                        }
-                    }
-                    if ($current_page < $total_pages) {
-                        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                    }
-                    ?>
+if ($current_page > 1) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+}
+for ($page = 1; $page <= $total_pages; $page++) {
+    if ($page == $current_page) {
+        echo "<li class='page-item active'><a class='btn btn-dark'>$page</a></li>";
+    }
+    else {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+    }
+}
+if ($current_page < $total_pages) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+}
+?>
                 </ul>
             </div>
         </div>
@@ -301,10 +307,10 @@ $result = mysqli_query($conn, $sql);
 
 <script>
     
-// Função para vender o ativo (transferir para a tabela "venda")
+// Função para doar o ativo (transferir para a tabela "venda" - agora doações)
 function sellAsset(assetId) {
-    if (confirm('Tem certeza que deseja vender este ativo?')) {
-        fetch('vender_ativo.php', {
+    if (confirm('Tem certeza que deseja doar este ativo?')) {
+        fetch('doar_ativo.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -314,15 +320,15 @@ function sellAsset(assetId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Ativo vendido com sucesso!');
+                alert('Ativo doado com sucesso!');
                 location.reload(); // Recarrega a página para refletir as mudanças
             } else {
-                alert('Ativo vendido com sucesso!');
+                alert('Ativo doado com sucesso!');
                 location.reload();
             }
         })
         .catch(error => {
-            alert('Ativo vendido com sucesso!');
+            alert('Erro ao processar doação!');
                 location.reload();
         });
     }

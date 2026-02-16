@@ -22,15 +22,31 @@ if ($senha !== $confirmarSenha) {
     exit();
 }
 
+// Upload da foto de perfil
+$foto_perfil = null;
+if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
+    $diretorio = "assets/img/avatars/";
+    if (!is_dir($diretorio)) {
+        mkdir($diretorio, 0777, true);
+    }
+    $extensao = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
+    $nome_arquivo = uniqid() . "." . $extensao;
+    $caminho_arquivo = $diretorio . $nome_arquivo;
+
+    if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $caminho_arquivo)) {
+        $foto_perfil = "/" . $caminho_arquivo; // Caminho relativo para armazenar no banco
+    }
+}
+
 // Aplica SHA-1 na senha
 $senhaHash = sha1($senha);
 
 // Prepara a consulta
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuario, $unidade, $status);
+$stmt->bind_param("ssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuario, $unidade, $status, $foto_perfil);
 
 if ($stmt->execute()) {
     echo "<script>
@@ -38,7 +54,8 @@ if ($stmt->execute()) {
             window.location.href = 'usuarios.php';
           </script>";
     exit();
-} else {
+}
+else {
     echo "Erro ao inserir dados: " . $stmt->error;
 }
 

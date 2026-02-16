@@ -34,6 +34,7 @@
 
 <body id="page-top">
 <?php
+include 'auth.php';
 include 'conexao.php';
 
 // Contagem de Chamados
@@ -193,8 +194,8 @@ $closed_string = implode(',', array_values($closed_per_month));
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Eduardo Gomes</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
                                         <div class="dropdown-divider"></div><a href="logout.php" class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -207,13 +208,66 @@ $closed_string = implode(',', array_values($closed_per_month));
                         <h3 class="text-dark mb-0">Dashboard</h3><a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#" style="background: rgb(44,64,74);"><i class="fas fa-download fa-sm text-white-50"></i>...</a>
                     </div>
                     <div class="row">
+                        <?php
+// Buscar contagem de ativos por categoria
+$categorias_interesse = [
+    'Computadores' => ['icon' => 'fas fa-desktop', 'color' => 'primary', 'label' => 'Computadores'],
+    'Laptops' => ['icon' => 'fas fa-laptop', 'color' => 'success', 'label' => 'Laptops'], // Assumindo que Laptops podem estar na categoria Computadores ou separados
+    'Periféricos' => ['icon' => 'far fa-keyboard', 'color' => 'info', 'label' => 'Periféricos'], // Ajustar conforme nome real na tabela
+    'Impressoras' => ['icon' => 'fas fa-print', 'color' => 'warning', 'label' => 'Impressoras']
+];
+
+// Query genérica para pegar todas as categorias e contagens
+$sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
+                                       FROM ativos GROUP BY categoria";
+$res_ativos = mysqli_query($conn, $sql_ativos);
+$dados_ativos = [];
+if ($res_ativos) {
+    while ($row = mysqli_fetch_assoc($res_ativos)) {
+        $dados_ativos[$row['categoria']] = $row;
+    }
+}
+
+// Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
+// Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
+// Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
+
+// Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
+// ou manter o layout fixo e preencher com o que encontrar.
+// Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
+
+// Card 1: Computadores (Desktops)
+$total_pc = isset($dados_ativos['Computadores']) ? $dados_ativos['Computadores']['total'] : 0;
+$disp_pc = isset($dados_ativos['Computadores']) ? $dados_ativos['Computadores']['disponiveis'] : 0;
+
+// Card 2: Laptops (Se não tiver categoria separada, pode ser 0 ou junto com computadores)
+// Ajuste: Se 'Notebooks' ou 'Laptops' existir no banco
+$total_note = isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : (isset($dados_ativos['Laptops']) ? $dados_ativos['Laptops']['total'] : 0);
+$disp_note = isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : (isset($dados_ativos['Laptops']) ? $dados_ativos['Laptops']['disponiveis'] : 0);
+
+// Card 3: Periféricos (Mouse, Teclado, Monitor, etc - Somar tudo que não for PC/Note/Impressora?)
+// Ou pegar categorias específicas. Vamos pegar 'Monitores' e 'Periféricos'
+$total_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['total'] : 0);
+$disp_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['disponiveis'] : 0);
+
+// Card 4: Impressoras
+$total_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['total'] : 0;
+$disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['disponiveis'] : 0;
+
+// Se os totais forem 0, exibir pelo menos um placeholder ou buscar tudo
+// Vamos exibir todos:
+?>
+
                         <div class="col-md-6 col-xl-3 mb-4">
                             <div class="card shadow border-left-primary py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>desktops ativos</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span>34</span></div>
+                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>Computadores</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_pc; ?></span>
+                                                <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_pc; ?> / <?php echo $total_pc; ?>)</span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-desktop fa-2x text-gray-300"></i></div>
                                     </div>
@@ -225,24 +279,27 @@ $closed_string = implode(',', array_values($closed_per_month));
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>Laptops ativos</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span>49</span></div>
+                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>Notebooks</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_note; ?></span>
+                                                 <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_note; ?> / <?php echo $total_note; ?>)</span>
+                                            </div>
                                         </div>
-                                        <div class="col-auto"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 640 640" width="1em" height="1em" fill="currentColor" class="fa-2x text-gray-300">
-                                                <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
-                                                <path d="M322.1 252v-1l-51.2-65.8s-12 1.6-25 15.1c-9 9.3-242.1 239.1-243.4 240.9-7 10 1.6 6.8 15.7 1.7.8 0 114.5-36.6 114.5-36.6.5-.6-.1-.1.6-.6-.4-5.1-.8-26.2-1-27.7-.6-5.2 2.2-6.9 7-8.9l92.6-33.8c.6-.8 88.5-81.7 90.2-83.3zm160.1 120.1c13.3 16.1 20.7 13.3 30.8 9.3 3.2-1.2 115.4-47.6 117.8-48.9 8-4.3-1.7-16.7-7.2-23.4-2.1-2.5-205.1-245.6-207.2-248.3-9.7-12.2-14.3-12.9-38.4-12.8-10.2 0-106.8.5-116.5.6-19.2.1-32.9-.3-19.2 16.9C250 75 476.5 365.2 482.2 372.1zm152.7 1.6c-2.3-.3-24.6-4.7-38-7.2 0 0-115 50.4-117.5 51.6-16 7.3-26.9-3.2-36.7-14.6l-57.1-74c-5.4-.9-60.4-9.6-65.3-9.3-3.1.2-9.6.8-14.4 2.9-4.9 2.1-145.2 52.8-150.2 54.7-5.1 2-11.4 3.6-11.1 7.6.2 2.5 2 2.6 4.6 3.5 2.7.8 300.9 67.6 308 69.1 15.6 3.3 38.5 10.5 53.6 1.7 2.1-1.2 123.8-76.4 125.8-77.8 5.4-4 4.3-6.8-1.7-8.2z"></path>
-                                            </svg></div>
+                                        <div class="col-auto"><i class="fas fa-laptop fa-2x text-gray-300"></i></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-success py-2">
+                             <div class="card shadow border-left-info py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>Perifericos ativos</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span>49</span></div>
+                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Periféricos</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_peri; ?></span>
+                                                 <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_peri; ?> / <?php echo $total_peri; ?>)</span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="far fa-keyboard fa-2x text-gray-300"></i></div>
                                     </div>
@@ -250,12 +307,15 @@ $closed_string = implode(',', array_values($closed_per_month));
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-success py-2">
+                            <div class="card shadow border-left-warning py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>impressoras ativas</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span>27</span></div>
+                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"><span>Impressoras</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_imp; ?></span>
+                                                 <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_imp; ?> / <?php echo $total_imp; ?>)</span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-print fa-2x text-gray-300"></i></div>
                                     </div>

@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include 'conexao.php';
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -150,7 +151,7 @@ $result = mysqli_query($conn, $sql);
                         <ul class="navbar-nav flex-nowrap ml-auto">
                            <!-- Navbar items (User profile, alerts, etc.) kept same as other pages -->
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Eduardo Gomes</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
@@ -229,10 +230,26 @@ if (mysqli_num_rows($result) > 0) {
                 $progress_bar_class = 'bg-success';
             }
 
+            // Formatar tempo decorrido
+            $tempo_formatado = '';
+            if ($minutos_decorridos < 60) {
+                $tempo_formatado = round($minutos_decorridos) . 'm';
+            }
+            elseif ($minutos_decorridos < 1440) { // Menos de 24h
+                $horas = floor($minutos_decorridos / 60);
+                $minutos = round($minutos_decorridos % 60);
+                $tempo_formatado = "{$horas}h {$minutos}m";
+            }
+            else { // Mais de 1 dia
+                $dias = floor($minutos_decorridos / 1440);
+                $horas = floor(($minutos_decorridos % 1440) / 60);
+                $tempo_formatado = "{$dias}d {$horas}h";
+            }
+
             // Montar HTML do Termômetro
             $sla_status_html = '
                 <div class="d-flex flex-column">
-                    <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . round($minutos_decorridos, 1) . 'm)</span>
+                    <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
                     <div class="progress" style="height: 10px; min-width: 100px;">
                         <div class="progress-bar ' . $progress_bar_class . ' progress-bar-striped progress-bar-animated" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>

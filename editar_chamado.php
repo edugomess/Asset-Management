@@ -1,4 +1,5 @@
 <?php
+include 'auth.php';
 include 'conexao.php';
 
 $id_chamado = isset($_GET['id']) ? intval($_GET['id']) : 0;

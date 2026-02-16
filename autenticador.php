@@ -14,20 +14,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($resultado->num_rows > 0) {
         $usuario = $resultado->fetch_assoc();
-        
+
         // Verifica a senha usando SHA-1
         if ($usuario['senha'] === sha1($senha)) {
             // Armazena informações na sessão
-            $_SESSION['id_usuarios'] = $usuario['id'];
+            $_SESSION['id_usuarios'] = $usuario['id_usuarios'];
             $_SESSION['email'] = $usuario['email'];
+            $_SESSION['nome_usuario'] = $usuario['nome'] . ' ' . $usuario['sobrenome'];
+            $_SESSION['foto_perfil'] = $usuario['foto_perfil'];
             // Redireciona para a página inicial ou dashboard
             header("Location: index.php");
             exit();
-        } else {
+        }
+        else {
             echo "<script>alert('Senha incorreta. Tente novamente.');
              window.location.href = 'login.php';</script>";
         }
-    } else {
+    }
+    else {
         echo "<script>alert('Email não encontrado.');
         window.location.href = 'login.php';</script>";
     }

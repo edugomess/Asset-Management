@@ -1,3 +1,7 @@
+<?php
+include 'auth.php';
+include 'conexao.php';
+?>
 <!DOCTYPE html>
 <html>
 <style>
@@ -173,8 +177,8 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small">Eduardo Gomes</span><img class="border rounded-circle img-profile" src="/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -192,17 +196,9 @@
                                 </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
-                                    <thead>
-                                        <tr>
-                                           
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info" >
                                     <?php
-include 'conexao.php';
+// include 'auth.php'; -- Moved to top
+// include 'conexao.php'; -- Moved to top
 
 // Definir o número de resultados por página
 $results_per_page = 10;
@@ -227,7 +223,8 @@ $sql = "SELECT * FROM ativos LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>
 
-<div class="table-responsive mt-2">
+
+
     <table class="table my-0" id="dataTable">
         <thead>
             <tr>
@@ -246,39 +243,54 @@ $result = mysqli_query($conn, $sql);
         </thead>
         <tbody>
             <?php
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
-                    ?>
+if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
+
+        // Calcular depreciação e elegibilidade
+        $data_ativacao = new DateTime($row['dataAtivacao']);
+        $data_atual = new DateTime();
+        $diff = $data_ativacao->diff($data_atual);
+        $dias_ativos = $diff->days;
+
+        // Depreciação: R$ 20,00 por dia
+        $depreciacao = $dias_ativos * 20;
+        $valor_original = $row['valor'];
+        $valor_atual = max(0, $valor_original - $depreciacao);
+
+        // Elegibilidade: Somente após 3 dias
+        $elegivel_doacao = $dias_ativos >= 3;
+?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                         <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                         <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                         <td><?php echo htmlspecialchars($row['tag']); ?></td>
                         <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                        <td><?php echo htmlspecialchars($row['valor']); ?></td>
+                        <td><?php echo "R$ " . number_format($valor_atual, 2, ',', '.') . " <small class='text-muted'>(Orig: " . number_format($valor_original, 2, ',', '.') . ")</small>"; ?></td>
                         <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                         <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
 
                         <td>
-    <?php 
-    if ($assigned_to) {
-        // Buscar os detalhes do usuário atribuído diretamente
-        $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
-        $result_user = mysqli_query($conn, $sql_user);
-        if ($result_user && mysqli_num_rows($result_user) > 0) {
-            $user = mysqli_fetch_assoc($result_user);
-            echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ")'>" . htmlspecialchars($user['nome']) . "</a>";
+    <?php
+        if ($assigned_to) {
+            // Buscar os detalhes do usuário atribuído diretamente
+            $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
+            $result_user = mysqli_query($conn, $sql_user);
+            if ($result_user && mysqli_num_rows($result_user) > 0) {
+                $user = mysqli_fetch_assoc($result_user);
+                echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ", " . ($elegivel_doacao ? 'true' : 'false') . ")'>" . htmlspecialchars($user['nome']) . "</a>";
+            }
         }
-    } else {
-        echo "Não Atribuído";
-    }
-    ?>
+        else {
+            echo "Não Atribuído";
+        }
+?>
 </td>
 <td> <!-- Exibe o status com cor de fundo condicional --> <span class="badge 
-<?php echo ($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger';?>"> 
+<?php echo($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>"> 
 <?php echo htmlspecialchars(ucfirst($row['status']));
-  ?> </span> </td>
+?> </span> </td>
 <td>
     <!-- Disposição dos botões lado a lado com o mesmo tamanho -->
     <div class="d-flex align-items-center">
@@ -287,13 +299,14 @@ $result = mysqli_query($conn, $sql);
         if ($assigned_to) {
             echo "<button class='btn btn-dark btn-tamanho-fixo mr-2' 
             onclick='unassignUser(" . $row['id_asset'] . ")'> 
-            Desatribuir <i class='fas fa-address-card'></i> </button>"; 
-        } else { 
+            Desatribuir <i class='fas fa-address-card'></i> </button>";
+        }
+        else {
             echo "<button class='btn btn-info btn-tamanho-fixo mr-2' 
             onclick='openAssignModal(" . $row['id_asset'] . ")'> 
             Atribuir <i class='fas fa-address-card'></i> </button>";
         }
-        ?>
+?>
 
         <!-- Botão de Editar (tamanho fixo de 130px, mas como botão pequeno, será mais estreito) -->
         <a class='btn btn-warning btn-edit mr-2' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'>
@@ -309,39 +322,39 @@ $result = mysqli_query($conn, $sql);
                         </td>
                     </tr>
             <?php
-                }
-            } else {
-                echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-            }
-            ?>
+    }
+}
+else {
+    echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
+}
+?>
         </tbody>
     </table>
-</div>
-
 
 <div class="pagination justify-content-start">
     <nav>
     <ul class="pagination">
     <?php
-    // Previous Page Link
-    if ($current_page > 1) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-    }
+// Previous Page Link
+if ($current_page > 1) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+}
 
-    // Page Links
-    for ($page = 1; $page <= $total_pages; $page++) {
-        if ($page == $current_page) {
-            echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-        } else {
-            echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
-        }
+// Page Links
+for ($page = 1; $page <= $total_pages; $page++) {
+    if ($page == $current_page) {
+        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
     }
+    else {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+    }
+}
 
-    // Next Page Link
-    if ($current_page < $total_pages) {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-    }
-    ?>
+// Next Page Link
+if ($current_page < $total_pages) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+}
+?>
 </ul>
     </nav>
 </div>
@@ -366,7 +379,7 @@ mysqli_close($conn);
                 </div>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="sellAssetButton" data-id="">Vender Ativo</button>
+            <button type="button" class="btn btn-danger" id="sellAssetButton" data-id="">Doar Ativo</button>
 
 
                 <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Fechar</button>
@@ -395,7 +408,7 @@ mysqli_close($conn);
 </div>
 
 <script>
-function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto, assetId) {
+function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto, assetId, isEligible) {
     const userDetails = `
         <p><strong>Nome:</strong> ${nome} ${sobrenome}</p>
         <p><strong>Usuário AD:</strong> ${usuarioAD}</p>
@@ -407,6 +420,17 @@ function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto,
     // Configura o ID do ativo no botão
     const sellButton = document.getElementById('sellAssetButton');
     sellButton.setAttribute('data-id', assetId);
+
+    // Habilitar/Desabilitar botão baseada na elegibilidade
+    if (isEligible) {
+        sellButton.disabled = false;
+        sellButton.innerHTML = "Doar Ativo";
+        sellButton.title = "";
+    } else {
+        sellButton.disabled = true;
+        sellButton.innerHTML = "Doação Bloqueada (3 dias)";
+        sellButton.title = "Ativo precisa de 3 dias de ativação para ser doado.";
+    }
 
     // Exibe o modal
     document.getElementById('userModal').style.display = 'block';
@@ -441,13 +465,16 @@ function unassignUser(assetId) {
     }
 }
 
-// Função para vender o ativo (transferir para a tabela "venda")
+// Função para doar o ativo (transferir para a tabela "venda" - agora doações)
 function sellAsset() {
     const sellButton = document.getElementById('sellAssetButton');
     const assetId = sellButton.getAttribute('data-id');
 
-    if (confirm('Tem certeza que deseja vender este ativo?')) {
-        fetch('vender_ativo.php', {
+    // (Opcional) Poderíamos adicionar uma verificação de data aqui também no frontend, 
+    // mas a validação principal deve ser no backend.
+
+    if (confirm('Tem certeza que deseja doar este ativo?')) {
+        fetch('doar_ativo.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
@@ -455,14 +482,14 @@ function sellAsset() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Ativo vendido com sucesso!');
+                alert('Ativo doado com sucesso!');
                 location.reload(); // Recarrega a página para refletir as mudanças
             } else {
-                alert('Erro ao vender o ativo: ' + data.message);
+                alert('Erro ao doar o ativo: ' + data.message);
             }
         })
         .catch(error => {
-            console.error('Erro ao tentar vender o ativo:', error);
+            console.error('Erro ao tentar doar o ativo:', error);
         });
     }
 }

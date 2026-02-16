@@ -54,6 +54,7 @@ if ($res && $row = mysqli_fetch_assoc($res))
     $count_pendente = $row['total'];
 
 // Preparar dados para o gráfico de Rosca
+$total_ativos = $count_aberto + $count_andamento + $count_pendente;
 $data_values = [$count_aberto, $count_andamento, $count_pendente];
 $data_string = implode(',', $data_values);
 
@@ -292,7 +293,7 @@ $closed_string = implode(',', array_values($closed_per_month));
                                     <div class="chart-area" style="position: relative;">
                                         <canvas data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Aberto&quot;,&quot;Em Andamento&quot;,&quot;Pendente&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.7rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
-                                            <?php echo $count_aberto; ?>
+                                            <?php echo $total_ativos; ?>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i class="fas fa-circle text-primary"></i> Aberto</span><span class="mr-2"><i class="fas fa-circle text-info"></i> Em And.</span><span class="mr-2"><i class="fas fa-circle text-warning"></i> Pendente</span></div>

@@ -5,12 +5,15 @@ date_default_timezone_set('America/Sao_Paulo');
 $results_per_page = 10;
 
 // Filtro de Status
-$filtro_status = isset($_GET['filtro_status']) ? $_GET['filtro_status'] : 'ativos';
+$filtro_status = isset($_GET['filtro_status']) ? $_GET['filtro_status'] : 'aberto';
 $where_clause = "";
 
 switch ($filtro_status) {
-    case 'ativos':
-        $where_clause = "WHERE c.status IN ('Aberto', 'Em Andamento')";
+    case 'aberto':
+        $where_clause = "WHERE c.status = 'Aberto'";
+        break;
+    case 'em_andamento':
+        $where_clause = "WHERE c.status = 'Em Andamento'";
         break;
     case 'pendente':
         $where_clause = "WHERE c.status = 'Pendente'";
@@ -22,8 +25,8 @@ switch ($filtro_status) {
         $where_clause = ""; // Sem filtro
         break;
     default:
-        $where_clause = "WHERE c.status IN ('Aberto', 'Em Andamento')"; // Default protection
-        $filtro_status = 'ativos';
+        $where_clause = "WHERE c.status = 'Aberto'"; // Default
+        $filtro_status = 'aberto';
         break;
 }
 
@@ -168,7 +171,8 @@ $result = mysqli_query($conn, $sql);
                                     <form method="GET" class="form-inline" style="margin-top: 23px;">
                                         <label class="mr-2 font-weight-bold">Filtrar por:</label>
                                         <select name="filtro_status" class="form-control mr-2" onchange="this.form.submit()">
-                                            <option value="ativos" <?php echo($filtro_status == 'ativos') ? 'selected' : ''; ?>>Ativos</option>
+                                            <option value="aberto" <?php echo($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
+                                            <option value="em_andamento" <?php echo($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
                                             <option value="pendente" <?php echo($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
                                             <option value="finalizados" <?php echo($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
                                             <option value="todos" <?php echo($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>

@@ -9,13 +9,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
     $novo_status = mysqli_real_escape_string($conn, $_POST['status']);
     $responsavel_id = !empty($_POST['responsavel_id']) ? intval($_POST['responsavel_id']) : 'NULL';
 
-    $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id WHERE id = $id_chamado";
-
-    if ($conn->query($sql_update) === TRUE) {
-        $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';
+    // Validação: Impedir alteração de status (se não for Aberto) sem responsável
+    if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
+        $msg = '<div class="alert alert-danger"><strong>Erro:</strong> Para alterar o status (sair de "Aberto"), é obrigatório atribuir um <strong>Responsável</strong> ao chamado.</div>';
     }
     else {
-        $msg = '<div class="alert alert-danger">Erro ao atualizar: ' . $conn->error . '</div>';
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id WHERE id = $id_chamado";
+
+        if ($conn->query($sql_update) === TRUE) {
+            $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';
+        }
+        else {
+            $msg = '<div class="alert alert-danger">Erro ao atualizar: ' . $conn->error . '</div>';
+        }
     }
 }
 

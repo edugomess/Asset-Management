@@ -25,4 +25,3 @@ if (!isset($_SESSION['nome_usuario'])) {
     }
     $stmt_nome->close();
 }
-?>

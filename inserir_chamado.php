@@ -1,5 +1,6 @@
 <?php
-include 'conexao.php';
+include 'auth.php';
+include_once 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $titulo = mysqli_real_escape_string($conn, $_POST['titulo']);
@@ -39,4 +40,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 $conn->close();
-?>

@@ -169,7 +169,7 @@
                                     <optgroup label="Selecione o Solicitante">
                                     <?php
 
-include 'conexao.php';
+include_once 'conexao.php';
 $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {

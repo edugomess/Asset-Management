@@ -5,6 +5,9 @@ include
 
 
 
+
+
+
     
 'conexao.php';
 ?>
@@ -71,10 +74,12 @@ include
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar...">
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
                                 <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
@@ -172,24 +177,67 @@ include
                             <p class="text-primary m-0 font-weight-bold"></p>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                            <div class="col-md-6 col-xl-2"><a href="relatorio_ativo.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Ativos</button></a></div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <form id="reportForm" class="d-flex align-items-center">
+                                        <select id="reportType" class="form-control mr-3" style="height: 50px;">
+                                            <option value="">Selecione um relatório...</option>
+                                            
+                                            <optgroup label="Ativos">
+                                                <option value="relatorio_ativo.php">Geral de Ativos</option>
+                                                <option value="relatorio_ativos_status.php">Por Status</option>
+                                                <option value="relatorio_ativos_cc.php">Por Centro de Custo</option>
+                                                <option value="relatorio_financeiro.php">Resumo Financeiro</option>
+                                                <option value="relatorio_ativos_fabricante.php">Por Fabricante</option>
+                                                <option value="relatorio_ativos_modelo.php">Por Modelo</option>
+                                                <option value="relatorio_ativos_categoria.php">Por Categoria</option>
+                                                <option value="relatorio_ativos_antigos.php">Ativos Antigos (> 3 anos)</option>
+                                                <option value="relatorio_ativos_recentes.php">Ativos Recentes (< 1 ano)</option>
+                                                <option value="relatorio_ativos_valor_alto.php">Alto Valor (> R$ 5k)</option>
+                                                <option value="relatorio_ativos_valor_baixo.php">Baixo Valor (< R$ 1k)</option>
+                                                <option value="relatorio_ativos_disponiveis.php">Disponíveis</option>
+                                                <option value="relatorio_ativos_em_uso.php">Em Uso</option>
+                                                <option value="relatorio_ativos_manutencao.php">Em Manutenção</option>
+                                                <option value="relatorio_ativos_sem_cc.php">Sem Centro de Custo</option>
+                                                <option value="relatorio_ativos_por_usuario.php">Por Usuário</option>
+                                                <option value="ativos_doados.php">Doações</option>
+                                            </optgroup>
 
-                            <div class="col-md-6 col-xl-2"><a href="relatorio_centro_de_custo.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Centro de Custo</button></a></div>
-                            <div class="col-md-6 col-xl-2"><a href="relatorio_usuario.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Usuário</button></a></div>
-                                <div class="col-md-6 col-xl-2"><a href="ativos_doados.php" style="display: block; text-decoration: none;"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="button" style="background: rgb(44,64,74); border-radius: 10px; padding: 0px; border-width: 0px; height: 50px; margin-top: 23px; width: 100%; display: flex; align-items: center; justify-content: center;">Doações</button></a></div>
-                                <div class="col-md-6 col-xl-2 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">MS365</button>
+                                            <optgroup label="Chamados">
+                                                <option value="relatorio_chamados_mensal.php">Resumo Mensal</option>
+                                                <option value="relatorio_chamados_abertos.php">Abertos</option>
+                                                <option value="relatorio_chamados_fechados.php">Fechados</option>
+                                                <option value="relatorio_chamados_categoria.php">Por Categoria</option>
+                                                <option value="relatorio_chamados_tecnico.php">Por Técnico</option>
+                                                <option value="relatorio_chamados_solicitante.php">Por Solicitante</option>
+                                                <option value="relatorio_chamados_sla_vencido.php">SLA Vencido</option>
+                                                <option value="relatorio_chamados_sem_atribuicao.php">Sem Atribuição</option>
+                                                <option value="relatorio_chamados_recentes.php">Recentes (30 dias)</option>
+                                            </optgroup>
+
+                                            <optgroup label="Usuários">
+                                                <option value="relatorio_usuario.php">Lista Geral</option>
+                                                <option value="relatorio_usuarios_cc.php">Por Centro de Custo</option>
+                                                <option value="relatorio_usuarios_inativos.php">Inativos</option>
+                                                <option value="relatorio_usuarios_sem_ativos.php">Sem Ativos</option>
+                                                <option value="relatorio_usuarios_com_ativos.php">Com Ativos</option>
+                                                <option value="relatorio_usuarios_funcao.php">Por Função</option>
+                                                <option value="relatorio_usuarios_vips.php">VIPs</option>
+                                            </optgroup>
+
+                                            <optgroup label="Outros">
+                                                <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)</option>
+                                                <option value="relatorio_cc_detalhado.php">Centros de Custo (Detalhado)</option>
+                                                <option value="relatorio_fornecedores_lista.php">Fornecedores (Lista)</option>
+                                                <option value="relatorio_fornecedores_servico.php">Fornecedores (Serviços)</option>
+                                                <option value="relatorio_resumo_geral.php">Resumo Geral do Sistema</option>
+                                            </optgroup>
+                                        </select>
+                                        <button class="btn btn-success active text-white pulse animated btn-user" type="button" onclick="generateReport()" style="background: rgb(44,64,74);border-radius: 10px;height: 50px; white-space: nowrap;">
+                                            Gerar Relatório
+                                        </button>
+                                    </form>
                                 </div>
-                                <div class="col-md-6 col-xl-2 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Setores</button>
-                                </div>
-                                <div class="col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Ativo por usuário</button></div>
-                                <div class="col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">--</button></div>
-                                <div class="col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">--</button></div>
-                                <div class="col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">--</button></div>
-                                <div class="col-xl-2"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">--</button></div>
-                                <div class="col"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">--</button></div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -228,6 +276,79 @@ include
     <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script>
+        function generateReport() {
+            var url = document.getElementById('reportType').value;
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                alert('Por favor, selecione um tipo de relatório.');
+            }
+        }
+
+        $(document).ready(function() {
+            let debounceTimer;
+            $('#globalSearchInput').on('input', function() {
+                clearTimeout(debounceTimer);
+                let query = $(this).val();
+                let resultBox = $('#globalSearchResults');
+                
+                if (query.length < 2) {
+                    resultBox.hide();
+                    return;
+                }
+
+                debounceTimer = setTimeout(function() {
+                    $.ajax({
+                        url: 'search_backend.php',
+                        method: 'GET',
+                        data: { q: query },
+                        dataType: 'json',
+                        success: function(data) {
+                            resultBox.empty();
+                            if (data.length > 0) {
+                                data.forEach(function(item) {
+                                    let icon = 'fa-search';
+                                    if(item.type === 'user') icon = 'fa-user';
+                                    else if(item.type === 'asset') icon = 'fa-box';
+                                    else if(item.type === 'ticket') icon = 'fa-headset';
+                                    else if(item.type === 'cost_center') icon = 'fa-building';
+                                    else if(item.type === 'supplier') icon = 'fa-truck';
+
+                                    resultBox.append(`
+                                        <a class="dropdown-item d-flex align-items-center" href="${item.url}">
+                                            <div class="mr-3">
+                                                <div class="icon-circle bg-primary">
+                                                    <i class="fas ${icon} text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-gray-500">${item.category}</div>
+                                                <span class="font-weight-bold">${item.label}</span>
+                                            </div>
+                                        </a>
+                                    `);
+                                });
+                                resultBox.show();
+                            } else {
+                                resultBox.append('<a class="dropdown-item text-center small text-gray-500" href="#">Nenhum resultado encontrado</a>');
+                                resultBox.show();
+                            }
+                        },
+                        error: function() {
+                             console.error("Erro na busca");
+                        }
+                    });
+                }, 300);
+            });
+
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar-search').length) {
+                    $('#globalSearchResults').hide();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

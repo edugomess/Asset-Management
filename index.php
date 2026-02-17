@@ -108,10 +108,12 @@ $closed_string = implode(',', array_values($closed_per_month));
                 <div id="content">
                     <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
                         <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                            <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                                <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar...">
+                            <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                                <div class="input-group">
+                                    <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
                                     <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                                 </div>
+                                <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                             </form>
                             <ul class="navbar-nav flex-nowrap ml-auto">
                                 <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
@@ -312,7 +314,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                 <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>Desktops</span></div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_pc; ?></span>
-                                                    <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_pc; ?> disponíveis / <?php echo $total_pc; ?>)</span>
+                                                    <span class="text-muted small ml-2" title="Disponíveis">(<?php echo $disp_pc; ?> disponíveis)</span>
                                                 </div>
                                             </div>
                                             <div class="col-auto"><i class="fas fa-desktop fa-2x text-gray-300"></i></div>
@@ -328,7 +330,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                 <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>Notebooks</span></div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_note; ?></span>
-                                                    <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_note; ?> disponíveis / <?php echo $total_note; ?>)</span>
+                                                    <span class="text-muted small ml-2" title="Disponíveis">(<?php echo $disp_note; ?> disponíveis)</span>
                                                 </div>
                                             </div>
                                             <div class="col-auto"><i class="fas fa-laptop fa-2x text-gray-300"></i></div>
@@ -344,7 +346,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                 <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Periféricos</span></div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_peri; ?></span>
-                                                    <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_peri; ?> disponíveis / <?php echo $total_peri; ?>)</span>
+                                                    <span class="text-muted small ml-2" title="Disponíveis">(<?php echo $disp_peri; ?> disponíveis)</span>
                                                 </div>
                                             </div>
                                             <div class="col-auto"><i class="far fa-keyboard fa-2x text-gray-300"></i></div>
@@ -360,7 +362,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                 <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"><span>Impressoras</span></div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_imp; ?></span>
-                                                    <span class="text-muted small ml-2" title="Disponíveis / Total">(<?php echo $disp_imp; ?> disponíveis / <?php echo $total_imp; ?>)</span>
+                                                    <span class="text-muted small ml-2" title="Disponíveis">(<?php echo $disp_imp; ?> disponíveis)</span>
                                                 </div>
                                             </div>
                                             <div class="col-auto"><i class="fas fa-print fa-2x text-gray-300"></i></div>
@@ -574,6 +576,71 @@ endif; ?>
         <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
         <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
         <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script>
+        $(document).ready(function() {
+            let debounceTimer;
+            $('#globalSearchInput').on('input', function() {
+                clearTimeout(debounceTimer);
+                let query = $(this).val();
+                let resultBox = $('#globalSearchResults');
+                
+                if (query.length < 2) {
+                    resultBox.hide();
+                    return;
+                }
+
+                debounceTimer = setTimeout(function() {
+                    $.ajax({
+                        url: 'search_backend.php',
+                        method: 'GET',
+                        data: { q: query },
+                        dataType: 'json',
+                        success: function(data) {
+                            resultBox.empty();
+                            if (data.length > 0) {
+                                data.forEach(function(item) {
+                                    let icon = 'fa-search';
+                                    if(item.type === 'user') icon = 'fa-user';
+                                    else if(item.type === 'asset') icon = 'fa-box';
+                                    else if(item.type === 'ticket') icon = 'fa-headset';
+                                    else if(item.type === 'cost_center') icon = 'fa-building';
+                                    else if(item.type === 'supplier') icon = 'fa-truck';
+
+                                    resultBox.append(`
+                                        <a class="dropdown-item d-flex align-items-center" href="${item.url}">
+                                            <div class="mr-3">
+                                                <div class="icon-circle bg-primary">
+                                                    <i class="fas ${icon} text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-gray-500">${item.category}</div>
+                                                <span class="font-weight-bold">${item.label}</span>
+                                            </div>
+                                        </a>
+                                    `);
+                                });
+                                resultBox.show();
+                            } else {
+                                resultBox.append('<a class="dropdown-item text-center small text-gray-500" href="#">Nenhum resultado encontrado</a>');
+                                resultBox.show();
+                            }
+                        },
+                        error: function() {
+                             console.error("Erro na busca");
+                        }
+                    });
+                }, 300);
+            });
+
+            // Hide results when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar-search').length) {
+                    $('#globalSearchResults').hide();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

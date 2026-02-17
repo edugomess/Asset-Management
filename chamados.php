@@ -31,6 +31,17 @@ switch ($filtro_status) {
         break;
 }
 
+// Search Logic
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+if (!empty($search)) {
+    if (empty($where_clause)) {
+        $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
+    }
+    else {
+        $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
+    }
+}
+
 $sql_count = "SELECT COUNT(*) AS total FROM chamados c $where_clause";
 $result_count = mysqli_query($conn, $sql_count);
 $row_count = mysqli_fetch_assoc($result_count);
@@ -143,10 +154,12 @@ $result = mysqli_query($conn, $sql);
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar...">
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
                                 <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                            <!-- Navbar items (User profile, alerts, etc.) kept same as other pages -->
@@ -169,7 +182,7 @@ $result = mysqli_query($conn, $sql);
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 23px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;" href="/cadastro_de_chamados.php">Novo Chamado</a></div>
                                 </div>
                                 <div class="col-md-6 col-xl-5">
-                                    <form method="GET" class="form-inline" style="margin-top: 23px;">
+                            <form method="GET" class="form-inline" style="margin-top: 23px;">
                                         <label class="mr-2 font-weight-bold">Filtrar por:</label>
                                         <select name="filtro_status" class="form-control mr-2" onchange="this.form.submit()">
                                             <option value="aberto" <?php echo($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
@@ -178,6 +191,7 @@ $result = mysqli_query($conn, $sql);
                                             <option value="finalizados" <?php echo($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
                                             <option value="todos" <?php echo($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
                                         </select>
+                                        <input type="search" name="search" class="form-control form-control-sm" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                     </form>
                                 </div>
                             </div>
@@ -364,5 +378,6 @@ if ($current_page < $total_pages) {
     <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 </html>

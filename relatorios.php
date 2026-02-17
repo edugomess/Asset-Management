@@ -8,6 +8,8 @@ include
 
 
 
+
+
     
 'conexao.php';
 ?>
@@ -65,6 +67,7 @@ include
                     <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
                  </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -349,6 +352,7 @@ include
             });
         });
     </script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

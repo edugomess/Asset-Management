@@ -14,51 +14,51 @@ $results = [];
 $search = "%" . mysqli_real_escape_string($conn, $query) . "%";
 
 // 1. Search Users (Usuarios)
-$sql_users = "SELECT id_usuarios, nome, email FROM usuarios WHERE nome LIKE '$search' OR email LIKE '$search' LIMIT 5";
+$sql_users = "SELECT id_usuarios, nome, sobrenome, email FROM usuarios WHERE nome LIKE '$search' OR sobrenome LIKE '$search' OR email LIKE '$search' LIMIT 5";
 $res_users = mysqli_query($conn, $sql_users);
 if ($res_users) {
     while ($row = mysqli_fetch_assoc($res_users)) {
         $results[] = [
             'category' => 'Usuários',
-            'label' => $row['nome'] . ' (' . $row['email'] . ')',
-            'url' => 'usuarios.php?search=' . urlencode($row['nome']), // Assuming usuarios.php handles search param or we link to edit
+            'label' => $row['nome'] . ' ' . $row['sobrenome'] . ' (' . $row['email'] . ')',
+            'url' => 'usuarios.php?search=' . urlencode($row['nome']),
             'type' => 'user'
         ];
     }
 }
 
-// 2. Search Assets (Ativos/Equipamentos)
-// checking equipamentos.php schema: nomeModelo, serviceTag, patrimonio
-$sql_assets = "SELECT id_asset, nomeModelo, serviceTag, patrimonio FROM ativos WHERE nomeModelo LIKE '$search' OR serviceTag LIKE '$search' OR patrimonio LIKE '$search' LIMIT 5";
+// 2. Search Assets (Ativos - 'ativos' table)
+// Correct columns: modelo, tag, hostName (from cadastro_de_equipamentos.php)
+$sql_assets = "SELECT id_asset, modelo, tag, hostName FROM ativos WHERE modelo LIKE '$search' OR tag LIKE '$search' OR hostName LIKE '$search' LIMIT 5";
 $res_assets = mysqli_query($conn, $sql_assets);
 if ($res_assets) {
     while ($row = mysqli_fetch_assoc($res_assets)) {
         $results[] = [
             'category' => 'Ativos',
-            'label' => $row['nomeModelo'] . ' - Tag: ' . $row['serviceTag'],
-            'url' => 'equipamentos.php?search=' . urlencode($row['serviceTag']),
+            'label' => $row['modelo'] . ' - Tag: ' . $row['tag'],
+            'url' => 'equipamentos.php?search=' . urlencode($row['tag']),
             'type' => 'asset'
         ];
     }
 }
 
-// 3. Search Tickets (Chamados)
-// checking chamados.php schema: id_chamado, titulo, descricao
-$sql_tickets = "SELECT id_chamado, titulo FROM chamados WHERE titulo LIKE '$search' OR id_chamado LIKE '$search' LIMIT 5";
+// 3. Search Tickets (Chamados - 'chamados' table)
+// Correct columns: id, titulo (from editar_chamado.php)
+$sql_tickets = "SELECT id, titulo FROM chamados WHERE titulo LIKE '$search' OR id LIKE '$search' LIMIT 5";
 $res_tickets = mysqli_query($conn, $sql_tickets);
 if ($res_tickets) {
     while ($row = mysqli_fetch_assoc($res_tickets)) {
         $results[] = [
             'category' => 'Chamados',
-            'label' => '#' . $row['id_chamado'] . ' - ' . $row['titulo'],
-            'url' => 'chamados.php?search=' . urlencode($row['id_chamado']),
+            'label' => '#' . $row['id'] . ' - ' . $row['titulo'],
+            'url' => 'chamados.php?filtro_status=todos&search=' . urlencode($row['id']),
             'type' => 'ticket'
         ];
     }
 }
 
-// 4. Search Cost Centers (Centro de Custo)
-// checking centro_de_custo.php schema: nomeSetor, codigo
+// 4. Search Cost Centers (Centro de Custo - 'centro_de_custo' table)
+// Correct columns: nomeSetor, codigo (from cadastro_de centro_de_custo.php)
 $sql_cost = "SELECT id_centro_de_custo, nomeSetor, codigo FROM centro_de_custo WHERE nomeSetor LIKE '$search' OR codigo LIKE '$search' LIMIT 5";
 $res_cost = mysqli_query($conn, $sql_cost);
 if ($res_cost) {
@@ -72,9 +72,9 @@ if ($res_cost) {
     }
 }
 
-// 5. Search Suppliers (Fornecedores)
-// checking fornecedores.php schema: nomeEmpresa, email
-$sql_suppliers = "SELECT id_fornecedor, nomeEmpresa, email FROM fornecedor WHERE nomeEmpresa LIKE '$search' OR email LIKE '$search' LIMIT 5";
+// 5. Search Suppliers (Fornecedores - 'fornecedor' table)
+// Correct columns: nomeEmpresa, email, cnpj (from cadastro_de_fornecedor.php)
+$sql_suppliers = "SELECT id_fornecedor, nomeEmpresa, email, cnpj FROM fornecedor WHERE nomeEmpresa LIKE '$search' OR email LIKE '$search' OR cnpj LIKE '$search' LIMIT 5";
 $res_suppliers = mysqli_query($conn, $sql_suppliers);
 if ($res_suppliers) {
     while ($row = mysqli_fetch_assoc($res_suppliers)) {

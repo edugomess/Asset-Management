@@ -8,9 +8,9 @@ class ReportGenerator extends FPDF
     protected $columns;
     protected $conn;
 
-    function __construct($title, $columns, $conn)
+    function __construct($title, $columns, $conn, $orientation = 'P')
     {
-        parent::__construct();
+        parent::__construct($orientation, 'mm', 'A4');
         $this->reportTitle = $title;
         $this->columns = $columns;
         $this->conn = $conn;

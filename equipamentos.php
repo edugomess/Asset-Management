@@ -327,6 +327,11 @@ if (mysqli_num_rows($result) > 0) {
             <i class='fas fa-edit'></i>
         </a>
 
+        <!-- Botão de Histórico -->
+        <a class='btn btn-info btn-edit mr-2' href='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>' title="Histórico">
+            <i class='fas fa-history'></i>
+        </a>
+
         <!-- Botão de Ativar/Desativar (tamanho fixo de 130px) -->
         
     </div>
@@ -394,7 +399,7 @@ mysqli_close($conn);
                 </div>
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="sellAssetButton" data-id="">Doar Ativo</button>
+            <button type="button" class="btn btn-danger" id="sellAssetButton" data-id="" onclick="sellAsset()">Doar Ativo</button>
 
 
                 <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Fechar</button>

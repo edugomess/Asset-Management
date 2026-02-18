@@ -140,7 +140,7 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Ativo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="inserir_equipamento.php" method="post">
+                <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
                 
                     <!-- Start: 1-column form row -->
                     <div class="form-row">

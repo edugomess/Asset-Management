@@ -1,5 +1,6 @@
 <?php
 include 'conexao.php'; // Inclui a conexão com o banco de dados
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitiza os dados recebidos para evitar problemas de segurança
@@ -42,18 +43,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param('ii', $usuario_id, $ativo_id);
 
         if ($stmt->execute()) {
+            $admin_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL';
+            $acao = 'Atribuição';
+            $detalhes = 'Ativo atribuído ao usuário ' . $usuario . ' (ID: ' . $usuario_id . ')';
+
+            $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $admin_id, '$acao', '$detalhes')";
+            mysqli_query($conn, $sql_historico);
+
             echo "Ativo atribuído com sucesso!";
-        } else {
+        }
+        else {
             echo "Erro ao atribuir ativo: " . $stmt->error;
         }
-    } else {
+    }
+    else {
         echo "Usuário não encontrado.";
     }
 
     // Fecha o statement e a conexão com o banco de dados
     $stmt->close();
     $conn->close();
-} else {
+}
+else {
     echo "Método de requisição inválido. Use POST.";
 }
 ?>

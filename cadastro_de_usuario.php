@@ -188,8 +188,27 @@
     <div class="form-row">
         <div class="col-sm-4 offset-lg-1 offset-xl-1">
             <div class="form-group">
-                <label></label>
-                <input class="form-control" name="centroDeCusto" type="text" placeholder="Centro de Custo" required="">
+                <label>Centro de Custo</label>
+                <select class="form-control" name="centroDeCusto">
+                    <option value="Nenhum">Nenhum</option>
+                    <?php
+// Reusing existing connection if available, or including if needed. 
+// However, auth.php is included at top which usually handles session, but conexao.php is needed for DB.
+// It is already included in line 254 for 'unidade', so we might need to include it here or ensure it's available.
+// To be safe and since it's inside a form, let's just include it if not already? 
+// Actually, looking at the file, 'conexao.php' is included later at line 254. 
+// It's better to verify connectivity here.
+include_once 'conexao.php';
+
+$sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+$res_cc = $conn->query($sql_cc);
+if ($res_cc && $res_cc->num_rows > 0) {
+    while ($row_cc = $res_cc->fetch_assoc()) {
+        echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
+    }
+}
+?>
+                </select>
             </div>
         </div>
         <div class="col-xl-1 offset-lg-1 offset-xl-0">

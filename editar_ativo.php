@@ -232,7 +232,20 @@ $id = intval($id);
                         <div class="col-xl-1"><label>Data de Cadastro</label><input class="form-control" label= "Data do Cadastro" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label>Centro de Custo</label><input class="form-control" label= "Centro de Custo" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto?>"></div>
+                            <div class="form-group"><label>Centro de Custo</label>
+                            <select class="form-control" name="centroDeCusto">
+                                <option value="" <?php echo ($centroDeCusto == '' || $centroDeCusto == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
+                                <?php
+                                $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                                $res_cc = $conn->query($sql_cc);
+                                if ($res_cc && $res_cc->num_rows > 0) {
+                                    while ($row_cc = $res_cc->fetch_assoc()) {
+                                        $selected_cc = ($row_cc['nomeSetor'] == $centroDeCusto) ? 'selected' : '';
+                                        echo '<option value="' . $row_cc['nomeSetor'] . '" ' . $selected_cc . '>' . $row_cc['nomeSetor'] . '</option>';
+                                    }
+                                }
+                                ?>
+                            </select></div>
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
@@ -241,7 +254,7 @@ $id = intval($id);
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  value="<?php echo $descricao?>" style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  value="<?php echo $descricao?>" style="height: 100px;margin-top: 10px; margin-bottom: 0px;"><?php echo $descricao;?></textarea></div>
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
                       <?php } ?>  
                     </div><!-- End: 4-column form row -->

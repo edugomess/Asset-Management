@@ -121,8 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $changes[] = "Centro de Custo: {$old_data['centroDeCusto']} -> $centroDeCusto";
         if ($old_data['descricao'] != $descricao)
             $changes[] = "Descrição alterada";
-        if ($old_data['dataAtivacao'] != $dataAtivacao)
-            $changes[] = "Data Ativação: {$old_data['dataAtivacao']} -> $dataAtivacao";
+
         if (!empty($imagemSql))
             $changes[] = "Imagem atualizada";
 

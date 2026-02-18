@@ -141,9 +141,7 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Usuário</h3>
                 </div><!-- Start: TR Form -->
-                <form class="register-form">
-                    <fieldset></fieldset>
-                </form><!-- End: TR Form -->
+
                 <!-- Start: Multi-row Form -->
                 <form action="inserir_usuario.php" method="post" enctype="multipart/form-data">
     <!-- Start: 2-column form row -->
@@ -279,12 +277,11 @@ $conn->close();
         </div>
         <div class="col-sm-3 col-xl-2 offset-xl-1">
             <label></label>
-            <select class="form-control" name="status" required="" style="margin: 23px 0;">
-                <optgroup label="Situação">
-                    <option value="Ativo" selected="">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                </optgroup>
-            </select>
+            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                <input type="hidden" name="status" value="Inativo">
+                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
+                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+            </div>
         </div>
     </div><!-- End: 4-column form row -->
 

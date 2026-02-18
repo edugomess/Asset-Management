@@ -143,7 +143,7 @@
                     </div><!-- Start: Multi-row Form -->
                     <form action="inserir_fornecedor.php" method="post">
 
-                    <form>
+
                         <!-- Start: 2-column form row -->
                         <div class="form-row">
                             <div class="col-sm-6 col-xl-4 offset-xl-1">
@@ -176,12 +176,11 @@
                             <div class="col-sm-3 col-xl-3">
                                 <div class="form-group"><label></label><input class="form-control" name="site" type="text" placeholder="Site"></div>
                             </div>
-                            <div class="col-xl-1"><select class="form-control" name="status" style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
-                                    <optgroup label="Situação">
-                                        <option value="Ativo">Ativo</option>
-                                        <option value="Inativo">Inativo</option>
-                                    </optgroup>
-                                </select></div>
+                                <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                    <input type="hidden" name="status" value="Inativo">
+                                    <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
+                                    <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                </div>
                         </div><!-- End: 4-column form row -->
                         <!-- Start: 6-column form row -->
                         <div class="form-row">

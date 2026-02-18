@@ -1,4 +1,3 @@
-
 <?PHP
 include 'conexao.php';
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
@@ -143,9 +142,6 @@ $id = intval($id);
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Editar Usuário</h3>
                 </div><!-- Start: TR Form -->
-                <form class="register-form">
-                    <fieldset></fieldset>
-                </form><!-- End: TR Form -->
                 <!-- Start: Multi-row Form -->
                 <form action="update_usuario.php" method="post" enctype="multipart/form-data">
     <?php
@@ -234,8 +230,6 @@ $id = intval($id);
             </select>
         </div>
     </div><!-- End: 3-column form row -->
-
-    
     <!-- Start: 5-column form row -->
     <div class="form-row" style="height: 108px;">
         <div class="col-sm-2 col-xl-4 offset-xl-1">
@@ -296,12 +290,11 @@ $conn->close();
         </div>
         <div class="col-sm-3 col-xl-2 offset-xl-1">
             <label></label>
-            <select class="form-control" name="status"  value="<?php echo $status?>" style="margin: 23px 0;">
-                <optgroup label="Situação">
-                    <option value="Ativo" selected="">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                </optgroup>
-            </select>
+            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                <input type="hidden" name="status" value="Inativo">
+                <input type="checkbox" class="custom-control-input" id="statusSwitchEdit" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
+                <label class="custom-control-label" for="statusSwitchEdit">Ativo</label>
+            </div>
             
         </div>
     </div><!-- End: 4-column form row -->

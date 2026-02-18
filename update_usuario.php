@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $telefone = $_POST['telefone'];
     $senha = $_POST['senha']; // Nova senha enviada no formulário
     $unidade = $_POST['unidade']; // Nova unidade enviada no formulário
+    $status = $_POST['status']; // Status update
 
     // Verificar se o usuarioAD já existe no banco de dados, exceto para o próprio usuário
     $query_check = "SELECT id_usuarios FROM usuarios WHERE usuarioAD = '$usuarioAD' AND id_usuarios != '$id_usuarios'";
@@ -68,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              matricula='$matricula', 
                              telefone='$telefone',
                              unidade='$unidade', 
+                             status='$status',
                              senha='$senha_hashed'
                              $foto_perfil_update
                          WHERE id_usuarios = '$id_usuarios'";
@@ -84,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              centroDeCusto='$centroDeCusto', 
                              matricula='$matricula', 
                              telefone='$telefone',
-                             unidade='$unidade'
+                             unidade='$unidade',
+                             status='$status'
                              $foto_perfil_update
                          WHERE id_usuarios = '$id_usuarios'";
     }

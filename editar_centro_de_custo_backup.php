@@ -46,15 +46,15 @@ $id = intval($id);
                             <line x1="4" y1="20" x2="20" y2="20"></line>
                             <rect x="6" y="9" width="12" height="6" rx="2"></rect>
                         </svg></div>
-                        <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
+                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
@@ -138,80 +138,105 @@ $id = intval($id);
         </ul>
     </div>
 </nav>
-                <div id="content-1">
-                    <div class="container-fluid">
-                        <h3 class="text-dark mb-1">Editar Fornecedor</h3>
-                    </div><!-- Start: Multi-row Form -->
-                    <form action="update_fornecedor.php" method="post">
-                    <?php
-    $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-1">Atualizar Centro de Custo</h3>
+                </div><!-- Start: Multi-row Form -->
+                <form action="inserir_centro_de_custo.php" method="post">
+                <?php
+    $sql = "SELECT * FROM centro_de_custo WHERE id_centro_de_custo = '$id'";
     $result = mysqli_query($conn, $sql);
     while ($array = mysqli_fetch_array($result)) {
-        echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
+        echo "<input type='hidden' name='id_centro_de_custo' value='" . $array['id_centro_de_custo'] . "'>";
         
-        $nomeEmpresa = $array['nomeEmpresa'];
-        $cnpj = $array['cnpj'];
-        $email = $array['email'];
-        $telefone = $array['telefone'];
-        $servico = $array['servico'];
-        $site = $array['site'];
+        $nomeSetor = $array['nomeSetor'];
+        $codigo = $array['codigo'];
+        $ramal = $array['ramal'];
+        $unidade = $array['unidade'];
+        $emailGestor = $array['emailGestor'];
+        $gestor = $array['gestor'];
         $status = $array['status'];
     ?>
-                        <!-- Start: 2-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"type="text" type="text" value="<?php echo $nomeEmpresa?>"></div>
+             
+                    <!-- Start: 2-column form row -->
+                    <div class="form-row">
+                        
+                    </div><!-- End: 2-column form row -->
+                    <!-- Start: 3-column form row -->
+                    <div class="form-row">
+                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                            <div class="form-group"><label></label><input class="form-control"  name="nomeSetor" type="text" value="<?php echo $nomeSetor?>"></div>
+                        </div>
+                        <div class="col-xl-2 offset-xl-1">
+                            <div class="form-group"><label></label><input class="form-control"  name="codigo" type="text" value="<?php echo $codigo?>"></div>
+                        </div>
+                        <div class="col-xl-2">
+                            <div class="input-group mb-4">
+                                <div class="input-group-prepend"></div><input class="form-control"  name="ramal" type="text" value="<?php echo $ramal?>" style="border-radius: 5.6px;margin-top: 24px;">
                             </div>
-                            <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="cnpj" type="text" type="text" value="<?php echo $cnpj?>"></div>
-                            </div>
-                        </div><!-- End: 2-column form row -->
-                        <!-- Start: 3-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="email" type="email" type="text" value="<?php echo $email?>"></div>
-                            </div>
-                            <div class="col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="telefone" type="tel" type="text" value="<?php echo $telefone?>"></div>
-                            </div>
-                            <div class="col-sm-2 offset-xl-0">
-                                <div class="form-group"><label></label></div>
-                            </div>
-                        </div><!-- End: 3-column form row -->
-                        <!-- Start: 4-column form row -->
-                        <div class="form-row">
-                            <div div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="servico" type="text"type="text" value="<?php echo $servico?>"></div>
-                            </div>
-                            <div class="col-sm-3 col-xl-1">
-                                <div class="form-group"></div>
-                            </div>
-                            <div class="col-sm-3 col-xl-3">
-                                <div class="form-group"><label></label><input class="form-control" name="site" type="text" type="text" value="<?php echo $site?>"></div>
-                            </div>
-                            <div class="col-xl-3">
-                                <div class="custom-control custom-switch" style="margin-top: 30px;">
-                                    <input type="hidden" name="status" value="Inativo">
-                                    <input type="checkbox" class="custom-control-input" id="statusSwitchEdit" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
-                                    <label class="custom-control-label" for="statusSwitchEdit">Ativo</label>
-                                </div>
-                            </div>
-                        </div><!-- End: 4-column form row -->
-                        <!-- Start: 6-column form row -->
-                        <div class="form-row">
-                            <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
-                        </div><!-- End: 6-column form row -->
-                    </form><!-- End: Multi-row Form -->
-                </div>
+                        </div>
+                        <div class="col-sm-3 col-xl-1">
+                            <div class="form-group"><label></label><select class="form-control" name="unidade"value="">
+                            <optgroup label="Unidade">
+                <?php
+// Conectar ao banco de dados
+include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+
+// Verificar conexão
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
+
+$sql = "SELECT unidade FROM unidade";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Saída dos dados de cada linha
+    while ($row = $result->fetch_assoc()) {
+        echo '<option value="'.$row['unidade'].'">'.$row['unidade'].'</option>';
+    }
+} else {
+    echo '<option value="">Nenhuma unidade encontrada</option>';
+}
+$conn->close();
+?>
+                </optgroup>     </select></div>
+                        </div>
+                    </div><!-- End: 3-column form row -->
+                    <!-- Start: 4-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-3 col-xl-4 offset-xl-1">
+                            <div class="form-group"><label></label><input class="form-control" name="emailGestor"type="text" value="<?php echo $emailGestor?>"></div>
+                        </div>
+                        <div class="col-sm-3 col-xl-1">
+                            
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group"><label></label><input class="form-control" name="gestor" type="text" value="<?php echo $gestor?>"></div>
+                        </div>
+                        <div class="col-sm-4 col-xl-2" style="margin-top: 23px;">
+                            <!-- Start: Date Range Picker -->
+                            <div class="form-group"><select class="form-control" style="margin: 23px,0px;"  name="status" value="<?php echo $status?>">
+                                    <optgroup label="Situação">
+                                        <option value="Ativo">Ativo</option>
+                                        <option value="Inativo">Inativo</option>
+                                    </optgroup>
+                                </select></div><!-- End: Date Range Picker -->
+                        </div>
+                    </div><!-- End: 4-column form row -->
+                    <!-- Start: 6-column form row -->
+                    <div class="form-row">
+                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
+                        <?php } ?> 
+                    </div><!-- End: 6-column form row -->
+                </form><!-- End: Multi-row Form -->
             </div>
-            <?php } ?>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-    <!-- Start: Simple footer by krissy -->
-    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-        <!-- Start: Footer text -->
-        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-    </section><!-- End: Simple footer by krissy -->
-</footer>
+            <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
+                <!-- Start: Simple footer by krissy -->
+                <section class="text-center footer" style="padding: 10px;margin-top: 70px;">
+                    <!-- Start: Footer text -->
+                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+                </section><!-- End: Simple footer by krissy -->
+            </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -11,6 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "id_asset não está definido.";
         exit;
     }
+
+    // Busca dados atuais para histórico (antes do update)
+    $sql_old = "SELECT * FROM ativos WHERE id_asset = '$id_asset'";
+    $result_old = mysqli_query($conn, $sql_old);
+    $old_data = mysqli_fetch_assoc($result_old);
     $categoria = $_POST['categoria'];
     $fabricante = $_POST['fabricante'];
     $modelo = $_POST['modelo'];
@@ -95,7 +100,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($update) {
         $usuario_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL';
         $acao = 'Edição';
-        $detalhes = 'Ativo atualizado. Status: ' . $status . ', Local: ' . $centroDeCusto;
+
+        // Identificar alterações
+        $changes = [];
+        if ($old_data['categoria'] != $categoria)
+            $changes[] = "Categoria: {$old_data['categoria']} -> $categoria";
+        if ($old_data['fabricante'] != $fabricante)
+            $changes[] = "Fabricante: {$old_data['fabricante']} -> $fabricante";
+        if ($old_data['modelo'] != $modelo)
+            $changes[] = "Modelo: {$old_data['modelo']} -> $modelo";
+        if ($old_data['hostName'] != $hostName)
+            $changes[] = "HostName: {$old_data['hostName']} -> $hostName";
+        if ($old_data['valor'] != $valor)
+            $changes[] = "Valor: {$old_data['valor']} -> $valor";
+        if ($old_data['status'] != $status)
+            $changes[] = "Status: {$old_data['status']} -> $status";
+        if ($old_data['macAdress'] != $macAdress)
+            $changes[] = "MacAdress: {$old_data['macAdress']} -> $macAdress";
+        if ($old_data['centroDeCusto'] != $centroDeCusto)
+            $changes[] = "Centro de Custo: {$old_data['centroDeCusto']} -> $centroDeCusto";
+        if ($old_data['descricao'] != $descricao)
+            $changes[] = "Descrição alterada";
+        if ($old_data['dataAtivacao'] != $dataAtivacao)
+            $changes[] = "Data Ativação: {$old_data['dataAtivacao']} -> $dataAtivacao";
+        if (!empty($imagemSql))
+            $changes[] = "Imagem atualizada";
+
+        $detalhes = empty($changes) ? "Nenhuma alteração registrada." : implode("; ", $changes);
 
         $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$id_asset', $usuario_id, '$acao', '$detalhes')";
         mysqli_query($conn, $sql_historico);

@@ -220,14 +220,16 @@ $conn->close();
                             <div class="form-group"><input class="form-control" name="macAdress" type="text" placeholder="MAC Adress" required="" style="margin-top: 24px;"></div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
-    <select class="form-control" name="status" required style="margin-top: 24px" required="";>
-        <optgroup label="Status" >
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-        </optgroup>
-    </select>
-</div>
-                        <div class="col-xl-1"><input class="form-control" name="dataAtivacao" type="date" placeholder="Data de Entrada" required="" style="margin-top: 24px;"></div>
+                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                <input type="hidden" name="status" value="Inativo">
+                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
+                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-2">
+                             <label>Data de Cadastro</label>
+                             <input class="form-control" name="dataAtivacao" type="date" value="<?php echo date('Y-m-d'); ?>" readonly>
+                        </div>
                         
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group"><label></label><input class="form-control" name="centroDeCusto" type="text" placeholder="Centro de custo" required=""></div>

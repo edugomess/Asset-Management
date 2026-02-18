@@ -196,7 +196,6 @@ $id = intval($id);
         </optgroup>
     </select>
 </div>
-
     </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
                             <div class="form-group"><label>Fabricante</label><input class="form-control" label= "Fabricante" name="fabricante" type="text"  value="<?php echo $fabricante?>"></div>
@@ -223,13 +222,12 @@ $id = intval($id);
                             <div class="form-group"><label>MacAdress</label><input class="form-control" label= "MacAdress" name="macAdress" type="text" value="<?php echo $macAdress?>"style="margin-top: 24px;"></div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
-    <select class="form-control" name="status" required style="margin-top: 57px" value="<?php echo $status?>">>
-        <optgroup label="Status" >
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-        </optgroup>
-    </select>
-</div>
+                            <div class="custom-control custom-switch" style="margin-top: 57px;">
+                                <input type="hidden" name="status" value="Inativo">
+                                <input type="checkbox" class="custom-control-input" id="statusSwitchAtivo" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
+                                <label class="custom-control-label" for="statusSwitchAtivo">Ativo</label>
+                            </div>
+                        </div>
 
                         <div class="col-xl-1"><label>Data de Cadastro</label><input class="form-control" label= "Data do Cadastro" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao?>" style="margin-top: 24px;" disabled></div>
                         

@@ -1,7 +1,32 @@
-<?PHP
+<?php
+
+include 'auth.php';
+
 include 'conexao.php';
-$id = isset($_GET['id']) ? $_GET['id'] : 0;
-$id = intval($id);
+
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$nomeSetor = '';
+$codigo = '';
+$ramal = '';
+$unidade = '';
+$emailGestor = '';
+$gestor = '';
+$status = '';
+
+if ($id > 0) {
+    $sql = "SELECT * FROM centro_de_custo WHERE id_centro_de_custo = $id";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $nomeSetor = $row['nomeSetor'];
+        $codigo = $row['codigo'];
+        $ramal = $row['ramal'];
+        $unidade = $row['unidade'];
+        $emailGestor = $row['emailGestor'];
+        $gestor = $row['gestor'];
+        $status = $row['status'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,7 +34,7 @@ $id = intval($id);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title>Editar Centro de Custo</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -57,7 +82,9 @@ $id = intval($id);
                     <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -139,24 +166,11 @@ $id = intval($id);
     </div>
 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Atualizar Centro de Custo</h3>
+                    <h3 class="text-dark mb-1">Editar Centro de Custo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="inserir_centro_de_custo.php" method="post">
-                <?php
-    $sql = "SELECT * FROM centro_de_custo WHERE id_centro_de_custo = '$id'";
-    $result = mysqli_query($conn, $sql);
-    while ($array = mysqli_fetch_array($result)) {
-        echo "<input type='hidden' name='id_centro_de_custo' value='" . $array['id_centro_de_custo'] . "'>";
-        
-        $nomeSetor = $array['nomeSetor'];
-        $codigo = $array['codigo'];
-        $ramal = $array['ramal'];
-        $unidade = $array['unidade'];
-        $emailGestor = $array['emailGestor'];
-        $gestor = $array['gestor'];
-        $status = $array['status'];
-    ?>
-             
+                <form action="update_centro_de_custo.php" method="post">
+                    <input type="hidden" name="id_centro_de_custo" value="<?php echo $id; ?>">
+              
                     <!-- Start: 2-column form row -->
                     <div class="form-row">
                         
@@ -164,69 +178,62 @@ $id = intval($id);
                     <!-- Start: 3-column form row -->
                     <div class="form-row">
                     <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control"  name="nomeSetor" type="text" value="<?php echo $nomeSetor?>"></div>
+                            <div class="form-group"><label></label><input class="form-control" name="nomeSetor" type="text" placeholder="Nome do Setor" value="<?php echo htmlspecialchars($nomeSetor); ?>"></div>
                         </div>
                         <div class="col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control"  name="codigo" type="text" value="<?php echo $codigo?>"></div>
+                            <div class="form-group"><label></label><input class="form-control" name="codigo" type="tel" placeholder="Código" value="<?php echo htmlspecialchars($codigo); ?>"></div>
                         </div>
                         <div class="col-xl-2">
                             <div class="input-group mb-4">
-                                <div class="input-group-prepend"></div><input class="form-control"  name="ramal" type="text" value="<?php echo $ramal?>" style="border-radius: 5.6px;margin-top: 24px;">
+                                <div class="input-group-prepend"></div><input class="form-control" name="ramal" type="text" placeholder="Ramal" style="border-radius: 5.6px;margin-top: 24px;" value="<?php echo htmlspecialchars($ramal); ?>">
                             </div>
                         </div>
                         <div class="col-sm-3 col-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="unidade"value="">
-                            <optgroup label="Unidade">
-                <?php
-// Conectar ao banco de dados
-include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+                            <div class="form-group"><label></label><select class="form-control" name="unidade" required="">
+                                    <optgroup label="Unidade">
+                                    <option value=""></option>
+                                    <?php
+// Utiliza a conexão já aberta no topo
+$sql_un = "SELECT unidade FROM unidade";
+$res_un = $conn->query($sql_un);
 
-// Verificar conexão
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-}
-
-$sql = "SELECT unidade FROM unidade";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // Saída dos dados de cada linha
-    while ($row = $result->fetch_assoc()) {
-        echo '<option value="'.$row['unidade'].'">'.$row['unidade'].'</option>';
+if ($res_un && $res_un->num_rows > 0) {
+    while ($row_u = $res_un->fetch_assoc()) {
+        $selected = ($row_u['unidade'] == $unidade) ? 'selected' : '';
+        echo '<option value="' . $row_u['unidade'] . '" ' . $selected . '>' . $row_u['unidade'] . '</option>';
     }
-} else {
+}
+else {
     echo '<option value="">Nenhuma unidade encontrada</option>';
 }
-$conn->close();
 ?>
-                </optgroup>     </select></div>
+                                    </optgroup>
+                                </select></div>
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
                         <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="emailGestor"type="text" value="<?php echo $emailGestor?>"></div>
+                            <div class="form-group"><label></label><input class="form-control" name="emailGestor" type="text" placeholder="E-mail do Gestor" value="<?php echo htmlspecialchars($emailGestor); ?>"></div>
                         </div>
                         <div class="col-sm-3 col-xl-1">
                             
                         </div>
                         <div class="col-sm-3">
-                            <div class="form-group"><label></label><input class="form-control" name="gestor" type="text" value="<?php echo $gestor?>"></div>
+                            <div class="form-group"><label></label><input class="form-control" name="gestor" type="text" placeholder="Gestor" value="<?php echo htmlspecialchars($gestor); ?>"></div>
                         </div>
                         <div class="col-sm-4 col-xl-2" style="margin-top: 23px;">
                             <!-- Start: Date Range Picker -->
-                            <div class="form-group"><select class="form-control" style="margin: 23px,0px;"  name="status" value="<?php echo $status?>">
-                                    <optgroup label="Situação">
-                                        <option value="Ativo">Ativo</option>
-                                        <option value="Inativo">Inativo</option>
-                                    </optgroup>
-                                </select></div><!-- End: Date Range Picker -->
+                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                <input type="hidden" name="status" value="Inativo">
+                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" <?php echo($status == 'Ativo') ? 'checked' : ''; ?>>
+                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                            </div>
                         </div>
                     </div><!-- End: 4-column form row -->
                     <!-- Start: 6-column form row -->
                     <div class="form-row">
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
-                        <?php } ?> 
                     </div><!-- End: 6-column form row -->
                 </form><!-- End: Multi-row Form -->
             </div>
@@ -255,6 +262,7 @@ $conn->close();
     <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

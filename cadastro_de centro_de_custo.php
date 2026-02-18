@@ -203,12 +203,11 @@ $conn->close();
                         </div>
                         <div class="col-sm-4 col-xl-2" style="margin-top: 23px;">
                             <!-- Start: Date Range Picker -->
-                            <div class="form-group"><select class="form-control" style="margin: 23px,0px;"  name="status" required="">
-                                    <optgroup label="Situação">
-                                        <option value="Ativo">Ativo</option>
-                                        <option value="Inativo">Inativo</option>
-                                    </optgroup>
-                                </select></div><!-- End: Date Range Picker -->
+                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                <input type="hidden" name="status" value="Inativo">
+                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
+                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                            </div>
                         </div>
                     </div><!-- End: 4-column form row -->
                     <!-- Start: 6-column form row -->

@@ -36,8 +36,7 @@ $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['searc
 if (!empty($search)) {
     if (empty($where_clause)) {
         $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
-    }
-    else {
+    } else {
         $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
     }
 }
@@ -64,24 +63,34 @@ $result = mysqli_query($conn, $sql);
 <!DOCTYPE html>
 <html>
 <style>
-    .btn-tamanho-fixo { 
-        width: 130px; 
+    .btn-tamanho-fixo {
+        width: 130px;
     }
+
     .btn-edit {
-        width: 50px; /* Metade da largura */
+        width: 50px;
+        /* Metade da largura */
     }
+
     .btn-medium {
-        width: 100px; /* Metade da largura */
+        width: 100px;
+        /* Metade da largura */
     }
-    <style>
-    .badge-success {
-        background-color: #28a745 !important; /* Verde para ativo */
-        color: #fff !important; /* Texto branco */
+
+    <style>.badge-success {
+        background-color: #28a745 !important;
+        /* Verde para ativo */
+        color: #fff !important;
+        /* Texto branco */
     }
+
     .badge-danger {
-        background-color: #dc3545 !important; /* Vermelho para inativo */
-        color: #fff !important; /* Texto branco */
+        background-color: #dc3545 !important;
+        /* Vermelho para inativo */
+        color: #fff !important;
+        /* Texto branco */
     }
+
     .badge-warning {
         background-color: #ffc107 !important;
         color: #212529 !important;
@@ -131,7 +140,7 @@ $result = mysqli_query($conn, $sql);
                             <line x1="4" y1="20" x2="20" y2="20"></line>
                             <rect x="6" y="9" width="12" height="6" rx="2"></rect>
                         </svg></div>
-                        
+
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -148,7 +157,7 @@ $result = mysqli_query($conn, $sql);
                     <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
-                
+
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -163,7 +172,7 @@ $result = mysqli_query($conn, $sql);
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                           <!-- Navbar items (User profile, alerts, etc.) kept same as other pages -->
+                            <!-- Navbar items (User profile, alerts, etc.) kept same as other pages -->
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
@@ -183,14 +192,14 @@ $result = mysqli_query($conn, $sql);
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 23px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;" href="/cadastro_de_chamados.php">Novo Chamado</a></div>
                                 </div>
                                 <div class="col-md-6 col-xl-5">
-                            <form method="GET" class="form-inline" style="margin-top: 23px;">
+                                    <form method="GET" class="form-inline" style="margin-top: 23px;">
                                         <label class="mr-2 font-weight-bold">Filtrar por:</label>
                                         <select name="filtro_status" class="form-control mr-2" onchange="this.form.submit()">
-                                            <option value="aberto" <?php echo($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
-                                            <option value="em_andamento" <?php echo($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
-                                            <option value="pendente" <?php echo($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
-                                            <option value="finalizados" <?php echo($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
-                                            <option value="todos" <?php echo($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
+                                            <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
+                                            <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
+                                            <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
+                                            <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
+                                            <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
                                         </select>
                                         <input type="search" name="search" class="form-control form-control-sm" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                     </form>
@@ -211,153 +220,149 @@ $result = mysqli_query($conn, $sql);
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php
-if (mysqli_num_rows($result) > 0) {
-    // Fetch SLA configurations
-    $sla_configs = [];
-    $res_config = mysqli_query($conn, "SELECT * FROM configuracoes_sla");
-    while ($row_config = mysqli_fetch_assoc($res_config)) { // Fix: use distinct variable name
-        $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_horas'];
-    }
+                                        <?php
+                                        if (mysqli_num_rows($result) > 0) {
+                                            // 1. Busca as configurações de SLA ANTES de iniciar o loop dos chamados
+                                            $sla_configs = [];
+                                            // Alterado para buscar a coluna correta de MINUTOS
+                                            $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $categoria = $row['categoria'];
-        // Default to 24h if not found
-        $sla_horas = isset($sla_configs[$categoria]) ? $sla_configs[$categoria] : 24;
-        $sla_minutos = $sla_horas * 60;
+                                            if ($res_config) {
+                                                while ($row_config = mysqli_fetch_assoc($res_config)) {
+                                                    $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
+                                                }
+                                            }
 
-        $data_abertura = new DateTime($row['data_abertura']);
-        $agora = new DateTime();
-        $intervalo = $data_abertura->diff($agora);
+                                            // Valores padrão em minutos caso não exista no banco (24h, 48h, 72h)
+                                            $defaults = ['Incidente' => 1440, 'Mudança' => 2880, 'Requisição' => 4320];
 
-        $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i + ($intervalo->s / 60);
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                $categoria = $row['categoria'];
 
-        $sla_percentage = min(100, ($minutos_decorridos / $sla_minutos) * 100);
-        $sla_status_text = '';
-        $progress_bar_class = '';
-        $sla_status_html = '';
+                                                // 2. CORREÇÃO DO ERRO: Busca o valor em minutos do array ou usa o padrão
+                                                // Isso elimina o "Undefined array key" na linha 220
+                                                $sla_total_minutos = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 1440);
 
-        if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento') {
-            if ($minutos_decorridos >= $sla_minutos) {
-                // Estourado
-                $sla_status_text = 'Vencido';
-                $progress_bar_class = 'bg-danger';
-            }
-            elseif ($minutos_decorridos >= ($sla_minutos * 0.8)) { // > 80%
-                // Atenção
-                $sla_status_text = 'Atenção';
-                $progress_bar_class = 'bg-warning';
-            }
-            else {
-                // No prazo
-                $sla_status_text = 'No Prazo';
-                $progress_bar_class = 'bg-success';
-            }
+                                                $data_abertura = new DateTime($row['data_abertura']);
+                                                $agora = new DateTime();
+                                                $intervalo = $data_abertura->diff($agora);
 
-            // Formatar tempo decorrido
-            $tempo_formatado = '';
-            if ($minutos_decorridos < 60) {
-                $tempo_formatado = round($minutos_decorridos) . 'm';
-            }
-            elseif ($minutos_decorridos < 1440) { // Menos de 24h
-                $horas = floor($minutos_decorridos / 60);
-                $minutos = round($minutos_decorridos % 60);
-                $tempo_formatado = "{$horas}h {$minutos}m";
-            }
-            else { // Mais de 1 dia
-                $dias = floor($minutos_decorridos / 1440);
-                $horas = floor(($minutos_decorridos % 1440) / 60);
-                $tempo_formatado = "{$dias}d {$horas}h";
-            }
+                                                // Calcula minutos decorridos de forma precisa
+                                                $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
 
-            // Montar HTML do Termômetro
-            $sla_status_html = '
+                                                // 3. Cálculo da porcentagem do SLA
+                                                $sla_percentage = min(100, ($minutos_decorridos / $sla_total_minutos) * 100);
+
+                                                $sla_status_text = '';
+                                                $progress_bar_class = '';
+                                                $sla_status_html = '';
+
+                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento') {
+                                                    if ($minutos_decorridos >= $sla_total_minutos) {
+                                                        $sla_status_text = 'Vencido';
+                                                        $progress_bar_class = 'bg-danger';
+                                                    } elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
+                                                        $sla_status_text = 'Atenção';
+                                                        $progress_bar_class = 'bg-warning';
+                                                    } else {
+                                                        $sla_status_text = 'No Prazo';
+                                                        $progress_bar_class = 'bg-success';
+                                                    }
+
+                                                    // Formatação do tempo decorrido para exibição
+                                                    if ($minutos_decorridos < 60) {
+                                                        $tempo_formatado = round($minutos_decorridos) . 'm';
+                                                    } elseif ($minutos_decorridos < 1440) {
+                                                        $horas = floor($minutos_decorridos / 60);
+                                                        $minutos = $minutos_decorridos % 60;
+                                                        $tempo_formatado = "{$horas}h {$minutos}m";
+                                                    } else {
+                                                        $dias = floor($minutos_decorridos / 1440);
+                                                        $horas = floor(($minutos_decorridos % 1440) / 60);
+                                                        $tempo_formatado = "{$dias}d {$horas}h";
+                                                    }
+
+                                                    $sla_status_html = '
                 <div class="d-flex flex-column">
                     <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
                     <div class="progress" style="height: 10px; min-width: 100px;">
                         <div class="progress-bar ' . $progress_bar_class . ' progress-bar-striped progress-bar-animated" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>';
+                                                } elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
+                                                    $sla_status_html = '<span class="badge badge-success">Concluído</span>';
+                                                } elseif ($row['status'] == 'Cancelado') {
+                                                    $sla_status_html = '<span class="badge badge-danger">Cancelado</span>';
+                                                } else {
+                                                    $sla_status_html = '<span class="badge badge-secondary">-</span>';
+                                                }
 
-        }
-        elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado' || $row['status'] == 'Cancelado') {
-            $sla_status_html = '<span class="badge badge-success">Concluído</span>';
-            if ($row['status'] == 'Cancelado')
-                $sla_status_html = '<span class="badge badge-danger">Cancelado</span>';
-        }
-        else {
-            $sla_status_html = '<span class="badge badge-secondary">-</span>';
-        }
+                                                // Definição das cores dos Badges de Status
+                                                $status_class = 'badge-secondary';
+                                                switch ($row['status']) {
+                                                    case 'Aberto':
+                                                        $status_class = 'badge-primary';
+                                                        break;
+                                                    case 'Em Andamento':
+                                                        $status_class = 'badge-info';
+                                                        break;
+                                                    case 'Pendente':
+                                                        $status_class = 'badge-warning';
+                                                        break;
+                                                    case 'Resolvido':
+                                                        $status_class = 'badge-success';
+                                                        break;
+                                                    case 'Cancelado':
+                                                        $status_class = 'badge-danger';
+                                                        break;
+                                                    case 'Fechado':
+                                                        $status_class = 'badge-dark';
+                                                        break;
+                                                }
 
-        // Status Badge Color Update
-        $status_class = 'badge-secondary';
-        switch ($row['status']) {
-            case 'Aberto':
-                $status_class = 'badge-primary';
-                break;
-            case 'Em Andamento':
-                $status_class = 'badge-info';
-                break;
-            case 'Pendente':
-                $status_class = 'badge-warning';
-                break;
-            case 'Resolvido':
-                $status_class = 'badge-success';
-                break;
-            case 'Cancelado':
-                $status_class = 'badge-danger';
-                break;
-            case 'Fechado':
-                $status_class = 'badge-dark';
-                break;
-        }
+                                                $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Não identificado';
+                                                $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : 'Não Atribuído';
+                                                $responsavel_class = $row['resp_nome'] ? 'badge-dark' : 'badge-secondary';
 
-        $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Não identificado';
-        $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : 'Não Atribuído';
-        $responsavel_class = $row['resp_nome'] ? 'badge-dark' : 'badge-secondary';
-
-        echo "<tr>
-                                                <td>" . htmlspecialchars($row['id']) . "</td>
-                                                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-primary'>" . htmlspecialchars($row['titulo']) . "</a></td>
-                                                <td>" . htmlspecialchars($row['categoria']) . "</td>
-                                                <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
-                                                <td>" . htmlspecialchars($solicitante) . "</td>
-                                                <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
-                                                <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
-                                                <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
-                                            </tr>";
-    }
-}
-
-else {
-    echo "<tr><td colspan='7'>Nenhum chamado encontrado.</td></tr>";
-}
-?>
+                                                echo "<tr>
+                <td>" . htmlspecialchars($row['id']) . "</td>
+                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-primary'>" . htmlspecialchars($row['titulo']) . "</a></td>
+                <td>" . htmlspecialchars($row['categoria']) . "</td>
+                <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
+                <td>" . htmlspecialchars($solicitante) . "</td>
+                <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
+                <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
+                <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
+            </tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='8' class='text-center'>Nenhum chamado encontrado.</td></tr>";
+                                        }
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
-                            
-                              <div class="pagination justify-content-start">
+
+                            <div class="pagination justify-content-start">
                                 <nav>
-                                <ul class="pagination">
-                                <?php
-$current_filter = "&filtro_status=" . urlencode($filtro_status);
-if ($current_page > 1) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . $current_filter . "'>« Anterior</a></li>";
-}
-for ($page = 1; $page <= $total_pages; $page++) {
-    if ($page == $current_page) {
-        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
-    }
-    else {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
-    }
-}
-if ($current_page < $total_pages) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . $current_filter . "'>Próximo »</a></li>";
-}
-?>
-                                </ul>
+                                    <ul class="pagination">
+                                        <?php
+                                        $current_filter = "&filtro_status=" . urlencode($filtro_status);
+                                        if ($current_page > 1) {
+                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . $current_filter . "'>« Anterior</a></li>";
+                                        }
+                                        for ($page = 1; $page <= $total_pages; $page++) {
+                                            if ($page == $current_page) {
+                                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
+                                            } else {
+                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
+                                            }
+                                        }
+                                        if ($current_page < $total_pages) {
+                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . $current_filter . "'>Próximo »</a></li>";
+                                        }
+                                        ?>
+                                    </ul>
                                 </nav>
                             </div>
 
@@ -390,4 +395,5 @@ if ($current_page < $total_pages) {
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
 </body>
+
 </html>

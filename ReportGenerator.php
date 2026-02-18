@@ -97,4 +97,3 @@ class ReportGenerator extends FPDF
         $this->Output();
     }
 }
-?>

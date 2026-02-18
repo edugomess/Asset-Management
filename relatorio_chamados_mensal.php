@@ -100,4 +100,3 @@ else {
 $conn->close();
 ob_end_clean();
 $pdf->Output();
-?>

@@ -13,4 +13,3 @@ $sql = "SELECT u.nome as nome_tecnico, COUNT(*) as qtd
         GROUP BY u.nome 
         ORDER BY qtd DESC";
 $pdf->generate($sql);
-?>

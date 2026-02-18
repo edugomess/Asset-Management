@@ -22,4 +22,3 @@ $columns_simple = [
 
 $pdf = new ReportGenerator('Relatório de Chamados por Categoria', $columns_simple, $conn);
 $pdf->generate($sql);
-?>

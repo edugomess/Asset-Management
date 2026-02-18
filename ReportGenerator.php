@@ -23,9 +23,8 @@ class ReportGenerator extends FPDF
 
         // System Name
         $this->SetFont('Arial', 'B', 15);
-        $this->Cell(80); // Move to right
-        $this->Cell(30, 10, 'Asset MGT', 0, 0, 'C');
-        $this->Ln(5);
+
+        $this->Cell(0, 10, 'Asset MGT', 0, 1, 'C');
 
         // Report Title
         $this->SetFont('Arial', 'B', 12);

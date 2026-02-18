@@ -289,7 +289,6 @@ if ($result->num_rows > 0) {
 else {
     echo '<option value="">Nenhuma unidade encontrada</option>';
 }
-$conn->close();
 ?>
                 </optgroup>
             </select>

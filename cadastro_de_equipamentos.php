@@ -171,7 +171,6 @@ if ($result->num_rows > 0) {
 else {
     echo '<option value="">Nenhuma categoria encontrada</option>';
 }
-$conn->close();
 ?>
 
                 </optgroup>

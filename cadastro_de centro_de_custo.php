@@ -140,7 +140,7 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Centro de Custo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="inserir_centro_de_custo.php" method="post">
+                <form action="inserir_centro_de_custo.php" method="post" enctype="multipart/form-data">
              
                     <!-- Start: 2-column form row -->
                     <div class="form-row">
@@ -210,10 +210,15 @@ $conn->close();
                             </div>
                         </div>
                     </div><!-- End: 4-column form row -->
-                    <!-- Start: 6-column form row -->
+                    <!-- Start: 3-column form row -->
+                    <div class="form-row" style="height: 80px;">
+                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex" name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
+                    </div><!-- End: 3-column form row -->
+                    <!-- Start: 4-column form row -->
                     <div class="form-row">
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button></div>
-                    </div><!-- End: 6-column form row -->
+                    </div><!-- End: 4-column form row -->
                 </form><!-- End: Multi-row Form -->
             </div>
             <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">

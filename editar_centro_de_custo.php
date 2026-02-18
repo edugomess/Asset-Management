@@ -12,6 +12,8 @@ $unidade = '';
 $emailGestor = '';
 $gestor = '';
 $status = '';
+$imagem = '';
+$descricao = '';
 
 if ($id > 0) {
     $sql = "SELECT * FROM centro_de_custo WHERE id_centro_de_custo = $id";
@@ -25,6 +27,8 @@ if ($id > 0) {
         $emailGestor = $row['emailGestor'];
         $gestor = $row['gestor'];
         $status = $row['status'];
+        $imagem = $row['imagem'];
+        $descricao = $row['descricao'];
     }
 }
 ?>
@@ -168,7 +172,7 @@ if ($id > 0) {
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Editar Centro de Custo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="update_centro_de_custo.php" method="post">
+                <form action="update_centro_de_custo.php" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="id_centro_de_custo" value="<?php echo $id; ?>">
               
                     <!-- Start: 2-column form row -->
@@ -231,8 +235,13 @@ else {
                             </div>
                         </div>
                     </div><!-- End: 4-column form row -->
-                    <!-- Start: 6-column form row -->
+                    <!-- Start: 3-column form row -->
+                    <div class="form-row" style="height: 80px;">
+                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex" name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
+                    </div><!-- End: 3-column form row -->
+                    <!-- Start: 4-column form row -->
                     <div class="form-row">
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"><?php echo htmlspecialchars($descricao); ?></textarea></div>
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
                     </div><!-- End: 6-column form row -->
                 </form><!-- End: Multi-row Form -->

@@ -269,9 +269,20 @@ if (mysqli_num_rows($result) > 0) {
                                     </td>
                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                     <td>
-                                        <button class="btn btn-success" onclick="sellAsset(<?php echo $row['id_asset']; ?>)">
-                                            Doar
-                                        </button>
+                                        <?php
+        // Calcular elegibilidade para doação (mesma lógica de equipamentos.php)
+        $data_ativacao = new DateTime($row['dataAtivacao']);
+        $data_atual = new DateTime();
+        $diff = $data_ativacao->diff($data_atual);
+        $elegivel_doacao = $diff->days >= 3;
+
+        if ($elegivel_doacao) {
+            echo '<button class="btn btn-success" onclick="sellAsset(' . $row['id_asset'] . ')">Doar</button>';
+        }
+        else {
+            echo '<button class="btn btn-secondary" disabled title="Aguardando período de carência (3 dias)">Doar</button>';
+        }
+?>
                                     </td>
                                 </tr>
                             <?php

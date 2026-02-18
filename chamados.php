@@ -36,7 +36,8 @@ $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['searc
 if (!empty($search)) {
     if (empty($where_clause)) {
         $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
-    } else {
+    }
+    else {
         $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
     }
 }
@@ -195,11 +196,11 @@ $result = mysqli_query($conn, $sql);
                                     <form method="GET" class="form-inline" style="margin-top: 23px;">
                                         <label class="mr-2 font-weight-bold">Filtrar por:</label>
                                         <select name="filtro_status" class="form-control mr-2" onchange="this.form.submit()">
-                                            <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
-                                            <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
-                                            <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
-                                            <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
-                                            <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
+                                            <option value="aberto" <?php echo($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
+                                            <option value="em_andamento" <?php echo($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
+                                            <option value="pendente" <?php echo($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
+                                            <option value="finalizados" <?php echo($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
+                                            <option value="todos" <?php echo($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
                                         </select>
                                         <input type="search" name="search" class="form-control form-control-sm" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                     </form>
@@ -212,6 +213,7 @@ $result = mysqli_query($conn, $sql);
                                             <th>ID</th>
                                             <th>Título</th>
                                             <th>Categoria</th>
+                                            <th>Prioridade</th>
                                             <th>Data Abertura</th>
                                             <th>Solicitante</th>
                                             <th>Responsável</th>
@@ -221,124 +223,162 @@ $result = mysqli_query($conn, $sql);
                                     </thead>
                                     <tbody>
                                         <?php
-                                        if (mysqli_num_rows($result) > 0) {
-                                            // 1. Busca as configurações de SLA ANTES de iniciar o loop dos chamados
-                                            $sla_configs = [];
-                                            // Alterado para buscar a coluna correta de MINUTOS
-                                            $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
+if (mysqli_num_rows($result) > 0) {
+    // 1. Busca as configurações de SLA ANTES de iniciar o loop dos chamados
+    $sla_configs = [];
+    // Alterado para buscar a coluna correta de MINUTOS
+    $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
 
-                                            if ($res_config) {
-                                                while ($row_config = mysqli_fetch_assoc($res_config)) {
-                                                    $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
-                                                }
-                                            }
+    if ($res_config) {
+        while ($row_config = mysqli_fetch_assoc($res_config)) {
+            $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
+        }
+    }
 
-                                            // Valores padrão em minutos caso não exista no banco (24h, 48h, 72h)
-                                            $defaults = ['Incidente' => 1440, 'Mudança' => 2880, 'Requisição' => 4320];
+    // Valores padrão em minutos caso não exista no banco (24h, 48h, 72h)
+    $defaults = ['Incidente' => 1440, 'Mudança' => 2880, 'Requisição' => 4320];
 
-                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                $categoria = $row['categoria'];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $categoria = $row['categoria'];
 
-                                                // 2. CORREÇÃO DO ERRO: Busca o valor em minutos do array ou usa o padrão
-                                                // Isso elimina o "Undefined array key" na linha 220
-                                                $sla_total_minutos = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 1440);
+        // 2. CORREÇÃO DO ERRO: Busca o valor em minutos do array ou usa o padrão
+        // Isso elimina o "Undefined array key" na linha 220
+        $sla_total_minutos = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 1440);
 
-                                                $data_abertura = new DateTime($row['data_abertura']);
-                                                $agora = new DateTime();
-                                                $intervalo = $data_abertura->diff($agora);
+        // Ajuste de SLA baseado na Prioridade
+        $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
 
-                                                // Calcula minutos decorridos de forma precisa
-                                                $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
+        if ($prioridade == 'Alta') {
+            $sla_total_minutos = $sla_total_minutos * 0.3; // 30% do tempo
+        }
+        elseif ($prioridade == 'Média') {
+            $sla_total_minutos = $sla_total_minutos * 0.7; // 70% do tempo
+        }
+        // Baixa = 100% (padrão)
 
-                                                // 3. Cálculo da porcentagem do SLA
-                                                $sla_percentage = min(100, ($minutos_decorridos / $sla_total_minutos) * 100);
+        $data_abertura = new DateTime($row['data_abertura']);
+        $agora = new DateTime();
+        $intervalo = $data_abertura->diff($agora);
 
-                                                $sla_status_text = '';
-                                                $progress_bar_class = '';
-                                                $sla_status_html = '';
+        // Calcula minutos decorridos de forma precisa
+        $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
 
-                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento') {
-                                                    if ($minutos_decorridos >= $sla_total_minutos) {
-                                                        $sla_status_text = 'Vencido';
-                                                        $progress_bar_class = 'bg-danger';
-                                                    } elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
-                                                        $sla_status_text = 'Atenção';
-                                                        $progress_bar_class = 'bg-warning';
-                                                    } else {
-                                                        $sla_status_text = 'No Prazo';
-                                                        $progress_bar_class = 'bg-success';
-                                                    }
+        // 3. Cálculo da porcentagem do SLA
+        if ($sla_total_minutos > 0) {
+            $sla_percentage = min(100, ($minutos_decorridos / $sla_total_minutos) * 100);
+        }
+        else {
+            $sla_percentage = 100; // Se SLA for 0, considera estourado se já passou algum tempo
+        }
 
-                                                    // Formatação do tempo decorrido para exibição
-                                                    if ($minutos_decorridos < 60) {
-                                                        $tempo_formatado = round($minutos_decorridos) . 'm';
-                                                    } elseif ($minutos_decorridos < 1440) {
-                                                        $horas = floor($minutos_decorridos / 60);
-                                                        $minutos = $minutos_decorridos % 60;
-                                                        $tempo_formatado = "{$horas}h {$minutos}m";
-                                                    } else {
-                                                        $dias = floor($minutos_decorridos / 1440);
-                                                        $horas = floor(($minutos_decorridos % 1440) / 60);
-                                                        $tempo_formatado = "{$dias}d {$horas}h";
-                                                    }
+        $sla_status_text = '';
+        $progress_bar_class = '';
+        $sla_status_html = '';
 
-                                                    $sla_status_html = '
+        if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento') {
+            if ($minutos_decorridos >= $sla_total_minutos) {
+                $sla_status_text = 'Vencido';
+                $progress_bar_class = 'bg-danger';
+            }
+            elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
+                $sla_status_text = 'Atenção';
+                $progress_bar_class = 'bg-warning';
+            }
+            else {
+                $sla_status_text = 'No Prazo';
+                $progress_bar_class = 'bg-success';
+            }
+
+            // Formatação do tempo decorrido para exibição
+            if ($minutos_decorridos < 60) {
+                $tempo_formatado = round($minutos_decorridos) . 'm';
+            }
+            elseif ($minutos_decorridos < 1440) {
+                $horas = floor($minutos_decorridos / 60);
+                $minutos = $minutos_decorridos % 60;
+                $tempo_formatado = "{$horas}h {$minutos}m";
+            }
+            else {
+                $dias = floor($minutos_decorridos / 1440);
+                $horas = floor(($minutos_decorridos % 1440) / 60);
+                $tempo_formatado = "{$dias}d {$horas}h";
+            }
+
+            $sla_status_html = '
                 <div class="d-flex flex-column">
                     <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
                     <div class="progress" style="height: 10px; min-width: 100px;">
                         <div class="progress-bar ' . $progress_bar_class . ' progress-bar-striped progress-bar-animated" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>';
-                                                } elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
-                                                    $sla_status_html = '<span class="badge badge-success">Concluído</span>';
-                                                } elseif ($row['status'] == 'Cancelado') {
-                                                    $sla_status_html = '<span class="badge badge-danger">Cancelado</span>';
-                                                } else {
-                                                    $sla_status_html = '<span class="badge badge-secondary">-</span>';
-                                                }
+        }
+        elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
+            $sla_status_html = '<span class="badge badge-success">Concluído</span>';
+        }
+        elseif ($row['status'] == 'Cancelado') {
+            $sla_status_html = '<span class="badge badge-danger">Cancelado</span>';
+        }
+        else {
+            $sla_status_html = '<span class="badge badge-secondary">-</span>';
+        }
 
-                                                // Definição das cores dos Badges de Status
-                                                $status_class = 'badge-secondary';
-                                                switch ($row['status']) {
-                                                    case 'Aberto':
-                                                        $status_class = 'badge-primary';
-                                                        break;
-                                                    case 'Em Andamento':
-                                                        $status_class = 'badge-info';
-                                                        break;
-                                                    case 'Pendente':
-                                                        $status_class = 'badge-warning';
-                                                        break;
-                                                    case 'Resolvido':
-                                                        $status_class = 'badge-success';
-                                                        break;
-                                                    case 'Cancelado':
-                                                        $status_class = 'badge-danger';
-                                                        break;
-                                                    case 'Fechado':
-                                                        $status_class = 'badge-dark';
-                                                        break;
-                                                }
+        // Definição das cores dos Badges de Status
+        $status_class = 'badge-secondary';
+        switch ($row['status']) {
+            case 'Aberto':
+                $status_class = 'badge-primary';
+                break;
+            case 'Em Andamento':
+                $status_class = 'badge-info';
+                break;
+            case 'Pendente':
+                $status_class = 'badge-warning';
+                break;
+            case 'Resolvido':
+                $status_class = 'badge-success';
+                break;
+            case 'Cancelado':
+                $status_class = 'badge-danger';
+                break;
+            case 'Fechado':
+                $status_class = 'badge-dark';
+                break;
+        }
 
-                                                $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Não identificado';
-                                                $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : 'Não Atribuído';
-                                                $responsavel_class = $row['resp_nome'] ? 'badge-dark' : 'badge-secondary';
+        $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Não identificado';
+        $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : 'Não Atribuído';
+        $responsavel_class = $row['resp_nome'] ? 'badge-dark' : 'badge-secondary';
 
-                                                echo "<tr>
+        $prioridade_class = 'badge-secondary';
+        switch ($prioridade) {
+            case 'Alta':
+                $prioridade_class = 'badge-danger';
+                break;
+            case 'Média':
+                $prioridade_class = 'badge-warning';
+                break;
+            case 'Baixa':
+                $prioridade_class = 'badge-info';
+                break;
+        }
+
+        echo "<tr>
                 <td>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-primary'>" . htmlspecialchars($row['titulo']) . "</a></td>
                 <td>" . htmlspecialchars($row['categoria']) . "</td>
+                <td><span class='badge " . $prioridade_class . "'>" . htmlspecialchars($prioridade) . "</span></td>
                 <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
                 <td>" . htmlspecialchars($solicitante) . "</td>
                 <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
                 <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
             </tr>";
-                                            }
-                                        } else {
-                                            echo "<tr><td colspan='8' class='text-center'>Nenhum chamado encontrado.</td></tr>";
-                                        }
-                                        ?>
+    }
+}
+else {
+    echo "<tr><td colspan='9' class='text-center'>Nenhum chamado encontrado.</td></tr>";
+}
+?>
                                     </tbody>
                                 </table>
                             </div>
@@ -347,21 +387,22 @@ $result = mysqli_query($conn, $sql);
                                 <nav>
                                     <ul class="pagination">
                                         <?php
-                                        $current_filter = "&filtro_status=" . urlencode($filtro_status);
-                                        if ($current_page > 1) {
-                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . $current_filter . "'>« Anterior</a></li>";
-                                        }
-                                        for ($page = 1; $page <= $total_pages; $page++) {
-                                            if ($page == $current_page) {
-                                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
-                                            } else {
-                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
-                                            }
-                                        }
-                                        if ($current_page < $total_pages) {
-                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . $current_filter . "'>Próximo »</a></li>";
-                                        }
-                                        ?>
+$current_filter = "&filtro_status=" . urlencode($filtro_status);
+if ($current_page > 1) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . $current_filter . "'>« Anterior</a></li>";
+}
+for ($page = 1; $page <= $total_pages; $page++) {
+    if ($page == $current_page) {
+        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
+    }
+    else {
+        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$current_filter'>$page</a></li>";
+    }
+}
+if ($current_page < $total_pages) {
+    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . $current_filter . "'>Próximo »</a></li>";
+}
+?>
                                     </ul>
                                 </nav>
                             </div>

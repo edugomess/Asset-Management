@@ -186,6 +186,18 @@ else {
                                 </select>
                             </div>
                         </div>
+                        <div class="col-sm-6 col-xl-4">
+                            <div class="form-group">
+                                <label>Prioridade</label>
+                                <select class="form-control" name="prioridade" required="">
+                                    <optgroup label="Selecione a Prioridade">
+                                        <option value="Baixa">Baixa</option>
+                                        <option value="Média" selected>Média</option>
+                                        <option value="Alta">Alta</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-row">

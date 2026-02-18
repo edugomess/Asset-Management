@@ -7,11 +7,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $categoria = mysqli_real_escape_string($conn, $_POST['categoria']);
     $usuario_id = intval($_POST['usuario_id']); // Ensure it's an integer
     $descricao = mysqli_real_escape_string($conn, $_POST['descricao']);
+    $prioridade = mysqli_real_escape_string($conn, $_POST['prioridade']);
 
     // Status default is 'Aberto' in DB
 
-    $sql = "INSERT INTO chamados (titulo, categoria, descricao, usuario_id) 
-            VALUES ('$titulo', '$categoria', '$descricao', '$usuario_id')";
+    $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id) 
+            VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id')";
 
     if ($conn->query($sql) === TRUE) {
         $last_id = $conn->insert_id;

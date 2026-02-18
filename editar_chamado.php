@@ -7,8 +7,9 @@ $msg = '';
 
 // Processar atualização
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
-    $novo_status = mysqli_real_escape_string($conn, $_POST['status']);
+    $novo_status = mysqli_real_escape_string($conn, $_POST['status']); // Update POST handler
     $responsavel_id = !empty($_POST['responsavel_id']) ? intval($_POST['responsavel_id']) : 'NULL';
+    $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : 'Média';
 
     // Validação: Impedir alteração de status (se não for Aberto) sem responsável
     if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
@@ -20,17 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
         $status_fechados = ['Resolvido', 'Fechado', 'Cancelado'];
 
         if (in_array($novo_status, $status_fechados)) {
-            // Se já tiver data de fechamento, mantemos? Por enquanto, atualizamos para NOW() para garantir último fechamento
-            // Ou melhor, so atualiza se estiver NULL ou mudando de aberto para fechado.
-            // Simplificando: atualizar sempre que fechar.
             $fechamento_sql = ", data_fechamento = NOW()";
         }
         else {
-            // Se reabrir, limpar data
             $fechamento_sql = ", data_fechamento = NULL";
         }
 
-        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id $fechamento_sql WHERE id = $id_chamado";
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade' $fechamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
             $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';
@@ -101,6 +98,16 @@ $result_users = $conn->query($sql_users);
                                     <div class="form-group col-md-6">
                                         <label>Data Abertura</label>
                                         <input type="text" class="form-control" value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label>Prioridade</label>
+                                        <select class="form-control" name="prioridade">
+                                            <option value="Baixa" <?php echo($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>>Baixa</option>
+                                            <option value="Média" <?php echo($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>>Média</option>
+                                            <option value="Alta" <?php echo($chamado['prioridade'] ?? 'Média') == 'Alta' ? 'selected' : ''; ?>>Alta</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">

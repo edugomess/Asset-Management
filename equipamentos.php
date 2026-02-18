@@ -267,8 +267,10 @@ if (mysqli_num_rows($result) > 0) {
         $diff = $data_ativacao->diff($data_atual);
         $dias_ativos = $diff->days;
 
-        // Depreciação: R$ 20,00 por dia
-        $depreciacao = $dias_ativos * 20;
+        // Depreciação Linear (5 anos = 1825 dias)
+        $vida_util_anos = 5;
+        $depreciacao_diaria = ($row['valor'] > 0) ? $row['valor'] / ($vida_util_anos * 365) : 0;
+        $depreciacao = $dias_ativos * $depreciacao_diaria;
         $valor_original = $row['valor'];
         $valor_atual = max(0, $valor_original - $depreciacao);
 

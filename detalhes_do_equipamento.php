@@ -22,9 +22,10 @@ if (mysqli_num_rows($result_ativo) > 0) {
     $diff = $data_ativacao->diff($data_atual);
     $dias_ativos = $diff->days;
 
-    // Depreciação: 20% do valor original por dia
+    // Depreciação Linear (5 anos = 1825 dias)
     $valor_original = $ativo['valor'];
-    $depreciacao_por_dia = $valor_original * 0.20;
+    $vida_util_anos = 5;
+    $depreciacao_por_dia = ($valor_original > 0) ? $valor_original / ($vida_util_anos * 365) : 0;
     $depreciacao_total = $dias_ativos * $depreciacao_por_dia;
     $valor_atual = max(0, $valor_original - $depreciacao_total);
 

@@ -277,6 +277,20 @@ while ($row = mysqli_fetch_array($closed_result)) {
 }
 $closed_string = implode(",", $closed_data);
 
+// Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes)
+$sql_recorrencia = "SELECT titulo, COUNT(*) as total FROM chamados GROUP BY titulo ORDER BY total DESC LIMIT 5";
+$res_recorrencia = mysqli_query($conn, $sql_recorrencia);
+$recorrencia_data = [];
+$max_recorrencia = 0;
+if ($res_recorrencia) {
+    while ($row = mysqli_fetch_assoc($res_recorrencia)) {
+        $recorrencia_data[] = $row;
+        if ($row['total'] > $max_recorrencia) {
+            $max_recorrencia = $row['total'];
+        }
+    }
+}
+
 
 // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
 // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
@@ -467,84 +481,31 @@ endif; ?>
                             </div>
                         </div><!-- End: SLA Ranking -->
                         <div class="row">
-                            <div class="col-lg-6 mb-4">
+                            <div class="col-lg-12 mb-4">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="text-primary font-weight-bold m-0">...</h6>
+                                        <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por Recorrência</h6>
                                     </div>
                                     <div class="card-body">
-                                        <h4 class="small font-weight-bold">...<span class="float-right">20%</span></h4>
+                                        <?php
+if (!empty($recorrencia_data)) {
+    $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
+    foreach ($recorrencia_data as $i => $rec) {
+        $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
+        $cor = $cores[$i % count($cores)];
+        $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
+?>
+                                        <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
                                         <div class="progress mb-4">
-                                            <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%;"><span class="sr-only">20%</span></div>
+                                            <div class="progress-bar <?php echo $cor; ?>" role="progressbar" aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $pct; ?>%;"><?php echo $rec['total']; ?></div>
                                         </div>
-                                        <h4 class="small font-weight-bold">...<span class="float-right">40%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-warning" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;"><span class="sr-only">40%</span></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">...<span class="float-right">60%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-primary" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span class="sr-only">60%</span></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">...<span class="float-right">80%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-info" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%;"><span class="sr-only">80%</span></div>
-                                        </div>
-                                        <h4 class="small font-weight-bold">...<span class="float-right">100%</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar bg-success" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><span class="sr-only">100%</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-primary shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#191d23</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-success shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#57707a</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-info shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#7b919c</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-warning shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#989daa</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-danger shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#c5bac4</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card text-white bg-secondary shadow">
-                                            <div class="card-body">
-                                                <p class="m-0">...</p>
-                                                <p class="text-white-50 small m-0">#dedcdc</p>
-                                            </div>
-                                        </div>
+                                        <?php
+    }
+}
+else {
+    echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
+}
+?>
                                     </div>
                                 </div>
                             </div>

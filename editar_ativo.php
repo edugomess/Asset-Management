@@ -159,97 +159,124 @@ $id = intval($id);
                         $status = $array['status'];
                         $dataAtivacao = $array['dataAtivacao'];
                         $centroDeCusto = $array['centroDeCusto'];
+                        $descricao = $array['descricao'];
+                    }
                     ?>
 
-                        <!-- Start: 1-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-12 col-xl-2 offset-xl-1">
-
-                                <div class="form-group">
-                                    <label>Categoria</label>
-                                    <select class="form-control" name="categoria" required="">
-                                        <optgroup label="Categoria">
-                                            <option value="<?php echo $categoria ?>"></option>
-                                            <?php
-                                            // Conectar ao banco de dados
-                                            include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
-
-                                            // Verificar conexão
-                                            if ($conn->connect_error) {
-                                                die("Conexão falhou: " . $conn->connect_error);
+                    <!-- Start: 1-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-12 col-xl-2 offset-xl-1">
+                            <div class="form-group">
+                                <label>Categoria</label>
+                                <select class="form-control" name="categoria" required="">
+                                    <optgroup label="Categoria">
+                                        <option value="<?php echo $categoria ?>"><?php echo $categoria ?></option>
+                                        <?php
+                                        include 'conexao.php';
+                                        if ($conn->connect_error) {
+                                            die("Conexão falhou: " . $conn->connect_error);
+                                        }
+                                        $sql = "SELECT categoria FROM categoria";
+                                        $result = $conn->query($sql);
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                $selected = ($row['categoria'] == $categoria) ? ' selected' : '';
+                                                echo '<option value="' . $row['categoria'] . '"' . $selected . '>' . $row['categoria'] . '</option>';
                                             }
+                                        } else {
+                                            echo '<option value="">Nenhuma categoria encontrada</option>';
+                                        }
+                                        // Conexão mantida aberta
+                                        ?>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-6 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="fabricante" type="text" placeholder="Fabricante" value="<?php echo $fabricante ?>">
+                            </div>
+                        </div>
+                    </div><!-- End: 1-column form row -->
 
-                                            $sql = "SELECT categoria FROM categoria";
-                                            $result = $conn->query($sql);
+                    <!-- Start: 2-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="modelo" type="text" placeholder="Modelo" value="<?php echo $modelo ?>">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="tag" type="text" placeholder="Tag" value="<?php echo $tag ?>" disabled>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="hostName" type="text" placeholder="Host Name" value="<?php echo $hostName ?>">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' " value="<?php echo $valor ?>">
+                            </div>
+                        </div>
+                    </div><!-- End: 2-column form row -->
+                    <!-- Start: 3-column form row -->
+                    <div class="form-row" style="height: 80px;">
+                        <div class="col-sm-4 col-xl-2 offset-xl-1">
+                            <div class="form-group"><input class="form-control" name="macAdress" type="text" placeholder="MAC Adress" value="<?php echo $macAdress ?>" style="margin-top: 24px;"></div>
+                        </div>
+                        <div class="col-sm-4 col-xl-1">
+                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                <input type="hidden" name="status" value="Inativo">
+                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
+                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-2">
+                            <label>Data de Cadastro</label>
+                            <input class="form-control" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao ?>" readonly>
+                        </div>
 
-                                            if ($result->num_rows > 0) {
-                                                // Saída dos dados de cada linha
-                                                while ($row = $result->fetch_assoc()) {
-                                                    $selected = ($row['categoria'] == $categoriaAtual) ? ' selected' : '';
-                                                    echo '<option value="' . $row['categoria'] . '"' . $selected . '>' . $row['categoria'] . '</option>';
-                                                }
-                                            } else {
-                                                echo '<option value="">Nenhuma categoria encontrada</option>';
-                                            }
-                                            $conn->close();
-                                            ?>
-                                        </optgroup>
-                                    </select>
-                                </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group"><label>Centro de Custo</label>
+                                <select class="form-control" name="centroDeCusto">
+                                    <option value="" <?php echo ($centroDeCusto == '' || $centroDeCusto == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
+                                    <?php
+                                    $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                                    $res_cc = $conn->query($sql_cc);
+                                    if ($res_cc && $res_cc->num_rows > 0) {
+                                        while ($row_cc = $res_cc->fetch_assoc()) {
+                                            $selected_cc = ($row_cc['nomeSetor'] == $centroDeCusto) ? 'selected' : '';
+                                            echo '<option value="' . $row_cc['nomeSetor'] . '" ' . $selected_cc . '>' . $row_cc['nomeSetor'] . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
                             </div>
-                            <div class="col-sm-6 col-xl-6 offset-xl-1">
-                                <div class="form-group"><label>Fabricante</label><input class="form-control" label="Fabricante" name="fabricante" type="text" value="<?php echo $fabricante ?>"></div>
-                            </div>
-                        </div><!-- End: 1-column form row -->
-                        <!-- Start: 2-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label>Modelo</label><input class="form-control" label="Modelo" name="modelo" type="text" value="<?php echo $modelo ?>"></div>
-                            </div>
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label>TAG</label><input class="form-control" label="TAG" name="tag" type="text" value="<?php echo $tag ?>" disabled></div>
-                            </div>
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label>HostName</label><input class="form-control" label="HostName" name="hostName" type="text" value="<?php echo $hostName ?>"></div>
-                            </div>
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label>Valor</label><input class="form-control" label="Valor" name="valor" type="step" value="<?php echo $valor ?>"></div>
-                            </div>
-                        </div><!-- End: 2-column form row -->
-                        <!-- Start: 3-column form row -->
-                        <div class="form-row" style="height: 80px;">
-                            <div class="col-sm-4 col-xl-2 offset-xl-1">
-                                <div class="form-group"><label>MacAdress</label><input class="form-control" label="MacAdress" name="macAdress" type="text" value="<?php echo $macAdress ?>" style="margin-top: 24px;"></div>
-                            </div>
-                            <div class="col-sm-4 col-xl-1">
-                                <div class="custom-control custom-switch" style="margin-top: 57px;">
-                                    <input type="hidden" name="status" value="Inativo">
-                                    <input type="checkbox" class="custom-control-input" id="statusSwitchAtivo" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
-                                    <label class="custom-control-label" for="statusSwitchAtivo">Ativo</label>
-                                </div>
-                            </div>
+                        </div>
+                    </div><!-- End: 3-column form row -->
+                    <div class="form-row" style="height: 80px;">
+                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex" name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
+                    </div><!-- End: 3-column form row -->
 
-                            <div class="col-xl-1"><label>Data de Cadastro</label><input class="form-control" label="Data do Cadastro" name="dataAtivacao" type="date" value="<?php echo $dataAtivacao ?>" style="margin-top: 24px;" disabled></div>
-
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label>Centro de Custo</label><input class="form-control" label="Centro de Custo" name="centroDeCusto" type="text" value="<?php echo $centroDeCusto ?>"></div>
-                            </div>
-                        </div><!-- End: 3-column form row -->
-                        <!-- Start: 3-column form row -->
-                        <div class="form-row" style="height: 80px;">
-                            <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex" name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
-                        </div><!-- End: 3-column form row -->
-                        <!-- Start: 4-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao" value="<?php echo $descricao ?>" style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
-                            <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
-                        <?php } ?>
-                        </div><!-- End: 4-column form row -->
+                    <!-- Start: 4-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao" placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"><?php echo $descricao; ?></textarea></div>
+                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
+                        <?php  ?>
+                    </div><!-- End: 4-column form row -->
                 </form><!-- End: Multi-row Form -->
                 <!-- Start: Simple footer by krissy -->
                 <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
                     <!-- Start: Simple footer by krissy -->
-                    <section class="text-center footer" style="padding: 10px;margin-top: 100px;">
+                    <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
                         <!-- Start: Footer text -->
                         <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
                     </section><!-- End: Simple footer by krissy -->

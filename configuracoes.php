@@ -45,6 +45,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
             VALUES ($taxa, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
     }
     mysqli_query($conn, $sql_dep);
+    // Salvar elegibilidade por categoria
+    $result_cats = mysqli_query($conn, "SELECT categoria FROM categoria");
+    while ($cat_row = mysqli_fetch_assoc($result_cats)) {
+        $cat_name = mysqli_real_escape_string($conn, $cat_row['categoria']);
+        $cat_elegivel = isset($_POST['cat_doacao'][$cat_name]) ? 1 : 0;
+        mysqli_query($conn, "INSERT INTO categoria_doacao (categoria, elegivel_doacao) VALUES ('$cat_name', $cat_elegivel) ON DUPLICATE KEY UPDATE elegivel_doacao = $cat_elegivel");
+    }
+
     $message = "Configurações de depreciação atualizadas com sucesso!";
 }
 
@@ -77,6 +85,15 @@ $dep_config = [
 $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
 if ($result_dep && mysqli_num_rows($result_dep) > 0) {
     $dep_config = mysqli_fetch_assoc($result_dep);
+}
+
+// Fetch per-category donation eligibility
+$cat_doacao = [];
+$result_cat_doacao = mysqli_query($conn, "SELECT c.categoria, COALESCE(cd.elegivel_doacao, 1) as elegivel_doacao FROM categoria c LEFT JOIN categoria_doacao cd ON c.categoria = cd.categoria ORDER BY c.categoria ASC");
+if ($result_cat_doacao) {
+    while ($row_cd = mysqli_fetch_assoc($result_cat_doacao)) {
+        $cat_doacao[$row_cd['categoria']] = $row_cd['elegivel_doacao'];
+    }
 }
 
 // Helper function to get hours and minutes from total minutes
@@ -276,7 +293,7 @@ foreach ($categories as $cat) {
 
                                 <hr class="my-4">
 
-                                <!-- Elegível para Doação -->
+                                <!-- Elegível para Doação (Global) -->
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label font-weight-bold">Elegível para Doação?</label>
                                     <div class="col-sm-4">
@@ -285,6 +302,26 @@ foreach ($categories as $cat) {
                                             <label class="custom-control-label" for="elegivelDoacao">
                                                 <?php echo($dep_config['elegivel_doacao'] == 1) ? 'Sim, ativos podem ser doados' : 'Não, doação desativada'; ?>
                                             </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Elegibilidade por Categoria -->
+                                <div id="categoriasDoacaoSection">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label font-weight-bold">Elegibilidade por Categoria</label>
+                                        <div class="col-sm-9">
+                                            <div class="row">
+                                                <?php foreach ($cat_doacao as $cat_nome => $cat_eleg): ?>
+                                                <div class="col-sm-4 mb-2">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input cat-switch" id="catDoacao_<?php echo md5($cat_nome); ?>" name="cat_doacao[<?php echo htmlspecialchars($cat_nome); ?>]" value="1" <?php echo($cat_eleg == 1) ? 'checked' : ''; ?>>
+                                                        <label class="custom-control-label" for="catDoacao_<?php echo md5($cat_nome); ?>"><?php echo htmlspecialchars($cat_nome); ?></label>
+                                                    </div>
+                                                </div>
+                                                <?php
+endforeach; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -348,13 +385,16 @@ foreach ($categories as $cat) {
     $(document).ready(function() {
         var $switch = $('#elegivelDoacao');
         var $doacaoRow = $('#tempoDoacaoRow');
+        var $catSection = $('#categoriasDoacaoSection');
         var $label = $switch.next('label');
 
         function toggleDoacao() {
             if ($switch.is(':checked')) {
+                $catSection.slideDown(200);
                 $doacaoRow.slideDown(200);
                 $label.text('Sim, ativos podem ser doados');
             } else {
+                $catSection.slideUp(200);
                 $doacaoRow.slideUp(200);
                 $label.text('Não, doação desativada');
             }
@@ -363,6 +403,7 @@ foreach ($categories as $cat) {
         // Initial state
         if (!$switch.is(':checked')) {
             $doacaoRow.hide();
+            $catSection.hide();
         }
 
         // On change

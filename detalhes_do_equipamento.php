@@ -61,9 +61,22 @@ if (mysqli_num_rows($result_ativo) > 0) {
     $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
     $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
 
+    // Verificar elegibilidade por categoria
+    $categoria_ativo = $ativo['categoria'];
+    $cat_elegivel = 1; // Default: elegível
+    $result_cat_eleg = mysqli_query($conn, "SELECT elegivel_doacao FROM categoria_doacao WHERE categoria = '" . mysqli_real_escape_string($conn, $categoria_ativo) . "' LIMIT 1");
+    if ($result_cat_eleg && mysqli_num_rows($result_cat_eleg) > 0) {
+        $row_cat_eleg = mysqli_fetch_assoc($result_cat_eleg);
+        $cat_elegivel = intval($row_cat_eleg['elegivel_doacao']);
+    }
+
     if (!$doacao_habilitada) {
         $status_doacao = "Doação Desativada";
         $cor_doacao = "text-secondary";
+    }
+    elseif (!$cat_elegivel) {
+        $status_doacao = "Categoria não elegível para doação";
+        $cor_doacao = "text-warning";
     }
     elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
         $status_doacao = "Elegível para Doação";

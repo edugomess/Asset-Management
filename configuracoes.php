@@ -2,8 +2,8 @@
 include 'auth.php';
 include 'conexao.php';
 
-// Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Process SLA form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     foreach ($_POST['sla'] as $category => $time) {
         $category = mysqli_real_escape_string($conn, $category);
         $hours = (int)$time['hours'];
@@ -11,13 +11,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $total_minutes = ($hours * 60) + $minutes;
 
-        // Insert or update
-        // We use tempo_sla_minutos column which we renamed earlier
         $sql = "INSERT INTO configuracoes_sla (categoria, tempo_sla_minutos) VALUES ('$category', $total_minutes) 
                 ON DUPLICATE KEY UPDATE tempo_sla_minutos = $total_minutes";
         mysqli_query($conn, $sql);
     }
-    $message = "Configurações atualizadas com sucesso!";
+    $message = "Configurações de SLA atualizadas com sucesso!";
+}
+
+// Process Depreciation form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
+    $taxa = floatval($_POST['depreciacao']['taxa']);
+    $periodo_anos = (int)$_POST['depreciacao']['periodo_anos'];
+    $periodo_meses = (int)$_POST['depreciacao']['periodo_meses'];
+    $elegivel = isset($_POST['depreciacao']['elegivel_doacao']) ? 1 : 0;
+    $doacao_anos = (int)$_POST['depreciacao']['tempo_doacao_anos'];
+    $doacao_meses = (int)$_POST['depreciacao']['tempo_doacao_meses'];
+
+    // Check if record exists
+    $check = mysqli_query($conn, "SELECT id FROM configuracoes_depreciacao LIMIT 1");
+    if (mysqli_num_rows($check) > 0) {
+        $row_dep = mysqli_fetch_assoc($check);
+        $sql_dep = "UPDATE configuracoes_depreciacao SET 
+            taxa_depreciacao = $taxa, 
+            periodo_anos = $periodo_anos, 
+            periodo_meses = $periodo_meses, 
+            elegivel_doacao = $elegivel, 
+            tempo_doacao_anos = $doacao_anos, 
+            tempo_doacao_meses = $doacao_meses 
+            WHERE id = " . $row_dep['id'];
+    }
+    else {
+        $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
+            VALUES ($taxa, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
+    }
+    mysqli_query($conn, $sql_dep);
+    $message = "Configurações de depreciação atualizadas com sucesso!";
 }
 
 // Fetch current settings
@@ -35,6 +63,20 @@ foreach ($defaults as $cat => $val) {
     if (!isset($configs[$cat])) {
         $configs[$cat] = $val;
     }
+}
+
+// Fetch depreciation settings
+$dep_config = [
+    'taxa_depreciacao' => 10.00,
+    'periodo_anos' => 1,
+    'periodo_meses' => 0,
+    'elegivel_doacao' => 0,
+    'tempo_doacao_anos' => 5,
+    'tempo_doacao_meses' => 0
+];
+$result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+if ($result_dep && mysqli_num_rows($result_dep) > 0) {
+    $dep_config = mysqli_fetch_assoc($result_dep);
 }
 
 // Helper function to get hours and minutes from total minutes
@@ -188,6 +230,94 @@ foreach ($categories as $cat) {
                             </form>
                         </div>
                     </div>
+
+                    <!-- Seção de Depreciação e Doação -->
+                    <div class="card shadow mt-4">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 font-weight-bold">Configuração de Depreciação e Doação de Ativos</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="configuracoes.php">
+                                <p class="mb-4">Defina a taxa de depreciação dos ativos e as regras de elegibilidade para doação.</p>
+                                
+                                <!-- Taxa de Depreciação -->
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Taxa de Depreciação (%)</label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="depreciacao[taxa]" value="<?php echo $dep_config['taxa_depreciacao']; ?>" required min="0" max="100" step="0.01" placeholder="10.00">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Período de Depreciação -->
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Período de Depreciação</label>
+                                    <div class="col-sm-2">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="depreciacao[periodo_anos]" value="<?php echo $dep_config['periodo_anos']; ?>" required min="0" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Anos</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="depreciacao[periodo_meses]" value="<?php echo $dep_config['periodo_meses']; ?>" required min="0" max="11" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Meses</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <!-- Elegível para Doação -->
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Elegível para Doação?</label>
+                                    <div class="col-sm-4">
+                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                            <input type="checkbox" class="custom-control-input" id="elegivelDoacao" name="depreciacao[elegivel_doacao]" value="1" <?php echo($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="elegivelDoacao">
+                                                <?php echo($dep_config['elegivel_doacao'] == 1) ? 'Sim, ativos podem ser doados' : 'Não, doação desativada'; ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tempo mínimo para Doação -->
+                                <div class="form-group row" id="tempoDoacaoRow">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Tempo mínimo para Doação</label>
+                                    <div class="col-sm-2">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="depreciacao[tempo_doacao_anos]" value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Anos</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="depreciacao[tempo_doacao_meses]" value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0" max="11" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Meses</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-10">
+                                        <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);">Salvar Configurações de Depreciação</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
@@ -214,6 +344,31 @@ foreach ($categories as $cat) {
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+    $(document).ready(function() {
+        var $switch = $('#elegivelDoacao');
+        var $doacaoRow = $('#tempoDoacaoRow');
+        var $label = $switch.next('label');
+
+        function toggleDoacao() {
+            if ($switch.is(':checked')) {
+                $doacaoRow.slideDown(200);
+                $label.text('Sim, ativos podem ser doados');
+            } else {
+                $doacaoRow.slideUp(200);
+                $label.text('Não, doação desativada');
+            }
+        }
+
+        // Initial state
+        if (!$switch.is(':checked')) {
+            $doacaoRow.hide();
+        }
+
+        // On change
+        $switch.on('change', toggleDoacao);
+    });
+    </script>
 </body>
 
 </html>

@@ -16,23 +16,75 @@ $result_ativo = mysqli_query($conn, $sql_ativo);
 if (mysqli_num_rows($result_ativo) > 0) {
     $ativo = mysqli_fetch_assoc($result_ativo);
 
-    // Calcular depreciação e elegibilidade
+    // Buscar configurações de depreciação do banco
+    $dep_config = [
+        'taxa_depreciacao' => 10.00,
+        'periodo_anos' => 1,
+        'periodo_meses' => 0,
+        'elegivel_doacao' => 0,
+        'tempo_doacao_anos' => 5,
+        'tempo_doacao_meses' => 0
+    ];
+    $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+    if ($result_dep && mysqli_num_rows($result_dep) > 0) {
+        $dep_config = mysqli_fetch_assoc($result_dep);
+    }
+
+    // Calcular tempo desde cadastro
     $data_ativacao = new DateTime($ativo['dataAtivacao']);
     $data_atual = new DateTime();
     $diff = $data_ativacao->diff($data_atual);
     $dias_ativos = $diff->days;
 
-    // Depreciação Linear (5 anos = 1825 dias)
-    $valor_original = $ativo['valor'];
-    $vida_util_anos = 5;
-    $depreciacao_por_dia = ($valor_original > 0) ? $valor_original / ($vida_util_anos * 365) : 0;
-    $depreciacao_total = $dias_ativos * $depreciacao_por_dia;
-    $valor_atual = max(0, $valor_original - $depreciacao_total);
+    // Depreciação baseada nas configurações
+    $valor_original = floatval($ativo['valor']);
+    $taxa_pct = floatval($dep_config['taxa_depreciacao']); // ex: 10 = 10%
+    $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
-    // Elegibilidade
-    $elegivel_doacao = $dias_ativos >= 3;
-    $status_doacao = $elegivel_doacao ? "Elegível para Doação" : "Bloqueado (Carência 3 dias)";
-    $cor_doacao = $elegivel_doacao ? "text-success" : "text-danger";
+    if ($periodo_total_meses > 0 && $valor_original > 0) {
+        // Quantos períodos completos já se passaram
+        $meses_ativos = ($diff->y * 12) + $diff->m;
+        $periodos_completos = floor($meses_ativos / $periodo_total_meses);
+        // Depreciação acumulada (nunca ultrapassa o valor original)
+        $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
+        $valor_atual = max(0, $valor_original - $depreciacao_total);
+        $percentual_depreciado = min(100, round(($depreciacao_total / $valor_original) * 100, 1));
+    }
+    else {
+        $depreciacao_total = 0;
+        $valor_atual = $valor_original;
+        $percentual_depreciado = 0;
+    }
+
+    // Elegibilidade para doação baseada nas configurações
+    $doacao_habilitada = intval($dep_config['elegivel_doacao']);
+    $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
+    $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
+
+    if (!$doacao_habilitada) {
+        $status_doacao = "Doação Desativada";
+        $cor_doacao = "text-secondary";
+    }
+    elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
+        $status_doacao = "Elegível para Doação";
+        $cor_doacao = "text-success";
+    }
+    else {
+        $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
+        $anos_rest = floor($restante_meses / 12);
+        $meses_rest = $restante_meses % 12;
+        $tempo_str = '';
+        if ($anos_rest > 0)
+            $tempo_str .= $anos_rest . ' ano(s)';
+        if ($anos_rest > 0 && $meses_rest > 0)
+            $tempo_str .= ' e ';
+        if ($meses_rest > 0)
+            $tempo_str .= $meses_rest . ' mês(es)';
+        if (empty($tempo_str))
+            $tempo_str = 'menos de 1 mês';
+        $status_doacao = "Bloqueado (Carência: " . $tempo_str . ")";
+        $cor_doacao = "text-danger";
+    }
 }
 else {
     echo "<script>alert('Ativo não encontrado!'); window.location.href='equipamentos.php';</script>";
@@ -186,6 +238,14 @@ endif; ?>
                                                     </div>
                                                     <div class="col">
                                                         <div class="form-group"><label><strong>Valor Atual</strong></label><input class="form-control" type="text" value="R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>" readonly></div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="col">
+                                                        <div class="form-group"><label><strong>Taxa de Depreciação</strong></label><input class="form-control" type="text" value="<?php echo number_format($taxa_pct, 2, ',', '.'); ?>% a cada <?php echo intval($dep_config['periodo_anos']); ?> ano(s) e <?php echo intval($dep_config['periodo_meses']); ?> mês(es)" readonly></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="form-group"><label><strong>Depreciação Acumulada</strong></label><input class="form-control text-danger" type="text" value="R$ <?php echo number_format($depreciacao_total, 2, ',', '.'); ?> (<?php echo number_format($percentual_depreciado, 1, ',', '.'); ?>%)" readonly style="font-weight: bold;"></div>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">

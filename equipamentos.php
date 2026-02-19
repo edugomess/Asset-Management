@@ -235,6 +235,33 @@ $start_from = ($current_page - 1) * $results_per_page;
 // Consultar os ativos
 $sql = "SELECT * FROM ativos $where_clause LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
+
+// Buscar configurações de depreciação/doação globais
+$dep_config_eq = [
+    'taxa_depreciacao' => 10.00,
+    'periodo_anos' => 1,
+    'periodo_meses' => 0,
+    'elegivel_doacao' => 0,
+    'tempo_doacao_anos' => 5,
+    'tempo_doacao_meses' => 0
+];
+$result_dep_eq = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+if ($result_dep_eq && mysqli_num_rows($result_dep_eq) > 0) {
+    $dep_config_eq = mysqli_fetch_assoc($result_dep_eq);
+}
+$doacao_global = intval($dep_config_eq['elegivel_doacao']);
+$tempo_min_doacao_meses_eq = (intval($dep_config_eq['tempo_doacao_anos']) * 12) + intval($dep_config_eq['tempo_doacao_meses']);
+$taxa_dep_eq = floatval($dep_config_eq['taxa_depreciacao']);
+$periodo_total_meses_eq = (intval($dep_config_eq['periodo_anos']) * 12) + intval($dep_config_eq['periodo_meses']);
+
+// Buscar elegibilidade por categoria
+$cat_doacao_map = [];
+$result_cat_eq = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
+if ($result_cat_eq) {
+    while ($r = mysqli_fetch_assoc($result_cat_eq)) {
+        $cat_doacao_map[$r['categoria']] = intval($r['elegivel_doacao']);
+    }
+}
 ?>
 
 
@@ -261,21 +288,61 @@ if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
 
-        // Calcular depreciação e elegibilidade
+        // Calcular depreciação baseada nas configurações
         $data_ativacao = new DateTime($row['dataAtivacao']);
         $data_atual = new DateTime();
         $diff = $data_ativacao->diff($data_atual);
         $dias_ativos = $diff->days;
 
-        // Depreciação Linear (5 anos = 1825 dias)
-        $vida_util_anos = 5;
-        $depreciacao_diaria = ($row['valor'] > 0) ? $row['valor'] / ($vida_util_anos * 365) : 0;
-        $depreciacao = $dias_ativos * $depreciacao_diaria;
-        $valor_original = $row['valor'];
-        $valor_atual = max(0, $valor_original - $depreciacao);
+        $valor_original = floatval($row['valor']);
+        if ($periodo_total_meses_eq > 0 && $valor_original > 0) {
+            $meses_ativos = ($diff->y * 12) + $diff->m;
+            $periodos_completos = floor($meses_ativos / $periodo_total_meses_eq);
+            $depreciacao = min($valor_original, $valor_original * ($taxa_dep_eq / 100) * $periodos_completos);
+            $valor_atual = max(0, $valor_original - $depreciacao);
+        }
+        else {
+            $depreciacao = 0;
+            $valor_atual = $valor_original;
+        }
 
-        // Elegibilidade: Somente após 3 dias
-        $elegivel_doacao = $dias_ativos >= 3;
+        // Elegibilidade para doação baseada nas configurações
+        $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
+        $cat_do_ativo = $row['categoria'];
+        $cat_elegivel = isset($cat_doacao_map[$cat_do_ativo]) ? $cat_doacao_map[$cat_do_ativo] : 1;
+
+        if (!$doacao_global) {
+            $elegivel_doacao = false;
+            $doacao_msg = 'Doação Desativada';
+            $doacao_title = 'A doação está desativada globalmente nas configurações.';
+        }
+        elseif (!$cat_elegivel) {
+            $elegivel_doacao = false;
+            $doacao_msg = 'Categoria não elegível';
+            $doacao_title = 'A categoria "' . htmlspecialchars($cat_do_ativo) . '" não está habilitada para doação.';
+        }
+        elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses_eq) {
+            $elegivel_doacao = true;
+            $doacao_msg = 'Doar Ativo';
+            $doacao_title = '';
+        }
+        else {
+            $elegivel_doacao = false;
+            $restante = $tempo_min_doacao_meses_eq - $meses_desde_cadastro;
+            $a = floor($restante / 12);
+            $m = $restante % 12;
+            $t = '';
+            if ($a > 0)
+                $t .= $a . ' ano(s)';
+            if ($a > 0 && $m > 0)
+                $t .= ' e ';
+            if ($m > 0)
+                $t .= $m . ' mês(es)';
+            if (empty($t))
+                $t = 'menos de 1 mês';
+            $doacao_msg = 'Bloqueado (Carência: ' . $t . ')';
+            $doacao_title = 'Ativo precisa de mais ' . $t . ' para ser elegível para doação.';
+        }
 ?>
                     <tr>
                         <td><?php echo htmlspecialchars($row['categoria']); ?></td>
@@ -295,7 +362,7 @@ if (mysqli_num_rows($result) > 0) {
             $result_user = mysqli_query($conn, $sql_user);
             if ($result_user && mysqli_num_rows($result_user) > 0) {
                 $user = mysqli_fetch_assoc($result_user);
-                echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ", " . ($elegivel_doacao ? 'true' : 'false') . ")'>" . htmlspecialchars($user['nome']) . "</a>";
+                echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ", " . ($elegivel_doacao ? 'true' : 'false') . ", \"" . addslashes($doacao_msg) . "\", \"" . addslashes($doacao_title) . "\")'>" . htmlspecialchars($user['nome']) . "</a>";
             }
         }
         else {
@@ -430,7 +497,7 @@ mysqli_close($conn);
 </div>
 
 <script>
-function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto, assetId, isEligible) {
+function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto, assetId, isEligible, doacaoMsg, doacaoTitle) {
     const userDetails = `
         <p><strong>Nome:</strong> ${nome} ${sobrenome}</p>
         <p><strong>Usuário AD:</strong> ${usuarioAD}</p>
@@ -446,12 +513,14 @@ function showUserModal(userId, nome, sobrenome, usuarioAD, email, centroDeCusto,
     // Habilitar/Desabilitar botão baseada na elegibilidade
     if (isEligible) {
         sellButton.disabled = false;
-        sellButton.innerHTML = "Doar Ativo";
-        sellButton.title = "";
+        sellButton.className = 'btn btn-success';
+        sellButton.innerHTML = doacaoMsg || 'Doar Ativo';
+        sellButton.title = '';
     } else {
         sellButton.disabled = true;
-        sellButton.innerHTML = "Doação Bloqueada (3 dias)";
-        sellButton.title = "Ativo precisa de 3 dias de ativação para ser doado.";
+        sellButton.className = 'btn btn-secondary';
+        sellButton.innerHTML = doacaoMsg || 'Doação Bloqueada';
+        sellButton.title = doacaoTitle || 'Este ativo não pode ser doado no momento.';
     }
 
     // Exibe o modal

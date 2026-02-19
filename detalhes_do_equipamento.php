@@ -199,6 +199,9 @@ else: ?>
                                     </button>
                                     <?php
 endif; ?>
+                                    <button class="btn btn-info btn-block" onclick="gerarPDF()">
+                                        <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -406,6 +409,51 @@ else {
                 alert('Erro na requisição');
             });
         }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+    function gerarPDF() {
+        // Esconder botões antes de gerar
+        var btns = document.querySelectorAll('.btn');
+        var sidebar = document.getElementById('wrapper').querySelector('nav.sidebar');
+        var topbar = document.querySelector('.topbar');
+        var btnPdf = event.target.closest('button');
+        var acoesCard = btnPdf.closest('.card');
+        var fotoCard = acoesCard.previousElementSibling;
+
+        // Guardar estado original
+        var sidebarDisplay = sidebar ? sidebar.style.display : '';
+        var topbarDisplay = topbar ? topbar.style.display : '';
+        var acoesDisplay = acoesCard.style.display;
+        var fotoDisplay = fotoCard ? fotoCard.style.display : '';
+
+        // Esconder elementos desnecessários no PDF
+        if (sidebar) sidebar.style.display = 'none';
+        if (topbar) topbar.style.display = 'none';
+        acoesCard.style.display = 'none';
+        if (fotoCard) fotoCard.style.display = 'none';
+
+        var element = document.getElementById('content');
+        var tag = '<?php echo addslashes($ativo["tag"]); ?>';
+        var modelo = '<?php echo addslashes($ativo["modelo"]); ?>';
+
+        var opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     'Relatorio_Ativo_' + tag + '.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(element).save().then(function() {
+            // Restaurar elementos
+            if (sidebar) sidebar.style.display = sidebarDisplay;
+            if (topbar) topbar.style.display = topbarDisplay;
+            acoesCard.style.display = acoesDisplay;
+            if (fotoCard) fotoCard.style.display = fotoDisplay;
+        });
+    }
     </script>
 </body>
 

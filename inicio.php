@@ -214,6 +214,31 @@ $start_from = ($current_page - 1) * $results_per_page;
 // Consultar os ativos atribuídos
 $sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
+
+// Buscar configurações de depreciação/doação globais
+$dep_config_ini = [
+    'taxa_depreciacao' => 10.00,
+    'periodo_anos' => 1,
+    'periodo_meses' => 0,
+    'elegivel_doacao' => 0,
+    'tempo_doacao_anos' => 5,
+    'tempo_doacao_meses' => 0
+];
+$result_dep_ini = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+if ($result_dep_ini && mysqli_num_rows($result_dep_ini) > 0) {
+    $dep_config_ini = mysqli_fetch_assoc($result_dep_ini);
+}
+$doacao_global_ini = intval($dep_config_ini['elegivel_doacao']);
+$tempo_min_doacao_meses_ini = (intval($dep_config_ini['tempo_doacao_anos']) * 12) + intval($dep_config_ini['tempo_doacao_meses']);
+
+// Buscar elegibilidade por categoria
+$cat_doacao_map_ini = [];
+$result_cat_ini = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
+if ($result_cat_ini) {
+    while ($r = mysqli_fetch_assoc($result_cat_ini)) {
+        $cat_doacao_map_ini[$r['categoria']] = intval($r['elegivel_doacao']);
+    }
+}
 ?>
 <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
     <div class="card shadow">
@@ -270,17 +295,39 @@ if (mysqli_num_rows($result) > 0) {
                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                     <td>
                                         <?php
-        // Calcular elegibilidade para doação (mesma lógica de equipamentos.php)
+        // Elegibilidade para doação baseada nas configurações
         $data_ativacao = new DateTime($row['dataAtivacao']);
         $data_atual = new DateTime();
         $diff = $data_ativacao->diff($data_atual);
-        $elegivel_doacao = $diff->days >= 3;
+        $meses_desde_cadastro_ini = ($diff->y * 12) + $diff->m;
+        $cat_do_ativo_ini = $row['categoria'];
+        $cat_elegivel_ini = isset($cat_doacao_map_ini[$cat_do_ativo_ini]) ? $cat_doacao_map_ini[$cat_do_ativo_ini] : 1;
 
-        if ($elegivel_doacao) {
-            echo '<button class="btn btn-success" onclick="sellAsset(' . $row['id_asset'] . ')">Doar</button>';
+        $btn_style = 'style="width:150px; font-size:12px;"';
+
+        if (!$doacao_global_ini) {
+            echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . '>Desativada</button>';
+        }
+        elseif (!$cat_elegivel_ini) {
+            echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . '>Cat. não elegível</button>';
+        }
+        elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
+            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . '>Doar</button>';
         }
         else {
-            echo '<button class="btn btn-secondary" disabled title="Aguardando período de carência (3 dias)">Doar</button>';
+            $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
+            $a_ini = floor($restante_ini / 12);
+            $m_ini = $restante_ini % 12;
+            $t_ini = '';
+            if ($a_ini > 0)
+                $t_ini .= $a_ini . ' ano(s)';
+            if ($a_ini > 0 && $m_ini > 0)
+                $t_ini .= ' e ';
+            if ($m_ini > 0)
+                $t_ini .= $m_ini . ' mês(es)';
+            if (empty($t_ini))
+                $t_ini = 'menos de 1 mês';
+            echo '<button class="btn btn-warning btn-sm" disabled title="Carência: ' . $t_ini . '" ' . $btn_style . '>Bloqueado</button>';
         }
 ?>
                                     </td>

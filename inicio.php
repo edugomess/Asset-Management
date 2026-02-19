@@ -303,7 +303,7 @@ if (mysqli_num_rows($result) > 0) {
         $cat_do_ativo_ini = $row['categoria'];
         $cat_elegivel_ini = isset($cat_doacao_map_ini[$cat_do_ativo_ini]) ? $cat_doacao_map_ini[$cat_do_ativo_ini] : 1;
 
-        $btn_style = 'style="width:150px; font-size:12px;"';
+        $btn_style = 'style="width:150px; font-size:12px; border-radius:10px;"';
 
         if (!$doacao_global_ini) {
             echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . '>Desativada</button>';

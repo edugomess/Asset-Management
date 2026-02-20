@@ -63,84 +63,84 @@
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
-    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-        <ul class="navbar-nav flex-nowrap ml-auto">
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                <p>A new monthly report is ready to download!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                <p>$290.29 has been deposited into your account!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 12, 2019</span>
+                                                <p>A new monthly report is ready to download!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 7, 2019</span>
+                                                <p>$290.29 has been deposited into your account!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 2, 2019</span>
+                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
+                                                <div class="status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
+                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
+                                                <div class="bg-warning status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
+                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
+                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
-                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                <div class="status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
-                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                <div class="bg-warning status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
-                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
-                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                    </div>
-                </div>
-                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
-            </li>
-        </ul>
-    </div>
-</nav>
+                </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Novo Chamado</h3>
                 </div>
                 <form action="inserir_chamado.php" method="post" id="form-novo-chamado">
-                
+
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-6 offset-xl-1">
                             <div class="form-group">
@@ -163,25 +163,24 @@
                     </div>
 
                     <div class="form-row">
-                         <div class="col-sm-6 col-xl-4 offset-xl-1">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
                                 <label>Solicitante</label>
                                 <select class="form-control" name="usuario_id" required="">
                                     <optgroup label="Selecione o Solicitante">
-                                    <?php
+                                        <?php
 
-include_once 'conexao.php';
-$sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
-    }
-}
-else {
-    echo '<option value="">Nenhum usuário encontrado</option>';
-}
-?>
+                                        include_once 'conexao.php';
+                                        $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
+                                        $result = $conn->query($sql);
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
+                                            }
+                                        } else {
+                                            echo '<option value="">Nenhum usuário encontrado</option>';
+                                        }
+                                        ?>
                                     </optgroup>
                                 </select>
                             </div>
@@ -203,7 +202,7 @@ else {
                     <div class="form-row">
                         <div class="col-sm-3 col-xl-10 offset-xl-1" style="height: 200px;">
                             <label>Descrição</label>
-                            <textarea class="form-control" name="descricao"  placeholder="Detalhes do chamado..." style="height: 150px; margin-bottom: 0px;" required=""></textarea>
+                            <textarea class="form-control" name="descricao" placeholder="Detalhes do chamado..." style="height: 150px; margin-bottom: 0px;" required=""></textarea>
                         </div>
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir Chamado</button></div>
                     </div>
@@ -211,28 +210,28 @@ else {
 
                 <!-- Success Modal -->
                 <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        Chamado criado com sucesso!<br>
-                        <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
-                      </div>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Chamado criado com sucesso!<br>
+                                <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-            <footer class="bg-white sticky-footer" style="padding: 0; position: fixed; bottom: 0; width: 100%; z-index: 1000;">
-                <div class="container my-auto">
-                     <div class="copyright text-center my-auto">
-                        <!-- SLA Timer Section -->
+                <footer class="bg-white sticky-footer" style="padding: 0; position: fixed; bottom: 0; width: 100%; z-index: 1000;">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <!-- SLA Timer Section 
                         <div id="sla-container" style="padding: 10px 20px;">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="font-weight-bold text-gray-800">Tempo Restante para Cadastro (SLA)</span>
@@ -241,13 +240,13 @@ else {
                             <div class="progress" style="height: 20px;">
                                 <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%; transition: width 1s linear;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="sla-progress-bar"></div>
                             </div>
+                        </div> -->
+                            <section class="text-center footer" style="padding: 10px;">
+                                <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                            </section>
                         </div>
-                        <section class="text-center footer" style="padding: 10px;">
-                            <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                        </section>
                     </div>
-                </div>
-            </footer>
+                </footer>
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
@@ -276,33 +275,33 @@ else {
         // AJAX Form Submission
         document.getElementById('form-novo-chamado').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             var formData = new FormData(this);
-            
+
             fetch('inserir_chamado.php', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('modal-chamado-id').textContent = '#' + data.id;
-                    $('#successModal').modal('show');
-                    
-                    document.getElementById('btn-redirect-chamados').onclick = function() {
-                        window.location.href = 'chamados.php';
-                    };
-                } else {
-                    alert('Erro ao criar chamado: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Ocorreu um erro na requisição.');
-            });
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('modal-chamado-id').textContent = '#' + data.id;
+                        $('#successModal').modal('show');
+
+                        document.getElementById('btn-redirect-chamados').onclick = function() {
+                            window.location.href = 'chamados.php';
+                        };
+                    } else {
+                        alert('Erro ao criar chamado: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocorreu um erro na requisição.');
+                });
         });
     </script>
     <script src="/assets/js/global_search.js"></script>

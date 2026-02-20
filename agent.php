@@ -27,14 +27,20 @@ include 'conexao.php';
             height: 60vh;
             overflow-y: auto;
             border: 1px solid #e3e6f0;
-            border-radius: 5px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 20px;
             background-color: #f8f9fc;
+            scroll-behavior: smooth;
         }
         .chat-message {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .message-user {
             align-items: flex-end;
@@ -43,25 +49,53 @@ include 'conexao.php';
             align-items: flex-start;
         }
         .message-content {
-            padding: 10px 15px;
-            border-radius: 20px;
+            padding: 12px 16px;
+            border-radius: 18px;
             max-width: 80%;
             word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 14px;
         }
         .message-user .message-content {
-            background-color: #4e73df;
+            background-color: rgb(44,64,74);
             color: white;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 4px;
         }
         .message-bot .message-content {
-            background-color: #e3e6f0;
-            color: #5a5c69;
-            border-bottom-left-radius: 5px;
+            background-color: #e8ecf1;
+            color: #2d3748;
+            border-bottom-left-radius: 4px;
         }
         .message-time {
             font-size: 0.7rem;
             color: #858796;
-            margin-top: 2px;
+            margin-top: 3px;
+        }
+        .message-content strong, .message-content b {
+            font-weight: 700;
+        }
+        .typing-dots span {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #858796;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .gemini-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 700; font-size: 13px;
+        }
+        .btn-clear-chat {
+            font-size: 12px; padding: 4px 10px; border-radius: 6px;
         }
     </style>
 </head>
@@ -111,8 +145,14 @@ include 'conexao.php';
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Agente Inteligente - Assistente Virtual</h3>
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Chat com IA</h6>
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold" style="color: rgb(44,64,74);">
+                                <i class="fas fa-robot mr-1"></i> Chat com IA 
+                                <span class="gemini-badge ml-2">✦ Gemini</span>
+                            </h6>
+                            <button class="btn btn-outline-secondary btn-clear-chat" onclick="clearChat()" title="Limpar conversa">
+                                <i class="fas fa-trash-alt mr-1"></i> Limpar
+                            </button>
                         </div>
                         <div class="card-body">
                             <div id="chat-history" class="chat-container mb-3">
@@ -124,11 +164,12 @@ include 'conexao.php';
                                 </div>
                             </div>
                             <div class="input-group">
-                                <input type="text" id="user-input" class="form-control" placeholder="Digite sua pergunta aqui (ex: 'quantos ativos temos?', 'listar chamados abertos')..." onkeypress="handleKeyPress(event)">
+                                <input type="text" id="user-input" class="form-control" placeholder="Pergunte qualquer coisa... (ex: 'resumo do sistema', 'sugira melhorias')" onkeypress="handleKeyPress(event)" style="border-radius: 8px 0 0 8px; border-color: rgba(44,64,74,0.3);">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" onclick="sendMessage()">Enviar <i class="fas fa-paper-plane"></i></button>
+                                    <button class="btn text-white" type="button" onclick="sendMessage()" style="background: rgb(44,64,74); border-radius: 0 8px 8px 0;">Enviar <i class="fas fa-paper-plane"></i></button>
                                 </div>
                             </div>
+                            <small class="text-muted mt-1 d-block"><i class="fas fa-bolt" style="color: #fbbc05;"></i> Powered by Google Gemini + Dados do Sistema</small>
                         </div>
                     </div>
                 </div>
@@ -159,9 +200,10 @@ include 'conexao.php';
             // Add user message to chat
             addMessage(message, 'user');
             input.value = '';
+            input.focus();
 
-            // Loading state
-            const loadingId = addMessage('Digitando...', 'bot', true);
+            // Loading state with animated dots
+            const loadingId = addMessage('', 'bot', true);
 
             // Send to backend
             fetch('agent_backend.php', {
@@ -173,42 +215,73 @@ include 'conexao.php';
             })
             .then(response => response.json())
             .then(data => {
-                // Remove loading message
                 removeMessage(loadingId);
-                // Add bot response
                 addMessage(data.reply, 'bot');
             })
             .catch(error => {
                 removeMessage(loadingId);
-                addMessage('Desculpe, ocorreu um erro ao processar sua solicitação.', 'bot');
+                addMessage('⚠️ Desculpe, ocorreu um erro ao processar sua solicitação. Tente novamente.', 'bot');
                 console.error('Error:', error);
             });
+        }
+
+        function formatMarkdown(text) {
+            // Bold: **text**
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // Newlines
+            text = text.replace(/\n/g, '<br>');
+            return text;
         }
 
         function addMessage(text, sender, isLoading = false) {
             const history = document.getElementById('chat-history');
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-message message-${sender}`;
-            if (isLoading) msgDiv.id = 'loading-msg-' + Date.now();
+            const msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+            if (isLoading) msgDiv.id = msgId;
             
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Format newlines
-            const formattedText = text.replace(/\n/g, '<br>');
-
-            msgDiv.innerHTML = `
-                <div class="message-content">${formattedText}</div>
-                <div class="message-time">${time}</div>
-            `;
+            if (isLoading) {
+                msgDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="typing-dots"><span></span><span></span><span></span></div>
+                    </div>
+                `;
+            } else {
+                const formattedText = formatMarkdown(text);
+                msgDiv.innerHTML = `
+                    <div class="message-content">${formattedText}</div>
+                    <div class="message-time">${time}</div>
+                `;
+            }
             
             history.appendChild(msgDiv);
             history.scrollTop = history.scrollHeight;
-            return msgDiv.id;
+            return msgId;
         }
 
         function removeMessage(id) {
             const msg = document.getElementById(id);
             if (msg) msg.remove();
+        }
+
+        function clearChat() {
+            const history = document.getElementById('chat-history');
+            history.innerHTML = `
+                <div class="chat-message message-bot">
+                    <div class="message-content">
+                        Olá, <strong><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></strong>! 👋 Eu sou o assistente virtual do sistema, integrado com <strong>Google Gemini AI</strong>. Posso ajudar com informações sobre ativos, chamados, fornecedores e muito mais. Como posso ajudar hoje?
+                    </div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `;
+            // Clear server-side history
+            fetch('agent_backend.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'clear_history=1'
+            });
         }
     </script>
 </body>

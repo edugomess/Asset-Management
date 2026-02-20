@@ -3,6 +3,15 @@ session_start();
 include 'conexao.php';
 header('Content-Type: application/json');
 
+// ============================================================
+// CONFIGURAÇÃO DA API GEMINI
+// ============================================================
+// Coloque sua chave da API do Google Gemini aqui
+// Obtenha em: https://aistudio.google.com/app/apikey
+$GEMINI_API_KEY = 'AIzaSyDXrsM8tcJBBKUFRO_uPJoK22ibnvFCUW8';
+
+// ============================================================
+
 // Check connection
 if ($conn->connect_error) {
     echo json_encode(['reply' => 'Erro de conexão com o banco de dados.']);
@@ -10,6 +19,13 @@ if ($conn->connect_error) {
 }
 
 $message = isset($_POST['message']) ? mb_strtolower(trim($_POST['message'])) : '';
+
+// Handle clear history request
+if (isset($_POST['clear_history'])) {
+    $_SESSION['chat_history'] = [];
+    echo json_encode(['reply' => 'ok']);
+    exit;
+}
 
 if (empty($message)) {
     echo json_encode(['reply' => 'Por favor, digite algo.']);
@@ -25,10 +41,223 @@ function formatMoney($val)
     return 'R$ ' . number_format($val, 2, ',', '.');
 }
 
+// Helper: Get system context for Gemini (summarized DB data)
+function getSystemContext($conn)
+{
+    $context = "Você é o assistente virtual do sistema Asset Management (Asset MGT). ";
+    $context .= "O sistema gerencia ativos de TI, usuários, fornecedores, centros de custo e chamados de suporte. ";
+    $context .= "Responda sempre em português brasileiro de forma profissional e amigável.\n\n";
+    $context .= "Dados atuais do sistema:\n";
+
+    // Safe query helper
+    $safeQuery = function ($sql) use ($conn) {
+        try {
+            $r = @$conn->query($sql);
+            return $r ?: null;
+        }
+        catch (Exception $e) {
+            return null;
+        }
+    };
+
+    // Total assets
+    $r = $safeQuery("SELECT COUNT(*) as total FROM ativos");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        $context .= "- Total de ativos cadastrados: " . $row['total'] . "\n";
+    }
+
+    // Assets by category
+    $r = $safeQuery("SELECT categoria, COUNT(*) as total FROM ativos GROUP BY categoria ORDER BY total DESC LIMIT 10");
+    if ($r && $r->num_rows > 0) {
+        $cats = [];
+        while ($row = $r->fetch_assoc()) {
+            $cats[] = $row['categoria'] . " (" . $row['total'] . ")";
+        }
+        $context .= "- Ativos por categoria: " . implode(", ", $cats) . "\n";
+    }
+
+    // Active vs Inactive
+    $r = $safeQuery("SELECT status, COUNT(*) as total FROM ativos GROUP BY status");
+    if ($r && $r->num_rows > 0) {
+        $statuses = [];
+        while ($row = $r->fetch_assoc()) {
+            $statuses[] = $row['status'] . ": " . $row['total'];
+        }
+        $context .= "- Status dos ativos: " . implode(", ", $statuses) . "\n";
+    }
+
+    // Total value
+    $r = $safeQuery("SELECT SUM(valor) as total FROM ativos");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        $context .= "- Valor total dos ativos: R$ " . number_format($row['total'] ?? 0, 2, ',', '.') . "\n";
+    }
+
+    // Users count
+    $r = $safeQuery("SELECT COUNT(*) as total FROM usuarios");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        $context .= "- Total de usuários: " . $row['total'] . "\n";
+    }
+
+    // Suppliers count
+    $r = $safeQuery("SELECT COUNT(*) as total FROM fornecedor");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        $context .= "- Total de fornecedores: " . $row['total'] . "\n";
+    }
+
+    // Open tickets
+    $r = $safeQuery("SELECT COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Pendente', 'Em Andamento')");
+    if ($r) {
+        $row = $r->fetch_assoc();
+        $context .= "- Chamados em aberto: " . $row['total'] . "\n";
+    }
+
+    // Recent tickets
+    $r = $safeQuery("SELECT id, titulo, status, prioridade FROM chamados ORDER BY data_abertura DESC LIMIT 5");
+    if ($r && $r->num_rows > 0) {
+        $context .= "- Últimos chamados:\n";
+        while ($row = $r->fetch_assoc()) {
+            $prio = isset($row['prioridade']) ? $row['prioridade'] : 'N/A';
+            $context .= "  #" . $row['id'] . " - " . $row['titulo'] . " (" . $row['status'] . ", " . $prio . ")\n";
+        }
+    }
+
+    // Recent assets
+    $r = $safeQuery("SELECT modelo, tag, categoria, status FROM ativos ORDER BY id_asset DESC LIMIT 5");
+    if ($r && $r->num_rows > 0) {
+        $context .= "- Últimos ativos cadastrados:\n";
+        while ($row = $r->fetch_assoc()) {
+            $context .= "  " . $row['modelo'] . " (Tag: " . $row['tag'] . ", " . $row['categoria'] . ", " . $row['status'] . ")\n";
+        }
+    }
+
+    // Suppliers list
+    $r = $safeQuery("SELECT nomeEmpresa, servico FROM fornecedor LIMIT 10");
+    if ($r && $r->num_rows > 0) {
+        $context .= "- Fornecedores cadastrados:\n";
+        while ($row = $r->fetch_assoc()) {
+            $context .= "  " . $row['nomeEmpresa'] . " (" . $row['servico'] . ")\n";
+        }
+    }
+
+    return $context;
+}
+
+// Helper: Call Gemini API
+function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory = [])
+{
+    if (empty($apiKey)) {
+        return null;
+    }
+
+    // Try models in order of preference (separate rate limits per model)
+    $models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+
+    // Build payload
+    $payload = [
+        'system_instruction' => [
+            'parts' => [['text' => $systemContext]]
+        ],
+        'generationConfig' => [
+            'temperature' => 0.7,
+            'maxOutputTokens' => 1024,
+            'topP' => 0.9,
+        ]
+    ];
+
+    // Build contents with history
+    $contents = [];
+    if (!empty($conversationHistory)) {
+        foreach ($conversationHistory as $msg) {
+            $contents[] = [
+                'role' => $msg['role'],
+                'parts' => [['text' => $msg['text']]]
+            ];
+        }
+    }
+    $contents[] = [
+        'role' => 'user',
+        'parts' => [['text' => $userMessage]]
+    ];
+    $payload['contents'] = $contents;
+    $jsonPayload = json_encode($payload);
+
+    // Try each model, with retry on rate limit
+    foreach ($models as $model) {
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=" . $apiKey;
+
+        $maxRetries = 2;
+        for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_POSTFIELDS => $jsonPayload,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_SSL_VERIFYPEER => false,
+            ]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+
+            if ($curlError) {
+                error_log("Gemini cURL Error ($model): " . $curlError);
+                break; // Try next model
+            }
+
+            // Rate limited - wait and retry or try next model
+            if ($httpCode === 429 && $attempt < $maxRetries - 1) {
+                sleep(5);
+                continue;
+            }
+
+            if ($httpCode === 429) {
+                break; // Try next model
+            }
+
+            if ($httpCode !== 200) {
+                error_log("Gemini HTTP Error $httpCode ($model): " . $response);
+                break; // Try next model
+            }
+
+            $data = json_decode($response, true);
+            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                return $data['candidates'][0]['content']['parts'][0]['text'];
+            }
+
+            return null;
+        }
+    }
+
+    // All models exhausted - return null so caller can fallback to local response
+    return null;
+}
+
+// ============================================================
+// CONVERSATION HISTORY (stored in session)
+// ============================================================
+if (!isset($_SESSION['chat_history'])) {
+    $_SESSION['chat_history'] = [];
+}
+
+// Keep last 10 messages for context
+$conversationHistory = $_SESSION['chat_history'];
+
+// ============================================================
+// LOCAL PATTERN MATCHING (Direct DB queries - fast responses)
+// ============================================================
+$handledLocally = true;
+
 // 1. Greet
-if (preg_match('/(oi|ola|olá|bom dia|boa tarde|boa noite)/', $message)) {
+if (preg_match('/(oi|ola|olá|bom dia|boa tarde|boa noite|hey|e aí|eae)/', $message)) {
     $nome = isset($_SESSION['nome_usuario']) ? $_SESSION['nome_usuario'] : 'Usuário';
-    $reply = "Olá, $nome! Como posso ajudar você hoje?";
+    $reply = "Olá, $nome! 👋 Como posso ajudar você hoje? Posso responder sobre ativos, chamados, fornecedores e muito mais!";
 }
 
 // 2. My Assets (Meus ativos)
@@ -37,14 +266,14 @@ elseif (preg_match('/(meus ativos|comigo|minha posse)/', $message)) {
         $reply = "Não consegui identificar seu usuário para buscar seus ativos.";
     }
     else {
-        $sql = "SELECT modelo, tag, hostName FROM ativos WHERE assigned_to = '$userId'";
+        $sql = "SELECT modelo, tag, hostName, categoria FROM ativos WHERE assigned_to = '$userId'";
         $result = $conn->query($sql);
         if ($result && $result->num_rows > 0) {
             $items = [];
             while ($row = $result->fetch_assoc()) {
-                $items[] = $row['modelo'] . " (Tag: " . $row['tag'] . ")";
+                $items[] = "📦 " . $row['modelo'] . " (Tag: " . $row['tag'] . " | " . $row['categoria'] . ")";
             }
-            $reply = "Você tem os seguintes ativos em sua posse:\n- " . implode("\n- ", $items);
+            $reply = "Você tem os seguintes ativos em sua posse:\n" . implode("\n", $items);
         }
         else {
             $reply = "Você não possui nenhum ativo vinculado ao seu usuário no momento.";
@@ -55,24 +284,25 @@ elseif (preg_match('/(meus ativos|comigo|minha posse)/', $message)) {
 // 3. Search Asset by Tag or Hostname
 elseif (preg_match('/(buscar|procurar|onde est[áa]|localizar).*ativo (.+)/', $message, $matches)) {
     $query = $conn->real_escape_string(trim($matches[2]));
-    // Remove ? if present
     $query = str_replace('?', '', $query);
 
-    $sql = "SELECT a.modelo, a.tag, a.hostName, a.status, u.nome as usuario_nome 
+    $sql = "SELECT a.modelo, a.tag, a.hostName, a.status, a.categoria, a.valor, u.nome as usuario_nome 
             FROM ativos a 
             LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
-            WHERE a.tag LIKE '%$query%' OR a.hostName LIKE '%$query%' LIMIT 1";
+            WHERE a.tag LIKE '%$query%' OR a.hostName LIKE '%$query%' OR a.modelo LIKE '%$query%' LIMIT 1";
 
     $result = $conn->query($sql);
     if ($result && $result->num_rows > 0) {
         $asset = $result->fetch_assoc();
         $assigned = $asset['usuario_nome'] ? "está com **" . $asset['usuario_nome'] . "**" : "não está atribuído a ninguém";
-        $reply = "Encontrei o ativo **" . $asset['modelo'] . "** (Tag: " . $asset['tag'] . ").\n" .
-            "Status: " . $asset['status'] . ".\n" .
-            "Atualmente $assigned.";
+        $reply = "🔍 Encontrei o ativo **" . $asset['modelo'] . "** (Tag: " . $asset['tag'] . ").\n" .
+            "📂 Categoria: " . $asset['categoria'] . "\n" .
+            "📊 Status: " . $asset['status'] . "\n" .
+            "💰 Valor: " . formatMoney($asset['valor']) . "\n" .
+            "👤 Atualmente $assigned.";
     }
     else {
-        $reply = "Não encontrei nenhum ativo com a Tag ou Hostname contendo '$query'.";
+        $reply = "Não encontrei nenhum ativo com a Tag, Hostname ou Modelo contendo '$query'.";
     }
 }
 
@@ -81,15 +311,15 @@ elseif (preg_match('/(contato|telefone|email|dados|quem [ée]).*fornecedor (.+)/
     $query = $conn->real_escape_string(trim($matches[2]));
     $query = str_replace('?', '', $query);
 
-    $sql = "SELECT nomeEmpresa, telefone, email, servico FROM fornecedores WHERE nomeEmpresa LIKE '%$query%' LIMIT 1";
+    $sql = "SELECT nomeEmpresa, telefone, email, servico FROM fornecedor WHERE nomeEmpresa LIKE '%$query%' LIMIT 1";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {
         $f = $result->fetch_assoc();
-        $reply = "Fornecedor: **" . $f['nomeEmpresa'] . "**\n" .
-            "Serviço: " . $f['servico'] . "\n" .
-            "Tel: " . $f['telefone'] . "\n" .
-            "Email: " . $f['email'];
+        $reply = "🏢 Fornecedor: **" . $f['nomeEmpresa'] . "**\n" .
+            "🔧 Serviço: " . $f['servico'] . "\n" .
+            "📞 Tel: " . $f['telefone'] . "\n" .
+            "📧 Email: " . $f['email'];
     }
     else {
         $reply = "Não encontrei informações sobre o fornecedor '$query'.";
@@ -98,19 +328,20 @@ elseif (preg_match('/(contato|telefone|email|dados|quem [ée]).*fornecedor (.+)/
 
 // 5. List Open Tickets (Detailed)
 elseif (preg_match('/(listar|quais|mostrar).*chamados.*(abertos|pendentes)/', $message)) {
-    $sql = "SELECT id, titulo, status, data_abertura FROM chamados WHERE status != 'Fechado' AND status != 'Resolvido' ORDER BY data_abertura DESC LIMIT 5";
+    $sql = "SELECT id, titulo, status, prioridade, data_abertura FROM chamados WHERE status != 'Fechado' AND status != 'Resolvido' ORDER BY data_abertura DESC LIMIT 5";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {
         $tickets = [];
         while ($row = $result->fetch_assoc()) {
             $date = date('d/m/Y', strtotime($row['data_abertura']));
-            $tickets[] = "#" . $row['id'] . " - " . $row['titulo'] . " (" . $row['status'] . ") em $date";
+            $priority = isset($row['prioridade']) ? " | " . $row['prioridade'] : "";
+            $tickets[] = "🎫 #" . $row['id'] . " - " . $row['titulo'] . " (" . $row['status'] . $priority . ") em $date";
         }
         $reply = "Aqui estão os últimos chamados abertos:\n" . implode("\n", $tickets);
     }
     else {
-        $reply = "Não há chamados abertos no momento.";
+        $reply = "✅ Não há chamados abertos no momento. Tudo em dia!";
     }
 }
 
@@ -119,7 +350,7 @@ elseif (preg_match('/(valor|custo|preço).*total.*ativos/', $message)) {
     $sql = "SELECT SUM(valor) as total FROM ativos";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $reply = "O valor total estimado de todos os ativos cadastrados é de **" . formatMoney($row['total']) . "**.";
+    $reply = "💰 O valor total estimado de todos os ativos cadastrados é de **" . formatMoney($row['total']) . "**.";
 }
 
 // 7. General Stats (Count Assets)
@@ -127,7 +358,7 @@ elseif (preg_match('/(quantos|total|n[uú]mero).*ativos/', $message)) {
     $sql = "SELECT COUNT(*) as total FROM ativos";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $reply = "Atualmente, temos um total de **" . $row['total'] . "** ativos cadastrados no sistema.";
+    $reply = "📊 Atualmente, temos um total de **" . $row['total'] . "** ativos cadastrados no sistema.";
 }
 
 // 8. General Stats (Count Tickets)
@@ -135,7 +366,7 @@ elseif (preg_match('/(chamados|tickets).*(abertos|pendentes)/', $message)) {
     $sql = "SELECT COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Pendente', 'Em Andamento')";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $reply = "Existem **" . $row['total'] . "** chamados em aberto ou em andamento.";
+    $reply = "🎫 Existem **" . $row['total'] . "** chamados em aberto ou em andamento.";
 }
 
 // 9. Who is user X
@@ -143,12 +374,15 @@ elseif (preg_match('/quem (é|e) (.+)/', $message, $matches)) {
     $name = $conn->real_escape_string(trim($matches[2]));
     $name = str_replace('?', '', $name);
 
-    $sql = "SELECT nome, sobrenome, email, funcao FROM usuarios WHERE nome LIKE '%$name%' OR sobrenome LIKE '%$name%' LIMIT 1";
+    $sql = "SELECT nome, sobrenome, email, funcao, centroDeCusto FROM usuarios WHERE nome LIKE '%$name%' OR sobrenome LIKE '%$name%' LIMIT 1";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        $reply = "Encontrei: **" . $user['nome'] . " " . $user['sobrenome'] . "**.\nFunção: " . $user['funcao'] . "\nEmail: " . $user['email'];
+        $reply = "👤 Encontrei: **" . $user['nome'] . " " . $user['sobrenome'] . "**\n" .
+            "💼 Função: " . $user['funcao'] . "\n" .
+            "📧 Email: " . $user['email'] . "\n" .
+            "🏢 Centro de Custo: " . ($user['centroDeCusto'] ?: 'Não definido');
     }
     else {
         $reply = "Desculpe, não encontrei nenhum usuário com o nome '$name'.";
@@ -156,19 +390,26 @@ elseif (preg_match('/quem (é|e) (.+)/', $message, $matches)) {
 }
 
 // 10. Help / Menu
-elseif (preg_match('/(ajuda|help|menu|opções|opcoes|o que você faz)/', $message)) {
-    $reply = "Estou ficando mais inteligente! Tente perguntar:\n" .
+elseif (preg_match('/(ajuda|help|menu|opções|opcoes|o que voc[eê] faz)/', $message)) {
+    $reply = "🤖 Sou o assistente virtual do Asset MGT, integrado com **Google Gemini AI**!\n\n" .
+        "📌 **Consultas rápidas (dados do sistema):**\n" .
         "- 'Quais são meus ativos?'\n" .
         "- 'Onde está o ativo [Tag/Hostname]?'\n" .
         "- 'Contato do fornecedor [Nome]'\n" .
         "- 'Listar chamados abertos'\n" .
         "- 'Qual o valor total dos ativos?'\n" .
-        "- 'Quantos chamados temos?'";
+        "- 'Quantos chamados temos?'\n" .
+        "- 'Quem é [Nome]?'\n\n" .
+        "🧠 **Perguntas inteligentes (Gemini AI):**\n" .
+        "- Qualquer pergunta sobre TI, gestão de ativos, suporte...\n" .
+        "- 'Sugira melhorias para o ciclo de vida dos ativos'\n" .
+        "- 'Qual a melhor prática para gestão de inventário?'\n" .
+        "- 'Me dê um resumo geral do sistema'";
 }
 
 // 11. Where to register asset
 elseif (preg_match('/(onde|como).*(cadastrar|criar|novo).*ativo/', $message)) {
-    $reply = "Você pode cadastrar novos ativos no menu 'Ativos' -> 'Novo Ativo'.";
+    $reply = "📝 Você pode cadastrar novos ativos no menu **Ativos** → **Cadastrar Novo**.";
 }
 
 // 12. List Categories
@@ -179,12 +420,80 @@ elseif (preg_match('/(categorias|tipos).*ativos/', $message)) {
     while ($row = $result->fetch_assoc()) {
         $cats[] = $row['categoria'];
     }
-    $reply = "As categorias de ativos cadastradas são: " . implode(', ', $cats);
+    $reply = "📂 As categorias de ativos cadastradas são: " . implode(', ', $cats);
 }
 
-// Default response
+// 13. System summary / dashboard
+elseif (preg_match('/(resumo|dashboard|visão geral|panorama|status geral)/', $message)) {
+    // Total ativos
+    $r = $conn->query("SELECT COUNT(*) as total FROM ativos");
+    $totalAtivos = $r->fetch_assoc()['total'];
+
+    // Ativos ativos
+    $r = $conn->query("SELECT COUNT(*) as total FROM ativos WHERE status = 'Ativo'");
+    $totalAtivosAtivos = $r->fetch_assoc()['total'];
+
+    // Valor total
+    $r = $conn->query("SELECT SUM(valor) as total FROM ativos");
+    $valorTotal = $r->fetch_assoc()['total'];
+
+    // Chamados abertos
+    $r = $conn->query("SELECT COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Pendente', 'Em Andamento')");
+    $chamadosAbertos = $r->fetch_assoc()['total'];
+
+    // Usuários
+    $r = $conn->query("SELECT COUNT(*) as total FROM usuarios");
+    $totalUsuarios = $r->fetch_assoc()['total'];
+
+    // Fornecedores
+    $r = $conn->query("SELECT COUNT(*) as total FROM fornecedor");
+    $totalFornecedores = $r->fetch_assoc()['total'];
+
+    $reply = "📊 **Resumo Geral do Sistema**\n\n" .
+        "📦 Ativos cadastrados: **$totalAtivos** ($totalAtivosAtivos ativos)\n" .
+        "💰 Valor total: **" . formatMoney($valorTotal) . "**\n" .
+        "🎫 Chamados em aberto: **$chamadosAbertos**\n" .
+        "👥 Usuários: **$totalUsuarios**\n" .
+        "🏢 Fornecedores: **$totalFornecedores**";
+}
+
+// DEFAULT: Send to Gemini AI, fallback to local response
 else {
-    $reply = "Ainda estou aprendendo. Tente perguntar sobre 'meus ativos', 'fornecedores' ou digite 'ajuda' para ver mais opções.";
+    $geminiReply = null;
+
+    if (!empty($GEMINI_API_KEY)) {
+        $systemContext = getSystemContext($conn);
+        $geminiReply = callGemini($_POST['message'], $systemContext, $GEMINI_API_KEY, $conversationHistory);
+    }
+
+    if ($geminiReply !== null) {
+        $reply = $geminiReply;
+    }
+    else {
+        // Fallback: provide a helpful local response instead of an error
+        $r = @$conn->query("SELECT COUNT(*) as total FROM ativos");
+        $totalAtivos = $r ? $r->fetch_assoc()['total'] : '?';
+        $r = @$conn->query("SELECT COUNT(*) as total FROM chamados WHERE status IN ('Aberto','Pendente','Em Andamento')");
+        $chamados = $r ? $r->fetch_assoc()['total'] : '?';
+
+        $reply = "🤖 Não consegui acessar a IA no momento, mas posso ajudar com comandos locais!\n\n" .
+            "📊 **Status rápido:** $totalAtivos ativos cadastrados, $chamados chamados abertos.\n\n" .
+            "📌 **Comandos disponíveis:**\n" .
+            "- **resumo** → Visão geral do sistema\n" .
+            "- **meus ativos** → Seus ativos atribuídos\n" .
+            "- **chamados abertos** → Listar chamados\n" .
+            "- **onde está [tag]** → Localizar ativo\n" .
+            "- **ajuda** → Ver todos os comandos";
+    }
+}
+
+// Save conversation history
+$_SESSION['chat_history'][] = ['role' => 'user', 'text' => $_POST['message']];
+$_SESSION['chat_history'][] = ['role' => 'model', 'text' => $reply];
+
+// Keep only last 20 messages (10 exchanges)
+if (count($_SESSION['chat_history']) > 20) {
+    $_SESSION['chat_history'] = array_slice($_SESSION['chat_history'], -20);
 }
 
 echo json_encode(['reply' => $reply]);

@@ -9,11 +9,13 @@ include 'conexao.php';
         width: 130px; 
     }
     .btn-edit {
-        width: 50px; /* Metade da largura */
+        width: 50px;
     }
     .btn-medium {
-        width: 100px; /* Metade da largura */
+        width: 100px;
     }
+
+
     <style>
     .badge-success {
         background-color: #28a745 !important; /* Verde para ativo */
@@ -419,33 +421,50 @@ else {
         </tbody>
     </table>
 
-<div class="pagination justify-content-start">
-    <nav>
-    <ul class="pagination">
+<style>
+    .pagination-custom { display: flex; gap: 6px; list-style: none; padding: 0; margin: 16px 0; flex-wrap: wrap; }
+    .pagination-custom li a {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 38px; height: 38px; padding: 0 12px;
+        border-radius: 8px; font-size: 14px; font-weight: 500;
+        text-decoration: none; transition: all 0.2s ease;
+        border: 1.5px solid rgba(44,64,74,0.25); color: rgb(44,64,74); background: #fff;
+    }
+    .pagination-custom li a:hover {
+        background: rgba(44,64,74,0.08); border-color: rgb(44,64,74); color: rgb(44,64,74);
+        transform: translateY(-1px); box-shadow: 0 2px 8px rgba(44,64,74,0.15);
+    }
+    .pagination-custom li.active a {
+        background: rgb(44,64,74); color: #fff; border-color: rgb(44,64,74);
+        box-shadow: 0 2px 8px rgba(44,64,74,0.3);
+    }
+    .pagination-custom li.active a:hover { background: rgb(34,54,64); }
+</style>
+<div class="d-flex justify-content-start mt-3">
+    <ul class="pagination-custom">
     <?php
 // Previous Page Link
 $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
 if ($current_page > 1) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+    echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
 }
 
 // Page Links
 for ($page = 1; $page <= $total_pages; $page++) {
     if ($page == $current_page) {
-        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Current page
+        echo "<li class='active'><a href='?page=$page$search_param'>$page</a></li>";
     }
     else {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Other pages
+        echo "<li><a href='?page=$page$search_param'>$page</a></li>";
     }
 }
 
 // Next Page Link
 if ($current_page < $total_pages) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+    echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
 }
 ?>
 </ul>
-    </nav>
 </div>
 
 

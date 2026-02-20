@@ -306,13 +306,13 @@ if (mysqli_num_rows($result) > 0) {
         $btn_style = 'style="width:150px; font-size:12px; border-radius:10px;"';
 
         if (!$doacao_global_ini) {
-            echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . '>Desativada</button>';
+            echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . ' >Desativada</button>';
         }
         elseif (!$cat_elegivel_ini) {
-            echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . '>Cat. não elegível</button>';
+            echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . ' >Cat. não elegível</button>';
         }
         elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
-            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . '>Doar</button>';
+            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >Doar</button>';
         }
         else {
             $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
@@ -327,7 +327,7 @@ if (mysqli_num_rows($result) > 0) {
                 $t_ini .= $m_ini . ' mês(es)';
             if (empty($t_ini))
                 $t_ini = 'menos de 1 mês';
-            echo '<button class="btn btn-warning btn-sm" disabled title="Carência: ' . $t_ini . '" ' . $btn_style . '>Bloqueado</button>';
+            echo '<button class="btn btn-warning btn-sm" disabled title="Carência: ' . $t_ini . '" ' . $btn_style . ' >Bloqueado</button>';
         }
 ?>
                                     </td>
@@ -343,22 +343,41 @@ else {
                 </table>
             </div>
 
-            <div class="pagination justify-content-start">
-                <ul class="pagination">
+            <style>
+                .pagination-custom { display: flex; gap: 6px; list-style: none; padding: 0; margin: 16px 0; flex-wrap: wrap; }
+                .pagination-custom li a {
+                    display: inline-flex; align-items: center; justify-content: center;
+                    min-width: 38px; height: 38px; padding: 0 12px;
+                    border-radius: 8px; font-size: 14px; font-weight: 500;
+                    text-decoration: none; transition: all 0.2s ease;
+                    border: 1.5px solid rgba(44,64,74,0.25); color: rgb(44,64,74); background: #fff;
+                }
+                .pagination-custom li a:hover {
+                    background: rgba(44,64,74,0.08); border-color: rgb(44,64,74); color: rgb(44,64,74);
+                    transform: translateY(-1px); box-shadow: 0 2px 8px rgba(44,64,74,0.15);
+                }
+                .pagination-custom li.active a {
+                    background: rgb(44,64,74); color: #fff; border-color: rgb(44,64,74);
+                    box-shadow: 0 2px 8px rgba(44,64,74,0.3);
+                }
+                .pagination-custom li.active a:hover { background: rgb(34,54,64); }
+            </style>
+            <div class="d-flex justify-content-start mt-3">
+                <ul class="pagination-custom">
                     <?php
 if ($current_page > 1) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+    echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
 }
 for ($page = 1; $page <= $total_pages; $page++) {
     if ($page == $current_page) {
-        echo "<li class='page-item active'><a class='btn btn-dark'>$page</a></li>";
+        echo "<li class='active'><a>$page</a></li>";
     }
     else {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>";
+        echo "<li><a href='?page=$page'>$page</a></li>";
     }
 }
 if ($current_page < $total_pages) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+    echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
 }
 ?>
                 </ul>

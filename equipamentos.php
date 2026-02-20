@@ -40,24 +40,11 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Raleway.css?h=f3d9abe8d5aa7831c01bfaa2a1563712">
     <link rel="stylesheet" href="/assets/css/Roboto.css?h=41e93b37bc495fd67938799bb3a6adaf">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
-    <link rel="stylesheet" href="/assets/css/Animated-numbers-section.css?h=f70eceb0d9266e15c95f7e63479d6265">
-    <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
-    <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
-    <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
-    <script src="https://kit.fontawesome.com/8786c39b09.js"></script>
+
    
 
 </head>
@@ -234,8 +221,12 @@ $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 // Calcular o limite de registros para a consulta
 $start_from = ($current_page - 1) * $results_per_page;
 
-// Consultar os ativos
-$sql = "SELECT * FROM ativos $where_clause LIMIT $start_from, $results_per_page";
+// Consultar os ativos com JOIN para buscar dados do usuário (evita N+1 queries)
+$sql = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, u.usuarioAD AS user_usuarioAD, u.email AS user_email, u.centroDeCusto AS user_centroDeCusto 
+        FROM ativos a 
+        LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
+        $where_clause 
+        LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 
 // Buscar configurações de depreciação/doação globais
@@ -358,14 +349,9 @@ if (mysqli_num_rows($result) > 0) {
 
                         <td>
     <?php
-        if ($assigned_to) {
-            // Buscar os detalhes do usuário atribuído diretamente
-            $sql_user = "SELECT nome, sobrenome, usuarioAD, email, centroDeCusto FROM usuarios WHERE id_usuarios = '$assigned_to'";
-            $result_user = mysqli_query($conn, $sql_user);
-            if ($result_user && mysqli_num_rows($result_user) > 0) {
-                $user = mysqli_fetch_assoc($result_user);
-                echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($user['nome']) . "\", \"" . addslashes($user['sobrenome']) . "\", \"" . addslashes($user['usuarioAD']) . "\", \"" . addslashes($user['email']) . "\", \"" . addslashes($user['centroDeCusto']) . "\", " . $row['id_asset'] . ", " . ($elegivel_doacao ? 'true' : 'false') . ", \"" . addslashes($doacao_msg) . "\", \"" . addslashes($doacao_title) . "\")'>" . htmlspecialchars($user['nome']) . "</a>";
-            }
+        if ($assigned_to && !empty($row['user_nome'])) {
+            // Dados do usuário já vieram via JOIN - sem query extra!
+            echo "<a href='#' onclick='showUserModal($assigned_to, \"" . addslashes($row['user_nome']) . "\", \"" . addslashes($row['user_sobrenome']) . "\", \"" . addslashes($row['user_usuarioAD']) . "\", \"" . addslashes($row['user_email']) . "\", \"" . addslashes($row['user_centroDeCusto']) . "\", " . $row['id_asset'] . ", " . ($elegivel_doacao ? 'true' : 'false') . ", \"" . addslashes($doacao_msg) . "\", \"" . addslashes($doacao_title) . "\")'>" . htmlspecialchars($row['user_nome']) . "</a>";
         }
         else {
             echo "Não Atribuído";
@@ -756,18 +742,6 @@ function toggleStatus(id, newStatus, button) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
 </body>

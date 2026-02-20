@@ -6,8 +6,8 @@ header('Content-Type: application/json');
 // ============================================================
 // CONFIGURAÇÃO DA API GEMINI
 // ============================================================
-// Coloque sua chave da API do Google Gemini aqui
-// Obtenha em: https://aistudio.google.com/app/apikey
+// Chave da API do Google Gemini aqui
+// Em: https://aistudio.google.com/app/apikey
 $GEMINI_API_KEY = 'AIzaSyDXrsM8tcJBBKUFRO_uPJoK22ibnvFCUW8';
 
 // ============================================================
@@ -54,8 +54,7 @@ function getSystemContext($conn)
         try {
             $r = @$conn->query($sql);
             return $r ?: null;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     };
@@ -264,8 +263,7 @@ if (preg_match('/(oi|ola|olá|bom dia|boa tarde|boa noite|hey|e aí|eae)/', $mes
 elseif (preg_match('/(meus ativos|comigo|minha posse)/', $message)) {
     if ($userId == 0) {
         $reply = "Não consegui identificar seu usuário para buscar seus ativos.";
-    }
-    else {
+    } else {
         $sql = "SELECT modelo, tag, hostName, categoria FROM ativos WHERE assigned_to = '$userId'";
         $result = $conn->query($sql);
         if ($result && $result->num_rows > 0) {
@@ -274,8 +272,7 @@ elseif (preg_match('/(meus ativos|comigo|minha posse)/', $message)) {
                 $items[] = "📦 " . $row['modelo'] . " (Tag: " . $row['tag'] . " | " . $row['categoria'] . ")";
             }
             $reply = "Você tem os seguintes ativos em sua posse:\n" . implode("\n", $items);
-        }
-        else {
+        } else {
             $reply = "Você não possui nenhum ativo vinculado ao seu usuário no momento.";
         }
     }
@@ -300,8 +297,7 @@ elseif (preg_match('/(buscar|procurar|onde est[áa]|localizar).*ativo (.+)/', $m
             "📊 Status: " . $asset['status'] . "\n" .
             "💰 Valor: " . formatMoney($asset['valor']) . "\n" .
             "👤 Atualmente $assigned.";
-    }
-    else {
+    } else {
         $reply = "Não encontrei nenhum ativo com a Tag, Hostname ou Modelo contendo '$query'.";
     }
 }
@@ -320,8 +316,7 @@ elseif (preg_match('/(contato|telefone|email|dados|quem [ée]).*fornecedor (.+)/
             "🔧 Serviço: " . $f['servico'] . "\n" .
             "📞 Tel: " . $f['telefone'] . "\n" .
             "📧 Email: " . $f['email'];
-    }
-    else {
+    } else {
         $reply = "Não encontrei informações sobre o fornecedor '$query'.";
     }
 }
@@ -339,8 +334,7 @@ elseif (preg_match('/(listar|quais|mostrar).*chamados.*(abertos|pendentes)/', $m
             $tickets[] = "🎫 #" . $row['id'] . " - " . $row['titulo'] . " (" . $row['status'] . $priority . ") em $date";
         }
         $reply = "Aqui estão os últimos chamados abertos:\n" . implode("\n", $tickets);
-    }
-    else {
+    } else {
         $reply = "✅ Não há chamados abertos no momento. Tudo em dia!";
     }
 }
@@ -383,8 +377,7 @@ elseif (preg_match('/quem (é|e) (.+)/', $message, $matches)) {
             "💼 Função: " . $user['funcao'] . "\n" .
             "📧 Email: " . $user['email'] . "\n" .
             "🏢 Centro de Custo: " . ($user['centroDeCusto'] ?: 'Não definido');
-    }
-    else {
+    } else {
         $reply = "Desculpe, não encontrei nenhum usuário com o nome '$name'.";
     }
 }
@@ -468,8 +461,7 @@ else {
 
     if ($geminiReply !== null) {
         $reply = $geminiReply;
-    }
-    else {
+    } else {
         // Fallback: provide a helpful local response instead of an error
         $r = @$conn->query("SELECT COUNT(*) as total FROM ativos");
         $totalAtivos = $r ? $r->fetch_assoc()['total'] : '?';
@@ -499,4 +491,3 @@ if (count($_SESSION['chat_history']) > 20) {
 echo json_encode(['reply' => $reply]);
 
 $conn->close();
-?>

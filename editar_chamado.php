@@ -116,6 +116,31 @@ $result_users = $conn->query($sql_users);
                                     <textarea class="form-control" rows="5" readonly><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
                                 </div>
 
+                                <?php if (!empty($chamado['anexo'])): ?>
+                                <div class="form-group">
+                                    <label><i class="fas fa-paperclip"></i> Anexo</label>
+                                    <div style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 15px; background: #f8f9fc;">
+                                        <?php
+    $ext = strtolower(pathinfo($chamado['anexo'], PATHINFO_EXTENSION));
+    $is_image = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
+    if ($is_image): ?>
+                                            <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank">
+                                                <img src="/<?php echo htmlspecialchars($chamado['anexo']); ?>" style="max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" alt="Anexo do chamado">
+                                            </a>
+                                            <br><small class="text-muted mt-2 d-inline-block">Clique na imagem para abrir em tamanho completo</small>
+                                        <?php
+    else: ?>
+                                            <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-<?php echo($ext === 'pdf') ? 'file-pdf' : 'file-word'; ?>"></i>
+                                                Baixar Anexo (<?php echo strtoupper($ext); ?>)
+                                            </a>
+                                        <?php
+    endif; ?>
+                                    </div>
+                                </div>
+                                <?php
+endif; ?>
+
                                 <div class="form-group">
                                     <label><strong>Nota de Resolução</strong> <small class="text-muted">(Registre aqui as ações realizadas para resolver o chamado)</small></label>
                                     <textarea class="form-control" name="nota_resolucao" rows="4" placeholder="Descreva as ações tomadas, a solução aplicada ou observações relevantes..."><?php echo htmlspecialchars($chamado['nota_resolucao'] ?? ''); ?></textarea>

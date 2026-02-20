@@ -13,23 +13,10 @@
     <link rel="stylesheet" href="/assets/css/Raleway.css?h=19488c1c6619bc9bd5c02de5f7ffbfd4">
     <link rel="stylesheet" href="/assets/css/Roboto.css?h=193916adb9d7af47fe74d9a2270caac3">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
-    <link rel="stylesheet" href="/assets/css/Animated-numbers-section.css?h=f70eceb0d9266e15c95f7e63479d6265">
-    <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
-    <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
-    <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
 
 <body id="page-top">
@@ -139,7 +126,7 @@
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Novo Chamado</h3>
                 </div>
-                <form action="inserir_chamado.php" method="post" id="form-novo-chamado">
+                <form action="inserir_chamado.php" method="post" id="form-novo-chamado" enctype="multipart/form-data">
 
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-6 offset-xl-1">
@@ -170,17 +157,18 @@
                                     <optgroup label="Selecione o Solicitante">
                                         <?php
 
-                                        include_once 'conexao.php';
-                                        $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
-                                        $result = $conn->query($sql);
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
-                                            }
-                                        } else {
-                                            echo '<option value="">Nenhum usuário encontrado</option>';
-                                        }
-                                        ?>
+include_once 'conexao.php';
+$sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
+    }
+}
+else {
+    echo '<option value="">Nenhum usuário encontrado</option>';
+}
+?>
                                     </optgroup>
                                 </select>
                             </div>
@@ -199,12 +187,44 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
                         <div class="col-sm-3 col-xl-10 offset-xl-1" style="height: 200px;">
                             <label>Descrição</label>
                             <textarea class="form-control" name="descricao" placeholder="Detalhes do chamado..." style="height: 150px; margin-bottom: 0px;" required=""></textarea>
                         </div>
-                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir Chamado</button></div>
+                    </div>
+
+                    <!-- Anexo de Arquivo -->
+                    <div class="form-row" style="margin-top: 15px;">
+                        <div class="col-sm-12 col-xl-10 offset-xl-1">
+                            <div class="form-group">
+                                <label><i class="fas fa-paperclip"></i> Anexo <small class="text-muted">(Opcional - Imagens, PDF, DOC - máx. 5MB)</small></label>
+                                <div id="drop-zone" style="border: 2px dashed #ccc; border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
+                                    <input type="file" name="anexo" id="input-anexo" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx" style="display: none;">
+                                    <div id="drop-zone-content">
+                                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #aaa;"></i>
+                                        <p class="mt-2 mb-0" style="color: #888;">Arraste um arquivo aqui ou <strong style="color: #4e73df; cursor: pointer;">clique para selecionar</strong></p>
+                                        <small class="text-muted">Print de tela, foto do erro, documento...</small>
+                                    </div>
+                                    <div id="file-preview" style="display: none;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-file-alt" id="file-icon" style="font-size: 2rem; color: #4e73df; margin-right: 10px;"></i>
+                                            <div class="text-left">
+                                                <strong id="file-name"></strong><br>
+                                                <small id="file-size" class="text-muted"></small>
+                                            </div>
+                                            <button type="button" id="btn-remove-file" class="btn btn-sm btn-outline-danger ml-3" title="Remover">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <img id="img-preview" style="display: none; max-height: 120px; margin-top: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 15px;">Abrir Chamado</button></div>
                     </div>
                 </form>
 
@@ -253,23 +273,99 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
-        // SLA Timer Logic (Simulated for this page as requested initially)
+        // Drop Zone / File Upload Logic
         document.addEventListener('DOMContentLoaded', function() {
-            // ... (Previous Timer Logic) ...
+            const dropZone = document.getElementById('drop-zone');
+            const inputAnexo = document.getElementById('input-anexo');
+            const dropContent = document.getElementById('drop-zone-content');
+            const filePreview = document.getElementById('file-preview');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const imgPreview = document.getElementById('img-preview');
+            const fileIcon = document.getElementById('file-icon');
+            const btnRemove = document.getElementById('btn-remove-file');
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            dropZone.addEventListener('click', () => inputAnexo.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#4e73df';
+                dropZone.style.background = '#eef2ff';
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '#ccc';
+                dropZone.style.background = '#fafafa';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#ccc';
+                dropZone.style.background = '#fafafa';
+                if (e.dataTransfer.files.length) {
+                    inputAnexo.files = e.dataTransfer.files;
+                    showPreview(e.dataTransfer.files[0]);
+                }
+            });
+
+            inputAnexo.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    showPreview(e.target.files[0]);
+                }
+            });
+
+            btnRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                inputAnexo.value = '';
+                dropContent.style.display = 'block';
+                filePreview.style.display = 'none';
+                imgPreview.style.display = 'none';
+                dropZone.style.borderColor = '#ccc';
+            });
+
+            function showPreview(file) {
+                if (file.size > maxSize) {
+                    alert('Arquivo muito grande! O tamanho máximo é 5MB.');
+                    inputAnexo.value = '';
+                    return;
+                }
+
+                fileName.textContent = file.name;
+                fileSize.textContent = formatSize(file.size);
+                dropContent.style.display = 'none';
+                filePreview.style.display = 'block';
+                dropZone.style.borderColor = '#28a745';
+                dropZone.style.background = '#f0fff4';
+
+                // Set icon based on file type
+                if (file.type.startsWith('image/')) {
+                    fileIcon.className = 'fas fa-file-image';
+                    fileIcon.style.color = '#28a745';
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imgPreview.src = e.target.result;
+                        imgPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type === 'application/pdf') {
+                    fileIcon.className = 'fas fa-file-pdf';
+                    fileIcon.style.color = '#dc3545';
+                    imgPreview.style.display = 'none';
+                } else {
+                    fileIcon.className = 'fas fa-file-word';
+                    fileIcon.style.color = '#4e73df';
+                    imgPreview.style.display = 'none';
+                }
+            }
+
+            function formatSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+                return (bytes/(1024*1024)).toFixed(1) + ' MB';
+            }
         });
 
         // AJAX Form Submission

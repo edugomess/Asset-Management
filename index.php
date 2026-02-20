@@ -19,45 +19,45 @@
 
 <body id="page-top">
     <?php
-include 'auth.php';
-include 'conexao.php';
+    include 'auth.php';
+    include 'conexao.php';
 
-// === Contagem de Chamados (QUERY UNICA para todos os status) ===
-$count_aberto = 0;
-$count_andamento = 0;
-$count_pendente = 0;
-$data = [];
-$total_ativos = 0;
+    // === Contagem de Chamados (QUERY UNICA para todos os status) ===
+    $count_aberto = 0;
+    $count_andamento = 0;
+    $count_pendente = 0;
+    $data = [];
+    $total_ativos = 0;
 
-$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') GROUP BY status");
-if ($res) {
-    while ($row = mysqli_fetch_assoc($res)) {
-        $data[$row['status']] = $row['total'];
-        $total_ativos += $row['total'];
-        if ($row['status'] == 'Aberto')
-            $count_aberto = $row['total'];
-        elseif ($row['status'] == 'Em Andamento')
-            $count_andamento = $row['total'];
-        elseif ($row['status'] == 'Pendente')
-            $count_pendente = $row['total'];
+    $res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') GROUP BY status");
+    if ($res) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $data[$row['status']] = $row['total'];
+            $total_ativos += $row['total'];
+            if ($row['status'] == 'Aberto')
+                $count_aberto = $row['total'];
+            elseif ($row['status'] == 'Em Andamento')
+                $count_andamento = $row['total'];
+            elseif ($row['status'] == 'Pendente')
+                $count_pendente = $row['total'];
+        }
     }
-}
-$data_string = implode(",", [
-    isset($data['Aberto']) ? $data['Aberto'] : 0,
-    isset($data['Em Andamento']) ? $data['Em Andamento'] : 0,
-    isset($data['Pendente']) ? $data['Pendente'] : 0
-]);
+    $data_string = implode(",", [
+        isset($data['Aberto']) ? $data['Aberto'] : 0,
+        isset($data['Em Andamento']) ? $data['Em Andamento'] : 0,
+        isset($data['Pendente']) ? $data['Pendente'] : 0
+    ]);
 
-// === Chamados Fechados por Mês (QUERY UNICA) ===
-$closed_data = array_fill(1, 12, 0);
-$res_closed = mysqli_query($conn, "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) GROUP BY MONTH(data_fechamento)");
-if ($res_closed) {
-    while ($row = mysqli_fetch_assoc($res_closed)) {
-        $closed_data[$row['month']] = $row['count'];
+    // === Chamados Fechados por Mês (QUERY UNICA) ===
+    $closed_data = array_fill(1, 12, 0);
+    $res_closed = mysqli_query($conn, "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) GROUP BY MONTH(data_fechamento)");
+    if ($res_closed) {
+        while ($row = mysqli_fetch_assoc($res_closed)) {
+            $closed_data[$row['month']] = $row['count'];
+        }
     }
-}
-$closed_string = implode(",", $closed_data);
-?>
+    $closed_string = implode(",", $closed_data);
+    ?>
 
     <div id="page-top">
         <div id="wrapper">
@@ -82,7 +82,7 @@ $closed_string = implode(",", $closed_data);
                         <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
                         <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
                     </ul>
                     <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
                 </div>
@@ -193,28 +193,28 @@ $closed_string = implode(",", $closed_data);
                         </div>
                         <div class="row">
                             <?php
-// Buscar contagem de ativos por categoria
-$categorias_interesse = [
-    'Computadores' => ['icon' => 'fas fa-desktop', 'color' => 'primary', 'label' => 'Computadores'],
-    'Laptops' => ['icon' => 'fas fa-laptop', 'color' => 'success', 'label' => 'Laptops'], // Assumindo que Laptops podem estar na categoria Computadores ou separados
-    'Periféricos' => ['icon' => 'far fa-keyboard', 'color' => 'info', 'label' => 'Periféricos'], // Ajustar conforme nome real na tabela
-    'Impressoras' => ['icon' => 'fas fa-print', 'color' => 'warning', 'label' => 'Impressoras']
-];
+                            // Buscar contagem de ativos por categoria
+                            $categorias_interesse = [
+                                'Computadores' => ['icon' => 'fas fa-desktop', 'color' => 'primary', 'label' => 'Computadores'],
+                                'Laptops' => ['icon' => 'fas fa-laptop', 'color' => 'success', 'label' => 'Laptops'], // Assumindo que Laptops podem estar na categoria Computadores ou separados
+                                'Periféricos' => ['icon' => 'far fa-keyboard', 'color' => 'info', 'label' => 'Periféricos'], // Ajustar conforme nome real na tabela
+                                'Impressoras' => ['icon' => 'fas fa-print', 'color' => 'warning', 'label' => 'Impressoras']
+                            ];
 
 
-// Query genérica para pegar todas as categorias e contagens
-$sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
+                            // Query genérica para pegar todas as categorias e contagens
+                            $sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
                                        FROM ativos GROUP BY categoria";
-$res_ativos = mysqli_query($conn, $sql_ativos);
-$dados_ativos = [];
-if ($res_ativos) {
-    while ($row = mysqli_fetch_assoc($res_ativos)) {
-        $dados_ativos[$row['categoria']] = $row;
-    }
-}
+                            $res_ativos = mysqli_query($conn, $sql_ativos);
+                            $dados_ativos = [];
+                            if ($res_ativos) {
+                                while ($row = mysqli_fetch_assoc($res_ativos)) {
+                                    $dados_ativos[$row['categoria']] = $row;
+                                }
+                            }
 
-// SLA Ranking Logic
-$sql_ranking = "SELECT 
+                            // SLA Ranking Logic
+                            $sql_ranking = "SELECT 
     r.nome, r.sobrenome, r.id_usuarios, r.foto_perfil,
     COUNT(*) as total,
     SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) as met_sla
@@ -224,61 +224,61 @@ WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado')
 AND c.data_fechamento >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
 GROUP BY r.id_usuarios
 ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) / COUNT(*)) DESC";
-$res_ranking = mysqli_query($conn, $sql_ranking);
-$ranking_data = [];
-if ($res_ranking) {
-    while ($row = mysqli_fetch_assoc($res_ranking)) {
-        $total = (int)$row['total'];
-        $met_sla = (int)$row['met_sla'];
-        $row['percentage'] = ($total > 0) ? round(($met_sla / $total) * 100) : 0;
-        $ranking_data[] = $row;
-    }
-}
-// (Closed data already computed above, no duplicate query needed)
+                            $res_ranking = mysqli_query($conn, $sql_ranking);
+                            $ranking_data = [];
+                            if ($res_ranking) {
+                                while ($row = mysqli_fetch_assoc($res_ranking)) {
+                                    $total = (int)$row['total'];
+                                    $met_sla = (int)$row['met_sla'];
+                                    $row['percentage'] = ($total > 0) ? round(($met_sla / $total) * 100) : 0;
+                                    $ranking_data[] = $row;
+                                }
+                            }
+                            // (Closed data already computed above, no duplicate query needed)
 
-// Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes)
-$sql_recorrencia = "SELECT titulo, COUNT(*) as total FROM chamados GROUP BY titulo ORDER BY total DESC LIMIT 5";
-$res_recorrencia = mysqli_query($conn, $sql_recorrencia);
-$recorrencia_data = [];
-$max_recorrencia = 0;
-if ($res_recorrencia) {
-    while ($row = mysqli_fetch_assoc($res_recorrencia)) {
-        $recorrencia_data[] = $row;
-        if ($row['total'] > $max_recorrencia) {
-            $max_recorrencia = $row['total'];
-        }
-    }
-}
+                            // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes)
+                            $sql_recorrencia = "SELECT titulo, COUNT(*) as total FROM chamados GROUP BY titulo ORDER BY total DESC LIMIT 5";
+                            $res_recorrencia = mysqli_query($conn, $sql_recorrencia);
+                            $recorrencia_data = [];
+                            $max_recorrencia = 0;
+                            if ($res_recorrencia) {
+                                while ($row = mysqli_fetch_assoc($res_recorrencia)) {
+                                    $recorrencia_data[] = $row;
+                                    if ($row['total'] > $max_recorrencia) {
+                                        $max_recorrencia = $row['total'];
+                                    }
+                                }
+                            }
 
 
-// Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
-// Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
-// Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
+                            // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
+                            // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
+                            // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
 
-// Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
-// ou manter o layout fixo e preencher com o que encontrar.
-// Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
+                            // Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
+                            // ou manter o layout fixo e preencher com o que encontrar.
+                            // Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
 
-// Card 1: Desktops
-$total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
-$disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
+                            // Card 1: Desktops
+                            $total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
+                            $disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
 
-// Card 2: Notebooks
-$total_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['total'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : 0);
-$disp_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['disponiveis'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : 0);
+                            // Card 2: Notebooks
+                            $total_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['total'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : 0);
+                            $disp_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['disponiveis'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : 0);
 
-// Card 3: Periféricos (Mouse, Teclado, Monitor, etc - Somar tudo que não for PC/Note/Impressora?)
-// Ou pegar categorias específicas. Vamos pegar 'Monitores' e 'Periféricos'
-$total_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['total'] : 0);
-$disp_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['disponiveis'] : 0);
+                            // Card 3: Periféricos (Mouse, Teclado, Monitor, etc - Somar tudo que não for PC/Note/Impressora?)
+                            // Ou pegar categorias específicas. Vamos pegar 'Monitores' e 'Periféricos'
+                            $total_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['total'] : 0);
+                            $disp_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['disponiveis'] : 0);
 
-// Card 4: Impressoras
-$total_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['total'] : 0;
-$disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['disponiveis'] : 0;
+                            // Card 4: Impressoras
+                            $total_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['total'] : 0;
+                            $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['disponiveis'] : 0;
 
-// Se os totais forem 0, exibir pelo menos um placeholder ou buscar tudo
-// Vamos exibir todos:
-?>
+                            // Se os totais forem 0, exibir pelo menos um placeholder ou buscar tudo
+                            // Vamos exibir todos:
+                            ?>
 
                             <div class="col-md-6 col-xl-3 mb-4">
                                 <div class="card shadow border-left-primary py-2">
@@ -398,7 +398,7 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                     <tr>
                                                         <th>Responsável</th>
                                                         <th>Chamados Resolvidos</th>
-                                                        <th>Dentro do Prazo (< 10min)</th>
+                                                        <th>Dentro do Prazo </th>
                                                         <th>% SLA Atingido</th>
                                                     </tr>
                                                 </thead>
@@ -414,24 +414,24 @@ $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['
                                                             <td class="align-middle">
                                                                 <div class="progress" style="height: 20px;">
                                                                     <?php
-    $color = 'bg-danger';
-    if ($rank['percentage'] >= 80)
-        $color = 'bg-success';
-    elseif ($rank['percentage'] >= 50)
-        $color = 'bg-warning';
-?>
+                                                                    $color = 'bg-danger';
+                                                                    if ($rank['percentage'] >= 80)
+                                                                        $color = 'bg-success';
+                                                                    elseif ($rank['percentage'] >= 50)
+                                                                        $color = 'bg-warning';
+                                                                    ?>
                                                                     <div class="progress-bar <?php echo $color; ?>" role="progressbar" style="width: <?php echo $rank['percentage']; ?>%" aria-valuenow="<?php echo $rank['percentage']; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $rank['percentage']; ?>%</div>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     <?php
-endforeach; ?>
+                                                    endforeach; ?>
                                                     <?php if (empty($ranking_data)): ?>
                                                         <tr>
                                                             <td colspan="4" class="text-center">Nenhum chamado finalizado no último mês.</td>
                                                         </tr>
                                                     <?php
-endif; ?>
+                                                    endif; ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -447,24 +447,23 @@ endif; ?>
                                     </div>
                                     <div class="card-body">
                                         <?php
-if (!empty($recorrencia_data)) {
-    $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
-    foreach ($recorrencia_data as $i => $rec) {
-        $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
-        $cor = $cores[$i % count($cores)];
-        $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
-?>
-                                        <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
-                                        <div class="progress mb-4">
-                                            <div class="progress-bar <?php echo $cor; ?>" role="progressbar" aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $pct; ?>%;"><?php echo $rec['total']; ?></div>
-                                        </div>
+                                        if (!empty($recorrencia_data)) {
+                                            $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
+                                            foreach ($recorrencia_data as $i => $rec) {
+                                                $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
+                                                $cor = $cores[$i % count($cores)];
+                                                $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
+                                        ?>
+                                                <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
+                                                <div class="progress mb-4">
+                                                    <div class="progress-bar <?php echo $cor; ?>" role="progressbar" aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $pct; ?>%;"><?php echo $rec['total']; ?></div>
+                                                </div>
                                         <?php
-    }
-}
-else {
-    echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
-}
-?>
+                                            }
+                                        } else {
+                                            echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
+                                        }
+                                        ?>
                                     </div>
                                 </div>
                             </div>
@@ -485,10 +484,10 @@ else {
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
         <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
         <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="/assets/js/global_search.js"></script>
-    <script>
-        // Inline script removed, moved to global_search.js
-    </script>
+        <script src="/assets/js/global_search.js"></script>
+        <script>
+            // Inline script removed, moved to global_search.js
+        </script>
 </body>
 
 </html>

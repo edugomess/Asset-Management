@@ -185,46 +185,20 @@ else {
                                 </select>
                             </div>
                         </div>
+                        <div class="col-sm-6 col-xl-2">
+                            <div class="form-group">
+                                <label><i class="fas fa-paperclip"></i> Anexo</label>
+                                <input type="file" name="anexo" class="form-control-file" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx" style="font-size: 0.8rem;">
+                                <small class="text-muted">Máx. 5MB</small>
+                            </div>
+                        </div>
                     </div>
-
+                    <div class="form-row">
                         <div class="col-sm-3 col-xl-10 offset-xl-1" style="height: 200px;">
                             <label>Descrição</label>
                             <textarea class="form-control" name="descricao" placeholder="Detalhes do chamado..." style="height: 150px; margin-bottom: 0px;" required=""></textarea>
                         </div>
-                    </div>
-
-                    <!-- Anexo de Arquivo -->
-                    <div class="form-row" style="margin-top: 15px;">
-                        <div class="col-sm-12 col-xl-10 offset-xl-1">
-                            <div class="form-group">
-                                <label><i class="fas fa-paperclip"></i> Anexo <small class="text-muted">(Opcional - Imagens, PDF, DOC - máx. 5MB)</small></label>
-                                <div id="drop-zone" style="border: 2px dashed #ccc; border-radius: 10px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
-                                    <input type="file" name="anexo" id="input-anexo" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx" style="display: none;">
-                                    <div id="drop-zone-content">
-                                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #aaa;"></i>
-                                        <p class="mt-2 mb-0" style="color: #888;">Arraste um arquivo aqui ou <strong style="color: #4e73df; cursor: pointer;">clique para selecionar</strong></p>
-                                        <small class="text-muted">Print de tela, foto do erro, documento...</small>
-                                    </div>
-                                    <div id="file-preview" style="display: none;">
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-file-alt" id="file-icon" style="font-size: 2rem; color: #4e73df; margin-right: 10px;"></i>
-                                            <div class="text-left">
-                                                <strong id="file-name"></strong><br>
-                                                <small id="file-size" class="text-muted"></small>
-                                            </div>
-                                            <button type="button" id="btn-remove-file" class="btn btn-sm btn-outline-danger ml-3" title="Remover">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <img id="img-preview" style="display: none; max-height: 120px; margin-top: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 15px;">Abrir Chamado</button></div>
+                        <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir Chamado</button></div>
                     </div>
                 </form>
 
@@ -248,26 +222,15 @@ else {
                         </div>
                     </div>
                 </div>
-                <footer class="bg-white sticky-footer" style="padding: 0; position: fixed; bottom: 0; width: 100%; z-index: 1000;">
-                    <div class="container my-auto">
-                        <div class="copyright text-center my-auto">
-                            <!-- SLA Timer Section 
-                        <div id="sla-container" style="padding: 10px 20px;">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="font-weight-bold text-gray-800">Tempo Restante para Cadastro (SLA)</span>
-                                <span class="font-weight-bold text-gray-800" id="sla-timer-text">10:00</span>
-                            </div>
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%; transition: width 1s linear;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="sla-progress-bar"></div>
-                            </div>
-                        </div> -->
-                            <section class="text-center footer" style="padding: 10px;">
-                                <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                            </section>
-                        </div>
-                    </div>
-                </footer>
             </div>
+            <!-- End of #content -->
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024</p>
+                    </div>
+                </div>
+            </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -275,99 +238,6 @@ else {
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
-        // Drop Zone / File Upload Logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropZone = document.getElementById('drop-zone');
-            const inputAnexo = document.getElementById('input-anexo');
-            const dropContent = document.getElementById('drop-zone-content');
-            const filePreview = document.getElementById('file-preview');
-            const fileName = document.getElementById('file-name');
-            const fileSize = document.getElementById('file-size');
-            const imgPreview = document.getElementById('img-preview');
-            const fileIcon = document.getElementById('file-icon');
-            const btnRemove = document.getElementById('btn-remove-file');
-            const maxSize = 5 * 1024 * 1024; // 5MB
-
-            dropZone.addEventListener('click', () => inputAnexo.click());
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = '#4e73df';
-                dropZone.style.background = '#eef2ff';
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.style.borderColor = '#ccc';
-                dropZone.style.background = '#fafafa';
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.style.borderColor = '#ccc';
-                dropZone.style.background = '#fafafa';
-                if (e.dataTransfer.files.length) {
-                    inputAnexo.files = e.dataTransfer.files;
-                    showPreview(e.dataTransfer.files[0]);
-                }
-            });
-
-            inputAnexo.addEventListener('change', (e) => {
-                if (e.target.files.length) {
-                    showPreview(e.target.files[0]);
-                }
-            });
-
-            btnRemove.addEventListener('click', (e) => {
-                e.stopPropagation();
-                inputAnexo.value = '';
-                dropContent.style.display = 'block';
-                filePreview.style.display = 'none';
-                imgPreview.style.display = 'none';
-                dropZone.style.borderColor = '#ccc';
-            });
-
-            function showPreview(file) {
-                if (file.size > maxSize) {
-                    alert('Arquivo muito grande! O tamanho máximo é 5MB.');
-                    inputAnexo.value = '';
-                    return;
-                }
-
-                fileName.textContent = file.name;
-                fileSize.textContent = formatSize(file.size);
-                dropContent.style.display = 'none';
-                filePreview.style.display = 'block';
-                dropZone.style.borderColor = '#28a745';
-                dropZone.style.background = '#f0fff4';
-
-                // Set icon based on file type
-                if (file.type.startsWith('image/')) {
-                    fileIcon.className = 'fas fa-file-image';
-                    fileIcon.style.color = '#28a745';
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        imgPreview.src = e.target.result;
-                        imgPreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                } else if (file.type === 'application/pdf') {
-                    fileIcon.className = 'fas fa-file-pdf';
-                    fileIcon.style.color = '#dc3545';
-                    imgPreview.style.display = 'none';
-                } else {
-                    fileIcon.className = 'fas fa-file-word';
-                    fileIcon.style.color = '#4e73df';
-                    imgPreview.style.display = 'none';
-                }
-            }
-
-            function formatSize(bytes) {
-                if (bytes < 1024) return bytes + ' B';
-                if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
-                return (bytes/(1024*1024)).toFixed(1) + ' MB';
-            }
-        });
-
         // AJAX Form Submission
         document.getElementById('form-novo-chamado').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -401,6 +271,7 @@ else {
         });
     </script>
     <script src="/assets/js/global_search.js"></script>
+
 </body>
 
 </html>

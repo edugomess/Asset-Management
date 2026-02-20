@@ -15,12 +15,10 @@ if (isset($_GET['id'])) {
         $deleteSql = "DELETE FROM ativos WHERE id = '$ativoId'";
         if (mysqli_query($conn, $deleteSql)) {
             echo json_encode(['success' => true]);
-        }
-        else {
+        } else {
             echo json_encode(['success' => false]);
         }
-    }
-    else {
+    } else {
         echo json_encode(['success' => false]);
     }
     exit;
@@ -46,24 +44,34 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
+    <link rel="stylesheet"
+        href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
     <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
+    <link rel="stylesheet"
+        href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-layout-distribute-horizontal" style="width: 30px;height: 30px;">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
+                            style="width: 30px;height: 30px;">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <line x1="4" y1="4" x2="20" y2="4"></line>
                             <line x1="4" y1="20" x2="20" y2="20"></line>
@@ -73,114 +81,171 @@ if (isset($_GET['id'])) {
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.php"><i
+                                class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/inicio.php"><i class="fas fa-home"></i><span>
+                                Início</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span>
+                                Usuários</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i
+                                class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i
+                                class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span>
+                                Ativos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/licencas.php"><i class="fas fa-key"></i><span>
+                                Licenças</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span>
+                                Relatórios</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span>
+                                Chamados</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span>
+                                Suporte</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA
+                                Agent</span></a></li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 23px;">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
+                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <form
+                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
                             <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
+                                <input class="bg-light form-control border-0 small" type="text"
+                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
+                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
+                                style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
+                                    aria-expanded="false" data-toggle="dropdown" href="#"><i
+                                        class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in"
+                                    aria-labelledby="searchDropdown">
                                     <form class="form-inline mr-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        <div class="input-group"><input class="bg-light form-control border-0 small"
+                                                type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0"
+                                                    type="button"><i class="fas fa-search"></i></button></div>
                                         </div>
                                     </form>
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                        <h6 class="dropdown-header">alerts center</h6><a
+                                            class="dropdown-item d-flex align-items-center" href="#">
                                             <div class="mr-3">
-                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                                                <div class="bg-primary icon-circle"><i
+                                                        class="fas fa-file-alt text-white"></i></div>
                                             </div>
                                             <div><span class="small text-gray-500">December 12, 2019</span>
                                                 <p>A new monthly report is ready to download!</p>
                                             </div>
                                         </a><a class="dropdown-item d-flex align-items-center" href="#">
                                             <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
+                                                <div class="bg-success icon-circle"><i
+                                                        class="fas fa-donate text-white"></i></div>
                                             </div>
                                             <div><span class="small text-gray-500">December 7, 2019</span>
                                                 <p>$290.29 has been deposited into your account!</p>
                                             </div>
                                         </a><a class="dropdown-item d-flex align-items-center" href="#">
                                             <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
+                                                <div class="bg-warning icon-circle"><i
+                                                        class="fas fa-exclamation-triangle text-white"></i></div>
                                             </div>
                                             <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                                <p>Spending Alert: We've noticed unusually high spending for your
+                                                    account.</p>
                                             </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
+                                            Alerts</a>
                                     </div>
                                 </div>
                             </li>
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
+                                        <h6 class="dropdown-header">alerts center</h6><a
+                                            class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
+                                                    src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
                                                 <div class="bg-success status-indicator"></div>
                                             </div>
                                             <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
+                                                        help me with a problem I've been having.</span></div>
                                                 <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
                                             </div>
                                         </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
+                                                    src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
                                                 <div class="status-indicator"></div>
                                             </div>
                                             <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
+                                                <div class="text-truncate"><span>I have the photos that you ordered last
+                                                        month!</span></div>
                                                 <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
                                             </div>
                                         </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
+                                                    src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
                                                 <div class="bg-warning status-indicator"></div>
                                             </div>
                                             <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
+                                                <div class="text-truncate"><span>Last month's report looks great, I am
+                                                        very happy with the progress so far, keep up the good
+                                                        work!</span></div>
                                                 <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
                                             </div>
                                         </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
+                                                    src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
                                                 <div class="bg-success status-indicator"></div>
                                             </div>
                                             <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
+                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is
+                                                        because someone told me that people say this to all dogs, even
+                                                        if they aren't good...</span></div>
                                                 <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
                                             </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
+                                            Alerts</a>
                                     </div>
                                 </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
+                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
+                                    aria-labelledby="alertsDropdown"></div>
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
+                                            class="border rounded-circle img-profile"
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
+                                            class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
+                                            class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar
+                                            conta</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
                             </li>
@@ -188,262 +253,288 @@ if (isset($_GET['id'])) {
                     </div>
                 </nav>
                 <div class="container-fluid">
-                
+
                     <!-- Start: 4-column form row -->
                     <?php
-include 'conexao.php';
+                    include 'conexao.php';
 
-// Definir o número de resultados por página
-$results_per_page = 10;
+                    // Definir o número de resultados por página
+                    $results_per_page = 10;
 
-// Verificar o número de resultados atribuídos no banco de dados
-$sql = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_assoc($result);
-$total_results = $row['total'];
+                    // Verificar o número de resultados atribuídos no banco de dados
+                    $sql = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
+                    $result = mysqli_query($conn, $sql);
+                    $row = mysqli_fetch_assoc($result);
+                    $total_results = $row['total'];
 
-// Determinar o número de páginas necessárias
-$total_pages = ceil($total_results / $results_per_page);
+                    // Determinar o número de páginas necessárias
+                    $total_pages = ceil($total_results / $results_per_page);
 
-// Determinar a página atual a partir da URL, se não definida, assume 1
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                    // Determinar a página atual a partir da URL, se não definida, assume 1
+                    $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 
-// Calcular o limite de registros para a consulta
-$start_from = ($current_page - 1) * $results_per_page;
+                    // Calcular o limite de registros para a consulta
+                    $start_from = ($current_page - 1) * $results_per_page;
 
-// Consultar os ativos atribuídos
-$sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
-$result = mysqli_query($conn, $sql);
+                    // Consultar os ativos atribuídos
+                    $sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL LIMIT $start_from, $results_per_page";
+                    $result = mysqli_query($conn, $sql);
 
-// Buscar configurações de depreciação/doação globais
-$dep_config_ini = [
-    'taxa_depreciacao' => 10.00,
-    'periodo_anos' => 1,
-    'periodo_meses' => 0,
-    'elegivel_doacao' => 0,
-    'tempo_doacao_anos' => 5,
-    'tempo_doacao_meses' => 0
-];
-$result_dep_ini = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
-if ($result_dep_ini && mysqli_num_rows($result_dep_ini) > 0) {
-    $dep_config_ini = mysqli_fetch_assoc($result_dep_ini);
-}
-$doacao_global_ini = intval($dep_config_ini['elegivel_doacao']);
-$tempo_min_doacao_meses_ini = (intval($dep_config_ini['tempo_doacao_anos']) * 12) + intval($dep_config_ini['tempo_doacao_meses']);
+                    // Buscar configurações de depreciação/doação globais
+                    $dep_config_ini = [
+                        'taxa_depreciacao' => 10.00,
+                        'periodo_anos' => 1,
+                        'periodo_meses' => 0,
+                        'elegivel_doacao' => 0,
+                        'tempo_doacao_anos' => 5,
+                        'tempo_doacao_meses' => 0
+                    ];
+                    $result_dep_ini = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+                    if ($result_dep_ini && mysqli_num_rows($result_dep_ini) > 0) {
+                        $dep_config_ini = mysqli_fetch_assoc($result_dep_ini);
+                    }
+                    $doacao_global_ini = intval($dep_config_ini['elegivel_doacao']);
+                    $tempo_min_doacao_meses_ini = (intval($dep_config_ini['tempo_doacao_anos']) * 12) + intval($dep_config_ini['tempo_doacao_meses']);
 
-// Buscar elegibilidade por categoria
-$cat_doacao_map_ini = [];
-$result_cat_ini = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
-if ($result_cat_ini) {
-    while ($r = mysqli_fetch_assoc($result_cat_ini)) {
-        $cat_doacao_map_ini[$r['categoria']] = intval($r['elegivel_doacao']);
-    }
-}
-?>
-<h3 class="text-dark mb-4">Ativos Atribuídos</h3>
-    <div class="card shadow">
-    <div class="col-md-6 col-xl-3 text-nowrap">
-    <div 
-        id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;" href="/ativos_doados.php">Doações</a>
-    </div>                             
-        <div class="card-body">
-            <div class="table-responsive mt-2">
-                <table class="table my-0" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Categoria</th>
-                            <th>Fabricante</th>
-                            <th>Modelo</th>
-                            <th>Tag</th>
-                            <th>HostName</th>
-                            <th>Valor</th>
-                            <th>MAC Address</th>
-                            <th>Usuário</th>
-                            <th>Centro de Custo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    // Buscar elegibilidade por categoria
+                    $cat_doacao_map_ini = [];
+                    $result_cat_ini = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
+                    if ($result_cat_ini) {
+                        while ($r = mysqli_fetch_assoc($result_cat_ini)) {
+                            $cat_doacao_map_ini[$r['categoria']] = intval($r['elegivel_doacao']);
+                        }
+                    }
+                    ?>
+                    <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
+                    <div class="card shadow">
+                        <div class="col-md-6 col-xl-3 text-nowrap">
+                            <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
+                                class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                role="button"
+                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;"
+                                href="/ativos_doados.php">Doações</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive mt-2">
+                                <table class="table my-0" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Categoria</th>
+                                            <th>Fabricante</th>
+                                            <th>Modelo</th>
+                                            <th>Tag</th>
+                                            <th>HostName</th>
+                                            <th>Valor</th>
+                                            <th>MAC Address</th>
+                                            <th>Usuário</th>
+                                            <th>Centro de Custo</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                    
-                        <?php
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        $assigned_to = $row['assigned_to'];
-?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                    <td><?php echo htmlspecialchars(number_format($row['valor'], 2, ',', '.')); ?></td>
-                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                    <td>
+
                                         <?php
-        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
-        $result_user = mysqli_query($conn, $sql_user);
-        if ($result_user && mysqli_num_rows($result_user) > 0) {
-            $user = mysqli_fetch_assoc($result_user);
-            echo htmlspecialchars($user['nome']);
-        }
-        else {
-            echo "Não encontrado";
-        }
-?>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
-                                    <td>
-                                        <?php
-        // Elegibilidade para doação baseada nas configurações
-        $data_ativacao = new DateTime($row['dataAtivacao']);
-        $data_atual = new DateTime();
-        $diff = $data_ativacao->diff($data_atual);
-        $meses_desde_cadastro_ini = ($diff->y * 12) + $diff->m;
-        $cat_do_ativo_ini = $row['categoria'];
-        $cat_elegivel_ini = isset($cat_doacao_map_ini[$cat_do_ativo_ini]) ? $cat_doacao_map_ini[$cat_do_ativo_ini] : 1;
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                $assigned_to = $row['assigned_to'];
+                                                ?>
+                                                <tr>
+                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                                    <td><?php echo htmlspecialchars(number_format($row['valor'], 2, ',', '.')); ?>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                    <td>
+                                                        <?php
+                                                        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
+                                                        $result_user = mysqli_query($conn, $sql_user);
+                                                        if ($result_user && mysqli_num_rows($result_user) > 0) {
+                                                            $user = mysqli_fetch_assoc($result_user);
+                                                            echo htmlspecialchars($user['nome']);
+                                                        } else {
+                                                            echo "Não encontrado";
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                                    <td>
+                                                        <?php
+                                                        // Elegibilidade para doação baseada nas configurações
+                                                        $data_ativacao = new DateTime($row['dataAtivacao']);
+                                                        $data_atual = new DateTime();
+                                                        $diff = $data_ativacao->diff($data_atual);
+                                                        $meses_desde_cadastro_ini = ($diff->y * 12) + $diff->m;
+                                                        $cat_do_ativo_ini = $row['categoria'];
+                                                        $cat_elegivel_ini = isset($cat_doacao_map_ini[$cat_do_ativo_ini]) ? $cat_doacao_map_ini[$cat_do_ativo_ini] : 1;
 
-        $btn_style = 'style="width:150px; font-size:12px; border-radius:10px;"';
+                                                        $btn_style = 'style="width:150px; font-size:12px; border-radius:10px;"';
 
-        if (!$doacao_global_ini) {
-            echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . ' >Desativada</button>';
-        }
-        elseif (!$cat_elegivel_ini) {
-            echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . ' >Cat. não elegível</button>';
-        }
-        elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
-            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >Doar</button>';
-        }
-        else {
-            $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
-            $a_ini = floor($restante_ini / 12);
-            $m_ini = $restante_ini % 12;
-            $t_ini = '';
-            if ($a_ini > 0)
-                $t_ini .= $a_ini . ' ano(s)';
-            if ($a_ini > 0 && $m_ini > 0)
-                $t_ini .= ' e ';
-            if ($m_ini > 0)
-                $t_ini .= $m_ini . ' mês(es)';
-            if (empty($t_ini))
-                $t_ini = 'menos de 1 mês';
-            echo '<button class="btn btn-warning btn-sm" disabled title="Carência: ' . $t_ini . '" ' . $btn_style . ' >Bloqueado</button>';
-        }
-?>
-                                    </td>
-                                </tr>
-                            <?php
-    }
-}
-else {
-    echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
-}
-?>
-                    </tbody>
-                </table>
-            </div>
+                                                        if (!$doacao_global_ini) {
+                                                            echo '<button class="btn btn-secondary btn-sm" disabled title="A doação está desativada globalmente nas configurações." ' . $btn_style . ' >Desativada</button>';
+                                                        } elseif (!$cat_elegivel_ini) {
+                                                            echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . ' >Cat. não elegível</button>';
+                                                        } elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
+                                                            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >Doar</button>';
+                                                        } else {
+                                                            $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
+                                                            $a_ini = floor($restante_ini / 12);
+                                                            $m_ini = $restante_ini % 12;
+                                                            $t_ini = '';
+                                                            if ($a_ini > 0)
+                                                                $t_ini .= $a_ini . ' ano(s)';
+                                                            if ($a_ini > 0 && $m_ini > 0)
+                                                                $t_ini .= ' e ';
+                                                            if ($m_ini > 0)
+                                                                $t_ini .= $m_ini . ' mês(es)';
+                                                            if (empty($t_ini))
+                                                                $t_ini = 'menos de 1 mês';
+                                                            echo '<button class="btn btn-warning btn-sm" disabled title="Carência: ' . $t_ini . '" ' . $btn_style . ' >Bloqueado</button>';
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                                <?php
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='10'>Nenhum ativo atribuído encontrado.</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
 
-            <style>
-                .pagination-custom { display: flex; gap: 6px; list-style: none; padding: 0; margin: 16px 0; flex-wrap: wrap; }
-                .pagination-custom li a {
-                    display: inline-flex; align-items: center; justify-content: center;
-                    min-width: 38px; height: 38px; padding: 0 12px;
-                    border-radius: 8px; font-size: 14px; font-weight: 500;
-                    text-decoration: none; transition: all 0.2s ease;
-                    border: 1.5px solid rgba(44,64,74,0.25); color: rgb(44,64,74); background: #fff;
-                }
-                .pagination-custom li a:hover {
-                    background: rgba(44,64,74,0.08); border-color: rgb(44,64,74); color: rgb(44,64,74);
-                    transform: translateY(-1px); box-shadow: 0 2px 8px rgba(44,64,74,0.15);
-                }
-                .pagination-custom li.active a {
-                    background: rgb(44,64,74); color: #fff; border-color: rgb(44,64,74);
-                    box-shadow: 0 2px 8px rgba(44,64,74,0.3);
-                }
-                .pagination-custom li.active a:hover { background: rgb(34,54,64); }
-            </style>
-            <div class="d-flex justify-content-start mt-3">
-                <ul class="pagination-custom">
-                    <?php
-if ($current_page > 1) {
-    echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-}
-for ($page = 1; $page <= $total_pages; $page++) {
-    if ($page == $current_page) {
-        echo "<li class='active'><a>$page</a></li>";
-    }
-    else {
-        echo "<li><a href='?page=$page'>$page</a></li>";
-    }
-}
-if ($current_page < $total_pages) {
-    echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-}
-?>
-                </ul>
-            </div>
+                            <style>
+                                .pagination-custom {
+                                    display: flex;
+                                    gap: 6px;
+                                    list-style: none;
+                                    padding: 0;
+                                    margin: 16px 0;
+                                    flex-wrap: wrap;
+                                }
+
+                                .pagination-custom li a {
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    min-width: 38px;
+                                    height: 38px;
+                                    padding: 0 12px;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    text-decoration: none;
+                                    transition: all 0.2s ease;
+                                    border: 1.5px solid rgba(44, 64, 74, 0.25);
+                                    color: rgb(44, 64, 74);
+                                    background: #fff;
+                                }
+
+                                .pagination-custom li a:hover {
+                                    background: rgba(44, 64, 74, 0.08);
+                                    border-color: rgb(44, 64, 74);
+                                    color: rgb(44, 64, 74);
+                                    transform: translateY(-1px);
+                                    box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
+                                }
+
+                                .pagination-custom li.active a {
+                                    background: rgb(44, 64, 74);
+                                    color: #fff;
+                                    border-color: rgb(44, 64, 74);
+                                    box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
+                                }
+
+                                .pagination-custom li.active a:hover {
+                                    background: rgb(34, 54, 64);
+                                }
+                            </style>
+                            <div class="d-flex justify-content-start mt-3">
+                                <ul class="pagination-custom">
+                                    <?php
+                                    if ($current_page > 1) {
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+                                    }
+                                    for ($page = 1; $page <= $total_pages; $page++) {
+                                        if ($page == $current_page) {
+                                            echo "<li class='active'><a>$page</a></li>";
+                                        } else {
+                                            echo "<li><a href='?page=$page'>$page</a></li>";
+                                        }
+                                    }
+                                    if ($current_page < $total_pages) {
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+
+                    // Função para doar o ativo (transferir para a tabela "venda" - agora doações)
+                    function sellAsset(assetId) {
+                        if (confirm('Tem certeza que deseja doar este ativo?')) {
+                            fetch('doar_ativo.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert('Ativo doado com sucesso!');
+                                        location.reload(); // Recarrega a página para refletir as mudanças
+                                    } else {
+                                        alert('Ativo doado com sucesso!');
+                                        location.reload();
+                                    }
+                                })
+                                .catch(error => {
+                                    alert('Erro ao processar doação!');
+                                    location.reload();
+                                });
+                        }
+                    }
+
+
+
+                </script>
+
+                <?php
+                mysqli_close($conn);
+                ?>
+
+
+
+            </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
         </div>
-    </div>
-</div>
-
-<script>
-    
-// Função para doar o ativo (transferir para a tabela "venda" - agora doações)
-function sellAsset(assetId) {
-    if (confirm('Tem certeza que deseja doar este ativo?')) {
-        fetch('doar_ativo.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Ativo doado com sucesso!');
-                location.reload(); // Recarrega a página para refletir as mudanças
-            } else {
-                alert('Ativo doado com sucesso!');
-                location.reload();
-            }
-        })
-        .catch(error => {
-            alert('Erro ao processar doação!');
-                location.reload();
-        });
-    }
-}
-
-
-
-</script>
-
-<?php
-mysqli_close($conn);
-?>
-
-
-          
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="/assets/js/global_search.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+        <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
+        <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
+        <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
+        <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
+        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+        <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
+        <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
+        <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

@@ -148,6 +148,8 @@ $result = mysqli_query($conn, $sql);
                                 class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span>
                                 Ativos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/licencas.php"><i class="fas fa-key"></i><span>
+                                Licenças</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span>
                                 Relatórios</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="/chamados.php"><i

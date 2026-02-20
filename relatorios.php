@@ -304,6 +304,17 @@ include
                                                 <option value="relatorio_usuarios_vips.php">VIPs</option>
                                             </optgroup>
 
+                                            <optgroup label="Licenças">
+                                                <option value="relatorio_licencas_geral.php">Geral de Licenças</option>
+                                                <option value="relatorio_licencas_expiradas.php">Expiradas / Próximas ao
+                                                    Vencimento</option>
+                                                <option value="relatorio_licencas_cc.php">Por Centro de Custo</option>
+                                                <option value="relatorio_licencas_em_uso.php">Uso de Seats (Ocupação)
+                                                </option>
+                                                <option value="relatorio_atribuicoes_geral.php">Relatório Geral de
+                                                    Atribuições</option>
+                                            </optgroup>
+
                                             <optgroup label="Outros">
                                                 <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)
                                                 </option>

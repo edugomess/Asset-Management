@@ -11,9 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $valor_unitario = floatval($_POST['valor_unitario']);
     $data_aquisicao = !empty($_POST['data_aquisicao']) ? $_POST['data_aquisicao'] : null;
     $data_expiracao = !empty($_POST['data_expiracao']) ? $_POST['data_expiracao'] : null;
+    $id_centro_custo = !empty($_POST['id_centro_custo']) ? intval($_POST['id_centro_custo']) : "NULL";
 
-    $sql = "INSERT INTO licencas (software, fabricante, tipo, chave, quantidade_total, valor_unitario, data_aquisicao, data_expiracao, status) 
-            VALUES ('$software', '$fabricante', '$tipo', '$chave', $quantidade_total, $valor_unitario, " .
+    $sql = "INSERT INTO licencas (software, fabricante, tipo, chave, quantidade_total, valor_unitario, id_centro_custo, data_aquisicao, data_expiracao, status) 
+            VALUES ('$software', '$fabricante', '$tipo', '$chave', $quantidade_total, $valor_unitario, $id_centro_custo, " .
         ($data_aquisicao ? "'$data_aquisicao'" : "NULL") . ", " .
         ($data_expiracao ? "'$data_expiracao'" : "NULL") . ", 'Ativa')";
 

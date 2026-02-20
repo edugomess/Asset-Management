@@ -6,107 +6,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Detalhes do Equipamento</title>
     <?php
-include 'conexao.php';
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    include 'conexao.php';
+    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Buscar detalhes do ativo
-$sql_ativo = "SELECT * FROM ativos WHERE id_asset = '$id'";
-$result_ativo = mysqli_query($conn, $sql_ativo);
+    // Buscar detalhes do ativo
+    $sql_ativo = "SELECT * FROM ativos WHERE id_asset = '$id'";
+    $result_ativo = mysqli_query($conn, $sql_ativo);
 
-if (mysqli_num_rows($result_ativo) > 0) {
-    $ativo = mysqli_fetch_assoc($result_ativo);
+    if (mysqli_num_rows($result_ativo) > 0) {
+        $ativo = mysqli_fetch_assoc($result_ativo);
 
-    // Buscar configurações de depreciação do banco
-    $dep_config = [
-        'taxa_depreciacao' => 10.00,
-        'periodo_anos' => 1,
-        'periodo_meses' => 0,
-        'elegivel_doacao' => 0,
-        'tempo_doacao_anos' => 5,
-        'tempo_doacao_meses' => 0
-    ];
-    $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
-    if ($result_dep && mysqli_num_rows($result_dep) > 0) {
-        $dep_config = mysqli_fetch_assoc($result_dep);
+        // Buscar configurações de depreciação do banco
+        $dep_config = [
+            'taxa_depreciacao' => 10.00,
+            'periodo_anos' => 1,
+            'periodo_meses' => 0,
+            'elegivel_doacao' => 0,
+            'tempo_doacao_anos' => 5,
+            'tempo_doacao_meses' => 0
+        ];
+        $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+        if ($result_dep && mysqli_num_rows($result_dep) > 0) {
+            $dep_config = mysqli_fetch_assoc($result_dep);
+        }
+
+        // Calcular tempo desde cadastro
+        $data_ativacao = new DateTime($ativo['dataAtivacao']);
+        $data_atual = new DateTime();
+        $diff = $data_ativacao->diff($data_atual);
+        $dias_ativos = $diff->days;
+
+        // Depreciação baseada nas configurações
+        $valor_original = floatval($ativo['valor']);
+        $taxa_pct = floatval($dep_config['taxa_depreciacao']); // ex: 10 = 10%
+        $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
+
+        if ($periodo_total_meses > 0 && $valor_original > 0) {
+            // Quantos períodos completos já se passaram
+            $meses_ativos = ($diff->y * 12) + $diff->m;
+            $periodos_completos = floor($meses_ativos / $periodo_total_meses);
+            // Depreciação acumulada (nunca ultrapassa o valor original)
+            $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
+            $valor_atual = max(0, $valor_original - $depreciacao_total);
+            $percentual_depreciado = min(100, round(($depreciacao_total / $valor_original) * 100, 1));
+        } else {
+            $depreciacao_total = 0;
+            $valor_atual = $valor_original;
+            $percentual_depreciado = 0;
+        }
+
+        // Elegibilidade para doação baseada nas configurações
+        $doacao_habilitada = intval($dep_config['elegivel_doacao']);
+        $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
+        $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
+
+        // Verificar elegibilidade por categoria
+        $categoria_ativo = $ativo['categoria'];
+        $cat_elegivel = 1; // Default: elegível
+        $result_cat_eleg = mysqli_query($conn, "SELECT elegivel_doacao FROM categoria_doacao WHERE categoria = '" . mysqli_real_escape_string($conn, $categoria_ativo) . "' LIMIT 1");
+        if ($result_cat_eleg && mysqli_num_rows($result_cat_eleg) > 0) {
+            $row_cat_eleg = mysqli_fetch_assoc($result_cat_eleg);
+            $cat_elegivel = intval($row_cat_eleg['elegivel_doacao']);
+        }
+
+        if (!$doacao_habilitada) {
+            $status_doacao = "Doação Desativada";
+            $cor_doacao = "text-secondary";
+        } elseif (!$cat_elegivel) {
+            $status_doacao = "Categoria não elegível para doação";
+            $cor_doacao = "text-warning";
+        } elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
+            $status_doacao = "Elegível para Doação";
+            $cor_doacao = "text-success";
+        } else {
+            $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
+            $anos_rest = floor($restante_meses / 12);
+            $meses_rest = $restante_meses % 12;
+            $tempo_str = '';
+            if ($anos_rest > 0)
+                $tempo_str .= $anos_rest . ' ano(s)';
+            if ($anos_rest > 0 && $meses_rest > 0)
+                $tempo_str .= ' e ';
+            if ($meses_rest > 0)
+                $tempo_str .= $meses_rest . ' mês(es)';
+            if (empty($tempo_str))
+                $tempo_str = 'menos de 1 mês';
+            $status_doacao = "Bloqueado (Carência: " . $tempo_str . ")";
+            $cor_doacao = "text-danger";
+        }
+    } else {
+        echo "<script>alert('Ativo não encontrado!'); window.location.href='equipamentos.php';</script>";
+        exit;
     }
 
-    // Calcular tempo desde cadastro
-    $data_ativacao = new DateTime($ativo['dataAtivacao']);
-    $data_atual = new DateTime();
-    $diff = $data_ativacao->diff($data_atual);
-    $dias_ativos = $diff->days;
-
-    // Depreciação baseada nas configurações
-    $valor_original = floatval($ativo['valor']);
-    $taxa_pct = floatval($dep_config['taxa_depreciacao']); // ex: 10 = 10%
-    $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
-
-    if ($periodo_total_meses > 0 && $valor_original > 0) {
-        // Quantos períodos completos já se passaram
-        $meses_ativos = ($diff->y * 12) + $diff->m;
-        $periodos_completos = floor($meses_ativos / $periodo_total_meses);
-        // Depreciação acumulada (nunca ultrapassa o valor original)
-        $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
-        $valor_atual = max(0, $valor_original - $depreciacao_total);
-        $percentual_depreciado = min(100, round(($depreciacao_total / $valor_original) * 100, 1));
-    }
-    else {
-        $depreciacao_total = 0;
-        $valor_atual = $valor_original;
-        $percentual_depreciado = 0;
-    }
-
-    // Elegibilidade para doação baseada nas configurações
-    $doacao_habilitada = intval($dep_config['elegivel_doacao']);
-    $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
-    $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
-
-    // Verificar elegibilidade por categoria
-    $categoria_ativo = $ativo['categoria'];
-    $cat_elegivel = 1; // Default: elegível
-    $result_cat_eleg = mysqli_query($conn, "SELECT elegivel_doacao FROM categoria_doacao WHERE categoria = '" . mysqli_real_escape_string($conn, $categoria_ativo) . "' LIMIT 1");
-    if ($result_cat_eleg && mysqli_num_rows($result_cat_eleg) > 0) {
-        $row_cat_eleg = mysqli_fetch_assoc($result_cat_eleg);
-        $cat_elegivel = intval($row_cat_eleg['elegivel_doacao']);
-    }
-
-    if (!$doacao_habilitada) {
-        $status_doacao = "Doação Desativada";
-        $cor_doacao = "text-secondary";
-    }
-    elseif (!$cat_elegivel) {
-        $status_doacao = "Categoria não elegível para doação";
-        $cor_doacao = "text-warning";
-    }
-    elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
-        $status_doacao = "Elegível para Doação";
-        $cor_doacao = "text-success";
-    }
-    else {
-        $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
-        $anos_rest = floor($restante_meses / 12);
-        $meses_rest = $restante_meses % 12;
-        $tempo_str = '';
-        if ($anos_rest > 0)
-            $tempo_str .= $anos_rest . ' ano(s)';
-        if ($anos_rest > 0 && $meses_rest > 0)
-            $tempo_str .= ' e ';
-        if ($meses_rest > 0)
-            $tempo_str .= $meses_rest . ' mês(es)';
-        if (empty($tempo_str))
-            $tempo_str = 'menos de 1 mês';
-        $status_doacao = "Bloqueado (Carência: " . $tempo_str . ")";
-        $cor_doacao = "text-danger";
-    }
-}
-else {
-    echo "<script>alert('Ativo não encontrado!'); window.location.href='equipamentos.php';</script>";
-    exit;
-}
-
-// Determinar imagem
-$imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2.jpeg';
-?>
+    // Determinar imagem
+    $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2.jpeg';
+    ?>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=ab31356e4f631a0a7556d48e827f1a2e">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=2fbfaadd1b3a8788aae69992363f994b">
@@ -120,24 +115,73 @@ $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
+    <link rel="stylesheet"
+        href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
     <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
+    <link rel="stylesheet"
+        href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <style>
+        .btn-system {
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: none;
+        }
+
+        .btn-system:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            filter: brightness(1.1);
+        }
+
+        .btn-warning-system {
+            background-color: #f6c23e;
+            color: white;
+        }
+
+        .btn-danger-system {
+            background-color: #e74a3b;
+            color: white;
+        }
+
+        .btn-info-system {
+            background-color: #36b9cc;
+            color: white;
+        }
+
+        .btn-success-system {
+            background-color: #1cc88a;
+            color: white;
+        }
+    </style>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-layout-distribute-horizontal" style="width: 30px;height: 30px;">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
+                            style="width: 30px;height: 30px;">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <line x1="4" y1="4" x2="20" y2="4"></line>
                             <line x1="4" y1="20" x2="20" y2="20"></line>
@@ -147,25 +191,38 @@ $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.php"><i
+                                class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span>
+                                Início</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span>
+                                Usuários</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i
+                                class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i
+                                class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/equipamentos.php"><i
+                                class="fas fa-boxes"></i><span> Ativos</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span>
+                                Relatórios</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span>
+                                Chamados</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span>
+                                Suporte</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA
+                                Agent</span></a></li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 23px;">
                     <div class="container-fluid">
-                        <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1"
+                            type="button"><i class="fas fa-bars"></i></button>
                     </div>
                 </nav>
                 <div class="container-fluid">
@@ -173,10 +230,17 @@ $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2
                     <div class="row mb-3">
                         <div class="col-lg-4">
                             <div class="card mb-3">
-                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="<?php echo $imagem; ?>" width="160" height="160">
+                                <div class="card-body text-center shadow">
+                                    <img class="rounded-circle mb-3 mt-4" src="<?php echo $imagem; ?>" width="160"
+                                        height="160" style="object-fit: cover; border: 3px solid #f8f9fc;">
                                     <div class="mb-3">
-                                        <input type="file" id="foto-input" accept="image/*" style="display: none;" onchange="uploadFoto(this)">
-                                        <button class="btn btn-primary btn-sm" type="button" style="background: rgb(44,64,74);" onclick="document.getElementById('foto-input').click();">Alterar Foto</button>
+                                        <input type="file" id="foto-input" accept="image/*" style="display: none;"
+                                            onchange="uploadFoto(this)">
+                                        <button class="btn btn-primary btn-sm btn-system mx-auto" type="button"
+                                            style="background: rgb(44,64,74); padding: 8px 15px; font-size: 0.85rem;"
+                                            onclick="document.getElementById('foto-input').click();">
+                                            <i class="fas fa-camera"></i> Alterar Foto
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -184,97 +248,147 @@ $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2
                                 <div class="card-header py-3">
                                     <h6 class="text-primary font-weight-bold m-0">Ações Rápidas</h6>
                                 </div>
-                                <div class="card-body">
-                                    <a href="editar_ativo.php?id=<?php echo $id; ?>" class="btn btn-warning btn-block text-white">
+                                <div class="card-body d-grid gap-3">
+                                    <a href="editar_ativo.php?id=<?php echo $id; ?>"
+                                        class="btn btn-warning-system btn-system btn-block text-white mb-3">
                                         <i class="fas fa-edit"></i> Editar Ativo
                                     </a>
-                                     <?php if ($ativo['status'] == 'Ativo'): ?>
-                                    <button class="btn btn-danger btn-block" onclick="alert('Funcionalidade em desenvolvimento')">
-                                        <i class="fas fa-power-off"></i> Desativar
-                                    </button>
-                                    <?php
-else: ?>
-                                    <button class="btn btn-success btn-block" onclick="alert('Funcionalidade em desenvolvimento')">
-                                        <i class="fas fa-power-off"></i> Ativar
-                                    </button>
-                                    <?php
-endif; ?>
-                                    <button class="btn btn-info btn-block" onclick="gerarPDF()">
+                                    <?php if ($ativo['status'] == 'Ativo'): ?>
+                                        <button class="btn btn-danger-system btn-system btn-block mb-3"
+                                            onclick="toggleStatus(<?php echo $id; ?>, 'Inativo')">
+                                            <i class="fas fa-power-off"></i> Desativar
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="btn btn-success-system btn-system btn-block mb-3"
+                                            onclick="toggleStatus(<?php echo $id; ?>, 'Ativo')">
+                                            <i class="fas fa-power-off"></i> Ativar
+                                        </button>
+                                    <?php endif; ?>
+                                    <button class="btn btn-info-system btn-system btn-block" onclick="gerarPDF()">
                                         <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
                                     </button>
                                 </div>
                             </div>
                         </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="card shadow mb-3">
-                                        <div class="card-header py-3">
-                                            <p class="text-primary m-0 font-weight-bold">Informações do Ativo</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="modelo"><strong>Modelo</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['modelo']); ?>" readonly></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="tag"><strong>Tag</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['tag']); ?>" readonly></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="fabricante"><strong>Fabricante</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['fabricante']); ?>" readonly></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="categoria"><strong>Categoria</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['categoria']); ?>" readonly></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group"><label for="hostname"><strong>Hostname</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['hostName']); ?>" readonly></div>
-                                                <div class="form-group"><label for="mac"><strong>MAC Address</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['macAdress']); ?>" readonly></div>
-                                            </form>
-                                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card shadow mb-3">
+                                    <div class="card-header py-3">
+                                        <p class="text-primary m-0 font-weight-bold">Informações do Ativo</p>
                                     </div>
-                                    <div class="card shadow">
-                                        <div class="card-header py-3">
-                                            <p class="text-primary m-0 font-weight-bold">Valores e Status</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Data de Cadastro</strong></label><input class="form-control" type="text" value="<?php echo date('d/m/Y', strtotime($ativo['dataAtivacao'])); ?>" readonly></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Centro de Custo</strong></label><input class="form-control" type="text" value="<?php echo htmlspecialchars($ativo['centroDeCusto']); ?>" readonly></div>
-                                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group"><label
+                                                            for="modelo"><strong>Modelo</strong></label><input
+                                                            class="form-control" type="text"
+                                                            value="<?php echo htmlspecialchars($ativo['modelo']); ?>"
+                                                            readonly></div>
                                                 </div>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Valor Original</strong></label><input class="form-control" type="text" value="R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>" readonly></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Valor Atual</strong></label><input class="form-control" type="text" value="R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>" readonly></div>
-                                                    </div>
+                                                <div class="col">
+                                                    <div class="form-group"><label
+                                                            for="tag"><strong>Tag</strong></label><input
+                                                            class="form-control" type="text"
+                                                            value="<?php echo htmlspecialchars($ativo['tag']); ?>"
+                                                            readonly></div>
                                                 </div>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Taxa de Depreciação</strong></label><input class="form-control" type="text" value="<?php echo number_format($taxa_pct, 2, ',', '.'); ?>% a cada <?php echo intval($dep_config['periodo_anos']); ?> ano(s) e <?php echo intval($dep_config['periodo_meses']); ?> mês(es)" readonly></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label><strong>Depreciação Acumulada</strong></label><input class="form-control text-danger" type="text" value="R$ <?php echo number_format($depreciacao_total, 2, ',', '.'); ?> (<?php echo number_format($percentual_depreciado, 1, ',', '.'); ?>%)" readonly style="font-weight: bold;"></div>
-                                                    </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group"><label
+                                                            for="fabricante"><strong>Fabricante</strong></label><input
+                                                            class="form-control" type="text"
+                                                            value="<?php echo htmlspecialchars($ativo['fabricante']); ?>"
+                                                            readonly></div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label><strong>Status de Doação</strong></label>
-                                                    <input class="form-control <?php echo $cor_doacao; ?>" type="text" value="<?php echo $status_doacao; ?>" readonly style="font-weight: bold;">
+                                                <div class="col">
+                                                    <div class="form-group"><label
+                                                            for="categoria"><strong>Categoria</strong></label><input
+                                                            class="form-control" type="text"
+                                                            value="<?php echo htmlspecialchars($ativo['categoria']); ?>"
+                                                            readonly></div>
                                                 </div>
-                                            </form>
-                                        </div>
+                                            </div>
+                                            <div class="form-group"><label
+                                                    for="hostname"><strong>Hostname</strong></label><input
+                                                    class="form-control" type="text"
+                                                    value="<?php echo htmlspecialchars($ativo['hostName']); ?>"
+                                                    readonly></div>
+                                            <div class="form-group"><label for="mac"><strong>MAC
+                                                        Address</strong></label><input class="form-control" type="text"
+                                                    value="<?php echo htmlspecialchars($ativo['macAdress']); ?>"
+                                                    readonly></div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="card shadow">
+                                    <div class="card-header py-3">
+                                        <p class="text-primary m-0 font-weight-bold">Valores e Status</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Data de
+                                                                Cadastro</strong></label><input class="form-control"
+                                                            type="text"
+                                                            value="<?php echo date('d/m/Y', strtotime($ativo['dataAtivacao'])); ?>"
+                                                            readonly></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Centro de
+                                                                Custo</strong></label><input class="form-control"
+                                                            type="text"
+                                                            value="<?php echo htmlspecialchars($ativo['centroDeCusto']); ?>"
+                                                            readonly></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Valor
+                                                                Original</strong></label><input class="form-control"
+                                                            type="text"
+                                                            value="R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>"
+                                                            readonly></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Valor
+                                                                Atual</strong></label><input class="form-control"
+                                                            type="text"
+                                                            value="R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>"
+                                                            readonly></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Taxa de
+                                                                Depreciação</strong></label><input class="form-control"
+                                                            type="text"
+                                                            value="<?php echo number_format($taxa_pct, 2, ',', '.'); ?>% a cada <?php echo intval($dep_config['periodo_anos']); ?> ano(s) e <?php echo intval($dep_config['periodo_meses']); ?> mês(es)"
+                                                            readonly></div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group"><label><strong>Depreciação
+                                                                Acumulada</strong></label><input
+                                                            class="form-control text-danger" type="text"
+                                                            value="R$ <?php echo number_format($depreciacao_total, 2, ',', '.'); ?> (<?php echo number_format($percentual_depreciado, 1, ',', '.'); ?>%)"
+                                                            readonly style="font-weight: bold;"></div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label><strong>Status de Doação</strong></label>
+                                                <input class="form-control <?php echo $cor_doacao; ?>" type="text"
+                                                    value="<?php echo $status_doacao; ?>" readonly
+                                                    style="font-weight: bold;">
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 <div class="card shadow mb-5">
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Descrição</p>
@@ -285,7 +399,8 @@ endif; ?>
                                 <form>
                                     <div class="form-group">
                                         <label for="signature"><strong>Detalhes Adicionais</strong></label>
-                                        <textarea class="form-control" rows="4" readonly><?php echo htmlspecialchars($ativo['descricao']); ?></textarea>
+                                        <textarea class="form-control" rows="4"
+                                            readonly><?php echo htmlspecialchars($ativo['descricao']); ?></textarea>
                                     </div>
                                 </form>
                             </div>
@@ -293,49 +408,48 @@ endif; ?>
                     </div>
                 </div>
                 <div class="card shadow mb-5">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Histórico do Ativo</p>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Data/Hora</th>
-                                            <th>Ação</th>
-                                            <th>Responsável pela ação</th>
-                                            <th>Detalhes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-$sql_historico = "SELECT h.*, u.nome, u.sobrenome FROM historico_ativos h LEFT JOIN usuarios u ON h.usuario_id = u.id_usuarios WHERE h.ativo_id = '$id' ORDER BY h.data_evento DESC";
-$result_historico = mysqli_query($conn, $sql_historico);
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Histórico do Ativo</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Ação</th>
+                                        <th>Responsável pela ação</th>
+                                        <th>Detalhes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $sql_historico = "SELECT h.*, u.nome, u.sobrenome FROM historico_ativos h LEFT JOIN usuarios u ON h.usuario_id = u.id_usuarios WHERE h.ativo_id = '$id' ORDER BY h.data_evento DESC";
+                                    $result_historico = mysqli_query($conn, $sql_historico);
 
-if (mysqli_num_rows($result_historico) > 0) {
-    while ($row = mysqli_fetch_assoc($result_historico)) {
-        $usuario_nome = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Sistema';
-        echo "<tr>";
-        echo "<td>" . date('d/m/Y H:i', strtotime($row['data_evento'])) . "</td>";
-        echo "<td>" . $row['acao'] . "</td>";
-        echo "<td>" . $usuario_nome . "</td>";
-        echo "<td>" . $row['detalhes'] . "</td>";
-        echo "</tr>";
-    }
-}
-else {
-    echo "<tr><td colspan='4' class='text-center'>Nenhum histórico encontrado.</td></tr>";
-}
-?>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    if (mysqli_num_rows($result_historico) > 0) {
+                                        while ($row = mysqli_fetch_assoc($result_historico)) {
+                                            $usuario_nome = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Sistema';
+                                            echo "<tr>";
+                                            echo "<td>" . date('d/m/Y H:i', strtotime($row['data_evento'])) . "</td>";
+                                            echo "<td>" . $row['acao'] . "</td>";
+                                            echo "<td>" . $usuario_nome . "</td>";
+                                            echo "<td>" . $row['detalhes'] . "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='4' class='text-center'>Nenhum histórico encontrado.</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
@@ -365,19 +479,19 @@ else {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Foto atualizada com sucesso!');
-                        location.reload();
-                    } else {
-                        alert('Erro ao atualizar foto: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Erro na requisição');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Foto atualizada com sucesso!');
+                            location.reload();
+                        } else {
+                            alert('Erro ao atualizar foto: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Erro na requisição');
+                    });
             }
         }
 
@@ -396,64 +510,64 @@ else {
                     novo_status: novoStatus
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Erro: ' + (data.message || 'Erro desconhecido'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Erro na requisição');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erro na requisição');
+                });
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
-    function gerarPDF() {
-        // Esconder botões antes de gerar
-        var btns = document.querySelectorAll('.btn');
-        var sidebar = document.getElementById('wrapper').querySelector('nav.sidebar');
-        var topbar = document.querySelector('.topbar');
-        var btnPdf = event.target.closest('button');
-        var acoesCard = btnPdf.closest('.card');
-        var fotoCard = acoesCard.previousElementSibling;
+        function gerarPDF() {
+            // Esconder botões antes de gerar
+            var btns = document.querySelectorAll('.btn');
+            var sidebar = document.getElementById('wrapper').querySelector('nav.sidebar');
+            var topbar = document.querySelector('.topbar');
+            var btnPdf = event.target.closest('button');
+            var acoesCard = btnPdf.closest('.card');
+            var fotoCard = acoesCard.previousElementSibling;
 
-        // Guardar estado original
-        var sidebarDisplay = sidebar ? sidebar.style.display : '';
-        var topbarDisplay = topbar ? topbar.style.display : '';
-        var acoesDisplay = acoesCard.style.display;
-        var fotoDisplay = fotoCard ? fotoCard.style.display : '';
+            // Guardar estado original
+            var sidebarDisplay = sidebar ? sidebar.style.display : '';
+            var topbarDisplay = topbar ? topbar.style.display : '';
+            var acoesDisplay = acoesCard.style.display;
+            var fotoDisplay = fotoCard ? fotoCard.style.display : '';
 
-        // Esconder elementos desnecessários no PDF
-        if (sidebar) sidebar.style.display = 'none';
-        if (topbar) topbar.style.display = 'none';
-        acoesCard.style.display = 'none';
-        if (fotoCard) fotoCard.style.display = 'none';
+            // Esconder elementos desnecessários no PDF
+            if (sidebar) sidebar.style.display = 'none';
+            if (topbar) topbar.style.display = 'none';
+            acoesCard.style.display = 'none';
+            if (fotoCard) fotoCard.style.display = 'none';
 
-        var element = document.getElementById('content');
-        var tag = '<?php echo addslashes($ativo["tag"]); ?>';
-        var modelo = '<?php echo addslashes($ativo["modelo"]); ?>';
+            var element = document.getElementById('content');
+            var tag = '<?php echo addslashes($ativo["tag"]); ?>';
+            var modelo = '<?php echo addslashes($ativo["modelo"]); ?>';
 
-        var opt = {
-            margin:       [10, 10, 10, 10],
-            filename:     'Relatorio_Ativo_' + tag + '.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
+            var opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'Relatorio_Ativo_' + tag + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
 
-        html2pdf().set(opt).from(element).save().then(function() {
-            // Restaurar elementos
-            if (sidebar) sidebar.style.display = sidebarDisplay;
-            if (topbar) topbar.style.display = topbarDisplay;
-            acoesCard.style.display = acoesDisplay;
-            if (fotoCard) fotoCard.style.display = fotoDisplay;
-        });
-    }
+            html2pdf().set(opt).from(element).save().then(function () {
+                // Restaurar elementos
+                if (sidebar) sidebar.style.display = sidebarDisplay;
+                if (topbar) topbar.style.display = topbarDisplay;
+                acoesCard.style.display = acoesDisplay;
+                if (fotoCard) fotoCard.style.display = fotoDisplay;
+            });
+        }
     </script>
 </body>
 

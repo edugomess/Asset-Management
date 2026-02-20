@@ -15,6 +15,74 @@
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
+    <style>
+        /* Custom Sidebar Styles */
+        .sidebar {
+            background: #2c3e50 !important;
+            /* Professional dark blue-gray */
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem 1rem !important;
+            height: auto !important;
+        }
+
+        .sidebar-brand-text {
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-heading {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 1.5rem 1rem 0.5rem 1.25rem;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1.25rem !important;
+            margin: 0.2rem 0.8rem !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+            font-size: 0.88rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: #3498db !important;
+            /* Bright primary blue */
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            color: #fff !important;
+        }
+
+        .nav-link.active i {
+            opacity: 1;
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+            margin: 1rem 1.25rem 0 !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -254,12 +322,28 @@
                     </nav>
                     <div class="container-fluid" style="background: #ffffff;">
                         <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                            <h3 class="text-dark mb-0">Dashboard</h3><a
-                                class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#"
-                                style="background: rgb(44,64,74);"><i
-                                    class="fas fa-download fa-sm text-white-50"></i>...</a>
+                            <h3 class="text-dark mb-0">Dashboard</h3>
+                            <div class="d-flex align-items-center">
+                                <?php
+                                $sql_total_fechados = "SELECT COUNT(*) as total FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado')";
+                                $res_total_fechados = mysqli_query($conn, $sql_total_fechados);
+                                $total_fechados = mysqli_fetch_assoc($res_total_fechados)['total'] ?? 0;
+                                ?>
+                                <div class="bg-success text-white px-2 py-1 rounded shadow-sm d-flex align-items-center mr-2"
+                                    style="font-size: 0.75rem; height: 31px;">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    <span class="font-weight-bold">Total de chamados fechados:
+                                        <?php echo $total_fechados; ?></span>
+                                </div>
+                                <a class="text-white px-2 py-1 rounded shadow-sm d-flex align-items-center text-decoration-none"
+                                    role="button" href="relatorio_resumo_geral.php" target="_blank"
+                                    style="background: #e74a3b; font-size: 0.75rem; height: 31px;">
+                                    <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i>
+                                    <span class="font-weight-bold">Gerar Relatório</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="row">
+                        <div class="row px-2 flex-nowrap overflow-auto">
                             <?php
                             // Buscar contagem de ativos por categoria
                             $categorias_interesse = [
@@ -319,6 +403,33 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                             }
 
 
+                            // 4. Licenças - Métricas Específicas
+                            // M365
+                            $sql_m365 = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%365%'";
+                            $res_m365 = mysqli_query($conn, $sql_m365);
+                            $data_m365 = mysqli_fetch_assoc($res_m365);
+                            $total_m365 = $data_m365['total'] ?? 0;
+                            $disp_m365 = $total_m365 - ($data_m365['em_uso'] ?? 0);
+
+                            // Adobe
+                            $sql_adobe = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%Adobe%' OR fabricante LIKE '%Adobe%'";
+                            $res_adobe = mysqli_query($conn, $sql_adobe);
+                            $data_adobe = mysqli_fetch_assoc($res_adobe);
+                            $total_adobe = $data_adobe['total'] ?? 0;
+                            $disp_adobe = $total_adobe - ($data_adobe['em_uso'] ?? 0);
+
+                            // Windows
+                            $sql_win = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%Windows%'";
+                            $res_win = mysqli_query($conn, $sql_win);
+                            $data_win = mysqli_fetch_assoc($res_win);
+                            $total_win = $data_win['total'] ?? 0;
+                            $disp_win = $total_win - ($data_win['em_uso'] ?? 0);
+
+                            // Expiradas ou prestes a vencer (60 dias)
+                            $sql_exp = "SELECT COUNT(*) as total FROM licencas WHERE status = 'Expirada' OR (data_expiracao IS NOT NULL AND data_expiracao <= DATE_ADD(CURDATE(), INTERVAL 60 DAY))";
+                            $res_exp = mysqli_query($conn, $sql_exp);
+                            $count_exp = mysqli_fetch_assoc($res_exp)['total'] ?? 0;
+
                             // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
                             // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
                             // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
@@ -335,10 +446,11 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                             $total_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['total'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : 0);
                             $disp_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['disponiveis'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : 0);
 
-                            // Card 3: Periféricos (Mouse, Teclado, Monitor, etc - Somar tudo que não for PC/Note/Impressora?)
-                            // Ou pegar categorias específicas. Vamos pegar 'Monitores' e 'Periféricos'
-                            $total_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['total'] : 0);
-                            $disp_peri = (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0) + (isset($dados_ativos['Periféricos']) ? $dados_ativos['Periféricos']['disponiveis'] : 0);
+                            // Card 3: Monitores (Monitor, Monitores)
+                            $total_mon = (isset($dados_ativos['Monitor']) ? $dados_ativos['Monitor']['total'] : 0) +
+                                (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0);
+                            $disp_mon = (isset($dados_ativos['Monitor']) ? $dados_ativos['Monitor']['disponiveis'] : 0) +
+                                (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0);
 
                             // Card 4: Impressoras
                             $total_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['total'] : 0;
@@ -348,86 +460,183 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                             // Vamos exibir todos:
                             ?>
 
-                            <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
                                 <div class="card shadow border-left-primary py-2">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col mr-2">
-                                                <div class="text-uppercase text-primary font-weight-bold text-xs mb-1">
-                                                    <span>Desktops</span></div>
+                                                <div class="text-uppercase text-primary font-weight-bold text-sm mb-1">
+                                                    <span>Desktops</span>
+                                                </div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_pc; ?></span>
-                                                    <span class="text-muted small ml-2"
-                                                        title="Disponíveis">(<?php echo $disp_pc; ?> disponíveis)</span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_pc; ?>
+                                                        Disponíveis)</span>
                                                 </div>
                                             </div>
-                                            <div class="col-auto"><i class="fas fa-desktop fa-2x text-gray-300"></i>
+                                            <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
                                 <div class="card shadow border-left-success py-2">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col mr-2">
-                                                <div class="text-uppercase text-success font-weight-bold text-xs mb-1">
-                                                    <span>Notebooks</span></div>
+                                                <div class="text-uppercase text-success font-weight-bold text-sm mb-1">
+                                                    <span>Notebooks</span>
+                                                </div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_note; ?></span>
-                                                    <span class="text-muted small ml-2"
-                                                        title="Disponíveis">(<?php echo $disp_note; ?>
-                                                        disponíveis)</span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_note; ?>
+                                                        Disponíveis)</span>
                                                 </div>
                                             </div>
-                                            <div class="col-auto"><i class="fas fa-laptop fa-2x text-gray-300"></i>
+                                            <div class="col-auto"><i class="fas fa-laptop fa-lg text-gray-600"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
                                 <div class="card shadow border-left-info py-2">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col mr-2">
-                                                <div class="text-uppercase text-info font-weight-bold text-xs mb-1">
-                                                    <span>Periféricos</span></div>
+                                                <div class="text-uppercase text-info font-weight-bold text-sm mb-1">
+                                                    <span>Monitores</span>
+                                                </div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
-                                                    <span><?php echo $total_peri; ?></span>
-                                                    <span class="text-muted small ml-2"
-                                                        title="Disponíveis">(<?php echo $disp_peri; ?>
-                                                        disponíveis)</span>
+                                                    <span><?php echo $total_mon; ?></span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_mon; ?>
+                                                        Disponíveis)</span>
                                                 </div>
                                             </div>
-                                            <div class="col-auto"><i class="far fa-keyboard fa-2x text-gray-300"></i>
+                                            <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
                                 <div class="card shadow border-left-warning py-2">
                                     <div class="card-body">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col mr-2">
-                                                <div class="text-uppercase text-warning font-weight-bold text-xs mb-1">
-                                                    <span>Impressoras</span></div>
+                                                <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
+                                                    <span>Impressoras</span>
+                                                </div>
                                                 <div class="text-dark font-weight-bold h5 mb-0">
                                                     <span><?php echo $total_imp; ?></span>
-                                                    <span class="text-muted small ml-2"
-                                                        title="Disponíveis">(<?php echo $disp_imp; ?>
-                                                        disponíveis)</span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_imp; ?>
+                                                        Disponíveis)</span>
                                                 </div>
                                             </div>
-                                            <div class="col-auto"><i class="fas fa-print fa-2x text-gray-300"></i></div>
+                                            <div class="col-auto"><i class="fas fa-print fa-lg text-gray-600"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Novas Licenças na mesma fileira -->
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
+                                <div class="card shadow border-left-secondary py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col mr-2">
+                                                <div
+                                                    class="text-uppercase text-secondary font-weight-bold text-sm mb-1">
+                                                    <span>Office 365</span>
+                                                </div>
+                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                    <span><?php echo $total_m365; ?></span>
+                                                    <span class="text-muted small ml-1" style="font-size: 0.85rem;">(
+                                                        <?php echo $disp_m365; ?> Disponíveis)</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-cloud fa-lg text-gray-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
+                                <div class="card shadow border-left-danger py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col mr-2">
+                                                <div class="text-uppercase text-danger font-weight-bold text-sm mb-1">
+                                                    <span>Adobe CC</span>
+                                                </div>
+                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                    <span><?php echo $total_adobe; ?></span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_adobe; ?>
+                                                        Disponíveis)</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas fa-palette fa-lg text-gray-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
+                                <div class="card shadow border-left-dark py-2">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col mr-2">
+                                                <div class="text-uppercase text-dark font-weight-bold text-sm mb-1">
+                                                    <span>Windows 11</span>
+                                                </div>
+                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                    <span><?php echo $total_win; ?></span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">(<?php echo $disp_win; ?>
+                                                        Disponíveis)</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i class="fab fa-windows fa-lg text-gray-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1"
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
+                                <div class="card shadow border-left-warning py-2"
+                                    style="border-left-color: #f6c23e !important;">
+                                    <div class="card-body">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col mr-2">
+                                                <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
+                                                    <span>Alertas</span>
+                                                </div>
+                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                    <span><?php echo $count_exp; ?></span>
+                                                    <span class="text-muted small ml-1"
+                                                        style="font-size: 0.85rem;">Expirando</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i
+                                                    class="fas fa-exclamation-circle fa-lg text-gray-600"></i></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Start: Charts -->
                         <div class="row">
                             <div class="col-lg-7 col-xl-8">
                                 <div class="card shadow mb-4">
@@ -529,7 +738,8 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                                                                         style="width: <?php echo $rank['percentage']; ?>%"
                                                                         aria-valuenow="<?php echo $rank['percentage']; ?>"
                                                                         aria-valuemin="0" aria-valuemax="100">
-                                                                        <?php echo $rank['percentage']; ?>%</div>
+                                                                        <?php echo $rank['percentage']; ?>%
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -571,7 +781,8 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                                                     <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
                                                         aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0"
                                                         aria-valuemax="100" style="width: <?php echo $pct; ?>%;">
-                                                        <?php echo $rec['total']; ?></div>
+                                                        <?php echo $rec['total']; ?>
+                                                    </div>
                                                 </div>
                                                 <?php
                                             }

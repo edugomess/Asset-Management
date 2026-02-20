@@ -86,6 +86,54 @@ include 'conexao.php';
             border-color: rgb(44, 64, 74);
             box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
         }
+
+        /* System Standard Buttons */
+        .btn-system {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            height: 38px;
+        }
+
+        .btn-tamanho-fixo {
+            width: 130px;
+        }
+
+        .btn-system:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            filter: brightness(1.1);
+        }
+
+        .btn-info-system {
+            background-color: #36b9cc;
+            color: white;
+        }
+
+        .btn-dark-system {
+            background-color: #2c404a;
+            color: white;
+        }
+
+        .btn-warning-system {
+            background-color: #f6c23e;
+            color: white;
+        }
+
+        .btn-secondary-system {
+            background-color: #858796;
+            color: white;
+        }
+
+        .btn-danger-system {
+            background-color: #e74a3b;
+            color: white;
+        }
     </style>
 </head>
 
@@ -242,16 +290,21 @@ include 'conexao.php';
                                                 }
                                                 ?>
                                                 <tr>
-                                                    <td><strong>
-                                                            <?php echo htmlspecialchars($row['software']); ?>
-                                                        </strong></td>
+                                                    <td><strong><?php echo htmlspecialchars($row['software']); ?></strong></td>
+                                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                    <td><?php echo $row['tipo']; ?></td>
                                                     <td>
-                                                        <?php echo htmlspecialchars($row['fabricante']); ?>
+                                                        <div class="d-flex align-items-center">
+                                                            <code id="key-<?php echo $row['id_licenca']; ?>"
+                                                                data-key="<?php echo htmlspecialchars($row['chave']); ?>"
+                                                                class="mr-2">********</code>
+                                                            <button class="btn btn-link btn-sm p-0 text-muted"
+                                                                onclick="toggleKey(<?php echo $row['id_licenca']; ?>)">
+                                                                <i class="fas fa-eye"
+                                                                    id="eye-<?php echo $row['id_licenca']; ?>"></i>
+                                                            </button>
+                                                        </div>
                                                     </td>
-                                                    <td>
-                                                        <?php echo $row['tipo']; ?>
-                                                    </td>
-                                                    <td><code><?php echo htmlspecialchars($row['chave']); ?></code></td>
                                                     <td>
                                                         <div class="small font-weight-bold">
                                                             <?php echo $row['quantidade_uso']; ?> /
@@ -264,24 +317,38 @@ include 'conexao.php';
                                                                 aria-valuemax="100"></div>
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <?php echo $row['data_expiracao'] ? date('d/m/Y', strtotime($row['data_expiracao'])) : 'N/A'; ?>
+                                                    <td><?php echo $row['data_expiracao'] ? date('d/m/Y', strtotime($row['data_expiracao'])) : 'N/A'; ?>
                                                     </td>
-                                                    <td><span class="badge <?php echo $status_badge; ?>">
-                                                            <?php echo $row['status']; ?>
-                                                        </span></td>
+                                                    <td><span
+                                                            class="badge <?php echo $status_badge; ?>"><?php echo $row['status']; ?></span>
+                                                    </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
-                                                            <a class="btn btn-warning btn-edit mr-2"
-                                                                href="editar_licenca.php?id=<?php echo $row['id_licenca']; ?>"><i
-                                                                    class="fas fa-edit"></i></a>
-                                                            <a class="btn btn-info btn-edit mr-2"
-                                                                href="atribuir_licenca.php?id=<?php echo $row['id_licenca']; ?>"
-                                                                title="Atribuir"><i class="fas fa-user-plus"></i></a>
-                                                            <a class="btn btn-danger btn-edit"
-                                                                href="apagar_licenca.php?id=<?php echo $row['id_licenca']; ?>"
-                                                                onclick="return confirm('Excluir esta licença?')"><i
-                                                                    class="fas fa-trash"></i></a>
+                                                            <!-- Botão de Atribuir ou Desatribuir (Dinâmico) -->
+                                                            <?php if ($row['quantidade_uso'] >= $row['quantidade_total']): ?>
+                                                                <button class="btn btn-dark-system btn-system btn-tamanho-fixo mr-2"
+                                                                    onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')">
+                                                                    Desatribuir <i class="fas fa-user-minus"></i>
+                                                                </button>
+                                                            <?php else: ?>
+                                                                <button class="btn btn-info-system btn-system btn-tamanho-fixo mr-2"
+                                                                    onclick="openAssignModal(<?php echo $row['id_licenca']; ?>)">
+                                                                    Atribuir <i class="fas fa-address-card"></i>
+                                                                </button>
+                                                            <?php endif; ?>
+
+                                                            <!-- Botão de Editar -->
+                                                            <a class="btn btn-warning-system btn-system btn-edit mr-2"
+                                                                href="editar_licenca.php?id=<?php echo $row['id_licenca']; ?>">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+
+                                                            <!-- Botão de Detalhes -->
+                                                            <button class="btn btn-secondary-system btn-system btn-edit mr-2"
+                                                                onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')"
+                                                                title="Detalhes de Atribuição">
+                                                                <i class="fas fa-info-circle"></i>
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -297,15 +364,16 @@ include 'conexao.php';
                             <div class="d-flex justify-content-start mt-3">
                                 <ul class="pagination-custom">
                                     <?php
-                                    $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-                                    if ($current_page > 1)
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-                                    for ($page = 1; $page <= $total_pages; $page++) {
-                                        $active = ($page == $current_page) ? "class='active'" : "";
-                                        echo "<li $active><a href='?page=$page$search_param'>$page</a></li>";
+                                    if ($current_page > 1) {
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "&search=$search'>« Anterior</a></li>";
                                     }
-                                    if ($current_page < $total_pages)
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                    for ($i = 1; $i <= $total_pages; $i++) {
+                                        $active = ($i == $current_page) ? "class='active'" : "";
+                                        echo "<li $active><a href='?page=$i&search=$search'>$i</a></li>";
+                                    }
+                                    if ($current_page < $total_pages) {
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "&search=$search'>Próximo »</a></li>";
+                                    }
                                     ?>
                                 </ul>
                             </div>
@@ -313,6 +381,242 @@ include 'conexao.php';
                     </div>
                 </div>
             </div>
+
+            <!-- Modal para atribuir licença -->
+            <div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Atribuir Licença ao Usuário</h5>
+                            <button type="button" class="close" onclick="closeAssignModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted small">Pesquise o usuário para vincular esta licença.</p>
+                            <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..."
+                                oninput="searchUsers()">
+                            <ul id="userList" class="list-group mt-2" style="max-height: 200px; overflow-y: auto;"></ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para detalhes da licença -->
+            <div id="detailsModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Atribuições: <span id="detailsSoftwareName"></span></h5>
+                            <button type="button" class="close" onclick="closeDetailsModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Usuário</th>
+                                            <th>Email</th>
+                                            <th>Data de Atribuição</th>
+                                            <th class="text-right">Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <ul id="assignmentList" class="list-unstyled mb-0">
+                                        <!-- Carregado via JS -->
+                                    </ul>
+                                    <tbody id="assignmentTableBody">
+                                        <!-- Carregado via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="noAssignmentsMsg" class="text-center p-3 d-none">
+                                <p class="text-muted">Nenhuma atribuição encontrada para esta licença.</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger-system btn-system"
+                                onclick="window.open('relatorio_atribuicoes_geral.php', '_blank')">
+                                <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
+                            </button>
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeDetailsModal()">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function toggleKey(id) {
+                    const keyElement = document.getElementById('key-' + id);
+                    const eyeIcon = document.getElementById('eye-' + id);
+                    const realKey = keyElement.getAttribute('data-key');
+
+                    if (keyElement.innerText === '********') {
+                        keyElement.innerText = realKey;
+                        eyeIcon.classList.remove('fa-eye');
+                        eyeIcon.classList.add('fa-eye-slash');
+                    } else {
+                        keyElement.innerText = '********';
+                        eyeIcon.classList.remove('fa-eye-slash');
+                        eyeIcon.classList.add('fa-eye');
+                    }
+                }
+
+                let currentLicenseId = null;
+
+                function openAssignModal(id) {
+                    currentLicenseId = id;
+                    document.getElementById('assignModal').style.display = 'block';
+                }
+
+                function closeAssignModal() {
+                    document.getElementById('assignModal').style.display = 'none';
+                    document.getElementById('userList').innerHTML = '';
+                    document.getElementById('userSearch').value = '';
+                }
+
+                function searchUsers() {
+                    const query = document.getElementById('userSearch').value;
+                    if (query.length < 2) {
+                        document.getElementById('userList').innerHTML = '';
+                        return;
+                    }
+
+                    fetch(`search_users.php?query=${query}`)
+                        .then(response => response.json())
+                        .then(users => {
+                            const userList = document.getElementById('userList');
+                            userList.innerHTML = '';
+
+                            if (users.length === 0) {
+                                userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
+                            } else {
+                                users.forEach(user => {
+                                    const li = document.createElement('li');
+                                    li.className = 'list-group-item list-group-item-action cursor-pointer';
+                                    li.style.cursor = 'pointer';
+                                    li.textContent = user.name;
+                                    li.onclick = () => assignLicense(user.id, user.name);
+                                    userList.appendChild(li);
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Erro na busca:', error));
+                }
+
+                function assignLicense(userId, userName) {
+                    if (confirm(`Deseja atribuir esta licença para ${userName}?`)) {
+                        fetch('assign_license.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id_licenca: currentLicenseId, id_usuario: userId })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Licença atribuída com sucesso!');
+                                    location.reload();
+                                } else {
+                                    alert('Erro: ' + data.message);
+                                }
+                            })
+                            .catch(error => console.error('Erro ao atribuir:', error));
+                    }
+                }
+
+                function openDetailsModal(id, softwareName) {
+                    document.getElementById('detailsSoftwareName').innerText = softwareName;
+                    const tbody = document.getElementById('assignmentTableBody');
+                    const msg = document.getElementById('noAssignmentsMsg');
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center">Carregando...</td></tr>';
+                    msg.classList.add('d-none');
+
+                    document.getElementById('detailsModal').style.display = 'block';
+
+                    fetch(`get_license_assignments.php?id=${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            tbody.innerHTML = '';
+                            if (data.success && data.atribuicoes.length > 0) {
+                                data.atribuicoes.forEach(attr => {
+                                    const tr = document.createElement('tr');
+                                    tr.innerHTML = `
+                                        <td><strong>${attr.usuario}</strong></td>
+                                        <td><small class="text-muted">${attr.email}</small></td>
+                                        <td>${attr.data}</td>
+                                        <td class="text-right">
+                                            <button class="btn btn-danger btn-sm" onclick="removeAssignment(${attr.id})">
+                                                <i class="fas fa-user-minus"></i>
+                                            </button>
+                                        </td>
+                                    `;
+                                    tbody.appendChild(tr);
+                                });
+                            } else {
+                                msg.classList.remove('d-none');
+                                tbody.innerHTML = '';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar detalhes:', error);
+                            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar dados.</td></tr>';
+                        });
+                }
+
+                function closeDetailsModal() {
+                    document.getElementById('detailsModal').style.display = 'none';
+                }
+
+                function removeAssignment(id) {
+                    if (confirm('Deseja remover esta atribuição?')) {
+                        fetch('remove_license_assignment.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id_atribuicao: id })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Atribuição removida com sucesso!');
+                                    // Recarrega a lista do modal sem fechar
+                                    const currentId = currentLicenseId;
+                                    const currentName = document.getElementById('detailsSoftwareName').innerText;
+                                    openDetailsModal(currentId, currentName);
+                                } else {
+                                    alert('Erro: ' + data.message);
+                                }
+                            })
+                            .catch(error => console.error('Erro ao remover:', error));
+                    }
+                }
+
+                function gerarRelatorioLicenca() {
+                    const softwareName = document.getElementById('detailsSoftwareName').innerText;
+                    // Abre o gerador de relatório oficial do sistema passando o ID da licença
+                    window.open(`relatorio_atribuicoes_licenca.php?id=${currentLicenseId}`, '_blank');
+                }
+
+                function zerarAtribuicoes() {
+                    if (confirm('ATENÇÃO: Isso irá remover TODOS os usuários vinculados a esta licença. Deseja continuar?')) {
+                        fetch('clear_license_assignments.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id_licenca: currentLicenseId })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Todas as atribuições foram removidas!');
+                                    location.reload(); // Recarrega para atualizar os contadores na tabela principal
+                                } else {
+                                    alert('Erro: ' + data.message);
+                                }
+                            })
+                            .catch(error => console.error('Erro ao zerar:', error));
+                    }
+                }
+            </script>
             <footer class="sticky-footer" style="background: transparent; padding: 0;">
                 <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
                     <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
@@ -325,6 +629,7 @@ include 'conexao.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="/assets/js/global_search.js"></script>
 </body>
 

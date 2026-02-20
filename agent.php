@@ -22,6 +22,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
+    <?php include 'sidebar_style.php'; ?>
     <style>
         .chat-container {
             height: 60vh;
@@ -289,12 +290,12 @@ include 'conexao.php';
 
             // Send to backend
             fetch('agent_backend.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'message=' + encodeURIComponent(message)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
                 .then(response => response.json())
                 .then(data => {
                     removeMessage(loadingId);
@@ -322,7 +323,10 @@ include 'conexao.php';
             const msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
             if (isLoading) msgDiv.id = msgId;
 
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const time = new Date().toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
             if (isLoading) {
                 msgDiv.innerHTML = `
@@ -361,7 +365,9 @@ include 'conexao.php';
             // Clear server-side history
             fetch('agent_backend.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
                 body: 'clear_history=1'
             });
         }

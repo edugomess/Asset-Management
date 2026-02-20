@@ -34,53 +34,21 @@
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-            style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+                    href="/index.php">
+                    <div class="sidebar-brand-icon rotate-n-15">
+                        <i class="fas fa-layer-group" style="font-size: 1.8rem; color: #fff;"></i>
+                    </div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
-                <hr class="sidebar-divider my-0">
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/index.php"><i
-                                class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span>
-                                Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span>
-                                Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i
-                                class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/fornecedores.php"><i
-                                class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span>
-                                Ativos</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/licencas.php"><i class="fas fa-key"></i><span>
-                                Licenças</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span>
-                                Relatórios</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span>
-                                Chamados</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span>
-                                Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA
-                                Agent</span></a></li>
-                </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
+                <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">

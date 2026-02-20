@@ -5,23 +5,28 @@ include 'conexao.php';
 <!DOCTYPE html>
 <html>
 <style>
-    .btn-tamanho-fixo { 
-        width: 130px; 
+    .btn-tamanho-fixo {
+        width: 130px;
     }
+
     .btn-edit {
-        width: 50px; 
+        width: 50px;
     }
+
     .btn-medium {
-        width: 100px; 
+        width: 100px;
     }
+
     .badge-success {
-        background-color: #28a745 !important; 
-        color: #fff !important; 
+        background-color: #28a745 !important;
+        color: #fff !important;
     }
+
     .badge-danger {
-        background-color: #dc3545 !important; 
-        color: #fff !important; 
+        background-color: #dc3545 !important;
+        color: #fff !important;
     }
+
     .badge-info {
         background-color: #17a2b8 !important;
         color: #fff !important;
@@ -57,6 +62,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
     <script src="https://kit.fontawesome.com/8786c39b09.js"></script>
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -69,7 +75,7 @@ include 'conexao.php';
                             <line x1="4" y1="20" x2="20" y2="20"></line>
                             <rect x="6" y="9" width="12" height="6" rx="2"></rect>
                         </svg></div>
-                        
+
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
@@ -86,7 +92,7 @@ include 'conexao.php';
                     <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
-                
+
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -101,7 +107,7 @@ include 'conexao.php';
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                           
+
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
@@ -118,7 +124,7 @@ include 'conexao.php';
                         <h3 class="text-dark">Ativos Doados</h3>
                         <a class="btn btn-danger active text-white pulse animated btn-user" role="button" style="border-radius: 10px; height: 50px; padding: 13px 30px;" href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i> Gerar Relatório PDF</a>
                     </div>
-                    
+
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -126,41 +132,43 @@ include 'conexao.php';
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
                                 </div>
                                 <div class="col-md-6 col-xl-9">
-                                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><form method="GET" action=""><label><input type="search" name="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label></form></div>
+                                    <div class="text-md-right dataTables_filter" id="dataTable_filter">
+                                        <form method="GET" action=""><label><input type="search" name="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label></form>
+                                    </div>
                                 </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
-                                    <?php
+                                <?php
 
-// Definir o número de resultados por página
-$results_per_page = 10;
+                                // Definir o número de resultados por página
+                                $results_per_page = 10;
 
-// Buscar termo de pesquisa
-$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-$where_clause = "";
-if (!empty($search)) {
-    $where_clause = "WHERE v.modelo LIKE '%$search%' OR v.tag LIKE '%$search%' OR v.hostName LIKE '%$search%'";
-}
+                                // Buscar termo de pesquisa
+                                $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+                                $where_clause = "";
+                                if (!empty($search)) {
+                                    $where_clause = "WHERE v.modelo LIKE '%$search%' OR v.tag LIKE '%$search%' OR v.hostName LIKE '%$search%'";
+                                }
 
-// Verificar o número de resultados no banco de dados
-$sql = "SELECT COUNT(*) AS total FROM venda v $where_clause";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_assoc($result);
-$total_results = $row['total'];
+                                // Verificar o número de resultados no banco de dados
+                                $sql = "SELECT COUNT(*) AS total FROM venda v $where_clause";
+                                $result = mysqli_query($conn, $sql);
+                                $row = mysqli_fetch_assoc($result);
+                                $total_results = $row['total'];
 
-// Determinar o número de páginas necessárias
-$total_pages = ceil($total_results / $results_per_page);
+                                // Determinar o número de páginas necessárias
+                                $total_pages = ceil($total_results / $results_per_page);
 
-// Determinar a página atual
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                                // Determinar a página atual
+                                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Calcular o limite de registros
-$start_from = ($current_page - 1) * $results_per_page;
+                                // Calcular o limite de registros
+                                $start_from = ($current_page - 1) * $results_per_page;
 
-// Consultar os ativos doados
-$sql = "SELECT v.*, u.nome, u.sobrenome FROM venda v LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios $where_clause ORDER BY v.data_venda DESC LIMIT $start_from, $results_per_page";
-$result = mysqli_query($conn, $sql);
-?>
+                                // Consultar os ativos doados
+                                $sql = "SELECT v.*, u.nome, u.sobrenome FROM venda v LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios $where_clause ORDER BY v.data_venda DESC LIMIT $start_from, $results_per_page";
+                                $result = mysqli_query($conn, $sql);
+                                ?>
 
                                 <table class="table my-0" id="dataTable">
                                     <thead>
@@ -178,12 +186,12 @@ $result = mysqli_query($conn, $sql);
                                     </thead>
                                     <tbody>
                                         <?php
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Format date
-        $data_venda = date('d/m/Y H:i', strtotime($row['data_venda']));
-        $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
-?>
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                // Format date
+                                                $data_venda = date('d/m/Y H:i', strtotime($row['data_venda']));
+                                                $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
+                                        ?>
                                                 <tr>
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
@@ -196,76 +204,74 @@ if (mysqli_num_rows($result) > 0) {
                                                     <td><span class="badge badge-info"><?php echo htmlspecialchars(ucfirst($row['status'])); ?> (Doado)</span></td>
                                                 </tr>
                                         <?php
-    }
-}
-else {
-    echo "<tr><td colspan='9' class='text-center'>Nenhum ativo doado encontrado.</td></tr>";
-}
-?>
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='9' class='text-center'>Nenhum ativo doado encontrado.</td></tr>";
+                                        }
+                                        ?>
                                     </tbody>
                                 </table>
 
                                 <div class="pagination justify-content-start">
                                     <nav>
-                                    <ul class="pagination">
-                                    <?php
-// Previous Page Link
-$search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-if ($current_page > 1) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-}
+                                        <ul class="pagination">
+                                            <?php
+                                            // Previous Page Link
+                                            $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                            if ($current_page > 1) {
+                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                            }
 
-// Page Links
-for ($page = 1; $page <= $total_pages; $page++) {
-    if ($page == $current_page) {
-        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Current page
-    }
-    else {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Other pages
-    }
-}
+                                            // Page Links
+                                            for ($page = 1; $page <= $total_pages; $page++) {
+                                                if ($page == $current_page) {
+                                                    echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Current page
+                                                } else {
+                                                    echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Other pages
+                                                }
+                                            }
 
-// Next Page Link
-if ($current_page < $total_pages) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-}
-?>
-                                    </ul>
+                                            // Next Page Link
+                                            if ($current_page < $total_pages) {
+                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                                            }
+                                            ?>
+                                        </ul>
                                     </nav>
                                 </div>
 
                                 <?php
-mysqli_close($conn);
-?>
+                                mysqli_close($conn);
+                                ?>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
-                <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
-                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="/assets/js/global_search.js"></script>
+
+                <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
+                    <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
+                        <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                    </section>
+                </footer>
+            </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+        <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
+        <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
+        <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
+        <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
+        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+        <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
+        <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
+        <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

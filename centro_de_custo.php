@@ -33,6 +33,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -173,62 +174,64 @@ include 'conexao.php';
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;" href="/cadastro_de%20centro_de_custo.php">Cadastrar Novo</a>
                                 </div>
                                 <div class="col-md-6 col-xl-9">
-                                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><form method="GET" action=""><label><input type="search" name="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label></form></div>
+                                    <div class="text-md-right dataTables_filter" id="dataTable_filter">
+                                        <form method="GET" action=""><label><input type="search" name="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label></form>
+                                    </div>
                                 </div>
                             </div>
-                           
-                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info" >
-                                    <?php
-// include 'auth.php'; -- Moved to top
-// include 'conexao.php'; -- Moved to top
 
-// Define how many results you want per page
-$results_per_page = 10;
+                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                <?php
+                                // include 'auth.php'; -- Moved to top
+                                // include 'conexao.php'; -- Moved to top
 
-// Buscar termo de pesquisa
-$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-$where_clause = "";
-if (!empty($search)) {
-    $where_clause = "WHERE nomeSetor LIKE '%$search%' OR codigo LIKE '%$search%'";
-}
+                                // Define how many results you want per page
+                                $results_per_page = 10;
 
-// Find out the number of results in the database
-$sql = "SELECT COUNT(*) AS total FROM centro_de_custo $where_clause";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_assoc($result);
-$total_results = $row['total'];
+                                // Buscar termo de pesquisa
+                                $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+                                $where_clause = "";
+                                if (!empty($search)) {
+                                    $where_clause = "WHERE nomeSetor LIKE '%$search%' OR codigo LIKE '%$search%'";
+                                }
 
-// Determine number of pages needed
-$total_pages = ceil($total_results / $results_per_page);
+                                // Find out the number of results in the database
+                                $sql = "SELECT COUNT(*) AS total FROM centro_de_custo $where_clause";
+                                $result = mysqli_query($conn, $sql);
+                                $row = mysqli_fetch_assoc($result);
+                                $total_results = $row['total'];
 
-// Determine the current page number from the URL, if not set default to 1
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                                // Determine number of pages needed
+                                $total_pages = ceil($total_results / $results_per_page);
 
-// Calculate the starting limit for the records
-$start_from = ($current_page - 1) * $results_per_page;
+                                // Determine the current page number from the URL, if not set default to 1
+                                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Fetch the selected results from the database
-$sql = "SELECT * FROM centro_de_custo $where_clause LIMIT $start_from, $results_per_page";
-$result = mysqli_query($conn, $sql);
-?>
+                                // Calculate the starting limit for the records
+                                $start_from = ($current_page - 1) * $results_per_page;
 
-<table class="table my-0" id="dataTable">
-    <thead>
-        <tr>
-        <th>Setor</th>
-        <th>Código</th>
-        <th>Ramal</th>
-        <th>Unidade</th>
-        <th>E-mail Gestor</th>
-        <th>Gestor</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "<tr>
+                                // Fetch the selected results from the database
+                                $sql = "SELECT * FROM centro_de_custo $where_clause LIMIT $start_from, $results_per_page";
+                                $result = mysqli_query($conn, $sql);
+                                ?>
+
+                                <table class="table my-0" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Setor</th>
+                                            <th>Código</th>
+                                            <th>Ramal</th>
+                                            <th>Unidade</th>
+                                            <th>E-mail Gestor</th>
+                                            <th>Gestor</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                echo "<tr>
                     <td>" . htmlspecialchars($row['nomeSetor']) . "</td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
@@ -240,91 +243,116 @@ if (mysqli_num_rows($result) > 0) {
                         <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
-    }
-}
-else {
-    echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-}
-?>
-    </tbody>
-    <thead>
-        <tr>
-        <th>Setor</th>
-        <th>Código</th>
-        <th>Ramal</th>
-        <th>Unidade</th>
-        <th>E-mail Gestor</th>
-        <th>Gestor</th>
-            <th></th>
-        </tr>
-    </thead>
-</table>
+                                            }
+                                        } else {
+                                            echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <thead>
+                                        <tr>
+                                            <th>Setor</th>
+                                            <th>Código</th>
+                                            <th>Ramal</th>
+                                            <th>Unidade</th>
+                                            <th>E-mail Gestor</th>
+                                            <th>Gestor</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                </table>
 
-<style>
-    .pagination-custom { display: flex; gap: 6px; list-style: none; padding: 0; margin: 16px 0; flex-wrap: wrap; }
-    .pagination-custom li a {
-        display: inline-flex; align-items: center; justify-content: center;
-        min-width: 38px; height: 38px; padding: 0 12px;
-        border-radius: 8px; font-size: 14px; font-weight: 500;
-        text-decoration: none; transition: all 0.2s ease;
-        border: 1.5px solid rgba(44,64,74,0.25); color: rgb(44,64,74); background: #fff;
-    }
-    .pagination-custom li a:hover {
-        background: rgba(44,64,74,0.08); border-color: rgb(44,64,74); color: rgb(44,64,74);
-        transform: translateY(-1px); box-shadow: 0 2px 8px rgba(44,64,74,0.15);
-    }
-    .pagination-custom li.active a {
-        background: rgb(44,64,74); color: #fff; border-color: rgb(44,64,74);
-        box-shadow: 0 2px 8px rgba(44,64,74,0.3);
-    }
-    .pagination-custom li.active a:hover { background: rgb(34,54,64); }
-</style>
-<div class="d-flex justify-content-start mt-3">
-    <ul class="pagination-custom">
-    <?php
-// Previous Page Link
-$search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-if ($current_page > 1) {
-    echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-}
+                                <style>
+                                    .pagination-custom {
+                                        display: flex;
+                                        gap: 6px;
+                                        list-style: none;
+                                        padding: 0;
+                                        margin: 16px 0;
+                                        flex-wrap: wrap;
+                                    }
 
-// Page Links
-for ($page = 1; $page <= $total_pages; $page++) {
-    if ($page == $current_page) {
-        echo "<li class='active'><a href='?page=$page$search_param'>$page</a></li>";
-    }
-    else {
-        echo "<li><a href='?page=$page$search_param'>$page</a></li>";
-    }
-}
+                                    .pagination-custom li a {
+                                        display: inline-flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        min-width: 38px;
+                                        height: 38px;
+                                        padding: 0 12px;
+                                        border-radius: 8px;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                        text-decoration: none;
+                                        transition: all 0.2s ease;
+                                        border: 1.5px solid rgba(44, 64, 74, 0.25);
+                                        color: rgb(44, 64, 74);
+                                        background: #fff;
+                                    }
 
-// Next Page Link
-if ($current_page < $total_pages) {
-    echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
-}
-?>
-</ul>
-</div>
+                                    .pagination-custom li a:hover {
+                                        background: rgba(44, 64, 74, 0.08);
+                                        border-color: rgb(44, 64, 74);
+                                        color: rgb(44, 64, 74);
+                                        transform: translateY(-1px);
+                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
+                                    }
+
+                                    .pagination-custom li.active a {
+                                        background: rgb(44, 64, 74);
+                                        color: #fff;
+                                        border-color: rgb(44, 64, 74);
+                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
+                                    }
+
+                                    .pagination-custom li.active a:hover {
+                                        background: rgb(34, 54, 64);
+                                    }
+                                </style>
+                                <div class="d-flex justify-content-start mt-3">
+                                    <ul class="pagination-custom">
+                                        <?php
+                                        // Previous Page Link
+                                        $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                        if ($current_page > 1) {
+                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                        }
+
+                                        // Page Links
+                                        for ($page = 1; $page <= $total_pages; $page++) {
+                                            if ($page == $current_page) {
+                                                echo "<li class='active'><a href='?page=$page$search_param'>$page</a></li>";
+                                            } else {
+                                                echo "<li><a href='?page=$page$search_param'>$page</a></li>";
+                                            }
+                                        }
+
+                                        // Next Page Link
+                                        if ($current_page < $total_pages) {
+                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
 
 
-<?php
-mysqli_close($conn);
-?>
-                            
+                                <?php
+                                mysqli_close($conn);
+                                ?>
 
-                           
+
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <footer class="sticky-footer" style="background: transparent; padding: 0;">
-    <!-- Start: Simple footer by krissy -->
-    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-        <!-- Start: Footer text -->
-        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-    </section><!-- End: Simple footer by krissy -->
-</footer>
+                <!-- Start: Simple footer by krissy -->
+                <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
+                    <!-- Start: Footer text -->
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+                </section><!-- End: Simple footer by krissy -->
+            </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

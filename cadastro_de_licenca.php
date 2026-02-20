@@ -23,6 +23,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">

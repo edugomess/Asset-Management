@@ -34,6 +34,7 @@ $id = intval($id);
     <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -46,7 +47,7 @@ $id = intval($id);
                             <line x1="4" y1="20" x2="20" y2="20"></line>
                             <rect x="6" y="9" width="12" height="6" rx="2"></rect>
                         </svg></div>
-                        <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
+                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
@@ -65,154 +66,154 @@ $id = intval($id);
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
-    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-        <ul class="navbar-nav flex-nowrap ml-auto">
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                <p>A new monthly report is ready to download!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                <p>$290.29 has been deposited into your account!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 12, 2019</span>
+                                                <p>A new monthly report is ready to download!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 7, 2019</span>
+                                                <p>$290.29 has been deposited into your account!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 2, 2019</span>
+                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
+                                                <div class="status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
+                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
+                                                <div class="bg-warning status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
+                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
+                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
-                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                <div class="status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
-                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                <div class="bg-warning status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
-                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
-                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                    </div>
-                </div>
-                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
-            </li>
-        </ul>
-    </div>
-</nav>
+                </nav>
                 <div id="content-1">
                     <div class="container-fluid">
                         <h3 class="text-dark mb-1">Editar Fornecedor</h3>
                     </div><!-- Start: Multi-row Form -->
                     <form action="update_fornecedor.php" method="post">
-                    <?php
-    $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
-    $result = mysqli_query($conn, $sql);
-    while ($array = mysqli_fetch_array($result)) {
-        echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
-        
-        $nomeEmpresa = $array['nomeEmpresa'];
-        $cnpj = $array['cnpj'];
-        $email = $array['email'];
-        $telefone = $array['telefone'];
-        $servico = $array['servico'];
-        $site = $array['site'];
-        $status = $array['status'];
-    ?>
+                        <?php
+                        $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
+                        $result = mysqli_query($conn, $sql);
+                        while ($array = mysqli_fetch_array($result)) {
+                            echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
 
-                    <form>
-                        <!-- Start: 2-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"type="text" type="text" value="<?php echo $nomeEmpresa?>"></div>
-                            </div>
-                            <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="cnpj" type="text" type="text" value="<?php echo $cnpj?>"></div>
-                            </div>
-                        </div><!-- End: 2-column form row -->
-                        <!-- Start: 3-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="email" type="email" type="text" value="<?php echo $email?>"></div>
-                            </div>
-                            <div class="col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="telefone" type="tel" type="text" value="<?php echo $telefone?>"></div>
-                            </div>
-                            <div class="col-sm-2 offset-xl-0">
-                                <div class="form-group"><label></label></div>
-                            </div>
-                        </div><!-- End: 3-column form row -->
-                        <!-- Start: 4-column form row -->
-                        <div class="form-row">
-                            <div div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="servico" type="text"type="text" value="<?php echo $servico?>"></div>
-                            </div>
-                            <div class="col-sm-3 col-xl-1">
-                                <div class="form-group"></div>
-                            </div>
-                            <div class="col-sm-3 col-xl-3">
-                                <div class="form-group"><label></label><input class="form-control" name="site" type="text" type="text" value="<?php echo $site?>"></div>
-                            </div>
-                            <div class="col-xl-1"><select class="form-control" name="status" type="text" value="<?php echo $status?>"style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
-                                    <optgroup label="Situação">
-                                        <option value="Ativo">Ativo</option>
-                                        <option value="Inativo">Inativo</option>
-                                    </optgroup>
-                                </select></div>
-                        </div><!-- End: 4-column form row -->
-                        <!-- Start: 6-column form row -->
-                        <div class="form-row">
-                            <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
-                        </div><!-- End: 6-column form row -->
-                    </form><!-- End: Multi-row Form -->
+                            $nomeEmpresa = $array['nomeEmpresa'];
+                            $cnpj = $array['cnpj'];
+                            $email = $array['email'];
+                            $telefone = $array['telefone'];
+                            $servico = $array['servico'];
+                            $site = $array['site'];
+                            $status = $array['status'];
+                        ?>
+
+                            <form>
+                                <!-- Start: 2-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa" type="text" type="text" value="<?php echo $nomeEmpresa ?>"></div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-3 offset-xl-1">
+                                        <div class="form-group"><label></label><input class="form-control" name="cnpj" type="text" type="text" value="<?php echo $cnpj ?>"></div>
+                                    </div>
+                                </div><!-- End: 2-column form row -->
+                                <!-- Start: 3-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-4 offset-xl-1">
+                                        <div class="form-group"><label></label><input class="form-control" name="email" type="email" type="text" value="<?php echo $email ?>"></div>
+                                    </div>
+                                    <div class="col-xl-3 offset-xl-1">
+                                        <div class="form-group"><label></label><input class="form-control" name="telefone" type="tel" type="text" value="<?php echo $telefone ?>"></div>
+                                    </div>
+                                    <div class="col-sm-2 offset-xl-0">
+                                        <div class="form-group"><label></label></div>
+                                    </div>
+                                </div><!-- End: 3-column form row -->
+                                <!-- Start: 4-column form row -->
+                                <div class="form-row">
+                                    <div div class="col-sm-4 offset-xl-1">
+                                        <div class="form-group"><label></label><input class="form-control" name="servico" type="text" type="text" value="<?php echo $servico ?>"></div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-1">
+                                        <div class="form-group"></div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-3">
+                                        <div class="form-group"><label></label><input class="form-control" name="site" type="text" type="text" value="<?php echo $site ?>"></div>
+                                    </div>
+                                    <div class="col-xl-1"><select class="form-control" name="status" type="text" value="<?php echo $status ?>" style="margin: 23px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;" required="">
+                                            <optgroup label="Situação">
+                                                <option value="Ativo">Ativo</option>
+                                                <option value="Inativo">Inativo</option>
+                                            </optgroup>
+                                        </select></div>
+                                </div><!-- End: 4-column form row -->
+                                <!-- Start: 6-column form row -->
+                                <div class="form-row">
+                                    <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button></div>
+                                </div><!-- End: 6-column form row -->
+                            </form><!-- End: Multi-row Form -->
                 </div>
             </div>
-            <?php } ?>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-    <!-- Start: Simple footer by krissy -->
-    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-        <!-- Start: Footer text -->
-        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-    </section><!-- End: Simple footer by krissy -->
-</footer>
+        <?php } ?>
+        <footer class="sticky-footer" style="background: transparent; padding: 0;">
+            <!-- Start: Simple footer by krissy -->
+            <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
+                <!-- Start: Footer text -->
+                <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+            </section><!-- End: Simple footer by krissy -->
+        </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

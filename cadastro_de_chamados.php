@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -157,18 +158,17 @@
                                     <optgroup label="Selecione o Solicitante">
                                         <?php
 
-include_once 'conexao.php';
-$sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
-    }
-}
-else {
-    echo '<option value="">Nenhum usuário encontrado</option>';
-}
-?>
+                                        include_once 'conexao.php';
+                                        $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
+                                        $result = $conn->query($sql);
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
+                                            }
+                                        } else {
+                                            echo '<option value="">Nenhum usuário encontrado</option>';
+                                        }
+                                        ?>
                                     </optgroup>
                                 </select>
                             </div>

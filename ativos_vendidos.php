@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -30,6 +29,7 @@
     <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -44,9 +44,9 @@
                         </svg></div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
-               <hr class="sidebar-divider my-0">
+                <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
@@ -175,115 +175,113 @@
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
                                 <table class="table my-0" id="dataTable">
                                     <tbody>
-                                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info" >
-<?php
-include 'conexao.php';
+                                        <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                            <?php
+                                            include 'conexao.php';
 
-// Define how many results you want per page
-$results_per_page = 10;
+                                            // Define how many results you want per page
+                                            $results_per_page = 10;
 
-// Find out the number of results in the database (for vendidos status)
-$sql = "SELECT COUNT(*) AS total FROM venda";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_assoc($result);
-$total_results = $row['total'];
+                                            // Find out the number of results in the database (for vendidos status)
+                                            $sql = "SELECT COUNT(*) AS total FROM venda";
+                                            $result = mysqli_query($conn, $sql);
+                                            $row = mysqli_fetch_assoc($result);
+                                            $total_results = $row['total'];
 
-// Determine number of pages needed
-$total_pages = ceil($total_results / $results_per_page);
+                                            // Determine number of pages needed
+                                            $total_pages = ceil($total_results / $results_per_page);
 
-// Determine the current page number from the URL, if not set default to 1
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                                            // Determine the current page number from the URL, if not set default to 1
+                                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Calculate the starting limit for the records
-$start_from = ($current_page - 1) * $results_per_page;
+                                            // Calculate the starting limit for the records
+                                            $start_from = ($current_page - 1) * $results_per_page;
 
-// Fetch the selected results from the database (ativos vendidos)
-$sql = "SELECT * FROM venda LIMIT $start_from, $results_per_page";
-$result = mysqli_query($conn, $sql);
-?>
+                                            // Fetch the selected results from the database (ativos vendidos)
+                                            $sql = "SELECT * FROM venda LIMIT $start_from, $results_per_page";
+                                            $result = mysqli_query($conn, $sql);
+                                            ?>
 
-<table class="table my-0" id="dataTable">
-    <thead>
-        <tr>
-            <th>Categoria</th>
-            <th>Fabricante</th>
-            <th>Modelo</th>
-            <th>Tag</th>
-            <th>Valor</th>
-            <th>MAC Address</th>
-            <th>Usuário</th>
-            <th>Data da Venda</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Retrieve the user who is assigned to the asset
-        $assigned_to = $row['assigned_to'];
-        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
-        $result_user = mysqli_query($conn, $sql_user);
-        $user_name = "Não atribuído";
-        if ($result_user && mysqli_num_rows($result_user) > 0) {
-            $user = mysqli_fetch_assoc($result_user);
-            $user_name = htmlspecialchars($user['nome']);
-        }
-?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
-                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
-                    <td><?php echo htmlspecialchars($row['tag']); ?></td>
-                    <td><?php echo htmlspecialchars($row['valor']); ?></td>
-                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                    <td><?php echo $user_name; ?></td>
-                    <td><?php echo htmlspecialchars($row['data_venda']); ?></td>
-                    
-                </tr>
-            <?php
-    }
-}
-else {
-    echo "<tr><td colspan='11'>Nenhum ativo vendido encontrado.</td></tr>";
-}
-?>
-    </tbody>
-</table>
+                                            <table class="table my-0" id="dataTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Categoria</th>
+                                                        <th>Fabricante</th>
+                                                        <th>Modelo</th>
+                                                        <th>Tag</th>
+                                                        <th>Valor</th>
+                                                        <th>MAC Address</th>
+                                                        <th>Usuário</th>
+                                                        <th>Data da Venda</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php
+                                                    if (mysqli_num_rows($result) > 0) {
+                                                        while ($row = mysqli_fetch_assoc($result)) {
+                                                            // Retrieve the user who is assigned to the asset
+                                                            $assigned_to = $row['assigned_to'];
+                                                            $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
+                                                            $result_user = mysqli_query($conn, $sql_user);
+                                                            $user_name = "Não atribuído";
+                                                            if ($result_user && mysqli_num_rows($result_user) > 0) {
+                                                                $user = mysqli_fetch_assoc($result_user);
+                                                                $user_name = htmlspecialchars($user['nome']);
+                                                            }
+                                                    ?>
+                                                            <tr>
+                                                                <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                                <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                                <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                                                                <td><?php echo htmlspecialchars($row['tag']); ?></td>
+                                                                <td><?php echo htmlspecialchars($row['valor']); ?></td>
+                                                                <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                                <td><?php echo $user_name; ?></td>
+                                                                <td><?php echo htmlspecialchars($row['data_venda']); ?></td>
 
-<div class="pagination justify-content-start">
-    <nav>
-        <ul class="pagination">
-            <?php
-// Previous Page Link
-if ($current_page > 1) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-}
+                                                            </tr>
+                                                    <?php
+                                                        }
+                                                    } else {
+                                                        echo "<tr><td colspan='11'>Nenhum ativo vendido encontrado.</td></tr>";
+                                                    }
+                                                    ?>
+                                                </tbody>
+                                            </table>
 
-// Page Links
-for ($page = 1; $page <= $total_pages; $page++) {
-    if ($page == $current_page) {
-        echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-    }
-    else {
-        echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
-    }
-}
+                                            <div class="pagination justify-content-start">
+                                                <nav>
+                                                    <ul class="pagination">
+                                                        <?php
+                                                        // Previous Page Link
+                                                        if ($current_page > 1) {
+                                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+                                                        }
 
-// Next Page Link
-if ($current_page < $total_pages) {
-    echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-}
-?>
-        </ul>
-    </nav>
-</div>
+                                                        // Page Links
+                                                        for ($page = 1; $page <= $total_pages; $page++) {
+                                                            if ($page == $current_page) {
+                                                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
+                                                            } else {
+                                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+                                                            }
+                                                        }
 
-<?php
-mysqli_close($conn);
-?>
-    </tr>
+                                                        // Next Page Link
+                                                        if ($current_page < $total_pages) {
+                                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                                                        }
+                                                        ?>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+
+                                            <?php
+                                            mysqli_close($conn);
+                                            ?>
+                                            </tr>
                                     </tbody>
-                                    
+
                                 </table>
 
                             </div>
@@ -292,12 +290,12 @@ mysqli_close($conn);
                 </div>
             </div>
             <footer class="sticky-footer" style="background: transparent; padding: 0;">
-    <!-- Start: Simple footer by krissy -->
-    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-        <!-- Start: Footer text -->
-        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-    </section><!-- End: Simple footer by krissy -->
-</footer>
+                <!-- Start: Simple footer by krissy -->
+                <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
+                    <!-- Start: Footer text -->
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+                </section><!-- End: Simple footer by krissy -->
+            </footer>
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

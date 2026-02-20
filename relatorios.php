@@ -49,6 +49,8 @@ include
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
+
 </head>
 
 <body id="page-top">
@@ -385,9 +387,9 @@ include
             }
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             let debounceTimer;
-            $('#globalSearchInput').on('input', function () {
+            $('#globalSearchInput').on('input', function() {
                 clearTimeout(debounceTimer);
                 let query = $(this).val();
                 let resultBox = $('#globalSearchResults');
@@ -397,16 +399,18 @@ include
                     return;
                 }
 
-                debounceTimer = setTimeout(function () {
+                debounceTimer = setTimeout(function() {
                     $.ajax({
                         url: 'search_backend.php',
                         method: 'GET',
-                        data: { q: query },
+                        data: {
+                            q: query
+                        },
                         dataType: 'json',
-                        success: function (data) {
+                        success: function(data) {
                             resultBox.empty();
                             if (data.length > 0) {
-                                data.forEach(function (item) {
+                                data.forEach(function(item) {
                                     let icon = 'fa-search';
                                     if (item.type === 'user') icon = 'fa-user';
                                     else if (item.type === 'asset') icon = 'fa-box';
@@ -434,14 +438,14 @@ include
                                 resultBox.show();
                             }
                         },
-                        error: function () {
+                        error: function() {
                             console.error("Erro na busca");
                         }
                     });
                 }, 300);
             });
 
-            $(document).on('click', function (e) {
+            $(document).on('click', function(e) {
                 if (!$(e.target).closest('.navbar-search').length) {
                     $('#globalSearchResults').hide();
                 }

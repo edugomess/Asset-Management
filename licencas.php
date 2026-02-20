@@ -20,6 +20,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
+    <?php include 'sidebar_style.php'; ?>
 
     <style>
         .badge-success {
@@ -288,7 +289,7 @@ include 'conexao.php';
                                                 } elseif ($row['status'] == 'Cancelada') {
                                                     $status_badge = 'badge-secondary';
                                                 }
-                                                ?>
+                                        ?>
                                                 <tr>
                                                     <td><strong><?php echo htmlspecialchars($row['software']); ?></strong></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
@@ -352,7 +353,7 @@ include 'conexao.php';
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <?php
+                                        <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='8' class='text-center'>Nenhuma licença encontrada.</td></tr>";
@@ -508,10 +509,15 @@ include 'conexao.php';
                 function assignLicense(userId, userName) {
                     if (confirm(`Deseja atribuir esta licença para ${userName}?`)) {
                         fetch('assign_license.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id_licenca: currentLicenseId, id_usuario: userId })
-                        })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id_licenca: currentLicenseId,
+                                    id_usuario: userId
+                                })
+                            })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
@@ -571,10 +577,14 @@ include 'conexao.php';
                 function removeAssignment(id) {
                     if (confirm('Deseja remover esta atribuição?')) {
                         fetch('remove_license_assignment.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id_atribuicao: id })
-                        })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id_atribuicao: id
+                                })
+                            })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
@@ -600,10 +610,14 @@ include 'conexao.php';
                 function zerarAtribuicoes() {
                     if (confirm('ATENÇÃO: Isso irá remover TODOS os usuários vinculados a esta licença. Deseja continuar?')) {
                         fetch('clear_license_assignments.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id_licenca: currentLicenseId })
-                        })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id_licenca: currentLicenseId
+                                })
+                            })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {

@@ -50,6 +50,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
+    <?php include 'sidebar_style.php'; ?>
 
 
 
@@ -57,51 +58,16 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-            style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+                    href="/index.php">
+                    <div class="sidebar-brand-icon rotate-n-15">
+                        <i class="fas fa-layer-group" style="font-size: 1.8rem; color: #fff;"></i>
+                    </div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
-                <hr class="sidebar-divider my-0">
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/index.php"><i
-                                class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span>
-                                Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span>
-                                Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i
-                                class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i
-                                class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/equipamentos.php"><i
-                                class="fas fa-boxes"></i><span> Ativos</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/licencas.php"><i class="fas fa-key"></i><span>
-                                Licenças</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span>
-                                Relatórios</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span>
-                                Chamados</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span>
-                                Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA
-                                Agent</span></a></li>
-                </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                        id="sidebarToggle" type="button"></button></div>
-
+                <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -274,8 +240,8 @@ include 'conexao.php';
                                 aria-describedby="dataTable_info">
                                 <?php
                                 // include 'auth.php'; -- Moved to top
-// include 'conexao.php'; -- Moved to top
-                                
+                                // include 'conexao.php'; -- Moved to top
+
                                 // Definir o número de resultados por página
                                 $results_per_page = 10;
 
@@ -360,7 +326,7 @@ include 'conexao.php';
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
-                                        
+
                                                 // Calcular depreciação baseada nas configurações
                                                 $data_ativacao = new DateTime($row['dataAtivacao']);
                                                 $data_atual = new DateTime();
@@ -412,7 +378,7 @@ include 'conexao.php';
                                                     $doacao_msg = 'Bloqueado (Carência: ' . $t . ')';
                                                     $doacao_title = 'Ativo precisa de mais ' . $t . ' para ser elegível para doação.';
                                                 }
-                                                ?>
+                                        ?>
                                                 <tr>
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
@@ -476,7 +442,7 @@ include 'conexao.php';
                                                     </a>
                                                     </td>
                                                 </tr>
-                                                <?php
+                                        <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
@@ -652,10 +618,14 @@ include 'conexao.php';
                                     function unassignUser(assetId) {
                                         if (confirm('Tem certeza que deseja desatribuir este usuário do ativo?')) {
                                             fetch('unassign_asset.php', {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ id_asset: assetId })
-                                            })
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify({
+                                                        id_asset: assetId
+                                                    })
+                                                })
                                                 .then(response => response.json())
                                                 .then(data => {
                                                     if (data.success) {
@@ -681,10 +651,14 @@ include 'conexao.php';
 
                                         if (confirm('Tem certeza que deseja doar este ativo?')) {
                                             fetch('doar_ativo.php', {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
-                                            })
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify({
+                                                        id_asset: assetId
+                                                    }) // Envia o id do ativo como JSON
+                                                })
                                                 .then(response => response.json())
                                                 .then(data => {
                                                     if (data.success) {
@@ -770,9 +744,9 @@ include 'conexao.php';
                         fetch(`search_users.php?query=${query}`)
                             .then(response => response.json())
                             .then(users => {
-                                console.log(users);  // Verifique a resposta da busca
+                                console.log(users); // Verifique a resposta da busca
                                 const userList = document.getElementById('userList');
-                                userList.innerHTML = '';  // Limpa a lista de usuários
+                                userList.innerHTML = ''; // Limpa a lista de usuários
 
                                 if (users.length === 0) {
                                     userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
@@ -781,7 +755,7 @@ include 'conexao.php';
                                         const li = document.createElement('li');
                                         li.className = 'list-group-item';
                                         li.textContent = user.name;
-                                        li.onclick = () => assignUser(user.id, user.name);  // Atribuindo evento de clique
+                                        li.onclick = () => assignUser(user.id, user.name); // Atribuindo evento de clique
                                         userList.appendChild(li);
                                     });
                                 }
@@ -798,10 +772,15 @@ include 'conexao.php';
 
                         // Faz a requisição para atribuir o ativo ao usuário
                         fetch('assign_asset.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id_asset: currentAssetId, assigned_to: userId }) // Passando o id do ativo e o id do usuário
-                        })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id_asset: currentAssetId,
+                                    assigned_to: userId
+                                }) // Passando o id do ativo e o id do usuário
+                            })
                             .then(response => response.json()) // Converte a resposta para JSON
                             .then(data => {
                                 if (data.success) {
@@ -823,12 +802,15 @@ include 'conexao.php';
 
                     function toggleStatus(id, newStatus, button) {
                         fetch('alterar_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ id_asset: id, status: newStatus })
-                        })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id_asset: id,
+                                    status: newStatus
+                                })
+                            })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {

@@ -130,6 +130,7 @@
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
     <style>
         .btn-system {
             border-radius: 10px;
@@ -476,9 +477,9 @@
                 formData.append('id_asset', <?php echo $id; ?>);
 
                 fetch('upload_foto_ativo.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                        method: 'POST',
+                        body: formData
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -501,15 +502,15 @@
             }
 
             fetch('toggle_status.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_asset: id,
-                    novo_status: novoStatus
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_asset: id,
+                        novo_status: novoStatus
+                    })
                 })
-            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -554,13 +555,26 @@
             var opt = {
                 margin: [10, 10, 10, 10],
                 filename: 'Relatorio_Ativo_' + tag + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy']
+                }
             };
 
-            html2pdf().set(opt).from(element).save().then(function () {
+            html2pdf().set(opt).from(element).save().then(function() {
                 // Restaurar elementos
                 if (sidebar) sidebar.style.display = sidebarDisplay;
                 if (topbar) topbar.style.display = topbarDisplay;

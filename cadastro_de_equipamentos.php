@@ -1,4 +1,3 @@
-
 <?php include 'auth.php'; ?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
@@ -31,6 +30,7 @@
     <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -64,154 +64,153 @@
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
-    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-        <ul class="navbar-nav flex-nowrap ml-auto">
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                <p>A new monthly report is ready to download!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                <p>$290.29 has been deposited into your account!</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="mr-3">
-                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                            </div>
-                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 12, 2019</span>
+                                                <p>A new monthly report is ready to download!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 7, 2019</span>
+                                                <p>$290.29 has been deposited into your account!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="mr-3">
+                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 2, 2019</span>
+                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
+                                                <div class="status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
+                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
+                                                <div class="bg-warning status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
+                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
+                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                        <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
-                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                <div class="status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
-                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                <div class="bg-warning status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
-                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                            </div>
-                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                            <div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
-                                <div class="bg-success status-indicator"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
-                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                            </div>
-                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                    </div>
-                </div>
-                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
-            </li>
-        </ul>
-    </div>
-</nav>
+                </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Ativo</h3>
                 </div><!-- Start: Multi-row Form -->
                 <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
-                
+
                     <!-- Start: 1-column form row -->
                     <div class="form-row">
-    <div class="col-sm-12 col-xl-2 offset-xl-1">
-        <div class="form-group">
-            <label>Categoria</label>
-            <select class="form-control" name="categoria" required="">
-                <optgroup label="Categoria">
-                    
-                    <?php
-// Conectar ao banco de dados
-include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
+                        <div class="col-sm-12 col-xl-2 offset-xl-1">
+                            <div class="form-group">
+                                <label>Categoria</label>
+                                <select class="form-control" name="categoria" required="">
+                                    <optgroup label="Categoria">
 
-// Verificar conexão
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-}
+                                        <?php
+                                        // Conectar ao banco de dados
+                                        include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
 
-$sql = "SELECT categoria FROM categoria";
-$result = $conn->query($sql);
+                                        // Verificar conexão
+                                        if ($conn->connect_error) {
+                                            die("Conexão falhou: " . $conn->connect_error);
+                                        }
 
-if ($result->num_rows > 0) {
-    // Saída dos dados de cada linha
-    while ($row = $result->fetch_assoc()) {
-        echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
-    }
-}
-else {
-    echo '<option value="">Nenhuma categoria encontrada</option>';
-}
-?>
+                                        $sql = "SELECT categoria FROM categoria";
+                                        $result = $conn->query($sql);
 
-                </optgroup>
-            </select>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-6 offset-xl-1">
-        <div class="form-group">
-            <label></label>
-            <input class="form-control" name="fabricante" type="text" placeholder="Fabricante" required="">
-        </div>
-    </div>
-</div><!-- End: 1-column form row -->
+                                        if ($result->num_rows > 0) {
+                                            // Saída dos dados de cada linha
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
+                                            }
+                                        } else {
+                                            echo '<option value="">Nenhuma categoria encontrada</option>';
+                                        }
+                                        ?>
 
-<!-- Start: 2-column form row -->
-<div class="form-row">
-    <div class="col-sm-6 col-xl-4 offset-xl-1">
-        <div class="form-group">
-            <label></label>
-            <input class="form-control" name="modelo" type="text" placeholder="Modelo" required="">
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-4 offset-xl-1">
-        <div class="form-group">
-            <label></label>
-            <input class="form-control" name="tag" type="text" placeholder="Tag" required="">
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-4 offset-xl-1">
-        <div class="form-group">
-            <label></label>
-            <input class="form-control" name="hostName" type="text" placeholder="Host Name" required="">
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-4 offset-xl-1">
-        <div class="form-group">
-            <label></label>
-            <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' " required="">
-        </div>
-    </div>
-</div><!-- End: 2-column form row -->
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-6 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="fabricante" type="text" placeholder="Fabricante" required="">
+                            </div>
+                        </div>
+                    </div><!-- End: 1-column form row -->
+
+                    <!-- Start: 2-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="modelo" type="text" placeholder="Modelo" required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="tag" type="text" placeholder="Tag" required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="hostName" type="text" placeholder="Host Name" required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label></label>
+                                <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' " required="">
+                            </div>
+                        </div>
+                    </div><!-- End: 2-column form row -->
 
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
@@ -226,25 +225,26 @@ else {
                             </div>
                         </div>
                         <div class="col-xl-2">
-                             <label>Data de Cadastro</label>
-                             <input class="form-control" name="dataAtivacao" type="date" value="<?php echo date('Y-m-d'); ?>" readonly>
+                            <label>Data de Cadastro</label>
+                            <input class="form-control" name="dataAtivacao" type="date" value="<?php echo date('Y-m-d'); ?>" readonly>
                         </div>
-                        
+
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group"><label>Centro de Custo</label>
-                            <?php include_once 'conexao.php'; ?>
-                            <select class="form-control" name="centroDeCusto">
-                                <option value="Nenhum">Nenhum</option>
-                                <?php
-$sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
-$res_cc = $conn->query($sql_cc);
-if ($res_cc && $res_cc->num_rows > 0) {
-    while ($row_cc = $res_cc->fetch_assoc()) {
-        echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
-    }
-}
-?>
-                            </select></div>
+                                <?php include_once 'conexao.php'; ?>
+                                <select class="form-control" name="centroDeCusto">
+                                    <option value="Nenhum">Nenhum</option>
+                                    <?php
+                                    $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                                    $res_cc = $conn->query($sql_cc);
+                                    if ($res_cc && $res_cc->num_rows > 0) {
+                                        while ($row_cc = $res_cc->fetch_assoc()) {
+                                            echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
@@ -253,19 +253,19 @@ if ($res_cc && $res_cc->num_rows > 0) {
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao"  placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control" name="descricao" placeholder="Descrição..." style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
                         <div class="col-xl-4 offset-xl-4"><button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button></div>
-                        
+
                     </div><!-- End: 4-column form row -->
                 </form><!-- End: Multi-row Form -->
                 <!-- Start: Simple footer by krissy -->
                 <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
-                <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
-                    <!-- Start: Footer text -->
-                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
-                </section><!-- End: Simple footer by krissy -->
-            </footer>
+                    <!-- Start: Simple footer by krissy -->
+                    <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
+                        <!-- Start: Footer text -->
+                        <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p><!-- End: Footer text -->
+                    </section><!-- End: Simple footer by krissy -->
+                </footer>
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

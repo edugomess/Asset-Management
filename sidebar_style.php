@@ -4,7 +4,7 @@
         --sidebar-bg-start: #06222b;
         --sidebar-bg-end: #05323f;
         --sidebar-accent: #103742ef;
-        --sidebar-accent-glow: rgba(16, 70, 105, 0.61);
+        --sidebar-accent-glow: rgb(0, 0, 0);
         --sidebar-hover: rgba(255, 255, 255, 0.1);
         --sidebar-text: #edeff3;
         --sidebar-text-active: #ffffff;
@@ -13,14 +13,14 @@
     .sidebar {
         background: linear-gradient(180deg, var(--sidebar-bg-start) 0%, var(--sidebar-bg-end) 100%) !important;
         box-shadow: 10px 0 30px rgba(88, 109, 133, 0.3) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        border-right: 0px solid rgba(255, 255, 255, 0.05);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         z-index: 1050;
     }
 
     .sidebar-brand {
         padding: 2.5rem 1rem !important;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.0rem;
     }
 
     .sidebar-brand-text {

@@ -30,6 +30,7 @@ $(document).ready(function () {
                             else if (item.type === 'ticket') icon = 'fa-headset';
                             else if (item.type === 'cost_center') icon = 'fa-building';
                             else if (item.type === 'supplier') icon = 'fa-truck';
+                            else if (item.type === 'license') icon = 'fa-key';
 
                             resultBox.append(`
                                 <a class="dropdown-item d-flex align-items-center" href="${item.url}">

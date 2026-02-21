@@ -58,13 +58,20 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
-            <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
-                    href="/index.php">
-                    <div class="sidebar-brand-icon rotate-n-15">
-                        <i class="fas fa-layer-group" style="font-size: 1.8rem; color: #fff;"></i>
-                    </div>
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
+                            style="width: 30px;height: 30px;">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <line x1="4" y1="4" x2="20" y2="4"></line>
+                            <line x1="4" y1="20" x2="20" y2="20"></line>
+                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
+                        </svg></div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
                 <?php include 'sidebar_menu.php'; ?>
@@ -215,6 +222,84 @@ include 'conexao.php';
                     </div>
                 </nav>
                 <div class="container-fluid">
+                    <div class="row">
+                        <?php
+                        // Buscar contagens de ativos
+                        $res_total = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos");
+                        $total_ativos = mysqli_fetch_assoc($res_total)['total'];
+
+                        $res_disp = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE assigned_to IS NULL OR assigned_to = 0");
+                        $total_disp = mysqli_fetch_assoc($res_disp)['total'];
+
+                        $res_uso = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE assigned_to IS NOT NULL AND assigned_to != 0");
+                        $total_uso = mysqli_fetch_assoc($res_uso)['total'];
+
+                        // Manutenção (Se houver coluna de status)
+                        // $res_manut = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE status = 'Manutenção'");
+                        // $total_manut = mysqli_fetch_assoc($res_manut)['total'] ?? 0;
+                        ?>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card shadow border-left-primary py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col mr-2">
+                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1">
+                                                <span>Total de Ativos</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_ativos; ?></span></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-boxes fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card shadow border-left-success py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col mr-2">
+                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1">
+                                                <span>Disponíveis</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_disp; ?></span></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card shadow border-left-info py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col mr-2">
+                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Em
+                                                    Uso</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_uso; ?></span></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card shadow border-left-warning py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center no-gutters">
+                                        <div class="col mr-2">
+                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1">
+                                                <span>Manutenção</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0"><span>0</span></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-tools fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <h3 class="text-dark mb-4">Ativos</h3>
                     <div class="card shadow">
                         <div class="card-body">
@@ -241,7 +326,7 @@ include 'conexao.php';
                                 <?php
                                 // include 'auth.php'; -- Moved to top
                                 // include 'conexao.php'; -- Moved to top
-
+                                
                                 // Definir o número de resultados por página
                                 $results_per_page = 10;
 
@@ -326,7 +411,7 @@ include 'conexao.php';
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $assigned_to = $row['assigned_to']; // Verifica se o ativo tem um usuário atribuído
-
+                                        
                                                 // Calcular depreciação baseada nas configurações
                                                 $data_ativacao = new DateTime($row['dataAtivacao']);
                                                 $data_atual = new DateTime();
@@ -378,7 +463,7 @@ include 'conexao.php';
                                                     $doacao_msg = 'Bloqueado (Carência: ' . $t . ')';
                                                     $doacao_title = 'Ativo precisa de mais ' . $t . ' para ser elegível para doação.';
                                                 }
-                                        ?>
+                                                ?>
                                                 <tr>
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
@@ -442,7 +527,7 @@ include 'conexao.php';
                                                     </a>
                                                     </td>
                                                 </tr>
-                                        <?php
+                                                <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
@@ -618,14 +703,14 @@ include 'conexao.php';
                                     function unassignUser(assetId) {
                                         if (confirm('Tem certeza que deseja desatribuir este usuário do ativo?')) {
                                             fetch('unassign_asset.php', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify({
-                                                        id_asset: assetId
-                                                    })
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    id_asset: assetId
                                                 })
+                                            })
                                                 .then(response => response.json())
                                                 .then(data => {
                                                     if (data.success) {
@@ -651,14 +736,14 @@ include 'conexao.php';
 
                                         if (confirm('Tem certeza que deseja doar este ativo?')) {
                                             fetch('doar_ativo.php', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify({
-                                                        id_asset: assetId
-                                                    }) // Envia o id do ativo como JSON
-                                                })
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    id_asset: assetId
+                                                }) // Envia o id do ativo como JSON
+                                            })
                                                 .then(response => response.json())
                                                 .then(data => {
                                                     if (data.success) {
@@ -772,15 +857,15 @@ include 'conexao.php';
 
                         // Faz a requisição para atribuir o ativo ao usuário
                         fetch('assign_asset.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    id_asset: currentAssetId,
-                                    assigned_to: userId
-                                }) // Passando o id do ativo e o id do usuário
-                            })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_asset: currentAssetId,
+                                assigned_to: userId
+                            }) // Passando o id do ativo e o id do usuário
+                        })
                             .then(response => response.json()) // Converte a resposta para JSON
                             .then(data => {
                                 if (data.success) {
@@ -802,15 +887,15 @@ include 'conexao.php';
 
                     function toggleStatus(id, newStatus, button) {
                         fetch('alterar_status.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    id_asset: id,
-                                    status: newStatus
-                                })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_asset: id,
+                                status: newStatus
                             })
+                        })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {

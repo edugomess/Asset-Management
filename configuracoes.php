@@ -6,8 +6,8 @@ include 'conexao.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     foreach ($_POST['sla'] as $category => $time) {
         $category = mysqli_real_escape_string($conn, $category);
-        $hours = (int)$time['hours'];
-        $minutes = (int)$time['minutes'];
+        $hours = (int) $time['hours'];
+        $minutes = (int) $time['minutes'];
 
         $total_minutes = ($hours * 60) + $minutes;
 
@@ -21,11 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
 // Process Depreciation form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $taxa = floatval($_POST['depreciacao']['taxa']);
-    $periodo_anos = (int)$_POST['depreciacao']['periodo_anos'];
-    $periodo_meses = (int)$_POST['depreciacao']['periodo_meses'];
+    $periodo_anos = (int) $_POST['depreciacao']['periodo_anos'];
+    $periodo_meses = (int) $_POST['depreciacao']['periodo_meses'];
     $elegivel = isset($_POST['depreciacao']['elegivel_doacao']) ? 1 : 0;
-    $doacao_anos = (int)$_POST['depreciacao']['tempo_doacao_anos'];
-    $doacao_meses = (int)$_POST['depreciacao']['tempo_doacao_meses'];
+    $doacao_anos = (int) $_POST['depreciacao']['tempo_doacao_anos'];
+    $doacao_meses = (int) $_POST['depreciacao']['tempo_doacao_meses'];
 
     // Check if record exists
     $check = mysqli_query($conn, "SELECT id FROM configuracoes_depreciacao LIMIT 1");
@@ -39,8 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
             tempo_doacao_anos = $doacao_anos, 
             tempo_doacao_meses = $doacao_meses 
             WHERE id = " . $row_dep['id'];
-    }
-    else {
+    } else {
         $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
             VALUES ($taxa, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
     }
@@ -127,24 +126,34 @@ function getHoursAndMinutes($total_minutes)
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
+    <link rel="stylesheet"
+        href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
     <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
+    <link rel="stylesheet"
+        href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css?h=1af6ac373aa34a3b40f3d87a4f494eaf">
+    <link rel="stylesheet"
+        href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0" style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-layout-distribute-horizontal" style="width: 30px;height: 30px;">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
+                            style="width: 30px;height: 30px;">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <line x1="4" y1="4" x2="20" y2="4"></line>
                             <line x1="4" y1="20" x2="20" y2="20"></line>
@@ -152,39 +161,44 @@ function getHoursAndMinutes($total_minutes)
                         </svg></div>
                     <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
                 </a>
-                <hr class="sidebar-divider my-0">
-                <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="/index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/inicio.php"><i class="fas fa-home"></i><span> Início</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/usuarios.php"><i class="fas fa-user-alt"></i><span> Usuários</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/centro_de_custo.php"><i class="fas fa-file-invoice-dollar"></i><span> Centro de Custo</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/fornecedores.php"><i class="fas fa-hands-helping"></i><span> Fornecedores</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/equipamentos.php"><i class="fas fa-boxes"></i><span> Ativos</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/relatorios.php"><i class="fas fa-scroll"></i><span> Relatórios</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/chamados.php"><i class="fas fa-headset"></i><span> Chamados</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/suporte.php"><i class="fas fa-user-cog"></i><span> Suporte</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="/agent.php"><i class="fas fa-robot"></i><span> IA Agent</span></a></li>
-                </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+                <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 23px;">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
+                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <form
+                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
                             <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
+                                <input class="bg-light form-control border-0 small" type="text"
+                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
+                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
+                                style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar conta</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
+                                            class="border rounded-circle img-profile"
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
+                                            class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
+                                            class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar
+                                            conta</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
                             </li>
@@ -193,7 +207,7 @@ function getHoursAndMinutes($total_minutes)
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Configurações do Sistema</h3>
-                    
+
                     <?php if (isset($message)): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <?php echo $message; ?>
@@ -201,47 +215,56 @@ function getHoursAndMinutes($total_minutes)
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                    <?php
-endif; ?>
+                        <?php
+                    endif; ?>
 
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Configuração de SLA (Service Level Agreement)</p>
+                            <p class="text-primary m-0 font-weight-bold">Configuração de SLA (Service Level Agreement)
+                            </p>
                         </div>
                         <div class="card-body">
                             <form method="POST" action="configuracoes.php">
-                                <p class="mb-4">Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria de chamado.</p>
-                                
+                                <p class="mb-4">Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria
+                                    de chamado.</p>
+
                                 <?php
-$categories = ['Incidente', 'Mudança', 'Requisição'];
-foreach ($categories as $cat) {
-    $time = getHoursAndMinutes($configs[$cat]);
-?>
-                                <div class="form-group row">
-                                    <label for="sla_<?php echo $cat; ?>" class="col-sm-2 col-form-label"><?php echo $cat; ?></label>
-                                    <div class="col-sm-3">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>" required min="0" placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">Horas</span>
+                                $categories = ['Incidente', 'Mudança', 'Requisição'];
+                                foreach ($categories as $cat) {
+                                    $time = getHoursAndMinutes($configs[$cat]);
+                                    ?>
+                                    <div class="form-group row">
+                                        <label for="sla_<?php echo $cat; ?>"
+                                            class="col-sm-2 col-form-label"><?php echo $cat; ?></label>
+                                        <div class="col-sm-3">
+                                            <div class="input-group">
+                                                <input type="number" class="form-control"
+                                                    name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>"
+                                                    required min="0" placeholder="0">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">Horas</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="input-group">
+                                                <input type="number" class="form-control"
+                                                    name="sla[<?php echo $cat; ?>][minutes]"
+                                                    value="<?php echo $time['m']; ?>" required min="0" max="59"
+                                                    placeholder="0">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">Minutos</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="sla[<?php echo $cat; ?>][minutes]" value="<?php echo $time['m']; ?>" required min="0" max="59" placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">Minutos</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php
-}?>
+                                    <?php
+                                } ?>
 
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-10">
-                                        <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);">Salvar Alterações</button>
+                                        <button type="submit" class="btn btn-primary"
+                                            style="background: rgb(44,64,74);">Salvar Alterações</button>
                                     </div>
                                 </div>
                             </form>
@@ -251,18 +274,23 @@ foreach ($categories as $cat) {
                     <!-- Seção de Depreciação e Doação -->
                     <div class="card shadow mt-4">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Configuração de Depreciação e Doação de Ativos</p>
+                            <p class="text-primary m-0 font-weight-bold">Configuração de Depreciação e Doação de Ativos
+                            </p>
                         </div>
                         <div class="card-body">
                             <form method="POST" action="configuracoes.php">
-                                <p class="mb-4">Defina a taxa de depreciação dos ativos e as regras de elegibilidade para doação.</p>
-                                
+                                <p class="mb-4">Defina a taxa de depreciação dos ativos e as regras de elegibilidade
+                                    para doação.</p>
+
                                 <!-- Taxa de Depreciação -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Taxa de Depreciação (%)</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Taxa de Depreciação
+                                        (%)</label>
                                     <div class="col-sm-3">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[taxa]" value="<?php echo $dep_config['taxa_depreciacao']; ?>" required min="0" max="100" step="0.01" placeholder="10.00">
+                                            <input type="number" class="form-control" name="depreciacao[taxa]"
+                                                value="<?php echo $dep_config['taxa_depreciacao']; ?>" required min="0"
+                                                max="100" step="0.01" placeholder="10.00">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">%</span>
                                             </div>
@@ -272,10 +300,13 @@ foreach ($categories as $cat) {
 
                                 <!-- Período de Depreciação -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Período de Depreciação</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Período de
+                                        Depreciação</label>
                                     <div class="col-sm-2">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[periodo_anos]" value="<?php echo $dep_config['periodo_anos']; ?>" required min="0" placeholder="0">
+                                            <input type="number" class="form-control" name="depreciacao[periodo_anos]"
+                                                value="<?php echo $dep_config['periodo_anos']; ?>" required min="0"
+                                                placeholder="0">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">Anos</span>
                                             </div>
@@ -283,7 +314,9 @@ foreach ($categories as $cat) {
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[periodo_meses]" value="<?php echo $dep_config['periodo_meses']; ?>" required min="0" max="11" placeholder="0">
+                                            <input type="number" class="form-control" name="depreciacao[periodo_meses]"
+                                                value="<?php echo $dep_config['periodo_meses']; ?>" required min="0"
+                                                max="11" placeholder="0">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">Meses</span>
                                             </div>
@@ -295,12 +328,14 @@ foreach ($categories as $cat) {
 
                                 <!-- Elegível para Doação (Global) -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Elegível para Doação?</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Elegível para
+                                        Doação?</label>
                                     <div class="col-sm-4">
                                         <div class="custom-control custom-switch" style="margin-top: 7px;">
-                                            <input type="checkbox" class="custom-control-input" id="elegivelDoacao" name="depreciacao[elegivel_doacao]" value="1" <?php echo($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
+                                            <input type="checkbox" class="custom-control-input" id="elegivelDoacao"
+                                                name="depreciacao[elegivel_doacao]" value="1" <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
                                             <label class="custom-control-label" for="elegivelDoacao">
-                                                <?php echo($dep_config['elegivel_doacao'] == 1) ? 'Sim, ativos podem ser doados' : 'Não, doação desativada'; ?>
+                                                <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'Sim, ativos podem ser doados' : 'Não, doação desativada'; ?>
                                             </label>
                                         </div>
                                     </div>
@@ -309,18 +344,23 @@ foreach ($categories as $cat) {
                                 <!-- Elegibilidade por Categoria -->
                                 <div id="categoriasDoacaoSection">
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label font-weight-bold">Elegibilidade por Categoria</label>
+                                        <label class="col-sm-3 col-form-label font-weight-bold">Elegibilidade por
+                                            Categoria</label>
                                         <div class="col-sm-9">
                                             <div class="row">
                                                 <?php foreach ($cat_doacao as $cat_nome => $cat_eleg): ?>
-                                                <div class="col-sm-4 mb-2">
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input cat-switch" id="catDoacao_<?php echo md5($cat_nome); ?>" name="cat_doacao[<?php echo htmlspecialchars($cat_nome); ?>]" value="1" <?php echo($cat_eleg == 1) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label" for="catDoacao_<?php echo md5($cat_nome); ?>"><?php echo htmlspecialchars($cat_nome); ?></label>
+                                                    <div class="col-sm-4 mb-2">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input cat-switch"
+                                                                id="catDoacao_<?php echo md5($cat_nome); ?>"
+                                                                name="cat_doacao[<?php echo htmlspecialchars($cat_nome); ?>]"
+                                                                value="1" <?php echo ($cat_eleg == 1) ? 'checked' : ''; ?>>
+                                                            <label class="custom-control-label"
+                                                                for="catDoacao_<?php echo md5($cat_nome); ?>"><?php echo htmlspecialchars($cat_nome); ?></label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <?php
-endforeach; ?>
+                                                    <?php
+                                                endforeach; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -328,10 +368,14 @@ endforeach; ?>
 
                                 <!-- Tempo mínimo para Doação -->
                                 <div class="form-group row" id="tempoDoacaoRow">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Tempo mínimo para Doação</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Tempo mínimo para
+                                        Doação</label>
                                     <div class="col-sm-2">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[tempo_doacao_anos]" value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0" placeholder="0">
+                                            <input type="number" class="form-control"
+                                                name="depreciacao[tempo_doacao_anos]"
+                                                value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0"
+                                                placeholder="0">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">Anos</span>
                                             </div>
@@ -339,7 +383,10 @@ endforeach; ?>
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[tempo_doacao_meses]" value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0" max="11" placeholder="0">
+                                            <input type="number" class="form-control"
+                                                name="depreciacao[tempo_doacao_meses]"
+                                                value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0"
+                                                max="11" placeholder="0">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">Meses</span>
                                             </div>
@@ -349,7 +396,9 @@ endforeach; ?>
 
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-10">
-                                        <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);">Salvar Configurações de Depreciação</button>
+                                        <button type="submit" class="btn btn-primary"
+                                            style="background: rgb(44,64,74);">Salvar Configurações de
+                                            Depreciação</button>
                                     </div>
                                 </div>
                             </form>
@@ -382,33 +431,33 @@ endforeach; ?>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
     <script>
-    $(document).ready(function() {
-        var $switch = $('#elegivelDoacao');
-        var $doacaoRow = $('#tempoDoacaoRow');
-        var $catSection = $('#categoriasDoacaoSection');
-        var $label = $switch.next('label');
+        $(document).ready(function () {
+            var $switch = $('#elegivelDoacao');
+            var $doacaoRow = $('#tempoDoacaoRow');
+            var $catSection = $('#categoriasDoacaoSection');
+            var $label = $switch.next('label');
 
-        function toggleDoacao() {
-            if ($switch.is(':checked')) {
-                $catSection.slideDown(200);
-                $doacaoRow.slideDown(200);
-                $label.text('Sim, ativos podem ser doados');
-            } else {
-                $catSection.slideUp(200);
-                $doacaoRow.slideUp(200);
-                $label.text('Não, doação desativada');
+            function toggleDoacao() {
+                if ($switch.is(':checked')) {
+                    $catSection.slideDown(200);
+                    $doacaoRow.slideDown(200);
+                    $label.text('Sim, ativos podem ser doados');
+                } else {
+                    $catSection.slideUp(200);
+                    $doacaoRow.slideUp(200);
+                    $label.text('Não, doação desativada');
+                }
             }
-        }
 
-        // Initial state
-        if (!$switch.is(':checked')) {
-            $doacaoRow.hide();
-            $catSection.hide();
-        }
+            // Initial state
+            if (!$switch.is(':checked')) {
+                $doacaoRow.hide();
+                $catSection.hide();
+            }
 
-        // On change
-        $switch.on('change', toggleDoacao);
-    });
+            // On change
+            $switch.on('change', toggleDoacao);
+        });
     </script>
 </body>
 

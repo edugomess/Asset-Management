@@ -145,29 +145,17 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0"
             style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
-                </a>
+            <div class="container-fluid d-flex flex-column p-0">
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                    style="margin: 5px 23px;">
                     <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i
                             class="fas fa-bars"></i></button>
                     <ul class="navbar-nav flex-nowrap ml-auto">

@@ -142,16 +142,14 @@ include 'conexao.php';
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-text mx-3"><span>Asset Mgt</span></div>
-                </a>
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                    style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form

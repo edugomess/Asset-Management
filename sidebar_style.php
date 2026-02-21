@@ -133,6 +133,42 @@
         margin: 1.25rem 1.2rem 0.25rem !important;
     }
 
+    /* Global Table Fixes - Optimized for Asset Management */
+    .table-responsive {
+        overflow-x: hidden !important;
+        /* Prevent horizontal scrollbars */
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .table {
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    .table th {
+        background: #f8f9fc;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #4e73df;
+        border-top: none !important;
+        padding: 1rem !important;
+    }
+
+    .table td {
+        padding: 1rem !important;
+        vertical-align: middle !important;
+        border-top: 1px solid #e3e6f0 !important;
+        color: #5a5c69;
+        font-size: 0.85rem;
+    }
+
+    .table tr:hover {
+        background-color: #f8f9fc;
+    }
+
     /* Sidebar Toggle Styling */
     #sidebarToggle {
         background: rgba(255, 255, 255, 0.05) !important;

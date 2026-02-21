@@ -58,29 +58,16 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-            style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
-                </a>
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+            <div class="container-fluid d-flex flex-column p-0">
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                    style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -244,9 +231,11 @@ include 'conexao.php';
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-primary font-weight-bold text-xs mb-1">
-                                                <span>Total de Ativos</span></div>
+                                                <span>Total de Ativos</span>
+                                            </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_ativos; ?></span></div>
+                                                <span><?php echo $total_ativos; ?></span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-boxes fa-2x text-gray-300"></i></div>
                                     </div>
@@ -259,9 +248,11 @@ include 'conexao.php';
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-success font-weight-bold text-xs mb-1">
-                                                <span>Disponíveis</span></div>
+                                                <span>Disponíveis</span>
+                                            </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_disp; ?></span></div>
+                                                <span><?php echo $total_disp; ?></span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i>
                                         </div>
@@ -277,7 +268,8 @@ include 'conexao.php';
                                             <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Em
                                                     Uso</span></div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_uso; ?></span></div>
+                                                <span><?php echo $total_uso; ?></span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-user-check fa-2x text-gray-300"></i>
                                         </div>
@@ -291,7 +283,8 @@ include 'conexao.php';
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-warning font-weight-bold text-xs mb-1">
-                                                <span>Manutenção</span></div>
+                                                <span>Manutenção</span>
+                                            </div>
                                             <div class="text-dark font-weight-bold h5 mb-0"><span>0</span></div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-tools fa-2x text-gray-300"></i></div>
@@ -357,6 +350,7 @@ include 'conexao.php';
         FROM ativos a 
         LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
         $where_clause 
+        ORDER BY a.id_asset DESC
         LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
 
@@ -536,52 +530,6 @@ include 'conexao.php';
                                     </tbody>
                                 </table>
 
-                                <style>
-                                    .pagination-custom {
-                                        display: flex;
-                                        gap: 6px;
-                                        list-style: none;
-                                        padding: 0;
-                                        margin: 16px 0;
-                                        flex-wrap: wrap;
-                                    }
-
-                                    .pagination-custom li a {
-                                        display: inline-flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        min-width: 38px;
-                                        height: 38px;
-                                        padding: 0 12px;
-                                        border-radius: 8px;
-                                        font-size: 14px;
-                                        font-weight: 500;
-                                        text-decoration: none;
-                                        transition: all 0.2s ease;
-                                        border: 1.5px solid rgba(44, 64, 74, 0.25);
-                                        color: rgb(44, 64, 74);
-                                        background: #fff;
-                                    }
-
-                                    .pagination-custom li a:hover {
-                                        background: rgba(44, 64, 74, 0.08);
-                                        border-color: rgb(44, 64, 74);
-                                        color: rgb(44, 64, 74);
-                                        transform: translateY(-1px);
-                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
-                                    }
-
-                                    .pagination-custom li.active a {
-                                        background: rgb(44, 64, 74);
-                                        color: #fff;
-                                        border-color: rgb(44, 64, 74);
-                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
-                                    }
-
-                                    .pagination-custom li.active a:hover {
-                                        background: rgb(34, 54, 64);
-                                    }
-                                </style>
                                 <div class="d-flex justify-content-start mt-3">
                                     <ul class="pagination-custom">
                                         <?php
@@ -594,7 +542,7 @@ include 'conexao.php';
                                         // Page Links
                                         for ($page = 1; $page <= $total_pages; $page++) {
                                             if ($page == $current_page) {
-                                                echo "<li class='active'><a href='?page=$page$search_param'>$page</a></li>";
+                                                echo "<li class='active'><span>$page</span></li>";
                                             } else {
                                                 echo "<li><a href='?page=$page$search_param'>$page</a></li>";
                                             }

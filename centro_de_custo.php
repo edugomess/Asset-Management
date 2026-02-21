@@ -42,21 +42,10 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-            style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-text mx-3"><span>Asset Mgt</span></div>
                 </a>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
@@ -233,7 +222,7 @@ include 'conexao.php';
                                 <?php
                                 // include 'auth.php'; -- Moved to top
                                 // include 'conexao.php'; -- Moved to top
-                                
+
                                 // Define how many results you want per page
                                 $results_per_page = 10;
 
@@ -260,7 +249,7 @@ include 'conexao.php';
                                 $start_from = ($current_page - 1) * $results_per_page;
 
                                 // Fetch the selected results from the database
-                                $sql = "SELECT * FROM centro_de_custo $where_clause LIMIT $start_from, $results_per_page";
+                                $sql = "SELECT * FROM centro_de_custo $where_clause ORDER BY id_centro_de_custo DESC LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
 
@@ -273,7 +262,7 @@ include 'conexao.php';
                                             <th>Unidade</th>
                                             <th>E-mail Gestor</th>
                                             <th>Gestor</th>
-                                            <th></th>
+                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -306,76 +295,27 @@ include 'conexao.php';
                                             <th>Unidade</th>
                                             <th>E-mail Gestor</th>
                                             <th>Gestor</th>
-                                            <th></th>
+                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                 </table>
 
-                                <style>
-                                    .pagination-custom {
-                                        display: flex;
-                                        gap: 6px;
-                                        list-style: none;
-                                        padding: 0;
-                                        margin: 16px 0;
-                                        flex-wrap: wrap;
-                                    }
-
-                                    .pagination-custom li a {
-                                        display: inline-flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        min-width: 38px;
-                                        height: 38px;
-                                        padding: 0 12px;
-                                        border-radius: 8px;
-                                        font-size: 14px;
-                                        font-weight: 500;
-                                        text-decoration: none;
-                                        transition: all 0.2s ease;
-                                        border: 1.5px solid rgba(44, 64, 74, 0.25);
-                                        color: rgb(44, 64, 74);
-                                        background: #fff;
-                                    }
-
-                                    .pagination-custom li a:hover {
-                                        background: rgba(44, 64, 74, 0.08);
-                                        border-color: rgb(44, 64, 74);
-                                        color: rgb(44, 64, 74);
-                                        transform: translateY(-1px);
-                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
-                                    }
-
-                                    .pagination-custom li.active a {
-                                        background: rgb(44, 64, 74);
-                                        color: #fff;
-                                        border-color: rgb(44, 64, 74);
-                                        box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
-                                    }
-
-                                    .pagination-custom li.active a:hover {
-                                        background: rgb(34, 54, 64);
-                                    }
-                                </style>
                                 <div class="d-flex justify-content-start mt-3">
                                     <ul class="pagination-custom">
                                         <?php
-                                        // Previous Page Link
                                         $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
                                         if ($current_page > 1) {
                                             echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
                                         }
 
-                                        // Page Links
                                         for ($page = 1; $page <= $total_pages; $page++) {
                                             if ($page == $current_page) {
-                                                echo "<li class='active'><a href='?page=$page$search_param'>$page</a></li>";
+                                                echo "<li class='active'><span>$page</span></li>";
                                             } else {
                                                 echo "<li><a href='?page=$page$search_param'>$page</a></li>";
                                             }
                                         }
 
-                                        // Next Page Link
                                         if ($current_page < $total_pages) {
                                             echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
                                         }

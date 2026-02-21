@@ -247,7 +247,7 @@
                                             $start_from = ($current_page - 1) * $results_per_page;
 
                                             // Fetch the selected results from the database (ativos vendidos)
-                                            $sql = "SELECT * FROM venda LIMIT $start_from, $results_per_page";
+                                            $sql = "SELECT * FROM venda ORDER BY id DESC LIMIT $start_from, $results_per_page";
                                             $result = mysqli_query($conn, $sql);
                                             ?>
 
@@ -298,31 +298,28 @@
                                                 </tbody>
                                             </table>
 
-                                            <div class="pagination justify-content-start">
-                                                <nav>
-                                                    <ul class="pagination">
-                                                        <?php
-                                                        // Previous Page Link
-                                                        if ($current_page > 1) {
-                                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-                                                        }
-
-                                                        // Page Links
-                                                        for ($page = 1; $page <= $total_pages; $page++) {
-                                                            if ($page == $current_page) {
-                                                                echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Current page
-                                                            } else {
-                                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page'>$page</a></li>"; // Other pages
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <nav>
+                                                        <ul class="pagination-custom">
+                                                            <?php
+                                                            if ($current_page > 1) {
+                                                                echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
                                                             }
-                                                        }
-
-                                                        // Next Page Link
-                                                        if ($current_page < $total_pages) {
-                                                            echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                                                        }
-                                                        ?>
-                                                    </ul>
-                                                </nav>
+                                                            for ($page = 1; $page <= $total_pages; $page++) {
+                                                                if ($page == $current_page) {
+                                                                    echo "<li class='active'><span>$page</span></li>";
+                                                                } else {
+                                                                    echo "<li><a href='?page=$page'>$page</a></li>";
+                                                                }
+                                                            }
+                                                            if ($current_page < $total_pages) {
+                                                                echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                                                            }
+                                                            ?>
+                                                        </ul>
+                                                    </nav>
+                                                </div>
                                             </div>
 
                                             <?php

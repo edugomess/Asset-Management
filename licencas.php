@@ -140,21 +140,10 @@ include 'conexao.php';
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
-            style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-text mx-3"><span>Asset Mgt</span></div>
                 </a>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
@@ -246,7 +235,7 @@ include 'conexao.php';
                                         $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                                         $start = ($current_page - 1) * $results_per_page;
 
-                                        $sql = "SELECT * FROM licencas $where LIMIT $start, $results_per_page";
+                                        $sql = "SELECT * FROM licencas $where ORDER BY id_licenca DESC LIMIT $start, $results_per_page";
                                         $result = mysqli_query($conn, $sql);
 
                                         if (mysqli_num_rows($result) > 0) {
@@ -343,8 +332,11 @@ include 'conexao.php';
                                         echo "<li><a href='?page=" . ($current_page - 1) . "&search=$search'>« Anterior</a></li>";
                                     }
                                     for ($i = 1; $i <= $total_pages; $i++) {
-                                        $active = ($i == $current_page) ? "class='active'" : "";
-                                        echo "<li $active><a href='?page=$i&search=$search'>$i</a></li>";
+                                        if ($i == $current_page) {
+                                            echo "<li class='active'><span>$i</span></li>";
+                                        } else {
+                                            echo "<li><a href='?page=$i&search=$search'>$i</a></li>";
+                                        }
                                     }
                                     if ($current_page < $total_pages) {
                                         echo "<li><a href='?page=" . ($current_page + 1) . "&search=$search'>Próximo »</a></li>";

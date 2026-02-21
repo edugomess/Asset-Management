@@ -88,7 +88,7 @@ if ($res_suppliers) {
 }
 
 // 6. Search Licenses (Licenças - 'licencas' table)
-$sql_licenses = "SELECT id, software, fabricante FROM licencas WHERE software LIKE '$search' OR fabricante LIKE '$search' LIMIT 5";
+$sql_licenses = "SELECT id_licenca, software, fabricante FROM licencas WHERE software LIKE '$search' OR fabricante LIKE '$search' LIMIT 5";
 $res_licenses = mysqli_query($conn, $sql_licenses);
 if ($res_licenses) {
     while ($row = mysqli_fetch_assoc($res_licenses)) {

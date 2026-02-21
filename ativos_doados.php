@@ -232,32 +232,29 @@ include 'conexao.php';
                                     </tbody>
                                 </table>
 
-                                <div class="pagination justify-content-start">
-                                    <nav>
-                                        <ul class="pagination">
-                                            <?php
-                                            // Previous Page Link
-                                            $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-                                            if ($current_page > 1) {
-                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-                                            }
-
-                                            // Page Links
-                                            for ($page = 1; $page <= $total_pages; $page++) {
-                                                if ($page == $current_page) {
-                                                    echo "<li class='page-item active'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Current page
-                                                } else {
-                                                    echo "<li class='page-item'><a class='btn btn-dark' href='?page=$page$search_param'>$page</a></li>"; // Other pages
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <nav>
+                                            <ul class="pagination-custom">
+                                                <?php
+                                                $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                                if ($current_page > 1) {
+                                                    echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
                                                 }
-                                            }
-
-                                            // Next Page Link
-                                            if ($current_page < $total_pages) {
-                                                echo "<li class='page-item'><a class='btn btn-dark' href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                                            }
-                                            ?>
-                                        </ul>
-                                    </nav>
+                                                for ($page = 1; $page <= $total_pages; $page++) {
+                                                    if ($page == $current_page) {
+                                                        echo "<li class='active'><span>$page</span></li>";
+                                                    } else {
+                                                        echo "<li><a href='?page=$page$search_param'>$page</a></li>";
+                                                    }
+                                                }
+                                                if ($current_page < $total_pages) {
+                                                    echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                                }
+                                                ?>
+                                            </ul>
+                                        </nav>
+                                    </div>
                                 </div>
 
                                 <?php

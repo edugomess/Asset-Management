@@ -19,7 +19,7 @@
     }
 
     .sidebar-brand {
-        padding: 2.5rem 1rem !important;
+        padding: 1.0rem 1rem 0.2rem 1rem !important;
         margin-bottom: 0.0rem;
     }
 
@@ -38,18 +38,18 @@
         font-size: 0.65rem !important;
         font-weight: 800 !important;
         text-transform: uppercase;
-        padding: 1.8rem 1.5rem 0.6rem 1.5rem !important;
+        padding: 0.8rem 1.5rem 0.3rem 1.5rem !important;
         letter-spacing: 2.5px;
         opacity: 0.8;
     }
 
     .nav-item {
         position: relative;
-        margin: 0.3rem 0.8rem !important;
+        margin: 0.15rem 0.8rem !important;
     }
 
     .nav-link {
-        padding: 0.9rem 1.2rem !important;
+        padding: 0.65rem 1.2rem !important;
         border-radius: 14px !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         font-weight: 500 !important;
@@ -130,7 +130,7 @@
 
     .sidebar-divider {
         border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-        margin: 1.8rem 1.2rem 0.5rem !important;
+        margin: 1.25rem 1.2rem 0.25rem !important;
     }
 
     /* Sidebar Toggle Styling */
@@ -173,3 +173,4 @@
         display: none !important;
     }
 </style>
+<?php include_once 'pagination_style.php'; ?>

@@ -221,6 +221,7 @@ $result = mysqli_query($conn, $sql);
                                             <th>Responsável</th>
                                             <th>Status</th>
                                             <th>SLA STATUS</th>
+                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -365,62 +366,20 @@ $result = mysqli_query($conn, $sql);
                 <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
                 <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
+                <td>
+                    <a class='btn btn-warning' href='editar_chamado.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i></a>
+                    <a class='btn btn-danger' href='apagar_chamado.php?id=" . $row['id'] . "' onclick=\"return confirm('Tem certeza que deseja apagar este chamado?')\"><i class='fas fa-trash'></i></a>
+                </td>
             </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='9' class='text-center'>Nenhum chamado encontrado.</td></tr>";
+                                            echo "<tr><td colspan='10' class='text-center'>Nenhum chamado encontrado.</td></tr>";
                                         }
                                         ?>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <style>
-                                .pagination-custom {
-                                    display: flex;
-                                    gap: 6px;
-                                    list-style: none;
-                                    padding: 0;
-                                    margin: 16px 0;
-                                    flex-wrap: wrap;
-                                }
-
-                                .pagination-custom li a {
-                                    display: inline-flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    min-width: 38px;
-                                    height: 38px;
-                                    padding: 0 12px;
-                                    border-radius: 8px;
-                                    font-size: 14px;
-                                    font-weight: 500;
-                                    text-decoration: none;
-                                    transition: all 0.2s ease;
-                                    border: 1.5px solid rgba(44, 64, 74, 0.25);
-                                    color: rgb(44, 64, 74);
-                                    background: #fff;
-                                }
-
-                                .pagination-custom li a:hover {
-                                    background: rgba(44, 64, 74, 0.08);
-                                    border-color: rgb(44, 64, 74);
-                                    color: rgb(44, 64, 74);
-                                    transform: translateY(-1px);
-                                    box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
-                                }
-
-                                .pagination-custom li.active a {
-                                    background: rgb(44, 64, 74);
-                                    color: #fff;
-                                    border-color: rgb(44, 64, 74);
-                                    box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
-                                }
-
-                                .pagination-custom li.active a:hover {
-                                    background: rgb(34, 54, 64);
-                                }
-                            </style>
                             <div class="d-flex justify-content-start mt-3">
                                 <ul class="pagination-custom">
                                     <?php
@@ -430,7 +389,7 @@ $result = mysqli_query($conn, $sql);
                                     }
                                     for ($page = 1; $page <= $total_pages; $page++) {
                                         if ($page == $current_page) {
-                                            echo "<li class='active'><a href='?page=$page$current_filter'>$page</a></li>";
+                                            echo "<li class='active'><span>$page</span></li>";
                                         } else {
                                             echo "<li><a href='?page=$page$current_filter'>$page</a></li>";
                                         }

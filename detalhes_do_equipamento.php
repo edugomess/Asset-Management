@@ -11,7 +11,10 @@
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
     // Buscar detalhes do ativo
-    $sql_ativo = "SELECT * FROM ativos WHERE id_asset = '$id'";
+    $sql_ativo = "SELECT a.*, m.observacoes AS manutencao_desc, m.data_inicio AS manutencao_data 
+                 FROM ativos a 
+                 LEFT JOIN manutencao m ON a.id_asset = m.id_asset AND m.status_manutencao = 'Em Manutenção'
+                 WHERE a.id_asset = '$id'";
     $result_ativo = mysqli_query($conn, $sql_ativo);
 
     if (mysqli_num_rows($result_ativo) > 0) {
@@ -162,12 +165,17 @@
         }
 
         .btn-info-system {
-            background-color: #36b9cc;
+            background-color: #e74a3b;
             color: white;
         }
 
         .btn-success-system {
             background-color: #1cc88a;
+            color: white;
+        }
+
+        .btn-maintenance-system {
+            background-color: #f6953e;
             color: white;
         }
     </style>
@@ -242,6 +250,8 @@
                                             <i class="fas fa-power-off"></i> Ativar
                                         </button>
                                     <?php endif; ?>
+
+
                                     <button class="btn btn-info-system btn-system btn-block" onclick="gerarPDF()">
                                         <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
                                     </button>
@@ -367,6 +377,26 @@
                         </div>
                     </div>
                 </div>
+                <?php if ($ativo['status'] == 'Manutencao' && !empty($ativo['manutencao_desc'])): ?>
+                    <div class="card shadow mb-4 border-left-warning">
+                        <div class="card-header py-3">
+                            <p class="text-warning m-0 font-weight-bold"><i class="fas fa-tools"></i> Detalhes da Manutenção
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p><strong>Data de Início:</strong>
+                                        <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
+                                    <p><strong>Observações:</strong></p>
+                                    <div class="p-3 bg-light border rounded">
+                                        <?php echo nl2br(htmlspecialchars($ativo['manutencao_desc'])); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <div class="card shadow mb-5">
                     <div class="card-header py-3">
                         <p class="text-primary m-0 font-weight-bold">Descrição</p>
@@ -454,9 +484,9 @@
                 formData.append('id_asset', <?php echo $id; ?>);
 
                 fetch('upload_foto_ativo.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                        method: 'POST',
+                        body: formData
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -479,15 +509,15 @@
             }
 
             fetch('toggle_status.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_asset: id,
-                    novo_status: novoStatus
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_asset: id,
+                        novo_status: novoStatus
+                    })
                 })
-            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -551,7 +581,7 @@
                 }
             };
 
-            html2pdf().set(opt).from(element).save().then(function () {
+            html2pdf().set(opt).from(element).save().then(function() {
                 // Restaurar elementos
                 if (sidebar) sidebar.style.display = sidebarDisplay;
                 if (topbar) topbar.style.display = topbarDisplay;

@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <?php include 'sidebar_style.php'; ?>
+    <?php include 'pagination_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -161,9 +162,9 @@
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
                                             class="dropdown-item" href="configuracoes.php"><i
                                                 class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar
-                                            conta</a>
+                                            class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>

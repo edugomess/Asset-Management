@@ -167,9 +167,9 @@ $result = mysqli_query($conn, $sql);
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
                                             class="dropdown-item" href="configuracoes.php"><i
                                                 class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Desativar
-                                            conta</a>
+                                            class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>

@@ -16,7 +16,7 @@ $id_asset = isset($data['id_asset']) ? intval($data['id_asset']) : 0;
 $novo_status = isset($data['novo_status']) ? $data['novo_status'] : '';
 
 // Validate input
-if ($id_asset <= 0 || !in_array($novo_status, ['Ativo', 'Inativo'])) {
+if ($id_asset <= 0 || !in_array($novo_status, ['Ativo', 'Inativo', 'Manutencao'])) {
     echo json_encode(['success' => false, 'message' => 'Dados inválidos.']);
     exit;
 }
@@ -29,7 +29,13 @@ $stmt->bind_param('si', $novo_status, $id_asset);
 if ($stmt->execute()) {
     // Log history
     $usuario_id = $_SESSION['id_usuarios'];
-    $acao = ($novo_status == 'Ativo') ? 'Ativação' : 'Desativação';
+    if ($novo_status == 'Ativo') {
+        $acao = 'Ativação';
+    } elseif ($novo_status == 'Inativo') {
+        $acao = 'Desativação';
+    } else {
+        $acao = 'Manutenção';
+    }
     $detalhes = "Status alterado para: $novo_status";
 
     $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES (?, ?, ?, ?)";
@@ -38,8 +44,7 @@ if ($stmt->execute()) {
     $stmt_hist->execute();
 
     echo json_encode(['success' => true]);
-}
-else {
+} else {
     echo json_encode(['success' => false, 'message' => 'Erro ao atualizar status: ' . $conn->error]);
 }
 

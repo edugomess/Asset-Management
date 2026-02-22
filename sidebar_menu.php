@@ -21,9 +21,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Gestão -->
     <div class="sidebar-heading">Gestão de Ativos</div>
     <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'equipamento') !== false || strpos($current_page, 'ativo') !== false) ? 'active' : ''; ?>"
+        <a class="nav-link <?php echo (strpos($current_page, 'equipamento') !== false || strpos($current_page, 'ativo') !== false) && !isset($_GET['status']) ? 'active' : ''; ?>"
             href="/equipamentos.php">
             <i class="fas fa-laptop-medical"></i><span>Inventário de Ativos</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link <?php echo isset($_GET['status']) && $_GET['status'] == 'Manutencao' ? 'active' : ''; ?>"
+            href="/equipamentos.php?status=Manutencao">
+            <i class="fas fa-tools"></i><span>Ativos em Manutenção</span>
         </a>
     </li>
     <li class="nav-item">

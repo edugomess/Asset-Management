@@ -34,6 +34,84 @@
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #2c404a 0%, #1a2a33 100%);
+            padding: 60px 0;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .support-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-color: #2c404a;
+        }
+
+        .support-card i {
+            font-size: 2.5rem;
+            color: #2c404a;
+            margin-bottom: 15px;
+        }
+
+        .contact-info-box {
+            background: rgba(44, 64, 74, 0.03);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px dashed #2c404a;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .info-item i {
+            width: 45px;
+            height: 45px;
+            background: #2c404a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .modern-input {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .modern-input:focus {
+            border-color: #2c404a;
+            box-shadow: 0 0 0 0.2rem rgba(44, 64, 74, 0.1);
+        }
+
+        .map-container {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+    </style>
     <?php include 'sidebar_style.php'; ?>
 </head>
 
@@ -190,73 +268,123 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Suporte</h3>
-                </div>
-                <div class="container">
-                    <!-- Start: Modern Contact Form -->
-                    <section class="getintouch">
-                        <div class="container modern-form" style="filter: saturate(90%);">
-                            <div class="text-center">
-                                <h4 style="color: #212529;font-size: 45px;">Contato para Suporte</h4>
+                    <!-- Hero Section -->
+                    <div class="hero-section text-center">
+                        <h2 class="font-weight-bold" style="font-size: 2.5rem;">Como podemos ajudar você hoje?</h2>
+                        <p class="lead opacity-75">Sua central de suporte e inteligência para gestão de ativos.</p>
+                    </div>
+
+                    <!-- Quick Action Cards -->
+                    <div class="row mb-5">
+                        <div class="col-md-4 mb-4" onclick="window.location.href='agent.php'">
+                            <div class="support-card">
+                                <i class="fas fa-robot"></i>
+                                <h5>Assistente IA</h5>
+                                <p class="text-muted small">Tire dúvidas rápidas sobre o sistema e procedimentos com
+                                    nossa inteligência artificial.</p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Acessar IA</span>
                             </div>
-                            <div class="modern-form__form-container">
+                        </div>
+                        <div class="col-md-4 mb-4" onclick="window.location.href='chamados.php'">
+                            <div class="support-card">
+                                <i class="fas fa-ticket-alt"></i>
+                                <h5>Central de Chamados</h5>
+                                <p class="text-muted small">Abra novas solicitações técnicas ou acompanhe o status dos
+                                    seus pedidos pendentes.</p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Ver Chamados</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" onclick="window.location.href='documentacao.php'">
+                            <div class="support-card">
+                                <i class="fas fa-book"></i>
+                                <h5>Documentação</h5>
+                                <p class="text-muted small">Acesse manuais de usuário, FAQs e guias de boas práticas
+                                    para gestão do seu inventário.</p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Ver Manuais</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Support Layout -->
+                    <div class="card shadow border-0 overflow-hidden" style="border-radius: 20px;">
+                        <div class="row no-gutters">
+                            <!-- Contact Info -->
+                            <div class="col-lg-5 p-5 bg-light">
+                                <h4 class="font-weight-bold mb-4">Canais de Atendimento</h4>
+                                <p class="text-muted mb-5">Se preferir, utilize nossos canais diretos para um
+                                    atendimento mais urgente.</p>
+
+                                <div class="info-item">
+                                    <i class="fab fa-whatsapp"></i>
+                                    <div>
+                                        <div class="font-weight-bold">WhatsApp Suporte</div>
+                                        <div class="text-muted">(11) 96843-55543</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <i class="far fa-envelope"></i>
+                                    <div>
+                                        <div class="font-weight-bold">E-mail Corporativo</div>
+                                        <div class="text-muted">suporte@degb.com.br</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <i class="far fa-clock"></i>
+                                    <div>
+                                        <div class="font-weight-bold">Horário de Atendimento</div>
+                                        <div class="text-muted">Segunda a Sexta: 08:00 às 18:00</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-5 p-4 contact-info-box text-center">
+                                    <p class="small text-muted mb-0">Localização Física</p>
+                                    <div class="font-weight-bold">Alphaville, Barueri - SP, Brasil</div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Form -->
+                            <div class="col-lg-7 p-5 bg-white">
+                                <h4 class="font-weight-bold mb-4">Envie uma Mensagem</h4>
                                 <form>
-                                    <div class="form-row">
-                                        <div class="col col-contact">
-                                            <div class="form-group modern-form__form-group--padding-r"><input
-                                                    class="form-control input input-tr" type="text" placeholder="Nome">
-                                                <div class="line-box">
-                                                    <div class="line"></div>
-                                                </div>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold">Seu Nome</label>
+                                            <input type="text" class="form-control modern-input"
+                                                placeholder="Ex: João Silva">
                                         </div>
-                                        <div class="col col-contact">
-                                            <div class="form-group modern-form__form-group--padding-r"><input
-                                                    class="form-control input input-tr" type="text"
-                                                    placeholder="Empresa">
-                                                <div class="line-box">
-                                                    <div class="line"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col col-contact">
-                                            <div class="form-group modern-form__form-group--padding-l"><input
-                                                    class="form-control input input-tr" type="text"
-                                                    placeholder="E-Mail">
-                                                <div class="line-box">
-                                                    <div class="line"></div>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold">Empresa/Centro de Custo</label>
+                                            <input type="text" class="form-control modern-input"
+                                                placeholder="Ex: TI Matriz">
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col">
-                                            <div class="form-group modern-form__form-group--padding-t"><textarea
-                                                    class="form-control input modern-form__form-control--textarea"
-                                                    placeholder="Messagem"></textarea>
-                                                <div class="line-box">
-                                                    <div class="line"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label class="small font-weight-bold">Seu E-mail Ativo</label>
+                                        <input type="email" class="form-control modern-input"
+                                            placeholder="Ex: joao@empresa.com.br">
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col-xl-3 offset-xl-4 text-center"><button
-                                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                                type="submit"
-                                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;">Enviar</button>
-                                        </div>
+                                    <div class="mb-4">
+                                        <label class="small font-weight-bold">Descrição da Necessidade</label>
+                                        <textarea class="form-control modern-input" rows="4"
+                                            placeholder="Como podemos ajudar você?"></textarea>
                                     </div>
+                                    <button type="submit" class="btn btn-dark btn-block font-weight-bold py-3 shadow"
+                                        style="border-radius: 12px; background: #2c404a;">
+                                        ENVIAR MENSAGEM <i class="fas fa-paper-plane ml-2"></i>
+                                    </button>
                                 </form>
                             </div>
                         </div>
-                    </section><!-- End: Modern Contact Form -->
-                </div>
-                <div class="container">
-                    <!-- Start: Map Clean -->
-                    <section class="map-clean"><iframe allowfullscreen="" frameborder="0"
-                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBPk6EEDKnLhNYxq-pI77Q4934lsuEC318&amp;q=AV.Mario+cola+Francisco%2C+210+Campos+do+Jord%C3%A3o%2C+SP%2C+Brasil&amp;zoom=15"
-                            width="100%" height="450"></iframe></section><!-- End: Map Clean -->
+                    </div>
+
+                    <!-- Map Section -->
+                    <div class="map-container">
+                        <iframe allowfullscreen="" frameborder="0"
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBPk6EEDKnLhNYxq-pI77Q4934lsuEC318&amp;q=Alphaville%2C+Barueri+-+SP%2C+Brasil&amp;zoom=15"
+                            width="100%" height="400" style="border:0;"></iframe>
+                    </div>
                 </div>
             </div>
             <footer class="sticky-footer" style="background: transparent; padding: 0;">

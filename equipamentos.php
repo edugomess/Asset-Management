@@ -75,6 +75,17 @@ include 'conexao.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <?php include 'sidebar_style.php'; ?>
+    <style>
+        .card.shadow {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .card.shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">

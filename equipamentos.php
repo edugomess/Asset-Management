@@ -87,20 +87,35 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top" style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                    style="margin: 5px 23px;">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
+                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <form
+                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
                             <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
+                                <input class="bg-light form-control border-0 small" type="text"
+                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
+                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
+                                style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#"><span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
+                                            class="border rounded-circle img-profile"
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
+                                            class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
+                                            class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
                             </li>
@@ -112,13 +127,13 @@ include 'conexao.php';
                     <div class="row">
                         <?php
                         // Buscar contagens de ativos
-                        $res_total = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos");
+                        $res_total = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
                         $total_ativos = mysqli_fetch_assoc($res_total)['total'];
 
-                        $res_disp = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE assigned_to IS NULL OR assigned_to = 0");
+                        $res_disp = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE (assigned_to IS NULL OR assigned_to = 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
                         $total_disp = mysqli_fetch_assoc($res_disp)['total'];
 
-                        $res_uso = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE assigned_to IS NOT NULL AND assigned_to != 0");
+                        $res_uso = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE (assigned_to IS NOT NULL AND assigned_to != 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
                         $total_uso = mysqli_fetch_assoc($res_uso)['total'];
 
                         $res_manut_card = mysqli_query($conn, "SELECT COUNT(*) as total FROM manutencao WHERE status_manutencao = 'Em Manutenção'");
@@ -129,8 +144,12 @@ include 'conexao.php';
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>Total de Ativos</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span><?php echo $total_ativos; ?></span></div>
+                                            <div class="text-uppercase text-primary font-weight-bold text-xs mb-1">
+                                                <span>Total de Ativos</span>
+                                            </div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_ativos; ?></span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-boxes fa-2x text-gray-300"></i></div>
                                     </div>
@@ -142,10 +161,15 @@ include 'conexao.php';
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1"><span>Disponíveis</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span><?php echo $total_disp; ?></span></div>
+                                            <div class="text-uppercase text-success font-weight-bold text-xs mb-1">
+                                                <span>Disponíveis</span>
+                                            </div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_disp; ?></span>
+                                            </div>
                                         </div>
-                                        <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i></div>
+                                        <div class="col-auto"><i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -155,10 +179,14 @@ include 'conexao.php';
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Em Uso</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span><?php echo $total_uso; ?></span></div>
+                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Em
+                                                    Uso</span></div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_uso; ?></span>
+                                            </div>
                                         </div>
-                                        <div class="col-auto"><i class="fas fa-user-check fa-2x text-gray-300"></i></div>
+                                        <div class="col-auto"><i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -168,8 +196,12 @@ include 'conexao.php';
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"><span>Manutenção</span></div>
-                                            <div class="text-dark font-weight-bold h5 mb-0"><span><?php echo $total_manut; ?></span></div>
+                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1">
+                                                <span>Manutenção</span>
+                                            </div>
+                                            <div class="text-dark font-weight-bold h5 mb-0">
+                                                <span><?php echo $total_manut; ?></span>
+                                            </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-tools fa-2x text-gray-300"></i></div>
                                     </div>
@@ -187,12 +219,19 @@ include 'conexao.php';
                             <div class="row">
                                 <?php if (!isset($_GET['status']) || $_GET['status'] !== 'Manutencao'): ?>
                                     <div class="col-md-6 col-xl-3 text-nowrap">
-                                        <div id="dataTable_length" class="dataTables_length"><a class="btn btn-success btn-block active text-white pulse animated btn-user" role="button" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;" href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
+                                        <div id="dataTable_length" class="dataTables_length"><a
+                                                class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                                role="button"
+                                                style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
+                                                href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
                                     </div>
                                 <?php endif; ?>
                                 <div class="col-md-6 col-xl-9">
                                     <div class="text-md-right dataTables_filter">
-                                        <form method="GET" action=""><label><input type="search" name="search" class="form-control form-control-sm" placeholder="Buscar..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label></form>
+                                        <form method="GET" action=""><label><input type="search" name="search"
+                                                    class="form-control form-control-sm" placeholder="Buscar..."
+                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -211,8 +250,12 @@ include 'conexao.php';
                                 if ($status_filter === 'Manutencao') {
                                     $maintenance_join = " JOIN manutencao m ON a.id_asset = m.id_asset ";
                                     $where_clauses[] = "m.status_manutencao = 'Em Manutenção'";
-                                } elseif (!empty($status_filter)) {
-                                    $where_clauses[] = "a.status LIKE '%$status_filter%'";
+                                } else {
+                                    // Se não estiver filtrando por manutenção, oculta os que estão em manutenção
+                                    $where_clauses[] = "a.id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')";
+                                    if (!empty($status_filter)) {
+                                        $where_clauses[] = "a.status LIKE '%$status_filter%'";
+                                    }
                                 }
 
                                 $where_clause = count($where_clauses) > 0 ? "WHERE " . implode(" AND ", $where_clauses) : "";
@@ -224,12 +267,17 @@ include 'conexao.php';
                                 $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                                 $start_from = ($current_page - 1) * $results_per_page;
 
+                                $order_by = "a.id_asset DESC";
+                                if ($status_filter === 'Manutencao') {
+                                    $order_by = "m.id_manutencao DESC";
+                                }
+
                                 $sql = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, u.usuarioAD AS user_usuarioAD, u.email AS user_email, u.centroDeCusto AS user_centroDeCusto, m_info.id_manutencao as em_manutencao, m_info.observacoes as manutencao_motivo 
                                         FROM ativos a 
                                         LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
                                         LEFT JOIN manutencao m_info ON a.id_asset = m_info.id_asset AND m_info.status_manutencao = 'Em Manutenção'
                                         $maintenance_join $where_clause 
-                                        ORDER BY a.id_asset DESC LIMIT $start_from, $results_per_page";
+                                        ORDER BY $order_by LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
 
@@ -261,12 +309,15 @@ include 'conexao.php';
                                                 $valor_original = floatval($row['valor']);
                                                 // Lógica simplificada de valor para o exemplo
                                                 $valor_atual = $valor_original;
-                                        ?>
+                                                ?>
                                                 <tr>
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['modelo']); ?></td>
-                                                    <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>" class="font-weight-bold" style="color: #2c404a;"><?php echo htmlspecialchars($row['tag']); ?></a></td>
+                                                    <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
+                                                            class="font-weight-bold"
+                                                            style="color: #2c404a;"><?php echo htmlspecialchars($row['tag']); ?></a>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td>R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?></td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
@@ -283,36 +334,60 @@ include 'conexao.php';
                                                             ?>
                                                         </td>
                                                     <?php else: ?>
-                                                        <td><?php echo htmlspecialchars($row['manutencao_motivo']); ?></td>
+                                                        <td>
+                                                            <?php
+                                                            $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações registradas';
+                                                            $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
+                                                            $has_motivo = !empty($row['manutencao_motivo']);
+                                                            ?>
+                                                            <span data-toggle="tooltip" data-placement="top"
+                                                                title="<?php echo htmlspecialchars($motivo_completo); ?>"
+                                                                style="cursor: help; <?php echo $has_motivo ? 'border-bottom: 1px dashed #ccc;' : 'color: #ccc; font-style: italic;'; ?>">
+                                                                <?php echo htmlspecialchars($motivo_resumo); ?>
+                                                            </span>
+                                                        </td>
                                                     <?php endif; ?>
 
                                                     <td>
-                                                        <span class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
+                                                        <span
+                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
                                                             <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
-                                                            <?php if ($status_filter !== 'Manutencao'): ?>
+                                                            <?php if (!$row['em_manutencao']): ?>
                                                                 <?php if ($assigned_to): ?>
-                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2' onclick='unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir <i class='fas fa-user-minus'></i></button>
+                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
+                                                                        onclick='unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
+                                                                        <i class='fas fa-user-minus'></i></button>
                                                                 <?php else: ?>
-                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2' onclick='openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir <i class='fas fa-user-plus'></i></button>
+                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2'
+                                                                        onclick='openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                        <i class='fas fa-user-plus'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
-                                                            <a class='btn btn-warning btn-edit mr-2' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>' title="Editar"><i class='fas fa-edit'></i></a>
-                                                            <a class='btn btn-info btn-edit mr-2' href='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>' title="Histórico"><i class='fas fa-history'></i></a>
+                                                            <a class='btn btn-warning btn-edit mr-2'
+                                                                href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
+                                                                title="Editar"><i class='fas fa-edit'></i></a>
+                                                            <a class='btn btn-info btn-edit mr-2'
+                                                                href='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'
+                                                                title="Histórico"><i class='fas fa-history'></i></a>
 
-                                                            <?php if ($status_filter === 'Manutencao'): ?>
-                                                                <button class="btn btn-success btn-edit" onclick="releaseFromMaintenance(<?php echo $row['id_asset']; ?>)" title="Liberar"><i class="fas fa-check-circle"></i></button>
+                                                            <?php if ($row['em_manutencao']): ?>
+                                                                <button class="btn btn-success btn-edit"
+                                                                    onclick="releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                    title="Liberar"><i class="fas fa-check-circle"></i></button>
                                                             <?php else: ?>
-                                                                <button class="btn btn-warning btn-edit" onclick="sendToMaintenance(<?php echo $row['id_asset']; ?>)" title="Manutenção"><i class="fas fa-tools"></i></button>
+                                                                <button class="btn btn-warning btn-edit"
+                                                                    onclick="sendToMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                    title="Manutenção"><i class="fas fa-tools"></i></button>
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                        <?php
+                                                <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
@@ -338,11 +413,13 @@ include 'conexao.php';
                 </div>
             </div>
 
-            <div id="maintenanceModal" class="modal" tabindex="-1" role="dialog" style="display: none; background: rgba(0,0,0,0.5);">
+            <div id="maintenanceModal" class="modal" tabindex="-1" role="dialog"
+                style="display: none; background: rgba(0,0,0,0.5);">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5>Iniciar Manutenção</h5><button type="button" class="close" onclick="closeMaintenanceModal()">&times;</button>
+                            <h5>Iniciar Manutenção</h5><button type="button" class="close"
+                                onclick="closeMaintenanceModal()">&times;</button>
                         </div>
                         <div class="modal-body">
                             <label>Descreva os detalhes da manutenção:</label>
@@ -356,14 +433,17 @@ include 'conexao.php';
                 </div>
             </div>
 
-            <div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none; background: rgba(0,0,0,0.5);">
+            <div id="assignModal" class="modal" tabindex="-1" role="dialog"
+                style="display: none; background: rgba(0,0,0,0.5);">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5>Atribuir Ativo</h5><button type="button" class="close" onclick="closeAssignModal()">&times;</button>
+                            <h5>Atribuir Ativo</h5><button type="button" class="close"
+                                onclick="closeAssignModal()">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..." oninput="searchUsers()">
+                            <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..."
+                                oninput="searchUsers()">
                             <ul id="userList" class="list-group mt-2"></ul>
                         </div>
                     </div>
@@ -372,7 +452,16 @@ include 'conexao.php';
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/bs-init.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/global_search.js"></script>
     <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
         let currentAssetId = null;
 
         function openAssignModal(id) {
@@ -406,7 +495,19 @@ include 'conexao.php';
                     acao: 'iniciar',
                     observacoes: obs
                 })
-            }).then(() => location.reload());
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Erro na comunicação com o servidor.');
+                });
         }
 
         function releaseFromMaintenance(id) {
@@ -420,7 +521,19 @@ include 'conexao.php';
                     id_asset: id,
                     acao: 'liberar'
                 })
-            }).then(() => location.reload());
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Erro na comunicação com o servidor.');
+                });
         }
 
         function unassignUser(id) {

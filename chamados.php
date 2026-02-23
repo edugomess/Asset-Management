@@ -54,9 +54,7 @@ $sql = "SELECT c.*, u.nome, u.sobrenome, r.nome AS resp_nome, r.sobrenome AS res
         LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
         LEFT JOIN usuarios r ON c.responsavel_id = r.id_usuarios
         $where_clause
-        ORDER BY 
-            CASE WHEN c.status = 'Aberto' THEN 0 ELSE 1 END ASC,
-            c.data_abertura DESC
+        ORDER BY c.data_abertura DESC
         LIMIT $start_from, $results_per_page";
 $result = mysqli_query($conn, $sql);
 ?>

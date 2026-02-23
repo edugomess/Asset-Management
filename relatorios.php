@@ -278,6 +278,15 @@ include
                                                     Atribuições</option>
                                             </optgroup>
 
+                                            <optgroup label="Manutenção">
+                                                <option value="relatorio_manutencao_atual.php">Manutenções Ativas
+                                                </option>
+                                                <option value="relatorio_manutencao_historico.php">Histórico de
+                                                    Manutenções</option>
+                                                <option value="relatorio_manutencao_estatistico.php">Resumo Estatístico
+                                                </option>
+                                            </optgroup>
+
                                             <optgroup label="Outros">
                                                 <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)
                                                 </option>

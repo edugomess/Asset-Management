@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $unidade = $_POST['unidade']; // Nova unidade enviada no formulário
     $status = $_POST['status']; // Status update
 
+    $cpf = isset($_POST['cpf']) ? preg_replace('/[^\d]/', '', $_POST['cpf']) : '';
+
     // Verificar se o usuarioAD já existe no banco de dados, exceto para o próprio usuário
     $query_check = "SELECT id_usuarios FROM usuarios WHERE usuarioAD = '$usuarioAD' AND id_usuarios != '$id_usuarios'";
     $result_check = mysqli_query($conn, $query_check);
@@ -70,11 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              telefone='$telefone',
                              unidade='$unidade', 
                              status='$status',
+                             cpf='$cpf',
                              senha='$senha_hashed'
                              $foto_perfil_update
                          WHERE id_usuarios = '$id_usuarios'";
-    }
-    else {
+    } else {
         // Se a senha não foi alterada, não atualize o campo de senha
         $query_update = "UPDATE usuarios 
                          SET nome='$nome', 
@@ -87,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              matricula='$matricula', 
                              telefone='$telefone',
                              unidade='$unidade',
+                             cpf='$cpf',
                              status='$status'
                              $foto_perfil_update
                          WHERE id_usuarios = '$id_usuarios'";
@@ -97,8 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 alert('Usuário atualizado com sucesso!');
                 window.location.href = 'usuarios.php';
               </script>";
-    }
-    else {
+    } else {
         echo 'Erro ao atualizar dados: ' . mysqli_error($conn);
     }
 }

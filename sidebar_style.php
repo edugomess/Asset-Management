@@ -208,5 +208,52 @@
     .sidebar.toggled .nav-link::after {
         display: none !important;
     }
+
+    /* Sticky Footer Global */
+    #wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    #content-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        flex: 1;
+    }
+
+    #content {
+        flex: 1 0 auto;
+    }
+
+    .sticky-footer {
+        flex-shrink: 0;
+        padding: 2rem 0;
+    }
+
+    /* Efeito Hover Global para Cards */
+    .card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Registration Form Label Styling - Standardize UI Across All Forms */
+    .form-group label {
+        display: block !important;
+        margin-bottom: 0.25rem !important;
+        color: #5a5c69 !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-transform: none;
+    }
+
+    .form-control::placeholder {
+        color: #b7b9cc !important;
+        opacity: 0.7;
+    }
 </style>
 <?php include_once 'pagination_style.php'; ?>

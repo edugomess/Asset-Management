@@ -148,20 +148,18 @@
                     <div class="form-row">
                         <div class="col-sm-12 col-xl-6 offset-xl-1">
                             <div class="form-group">
-                                <label>Título</label>
-                                <input class="form-control" name="titulo" type="text" placeholder="Título do chamado"
-                                    required="">
+                                <label>Assunto / Título do Chamado</label>
+                                <input class="form-control" name="titulo" type="text"
+                                    placeholder="Ex: Problema com impressora no RH" required="">
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4">
                             <div class="form-group">
-                                <label>Categoria</label>
+                                <label>Tipo de Atendimento</label>
                                 <select class="form-control" name="categoria" required="">
-                                    <optgroup label="Selecione a Categoria">
-                                        <option value="Incidente">Incidente</option>
-                                        <option value="Mudança">Mudança</option>
-                                        <option value="Requisição">Requisição</option>
-                                    </optgroup>
+                                    <option value="Incidente">Incidente (Falha/Erro)</option>
+                                    <option value="Mudança">Mudança (Solicitação de Alteração)</option>
+                                    <option value="Requisição">Requisição (Pedido Novo)</option>
                                 </select>
                             </div>
                         </div>
@@ -204,58 +202,57 @@
                         </div>
                         <div class="col-sm-6 col-xl-2">
                             <div class="form-group">
-                                <label><i class="fas fa-paperclip"></i> Anexo</label>
+                                <label><i class="fas fa-paperclip"></i> Anexar Arquivo</label>
                                 <input type="file" name="anexo" class="form-control-file"
                                     accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx" style="font-size: 0.8rem;">
-                                <small class="text-muted">Máx. 5MB</small>
+                                <small class="text-muted">Evidências (Máx. 5MB)</small>
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-10 offset-xl-1" style="height: 200px;">
-                            <label>Descrição</label>
-                            <textarea class="form-control" name="descricao" placeholder="Detalhes do chamado..."
-                                style="height: 150px; margin-bottom: 0px;" required=""></textarea>
-                        </div>
-                        <div class="col-xl-4 offset-xl-4"><button
-                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir
-                                Chamado</button></div>
+                    <div class="col-sm-3 col-xl-10 offset-xl-1">
+                        <label>Descrição Detalhada</label>
+                        <textarea class="form-control" name="descricao"
+                            placeholder="Descreva o problema ou solicitação com o máximo de detalhes possível..."
+                            style="height: 120px; margin-bottom: 0px;" required=""></textarea>
                     </div>
-                </form>
+                    <div class="col-xl-4 offset-xl-4"><button
+                            class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit"
+                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir
+                            Chamado</button></div>
+            </div>
+            </form>
 
-                <!-- Success Modal -->
-                <div class="modal fade" id="successModal" tabindex="-1" role="dialog"
-                    aria-labelledby="successModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                Chamado criado com sucesso!<br>
-                                <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
-                            </div>
+            <!-- Success Modal -->
+            <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Chamado criado com sucesso!<br>
+                            <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- End of #content -->
-            <footer class="bg-white sticky-footer">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024</p>
-                    </div>
+        </div>
+        <!-- End of #content -->
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>DEGB&nbsp;Copyright © 2015-2024</span>
                 </div>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+            </div>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>

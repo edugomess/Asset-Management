@@ -167,23 +167,35 @@
                         <!-- Start: 2-column form row -->
                         <div class="form-row">
                             <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"
-                                        type="text" placeholder="Nome da Empresa"></div>
+                                <div class="form-group">
+                                    <label>Nome da Empresa / Razão Social</label>
+                                    <input class="form-control" name="nomeEmpresa" type="text"
+                                        placeholder="Ex: Dell Technologies" required="">
+                                </div>
                             </div>
                             <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="cnpj"
-                                        type="text" placeholder="CNPJ"></div>
+                                <div class="form-group">
+                                    <label>CNPJ</label>
+                                    <input class="form-control" name="cnpj" type="text" placeholder="00.000.000/0000-00"
+                                        required="">
+                                </div>
                             </div>
                         </div><!-- End: 2-column form row -->
                         <!-- Start: 3-column form row -->
                         <div class="form-row">
                             <div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="email"
-                                        type="email" placeholder="E-mail"></div>
+                                <div class="form-group">
+                                    <label>E-mail de Contato</label>
+                                    <input class="form-control" name="email" type="email"
+                                        placeholder="contato@empresa.com" required="">
+                                </div>
                             </div>
                             <div class="col-xl-3 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="telefone"
-                                        type="tel" placeholder="Telefone (99) 99999-9999"></div>
+                                <div class="form-group">
+                                    <label>Telefone / WhatsApp</label>
+                                    <input class="form-control" name="telefone" type="tel" placeholder="(99) 99999-9999"
+                                        required="">
+                                </div>
                             </div>
                             <div class="col-sm-2 offset-xl-0">
                                 <div class="form-group"><label></label></div>
@@ -192,15 +204,21 @@
                         <!-- Start: 4-column form row -->
                         <div class="form-row">
                             <div div class="col-sm-4 offset-xl-1">
-                                <div class="form-group"><label></label><input class="form-control" name="servico"
-                                        type="text" placeholder="Serviço"></div>
+                                <div class="form-group">
+                                    <label>Serviço Prestado</label>
+                                    <input class="form-control" name="servico" type="text"
+                                        placeholder="Ex: Manutenção de Hardware" required="">
+                                </div>
                             </div>
                             <div class="col-sm-3 col-xl-1">
                                 <div class="form-group"></div>
                             </div>
                             <div class="col-sm-3 col-xl-3">
-                                <div class="form-group"><label></label><input class="form-control" name="site"
-                                        type="text" placeholder="Site"></div>
+                                <div class="form-group">
+                                    <label>Site / URL</label>
+                                    <input class="form-control" name="site" type="url"
+                                        placeholder="https://www.empresa.com">
+                                </div>
                             </div>
                             <div class="custom-control custom-switch" style="margin-top: 30px;">
                                 <input type="hidden" name="status" value="Inativo">
@@ -220,13 +238,12 @@
                     </form><!-- End: Multi-row Form -->
                 </div>
             </div>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-                <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-                    <!-- Start: Footer text -->
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                    <!-- End: Footer text -->
-                </section><!-- End: Simple footer by krissy -->
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                    </div>
+                </div>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

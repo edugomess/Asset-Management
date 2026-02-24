@@ -71,14 +71,14 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label>Software / Aplicação</label>
+                                <label class="text-gray-600 small font-weight-bold">Software / Aplicação</label>
                                 <input class="form-control" name="software" type="text"
                                     placeholder="Ex: Microsoft Office 365" required="">
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label>Fabricante</label>
+                                <label class="text-gray-600 small font-weight-bold">Fabricante</label>
                                 <input class="form-control" name="fabricante" type="text" placeholder="Ex: Microsoft"
                                     required="">
                             </div>
@@ -87,7 +87,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label>Tipo de Licença</label>
+                                <label class="text-gray-600 small font-weight-bold">Tipo de Licença</label>
                                 <select class="form-control" name="tipo">
                                     <option value="Assinatura">Assinatura</option>
                                     <option value="Vitalícia">Vitalícia</option>
@@ -96,7 +96,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label>Chave de Licença</label>
+                                <label class="text-gray-600 small font-weight-bold">Chave de Licença</label>
                                 <input class="form-control" name="chave" type="text"
                                     placeholder="XXXXX-XXXXX-XXXXX-XXXXX">
                             </div>
@@ -105,19 +105,19 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     <div class="form-row">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">
                             <div class="form-group">
-                                <label>Quantidade Seats</label>
+                                <label class="text-gray-600 small font-weight-bold">Quantidade Seats</label>
                                 <input class="form-control" name="quantidade_total" type="number" value="1" min="1">
                             </div>
                         </div>
                         <div class="col-sm-4 col-xl-2">
                             <div class="form-group">
-                                <label>Valor Unitário</label>
+                                <label class="text-gray-600 small font-weight-bold">Valor Unitário</label>
                                 <input class="form-control" name="valor_unitario" type="number" step="0.01"
                                     placeholder="0.00">
                             </div>
                         </div>
                         <div class="col-xl-2">
-                            <label>Centro de Custo</label>
+                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
                             <select class="form-control" name="id_centro_custo">
                                 <option value="">Nenhum</option>
                                 <?php
@@ -128,12 +128,12 @@ $result_cc = mysqli_query($conn, $sql_cc);
                             </select>
                         </div>
                         <div class="col-xl-2">
-                            <label>Data de Aquisição</label>
+                            <label class="text-gray-600 small font-weight-bold">Data de Aquisição</label>
                             <input class="form-control" name="data_aquisicao" type="date"
                                 value="<?php echo date('Y-m-d'); ?>">
                         </div>
                         <div class="col-xl-2">
-                            <label>Data de Expiração</label>
+                            <label class="text-gray-600 small font-weight-bold">Data de Expiração</label>
                             <input class="form-control" name="data_expiracao" type="date">
                         </div>
                     </div>
@@ -147,10 +147,12 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     </div>
                 </form>
             </div>
-            <footer class="bg-white sticky-footer" style="padding: 10px 0; flex-shrink: 0;">
-                <section class="text-center footer">
-                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                    </div>
+                </div>
             </footer>
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

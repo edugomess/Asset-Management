@@ -202,6 +202,18 @@ include 'conexao.php';
                                     <div class="message-time"><?php echo date('H:i'); ?></div>
                                 </div>
                             </div>
+                            <div id="quick-suggestions" class="mb-3 d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                    onclick="useSuggestion('Resumo do sistema')">📊 Resumo do sistema</button>
+                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                    onclick="useSuggestion('Quais licenças temos?')">🔑 Licenças atuais</button>
+                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                    onclick="useSuggestion('Ativos em manutenção')">🔧 Em manutenção</button>
+                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                    onclick="useSuggestion('Meus ativos')">📦 Meus ativos</button>
+                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                    onclick="useSuggestion('Sugira melhorias')">💡 Sugerir melhorias</button>
+                            </div>
                             <div class="input-group">
                                 <input type="text" id="user-input" class="form-control"
                                     placeholder="Pergunte qualquer coisa... (ex: 'resumo do sistema', 'sugira melhorias')"
@@ -213,8 +225,11 @@ include 'conexao.php';
                                             class="fas fa-paper-plane"></i></button>
                                 </div>
                             </div>
-                            <small class="text-muted mt-1 d-block"><i class="fas fa-bolt" style="color: #fbbc05;"></i>
-                                Powered by Google Gemini + Dados do Sistema</small>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-muted"><i class="fas fa-bolt" style="color: #fbbc05;"></i> Powered by
+                                    Google Gemini 2.0 + Dados do Sistema</small>
+                                <small class="text-muted">v2.0 Intelligent Mode</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -235,6 +250,11 @@ include 'conexao.php';
             if (e.key === 'Enter') {
                 sendMessage();
             }
+        }
+
+        function useSuggestion(text) {
+            document.getElementById('user-input').value = text;
+            sendMessage();
         }
 
         function sendMessage() {

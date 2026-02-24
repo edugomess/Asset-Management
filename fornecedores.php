@@ -333,13 +333,12 @@
                         </div>
                     </div>
                 </div>
-                <footer class="sticky-footer" style="background: transparent; padding: 0;">
-                    <!-- Start: Simple footer by krissy -->
-                    <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-                        <!-- Start: Footer text -->
-                        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                        <!-- End: Footer text -->
-                    </section><!-- End: Simple footer by krissy -->
+                <footer class="bg-white sticky-footer">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                        </div>
+                    </div>
                 </footer>
 
             </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

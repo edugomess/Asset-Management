@@ -6,10 +6,7 @@ header('Content-Type: application/json');
 // ============================================================
 // CONFIGURAÇÃO DA API GEMINI
 // ============================================================
-// Chave da API do Google Gemini aqui
-// Em: https://aistudio.google.com/app/apikey
 $GEMINI_API_KEY = 'AIzaSyDXrsM8tcJBBKUFRO_uPJoK22ibnvFCUW8';
-
 // ============================================================
 
 // Check connection
@@ -34,6 +31,7 @@ if (empty($message)) {
 
 $reply = "";
 $userId = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 0;
+$userName = isset($_SESSION['nome_usuario']) ? $_SESSION['nome_usuario'] : 'Usuário';
 
 // Helper function to format money
 function formatMoney($val)
@@ -42,11 +40,13 @@ function formatMoney($val)
 }
 
 // Helper: Get system context for Gemini (summarized DB data)
-function getSystemContext($conn)
+function getSystemContext($conn, $userName)
 {
     $context = "Você é o assistente virtual do sistema Asset Management (Asset MGT). ";
-    $context .= "O sistema gerencia ativos de TI, usuários, fornecedores, centros de custo e chamados de suporte. ";
-    $context .= "Responda sempre em português brasileiro de forma profissional e amigável.\n\n";
+    $context .= "O usuário atual é: " . $userName . ".\n";
+    $context .= "O sistema gerencia ativos de TI, usuários, fornecedores, centros de custo, licenças e chamados de suporte. ";
+    $context .= "Responda sempre em português brasileiro de forma profissional, proativa e amigável. ";
+    $context .= "Seja um consultor de TI: não apenas liste dados, mas interprete-os e sugira melhorias se apropriado.\n\n";
     $context .= "Dados atuais do sistema:\n";
 
     // Safe query helper
@@ -63,20 +63,10 @@ function getSystemContext($conn)
     $r = $safeQuery("SELECT COUNT(*) as total FROM ativos");
     if ($r) {
         $row = $r->fetch_assoc();
-        $context .= "- Total de ativos cadastrados: " . $row['total'] . "\n";
+        $context .= "- Total de ativos: " . $row['total'] . "\n";
     }
 
-    // Assets by category
-    $r = $safeQuery("SELECT categoria, COUNT(*) as total FROM ativos GROUP BY categoria ORDER BY total DESC LIMIT 10");
-    if ($r && $r->num_rows > 0) {
-        $cats = [];
-        while ($row = $r->fetch_assoc()) {
-            $cats[] = $row['categoria'] . " (" . $row['total'] . ")";
-        }
-        $context .= "- Ativos por categoria: " . implode(", ", $cats) . "\n";
-    }
-
-    // Active vs Inactive
+    // Assets by status (including Maintenance)
     $r = $safeQuery("SELECT status, COUNT(*) as total FROM ativos GROUP BY status");
     if ($r && $r->num_rows > 0) {
         $statuses = [];
@@ -86,60 +76,50 @@ function getSystemContext($conn)
         $context .= "- Status dos ativos: " . implode(", ", $statuses) . "\n";
     }
 
-    // Total value
-    $r = $safeQuery("SELECT SUM(valor) as total FROM ativos");
-    if ($r) {
-        $row = $r->fetch_assoc();
-        $context .= "- Valor total dos ativos: R$ " . number_format($row['total'] ?? 0, 2, ',', '.') . "\n";
+    // Assets in maintenance detail
+    $r = $safeQuery("SELECT modelo, tag, problema FROM ativos WHERE status = 'Manutenção' LIMIT 5");
+    if ($r && $r->num_rows > 0) {
+        $context .= "- Ativos em manutenção:\n";
+        while ($row = $r->fetch_assoc()) {
+            $context .= "  * " . $row['modelo'] . " (Tag: " . $row['tag'] . ") - Problema: " . ($row['problema'] ?: 'N/A') . "\n";
+        }
     }
 
-    // Users count
-    $r = $safeQuery("SELECT COUNT(*) as total FROM usuarios");
-    if ($r) {
-        $row = $r->fetch_assoc();
-        $context .= "- Total de usuários: " . $row['total'] . "\n";
+    // Licenses count and summary
+    $r = $safeQuery("SELECT software, tipo, COUNT(*) as total FROM licencas GROUP BY software, tipo");
+    if ($r && $r->num_rows > 0) {
+        $context .= "- Licenças de software:\n";
+        while ($row = $r->fetch_assoc()) {
+            $context .= "  * " . $row['software'] . " (" . $row['tipo'] . "): " . $row['total'] . "\n";
+        }
     }
 
-    // Suppliers count
-    $r = $safeQuery("SELECT COUNT(*) as total FROM fornecedor");
-    if ($r) {
-        $row = $r->fetch_assoc();
-        $context .= "- Total de fornecedores: " . $row['total'] . "\n";
+    // Cost Centers
+    $r = $safeQuery("SELECT nomeSetor, unidade FROM centro_de_custo LIMIT 10");
+    if ($r && $r->num_rows > 0) {
+        $ccs = [];
+        while ($row = $r->fetch_assoc()) {
+            $ccs[] = $row['nomeSetor'] . " (" . $row['unidade'] . ")";
+        }
+        $context .= "- Centros de Custo principais: " . implode(", ", $ccs) . "\n";
     }
 
     // Open tickets
     $r = $safeQuery("SELECT COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Pendente', 'Em Andamento')");
     if ($r) {
         $row = $r->fetch_assoc();
-        $context .= "- Chamados em aberto: " . $row['total'] . "\n";
+        $context .= "- Chamados ativos: " . $row['total'] . "\n";
     }
 
     // Recent tickets
-    $r = $safeQuery("SELECT id, titulo, status, prioridade FROM chamados ORDER BY data_abertura DESC LIMIT 5");
+    $r = $safeQuery("SELECT id, titulo, status, prioridade FROM chamados ORDER BY data_abertura DESC LIMIT 3");
     if ($r && $r->num_rows > 0) {
-        $context .= "- Últimos chamados:\n";
+        $context .= "- Últimos chamados: ";
+        $tks = [];
         while ($row = $r->fetch_assoc()) {
-            $prio = isset($row['prioridade']) ? $row['prioridade'] : 'N/A';
-            $context .= "  #" . $row['id'] . " - " . $row['titulo'] . " (" . $row['status'] . ", " . $prio . ")\n";
+            $tks[] = "#" . $row['id'] . " " . $row['titulo'] . " (" . $row['status'] . ")";
         }
-    }
-
-    // Recent assets
-    $r = $safeQuery("SELECT modelo, tag, categoria, status FROM ativos ORDER BY id_asset DESC LIMIT 5");
-    if ($r && $r->num_rows > 0) {
-        $context .= "- Últimos ativos cadastrados:\n";
-        while ($row = $r->fetch_assoc()) {
-            $context .= "  " . $row['modelo'] . " (Tag: " . $row['tag'] . ", " . $row['categoria'] . ", " . $row['status'] . ")\n";
-        }
-    }
-
-    // Suppliers list
-    $r = $safeQuery("SELECT nomeEmpresa, servico FROM fornecedor LIMIT 10");
-    if ($r && $r->num_rows > 0) {
-        $context .= "- Fornecedores cadastrados:\n";
-        while ($row = $r->fetch_assoc()) {
-            $context .= "  " . $row['nomeEmpresa'] . " (" . $row['servico'] . ")\n";
-        }
+        $context .= implode(" | ", $tks) . "\n";
     }
 
     return $context;
@@ -152,8 +132,8 @@ function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory 
         return null;
     }
 
-    // Try models in order of preference (separate rate limits per model)
-    $models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    // Models in order of performance/availability
+    $models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
     // Build payload
     $payload = [
@@ -455,7 +435,7 @@ else {
     $geminiReply = null;
 
     if (!empty($GEMINI_API_KEY)) {
-        $systemContext = getSystemContext($conn);
+        $systemContext = getSystemContext($conn, $userName);
         $geminiReply = callGemini($_POST['message'], $systemContext, $GEMINI_API_KEY, $conversationHistory);
     }
 

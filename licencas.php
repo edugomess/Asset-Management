@@ -21,6 +21,7 @@ include 'conexao.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <?php include 'sidebar_style.php'; ?>
+    <?php include 'pagination_style.php'; ?>
 
     <style>
         .badge-success {
@@ -45,47 +46,6 @@ include 'conexao.php';
         .progress {
             height: 8px;
             border-radius: 10px;
-        }
-
-        .pagination-custom {
-            display: flex;
-            gap: 6px;
-            list-style: none;
-            padding: 0;
-            margin: 16px 0;
-            flex-wrap: wrap;
-        }
-
-        .pagination-custom li a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 38px;
-            height: 38px;
-            padding: 0 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border: 1.5px solid rgba(44, 64, 74, 0.25);
-            color: rgb(44, 64, 74);
-            background: #fff;
-        }
-
-        .pagination-custom li a:hover {
-            background: rgba(44, 64, 74, 0.08);
-            border-color: rgb(44, 64, 74);
-            color: rgb(44, 64, 74);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(44, 64, 74, 0.15);
-        }
-
-        .pagination-custom li.active a {
-            background: rgb(44, 64, 74);
-            color: #fff;
-            border-color: rgb(44, 64, 74);
-            box-shadow: 0 2px 8px rgba(44, 64, 74, 0.3);
         }
 
         /* System Standard Buttons */
@@ -598,10 +558,12 @@ include 'conexao.php';
                     }
                 }
             </script>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-                <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                    </div>
+                </div>
             </footer>
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

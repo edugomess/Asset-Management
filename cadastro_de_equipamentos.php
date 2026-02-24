@@ -198,8 +198,8 @@
                         </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="fabricante" type="text" placeholder="Fabricante"
+                                <label>Fabricante</label>
+                                <input class="form-control" name="fabricante" type="text" placeholder="Ex: Dell"
                                     required="">
                             </div>
                         </div>
@@ -209,28 +209,30 @@
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="modelo" type="text" placeholder="Modelo" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="tag" type="text" placeholder="Tag" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="hostName" type="text" placeholder="Host Name"
+                                <label>Modelo</label>
+                                <input class="form-control" name="modelo" type="text" placeholder="Ex: Latitude 3420"
                                     required="">
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' "
+                                <label>Tag / Service Tag</label>
+                                <input class="form-control" name="tag" type="text" placeholder="Ex: ABC123D"
                                     required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Host Name</label>
+                                <input class="form-control" name="hostName" type="text" placeholder="Ex: NOTE-001"
+                                    required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Valor do Ativo (R$)</label>
+                                <input class="form-control" name="valor" type="number" step="0.01"
+                                    placeholder="Ex: 999.99" required="">
                             </div>
                         </div>
                     </div><!-- End: 2-column form row -->
@@ -238,8 +240,11 @@
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group"><input class="form-control" name="macAdress" type="text"
-                                    placeholder="MAC Adress" required="" style="margin-top: 24px;"></div>
+                            <div class="form-group">
+                                <label>MAC Address</label>
+                                <input class="form-control" name="macAdress" type="text"
+                                    placeholder="Ex: 00:00:00:00:00:00" required="">
+                            </div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
                             <div class="custom-control custom-switch" style="margin-top: 30px;">
@@ -274,15 +279,21 @@
                         </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
-                    <div class="form-row" style="height: 80px;">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex"
-                                name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
+                    <div class="form-row mt-4">
+                        <div class="col-sm-4 col-xl-5 offset-xl-1">
+                            <label>Imagem do Ativo</label>
+                            <input class="form-control-file d-xl-flex" name="imagem" type="file" style="height: 30px;"
+                                accept="image/*">
+                        </div>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control"
-                                name="descricao" placeholder="Descrição..."
-                                style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 150px;">
+                            <label>Descrição e Observações</label>
+                            <textarea class="form-control" name="descricao"
+                                placeholder="Detalhes adicionais do equipamento..."
+                                style="height: 100px; margin-bottom: 0px;"></textarea>
+                        </div>
                         <div class="col-xl-4 offset-xl-4"><button
                                 class="btn btn-success btn-block active text-white pulse animated btn-user"
                                 type="submit"
@@ -291,17 +302,16 @@
 
                     </div><!-- End: 4-column form row -->
                 </form><!-- End: Multi-row Form -->
-                <!-- Start: Simple footer by krissy -->
-                <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
-                    <!-- Start: Simple footer by krissy -->
-                    <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
-                        <!-- Start: Footer text -->
-                        <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                        <!-- End: Footer text -->
-                    </section><!-- End: Simple footer by krissy -->
-                </footer>
             </div>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>

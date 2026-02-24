@@ -1,4 +1,12 @@
-<?php include 'auth.php'; ?>
+<?php
+include 'auth.php';
+include 'conexao.php';
+
+// Fetch next user ID for Matricula
+$sql_id = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$dbname' AND TABLE_NAME = 'usuarios'";
+$res_id = $conn->query($sql_id);
+$next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
+?>
 <!DOCTYPE html>
 <html>
 
@@ -163,67 +171,79 @@
                 </div><!-- Start: TR Form -->
 
                 <!-- Start: Multi-row Form -->
+                <!-- Start: Multi-row Form -->
+                <!-- Start: Multi-row Form -->
                 <form action="inserir_usuario.php" method="post" enctype="multipart/form-data">
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row" style="height: 78px;">
-                        <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
+                    <!-- Row 1: Nome, Sobrenome -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="nome" type="text" placeholder="Nome" required="">
+                                <label>Nome</label>
+                                <input class="form-control" name="nome" type="text" placeholder="Ex: João" required="">
                             </div>
                         </div>
-                        <div class="col-10 col-sm-6 col-xl-3 offset-1 offset-xl-1">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="sobrenome" type="text" placeholder="Sobrenome"
+                                <label>Sobrenome</label>
+                                <input class="form-control" name="sobrenome" type="text" placeholder="Ex: Silva"
                                     required="">
                             </div>
                         </div>
-                        <div class="col-xl-2 offset-xl-1">
-                            <input class="form-control" name="usuarioAD" type="text" placeholder="Usuário AD"
-                                required="" style="margin-top: 24px;">
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="w-100"></div>
-                    </div><!-- End: 2-column form row -->
+                    </div>
 
-                    <!-- Start: 3-column form row -->
+                    <!-- Row 2: Usuário AD, Função -->
                     <div class="form-row">
-                        <div class="col-sm-4 offset-lg-1 offset-xl-1">
-                            <input class="form-control" name="funcao" type="text" placeholder="Função" required=""
-                                style="padding: 6px; margin-top: 24px;">
-                        </div>
-                        <div class="col-xl-3">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Usuário AD</label>
+                                <input class="form-control" name="usuarioAD" type="text" placeholder="Ex: joao.silva"
+                                    required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Função</label>
+                                <input class="form-control" name="funcao" type="text" placeholder="Ex: Analista de TI"
+                                    required="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Data Nasc, Email -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Data de Nascimento</label>
                                 <input class="form-control" name="dataNascimento" type="date" required="">
                             </div>
                         </div>
-                        <div class="col-xl-3 offset-xl-0">
-                            <input class="form-control" name="email" type="email" placeholder="Email" required=""
-                                style="margin-top: 24px;">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input class="form-control" name="email" type="email" placeholder="email@exemplo.com"
+                                    required="">
+                            </div>
                         </div>
-                        <div class="col-sm-4 col-xl-1 offset-lg-1 offset-xl-0">
-                            <div class="form-group"><label></label></div>
-                        </div>
-                    </div><!-- End: 3-column form row -->
+                    </div>
 
-                    <!-- Start: 3-column form row -->
+                    <!-- Row 4: CPF, Centro de Custo -->
                     <div class="form-row">
-                        <div class="col-sm-4 offset-lg-1 offset-xl-1">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label class="text-danger">CPF (Somente Números)</label>
+                                <input class="form-control" name="cpf" id="cpf" type="text" placeholder="000.000.000-00"
+                                    required="" maxlength="14" oninput="maskCPF(this)">
+                                <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF Inválido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
                                 <label>Centro de Custo</label>
                                 <select class="form-control" name="centroDeCusto">
                                     <option value="Nenhum">Nenhum</option>
                                     <?php
-                                    // Reusing existing connection if available, or including if needed. 
-                                    // However, auth.php is included at top which usually handles session, but conexao.php is needed for DB.
-                                    // It is already included in line 254 for 'unidade', so we might need to include it here or ensure it's available.
-                                    // To be safe and since it's inside a form, let's just include it if not already? 
-                                    // Actually, looking at the file, 'conexao.php' is included later at line 254. 
-                                    // It's better to verify connectivity here.
                                     include_once 'conexao.php';
-
                                     $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                     $res_cc = $conn->query($sql_cc);
                                     if ($res_cc && $res_cc->num_rows > 0) {
@@ -235,112 +255,107 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xl-1 offset-lg-1 offset-xl-0">
+                    </div>
+
+                    <!-- Row 5: Matrícula, Telefone -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="matricula" type="text" placeholder="Matrícula"
-                                    inputmode="numeric" required="">
+                                <label>Matrícula (Automático)</label>
+                                <input class="form-control" name="matricula" type="text" value="<?php echo $next_id; ?>"
+                                    readonly required="">
                             </div>
                         </div>
-                        <div class="col-xl-3">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Telefone</label>
                                 <input class="form-control" name="telefone" type="text" inputmode="tel"
-                                    placeholder="Telefone (99) 99999-9999" required="">
+                                    placeholder="(99) 99999-9999" required="">
                             </div>
                         </div>
-                        <div class="col-xl-2" style="margin-top: 23px;">
-                            <select class="form-control" name="tipoContrato" required="">
-                                <optgroup label="Tipo de Contrato">
+                    </div>
+
+                    <!-- Row 6: Tipo de Contrato, Tipo de Usuário -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Tipo de Contrato</label>
+                                <select class="form-control" name="tipoContrato" required="">
                                     <option value="CLT">CLT</option>
                                     <option value="PJ">PJ</option>
                                     <option value="Cooperativa">Cooperativa</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                    </div><!-- End: 3-column form row -->
-
-                    <!-- Start: 5-column form row -->
-                    <div class="form-row" style="height: 108px;">
-                        <div class="col-sm-2 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="senha" type="password" placeholder="Senha"
-                                    required="">
+                                </select>
                             </div>
                         </div>
-                        <div class="col-sm-2 col-xl-4 offset-xl-2">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
-                                <input class="form-control" name="confirmarSenha" type="password"
-                                    placeholder="Confirmação de Senha" required="">
-                                <small></small>
-                            </div>
-                        </div>
-                    </div><!-- End: 5-column form row -->
-
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row" style="height: 78px;">
-                        <div class="col-xl-3 offset-xl-1">
-                            <label></label>
-                            <select class="form-control" name="nivelUsuario" required="" style="margin: 23px 0;">
-                                <optgroup label="Tipo de Usuário">
+                                <label>Tipo de Usuário</label>
+                                <select class="form-control" name="nivelUsuario" required="">
                                     <option value="1">Administrador</option>
                                     <option value="2">Suporte</option>
                                     <option value="3" selected="">Usuário</option>
-                                </optgroup>
-                            </select>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-xl-3 offset-xl-1">
-                            <label></label>
-                            <label></label>
-                            <select class="form-control" name="unidade" required="" style="margin: 23px 0;">
-                                <optgroup label="Unidade">
+                    </div>
+
+                    <!-- Row 7: Unidade, Status -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Unidade</label>
+                                <select class="form-control" name="unidade" required="">
                                     <?php
-                                    // Conectar ao banco de dados
-                                    include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
-                                    
-                                    // Verificar conexão
-                                    if ($conn->connect_error) {
-                                        die("Conexão falhou: " . $conn->connect_error);
-                                    }
-
-                                    $sql = "SELECT unidade FROM unidade";
-                                    $result = $conn->query($sql);
-
-                                    if ($result->num_rows > 0) {
-                                        // Saída dos dados de cada linha
-                                        while ($row = $result->fetch_assoc()) {
+                                    include 'conexao.php';
+                                    $sql_un = "SELECT unidade FROM unidade";
+                                    $res_un = $conn->query($sql_un);
+                                    if ($res_un->num_rows > 0) {
+                                        while ($row = $res_un->fetch_assoc()) {
                                             echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '</option>';
                                         }
-                                    } else {
-                                        echo '<option value="">Nenhuma unidade encontrada</option>';
                                     }
                                     ?>
-                                </optgroup>
-                            </select>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-sm-3 col-xl-2 offset-xl-1">
-                            <label></label>
-                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="custom-control custom-switch" style="margin-top: 35px;">
                                 <input type="hidden" name="status" value="Inativo">
                                 <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
                                     value="Ativo" checked>
-                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                <label class="custom-control-label" for="statusSwitch">Usuário Ativo</label>
                             </div>
                         </div>
-                    </div><!-- End: 4-column form row -->
+                    </div>
 
-                    <!-- Start: File Upload Row -->
-                    <div class="form-row" style="margin-top: 20px;">
-                        <div class="col-xl-6 offset-xl-3">
+                    <!-- Row 8: Senha, Confirmação -->
+                    <div class="form-row">
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label for="foto_perfil">Foto de Perfil (Opcional)</label>
+                                <label>Senha</label>
+                                <input class="form-control" name="senha" id="Senha" type="password"
+                                    placeholder="********" required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                            <div class="form-group">
+                                <label>Confirmação de Senha</label>
+                                <input class="form-control" name="confirmarSenha" type="password" placeholder="********"
+                                    required="" oninput="passwordvalidation(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 9: Foto Perfil -->
+                    <div class="form-row">
+                        <div class="col-xl-6 offset-xl-3 mt-3">
+                            <div class="form-group">
+                                <label>Foto de Perfil (Opcional)</label>
                                 <input type="file" class="form-control-file" name="foto_perfil" id="foto_perfil"
                                     accept="image/*">
                             </div>
                         </div>
-                    </div><!-- End: File Upload Row -->
+                    </div>
 
                     <!-- Start: 6-column form row -->
                     <div class="form-row" style="margin-top: 50px;">
@@ -352,42 +367,126 @@
                     </div><!-- End: 6-column form row -->
                 </form><!-- End: Multi-row Form -->
 
-            </div><!-- Start: Simple footer by krissy -->
-            <section class="text-center footer" style="background: rgb(34,40,39);">
-                <!-- Start: Footer text -->
-                <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024&nbsp;<br></p>
-                <!-- End: Footer text -->
-            </section><!-- End: Simple footer by krissy -->
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+                <footer class="bg-white sticky-footer">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>DEGB&nbsp;Copyright © 2015-2024</span>
+                        </div>
+                    </div>
+                </footer>
+            </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+        <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
+        <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
+        <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
+        <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
+        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+        <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
+        <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
+        <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
 
-    //
-    <script>
-        function passwordvalidation(input) {
-            if (input.value != document.getElementById('Senha').value) {
-                input.setCustomValidity('Senha diferente da anterior');
-            } else {
-                input.setCustomValidity('');
+        //
+        <script>
+            function passwordvalidation(input) {
+                if (input.value != document.getElementById('Senha').value) {
+                    input.setCustomValidity('Senha diferente da anterior');
+                } else {
+                    input.setCustomValidity('');
+                }
             }
-        }
-    </script>
-    <script src="/assets/js/global_search.js"></script>
+
+            function maskCPF(i) {
+                var v = i.value;
+                if (isNaN(v[v.length - 1])) {
+                    i.value = v.substring(0, v.length - 1);
+                    return;
+                }
+                i.setAttribute("maxlength", "14");
+                if (v.length == 3 || v.length == 7) i.value += ".";
+                if (v.length == 11) i.value += "-";
+
+                if (v.length == 14) {
+                    validateCPF(v);
+                } else {
+                    document.getElementById('cpf-error').style.display = 'none';
+                    i.setCustomValidity('');
+                }
+            }
+
+            function validateCPF(cpf) {
+                cpf = cpf.replace(/[^\d]+/g, '');
+                if (cpf == '') return false;
+                // Elimina CPFs invalidos conhecidos
+                if (cpf.length != 11 ||
+                    cpf == "00000000000" ||
+                    cpf == "11111111111" ||
+                    cpf == "22222222222" ||
+                    cpf == "33333333333" ||
+                    cpf == "44444444444" ||
+                    cpf == "55555555555" ||
+                    cpf == "66666666666" ||
+                    cpf == "77777777771" ||
+                    cpf == "88888888888" ||
+                    cpf == "99999999999") {
+                    showCPFError(true);
+                    return false;
+                }
+                // Valida 1o digito	
+                add = 0;
+                for (i = 0; i < 9; i++)
+                    add += parseInt(cpf.charAt(i)) * (10 - i);
+                rev = 11 - (add % 11);
+                if (rev == 10 || rev == 11)
+                    rev = 0;
+                if (rev != parseInt(cpf.charAt(9))) {
+                    showCPFError(true);
+                    return false;
+                }
+                // Valida 2o digito	
+                add = 0;
+                for (i = 0; i < 10; i++)
+                    add += parseInt(cpf.charAt(i)) * (11 - i);
+                rev = 11 - (add % 11);
+                if (rev == 10 || rev == 11)
+                    rev = 0;
+                if (rev != parseInt(cpf.charAt(10))) {
+                    showCPFError(true);
+                    return false;
+                }
+                showCPFError(false);
+                return true;
+            }
+
+            function showCPFError(hasError) {
+                const errorEl = document.getElementById('cpf-error');
+                const inputEl = document.getElementById('cpf');
+                if (hasError) {
+                    errorEl.style.display = 'block';
+                    inputEl.setCustomValidity('CPF Inválido');
+                } else {
+                    errorEl.style.display = 'none';
+                    inputEl.setCustomValidity('');
+                }
+            }
+
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const cpf = document.getElementById('cpf').value;
+                if (!validateCPF(cpf)) {
+                    e.preventDefault();
+                    alert('Por favor, insira um CPF válido.');
+                }
+            });
+        </script>
+        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

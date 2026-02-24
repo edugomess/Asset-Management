@@ -223,12 +223,13 @@ function getHoursAndMinutes($total_minutes)
                                 foreach ($categories as $cat) {
                                     $time = getHoursAndMinutes($configs[$cat]);
                                     ?>
-                                    <div class="form-group row">
+                                    <div class="form-group row align-items-center mb-4 sla-row"
+                                        data-category="<?php echo $cat; ?>">
                                         <label for="sla_<?php echo $cat; ?>"
-                                            class="col-sm-2 col-form-label"><?php echo $cat; ?></label>
+                                            class="col-sm-2 col-form-label font-weight-bold"><?php echo $cat; ?></label>
                                         <div class="col-sm-3">
-                                            <div class="input-group">
-                                                <input type="number" class="form-control"
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" class="form-control sla-hours"
                                                     name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>"
                                                     required min="0" placeholder="0">
                                                 <div class="input-group-append">
@@ -237,14 +238,31 @@ function getHoursAndMinutes($total_minutes)
                                             </div>
                                         </div>
                                         <div class="col-sm-3">
-                                            <div class="input-group">
-                                                <input type="number" class="form-control"
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" class="form-control sla-minutes"
                                                     name="sla[<?php echo $cat; ?>][minutes]"
                                                     value="<?php echo $time['m']; ?>" required min="0" max="59"
                                                     placeholder="0">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">Minutos</span>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2" style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
+                                            <div class="text-center" style="flex: 1;">
+                                                <span class="badge badge-danger mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Alta</span>
+                                                <div style="height: 6px; background: #dc3545; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-50" style="font-size: 0.85rem;">--</strong>
+                                            </div>
+                                            <div class="text-center mx-1" style="flex: 1;">
+                                                <span class="badge badge-warning mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">Média</span>
+                                                <div style="height: 6px; background: #f6c23e; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-75" style="font-size: 0.85rem;">--</strong>
+                                            </div>
+                                            <div class="text-center" style="flex: 1;">
+                                                <span class="badge badge-success mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Baixa</span>
+                                                <div style="height: 6px; background: #1cc88a; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-100" style="font-size: 0.85rem;">--</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -447,6 +465,32 @@ function getHoursAndMinutes($total_minutes)
 
             // On change
             $switch.on('change', toggleDoacao);
+
+            // SLA Real-time Calculation
+            function formatTimeDisplay(totalMinutes) {
+                const h = Math.floor(totalMinutes / 60);
+                const m = totalMinutes % 60;
+                let res = '';
+                if (h > 0) res += h + 'h';
+                if (m > 0) res += (res ? ' ' : '') + m + 'm';
+                return res || '0m';
+            }
+
+            function updateSLABars() {
+                $('.sla-row').each(function () {
+                    const $row = $(this);
+                    const hours = parseInt($row.find('.sla-hours').val()) || 0;
+                    const minutes = parseInt($row.find('.sla-minutes').val()) || 0;
+                    const total = (hours * 60) + minutes;
+
+                    $row.find('.label-50').text(formatTimeDisplay(Math.round(total * 0.5)));
+                    $row.find('.label-75').text(formatTimeDisplay(Math.round(total * 0.75)));
+                    $row.find('.label-100').text(formatTimeDisplay(total));
+                });
+            }
+
+            $('.sla-hours, .sla-minutes').on('input', updateSLABars);
+            updateSLABars(); // Initial call
         });
     </script>
 </body>

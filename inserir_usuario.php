@@ -41,12 +41,27 @@ if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
 // Aplica SHA-1 na senha
 $senhaHash = sha1($senha);
 
+// Mapeia o nível de usuário numérico para o ENUM do banco de dados
+$nivelMapeamento = [
+    '1' => 'Admin',
+    '2' => 'Suporte',
+    '3' => 'Usuário'
+];
+$nivelUsuarioEnum = isset($nivelMapeamento[$nivelUsuario]) ? $nivelMapeamento[$nivelUsuario] : 'Usuário';
+
 // Prepara a consulta
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$cpfRaw = isset($_POST['cpf']) ? $_POST['cpf'] : '';
+$cpfClean = preg_replace('/[^0-9]/', '', $cpfRaw);
+
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centro de custo, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+// Nota: Usei 'centroDeCusto' conforme o nome da coluna no DESCRIBE recebido anteriormente.
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuario, $unidade, $status, $foto_perfil);
+$stmt->bind_param("sssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $cpfClean, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuarioEnum, $unidade, $status, $foto_perfil);
 
 if ($stmt->execute()) {
     echo "<script>
@@ -54,8 +69,7 @@ if ($stmt->execute()) {
             window.location.href = 'usuarios.php';
           </script>";
     exit();
-}
-else {
+} else {
     echo "Erro ao inserir dados: " . $stmt->error;
 }
 

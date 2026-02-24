@@ -671,7 +671,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             }
                                             ?>
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm mr-2" style="font-size: 0.7rem;">Filtrar</button>
+                                        <button type="submit" class="btn btn-primary btn-sm mr-2" style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
                                         <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>" 
                                            id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
@@ -765,7 +765,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             ?>
                                         </select>
                                         <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                            style="font-size: 0.7rem;">Filtrar</button>
+                                            style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
                                         <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>" 
                                            id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF

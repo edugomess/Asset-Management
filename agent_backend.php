@@ -6,7 +6,8 @@ header('Content-Type: application/json');
 // ============================================================
 // CONFIGURAÇÃO DA API GEMINI
 // ============================================================
-$GEMINI_API_KEY = 'AIzaSyDXrsM8tcJBBKUFRO_uPJoK22ibnvFCUW8';
+require_once 'credentials.php';
+$GEMINI_API_KEY = GEMINI_API_KEY;
 // ============================================================
 
 // Check connection
@@ -133,7 +134,7 @@ function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory 
     }
 
     // Models in order of performance/availability
-    $models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+    $models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
     // Build payload
     $payload = [

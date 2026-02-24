@@ -1,5 +1,6 @@
 <?php
-$apiKey = 'AIzaSyDXrsM8tcJBBKUFRO_uPJoK22ibnvFCUW8';
+require_once 'credentials.php';
+$apiKey = GEMINI_API_KEY;
 
 $models = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
 
@@ -24,8 +25,7 @@ foreach ($models as $model) {
     $data = json_decode($r, true);
     if ($code === 200 && isset($data['candidates'][0]['content']['parts'][0]['text'])) {
         echo "OK! -> " . trim($data['candidates'][0]['content']['parts'][0]['text']) . "\n";
-    }
-    else {
+    } else {
         $msg = isset($data['error']['message']) ? substr($data['error']['message'], 0, 80) : "HTTP $code";
         echo "ERRO: $msg\n";
     }

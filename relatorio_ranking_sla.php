@@ -62,13 +62,18 @@ $sql_ranking = "SELECT
     r.nome, r.sobrenome,
     COUNT(*) as total,
     SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
-        CASE 
+        (CASE 
             WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
             WHEN c.categoria = 'Incidente' THEN 360
             WHEN c.categoria = 'Mudança' THEN 1440
             WHEN c.categoria = 'Requisição' THEN 2880
             ELSE 1440 
-        END THEN 1 ELSE 0 END) as met_sla
+        END * 
+        CASE 
+            WHEN c.prioridade = 'Alta' THEN 1/3.0
+            WHEN c.prioridade = 'Média' THEN 2/3.0
+            ELSE 1.0
+        END) THEN 1 ELSE 0 END) as met_sla
 FROM chamados c
 JOIN usuarios r ON c.responsavel_id = r.id_usuarios
 LEFT JOIN configuracoes_sla s ON c.categoria = s.categoria
@@ -77,13 +82,18 @@ AND MONTH(c.data_fechamento) = $mes
 AND YEAR(c.data_fechamento) = $ano
 GROUP BY r.id_usuarios
 ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
-    CASE 
+    (CASE 
         WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
         WHEN c.categoria = 'Incidente' THEN 360
         WHEN c.categoria = 'Mudança' THEN 1440
         WHEN c.categoria = 'Requisição' THEN 2880
         ELSE 1440 
-    END THEN 1 ELSE 0 END) / COUNT(*)) DESC";
+    END * 
+    CASE 
+        WHEN c.prioridade = 'Alta' THEN 1/3.0
+        WHEN c.prioridade = 'Média' THEN 2/3.0
+        ELSE 1.0
+    END) THEN 1 ELSE 0 END) / COUNT(*)) DESC";
 
 $res = mysqli_query($conn, $sql_ranking);
 

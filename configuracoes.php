@@ -496,8 +496,8 @@ function getHoursAndMinutes($total_minutes)
                     const minutes = parseInt($row.find('.sla-minutes').val()) || 0;
                     const total = (hours * 60) + minutes;
 
-                    $row.find('.label-50').text(formatTimeDisplay(Math.round(total * 0.5)));
-                    $row.find('.label-75').text(formatTimeDisplay(Math.round(total * 0.75)));
+                    $row.find('.label-50').text(formatTimeDisplay(Math.round(total / 3)));
+                    $row.find('.label-75').text(formatTimeDisplay(Math.round(total * 2 / 3)));
                     $row.find('.label-100').text(formatTimeDisplay(total));
                 });
             }

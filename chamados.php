@@ -240,25 +240,24 @@ $result = mysqli_query($conn, $sql);
                                                 }
                                             }
 
-                                            // Valores padrão em minutos caso não exista no banco (24h, 48h, 72h)
-                                            $defaults = ['Incidente' => 1440, 'Mudança' => 2880, 'Requisição' => 4320];
-
+                                            // Valores padrão corrigidos (Incidente = 6h/360min)
+                                            $defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
+                                            
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $categoria = $row['categoria'];
-
-                                                // 2. CORREÇÃO DO ERRO: Busca o valor em minutos do array ou usa o padrão
-                                                // Isso elimina o "Undefined array key" na linha 220
-                                                $sla_total_minutos = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 1440);
-
-                                                // Ajuste de SLA baseado na Prioridade
                                                 $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
-
-                                                if ($prioridade == 'Alta') {
-                                                    $sla_total_minutos = $sla_total_minutos * 0.3; // 30% do tempo
-                                                } elseif ($prioridade == 'Média') {
-                                                    $sla_total_minutos = $sla_total_minutos * 0.7; // 70% do tempo
+                                                
+                                                // Tempo base da categoria
+                                                $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
+                                                
+                                                // Aplicar multiplicadores de prioridade (Alta=1/3, Média=2/3, Baixa=1)
+                                                if ($prioridade === 'Alta') {
+                                                    $sla_total_minutos = round($cat_sla / 3);
+                                                } elseif ($prioridade === 'Média') {
+                                                    $sla_total_minutos = round(($cat_sla * 2) / 3);
+                                                } else {
+                                                    $sla_total_minutos = $cat_sla; // Baixa = 100%
                                                 }
-                                                // Baixa = 100% (padrão)
                                         
                                                 $data_abertura = new DateTime($row['data_abertura']);
                                                 $agora = new DateTime();

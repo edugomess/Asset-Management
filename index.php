@@ -3,6 +3,12 @@ include_once 'auth.php';     // Verifica sessão
 include_once 'conexao.php';  // Conecta ao banco
 
 // === Toda a sua lógica de SQL deve vir aqui, antes do HTML ===
+$meses = [
+    1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+    5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+    9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
+];
+$ano_atual = date('Y');
 $count_aberto = 0;
 $count_andamento = 0;
 // ... (mantenha o restante das suas queries SQL que estavam no corpo do código aqui)
@@ -276,17 +282,36 @@ $closed_string = implode(",", $closed_data);
                             }
                         }
 
-                        // SLA Ranking Logic
+                        // SLA Ranking Logic - Filtro de Mês/Ano
+                        $mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
+                        $ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
+
                         $sql_ranking = "SELECT 
     r.nome, r.sobrenome, r.id_usuarios, r.foto_perfil,
     COUNT(*) as total,
-    SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) as met_sla
+    SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
+        CASE 
+            WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
+            WHEN c.categoria = 'Incidente' THEN 360
+            WHEN c.categoria = 'Mudança' THEN 1440
+            WHEN c.categoria = 'Requisição' THEN 2880
+            ELSE 1440 
+        END THEN 1 ELSE 0 END) as met_sla
 FROM chamados c
 JOIN usuarios r ON c.responsavel_id = r.id_usuarios
+LEFT JOIN configuracoes_sla s ON c.categoria = s.categoria
 WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado')
-AND c.data_fechamento >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+AND MONTH(c.data_fechamento) = $mes_filtro 
+AND YEAR(c.data_fechamento) = $ano_filtro
 GROUP BY r.id_usuarios
-ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) <= 10 THEN 1 ELSE 0 END) / COUNT(*)) DESC";
+ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
+    CASE 
+        WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
+        WHEN c.categoria = 'Incidente' THEN 360
+        WHEN c.categoria = 'Mudança' THEN 1440
+        WHEN c.categoria = 'Requisição' THEN 2880
+        ELSE 1440 
+    END THEN 1 ELSE 0 END) / COUNT(*)) DESC";
                         $res_ranking = mysqli_query($conn, $sql_ranking);
                         $ranking_data = [];
                         if ($res_ranking) {
@@ -299,8 +324,16 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                         }
                         // (Closed data already computed above, no duplicate query needed)
                         
-                        // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes)
-                        $sql_recorrencia = "SELECT titulo, COUNT(*) as total FROM chamados GROUP BY titulo ORDER BY total DESC LIMIT 5";
+                        // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
+                        $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
+                        $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
+
+                        $sql_recorrencia = "SELECT titulo, COUNT(*) as total 
+                                            FROM chamados 
+                                            WHERE MONTH(data_abertura) = $mes_rec_filtro 
+                                            AND YEAR(data_abertura) = $ano_rec_filtro
+                                            GROUP BY titulo 
+                                            ORDER BY total DESC LIMIT 5";
                         $res_recorrencia = mysqli_query($conn, $sql_recorrencia);
                         $recorrencia_data = [];
                         $max_recorrencia = 0;
@@ -606,8 +639,34 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                         <div class="col-lg-12">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA (Último Mês) -
-                                        Melhores Técnicos</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos</h6>
+                                    <form method="GET" class="form-inline">
+                                        <!-- Preservar filtro de recorrência ao filtrar SLA -->
+                                        <input type="hidden" name="mes_recorrencia" value="<?php echo $mes_rec_filtro; ?>">
+                                        <input type="hidden" name="ano_recorrencia" value="<?php echo $ano_rec_filtro; ?>">
+                                        
+                                        <select name="mes_ranking" id="mes_ranking" class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                            <?php
+                                            foreach ($meses as $num => $nome) {
+                                                $selected = ($num == $mes_filtro) ? 'selected' : '';
+                                                echo "<option value='$num' $selected>$nome</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <select name="ano_ranking" id="ano_ranking" class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                            <?php
+                                            for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
+                                                $selected = ($i == $ano_filtro) ? 'selected' : '';
+                                                echo "<option value='$i' $selected>$i</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm mr-2" style="font-size: 0.7rem;">Filtrar</button>
+                                        <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>" 
+                                           id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                            <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                        </a>
+                                    </form>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -654,8 +713,8 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                                                 endforeach; ?>
                                                 <?php if (empty($ranking_data)): ?>
                                                     <tr>
-                                                        <td colspan="4" class="text-center">Nenhum chamado finalizado no
-                                                            último mês.</td>
+                                                        <td colspan="4" class="text-center">Nenhum chamado finalizado neste
+                                                            período.</td>
                                                     </tr>
                                                     <?php
                                                 endif; ?>
@@ -669,9 +728,39 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
                     <div class="row">
                         <div class="col-lg-12 mb-4">
                             <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por
-                                        Recorrência</h6>
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por Recorrência
+                                    </h6>
+                                    <form method="GET" class="form-inline">
+                                        <!-- Preservar filtro de SLA ao filtrar Recorrência -->
+                                        <input type="hidden" name="mes_ranking" value="<?php echo $mes_filtro; ?>">
+                                        <input type="hidden" name="ano_ranking" value="<?php echo $ano_filtro; ?>">
+
+                                        <select name="mes_recorrencia" id="mes_recorrencia" class="form-control form-control-sm mr-2"
+                                            style="font-size: 0.75rem;">
+                                            <?php
+                                            foreach ($meses as $num => $nome) {
+                                                $selected = ($num == $mes_rec_filtro) ? 'selected' : '';
+                                                echo "<option value='$num' $selected>$nome</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <select name="ano_recorrencia" id="ano_recorrencia" class="form-control form-control-sm mr-2"
+                                            style="font-size: 0.75rem;">
+                                            <?php
+                                            for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
+                                                $selected = ($i == $ano_rec_filtro) ? 'selected' : '';
+                                                echo "<option value='$i' $selected>$i</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm mr-2"
+                                            style="font-size: 0.7rem;">Filtrar</button>
+                                        <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>" 
+                                           id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                            <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                        </a>
+                                    </form>
                                 </div>
                                 <div class="card-body">
                                     <?php
@@ -720,6 +809,25 @@ ORDER BY (SUM(CASE WHEN TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento
     <script src="/assets/js/global_search.js"></script>
     <script>
         // Inline script removed, moved to global_search.js
+    </script>
+    <script>
+        // Atualizar links de PDF dinamicamente ao mudar os selects
+        function updateSlaPdfLink() {
+            const mes = document.getElementById('mes_ranking').value;
+            const ano = document.getElementById('ano_ranking').value;
+            document.getElementById('btn_pdf_sla').href = `relatorio_ranking_sla.php?mes=${mes}&ano=${ano}`;
+        }
+        
+        function updateRecPdfLink() {
+            const mes = document.getElementById('mes_recorrencia').value;
+            const ano = document.getElementById('ano_recorrencia').value;
+            document.getElementById('btn_pdf_recorrencia').href = `relatorio_ranking_recorrencia.php?mes=${mes}&ano=${ano}`;
+        }
+        
+        document.getElementById('mes_ranking').addEventListener('change', updateSlaPdfLink);
+        document.getElementById('ano_ranking').addEventListener('change', updateSlaPdfLink);
+        document.getElementById('mes_recorrencia').addEventListener('change', updateRecPdfLink);
+        document.getElementById('ano_recorrencia').addEventListener('change', updateRecPdfLink);
     </script>
 </body>
 

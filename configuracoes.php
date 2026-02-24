@@ -64,8 +64,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     $configs[$row['categoria']] = $row['tempo_sla_minutos'];
 }
 
-// Default values if database is empty or category missing (in minutes)
-$defaults = ['Incidente' => 1440, 'Mudança' => 2880, 'Requisição' => 4320]; // 24h, 48h, 72h
+// Valores padrão corrigidos (Incidente = 6h/360min como solicitado)
+$defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
 foreach ($defaults as $cat => $val) {
     if (!isset($configs[$cat])) {
         $configs[$cat] = $val;
@@ -248,21 +248,34 @@ function getHoursAndMinutes($total_minutes)
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2" style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
+                                        <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2"
+                                            style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
                                             <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-danger mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Alta</span>
-                                                <div style="height: 6px; background: #dc3545; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-50" style="font-size: 0.85rem;">--</strong>
+                                                <span class="badge badge-danger mb-2 px-3 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Alta</span>
+                                                <div
+                                                    style="height: 6px; background: #dc3545; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
+                                                </div>
+                                                <strong class="text-dark d-block label-50"
+                                                    style="font-size: 0.85rem;">--</strong>
                                             </div>
                                             <div class="text-center mx-1" style="flex: 1;">
-                                                <span class="badge badge-warning mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">Média</span>
-                                                <div style="height: 6px; background: #f6c23e; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-75" style="font-size: 0.85rem;">--</strong>
+                                                <span class="badge badge-warning mb-2 px-3 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">Média</span>
+                                                <div
+                                                    style="height: 6px; background: #f6c23e; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
+                                                </div>
+                                                <strong class="text-dark d-block label-75"
+                                                    style="font-size: 0.85rem;">--</strong>
                                             </div>
                                             <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-success mb-2 px-3 py-1" style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Baixa</span>
-                                                <div style="height: 6px; background: #1cc88a; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-100" style="font-size: 0.85rem;">--</strong>
+                                                <span class="badge badge-success mb-2 px-3 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Baixa</span>
+                                                <div
+                                                    style="height: 6px; background: #1cc88a; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
+                                                </div>
+                                                <strong class="text-dark d-block label-100"
+                                                    style="font-size: 0.85rem;">--</strong>
                                             </div>
                                         </div>
                                     </div>

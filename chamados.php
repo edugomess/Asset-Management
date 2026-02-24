@@ -93,6 +93,11 @@ $result = mysqli_query($conn, $sql);
         background-color: #ffc107 !important;
         color: #212529 !important;
     }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(44, 64, 74, 0.05);
+        transition: background-color 0.2s;
+    }
 </style>
 
 </style>
@@ -207,7 +212,7 @@ $result = mysqli_query($conn, $sql);
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
+                                <table class="table table-hover my-0" id="dataTable">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -219,7 +224,6 @@ $result = mysqli_query($conn, $sql);
                                             <th>Responsável</th>
                                             <th>Status</th>
                                             <th>SLA STATUS</th>
-                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -260,8 +264,23 @@ $result = mysqli_query($conn, $sql);
                                                 $agora = new DateTime();
                                                 $intervalo = $data_abertura->diff($agora);
 
-                                                // Calcula minutos decorridos de forma precisa
+                                                // Calcula minutos decorridos totais
                                                 $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
+
+                                                // Descontar tempo congelado anteriormente
+                                                $tempo_congelado = intval($row['tempo_congelado_minutos'] ?? 0);
+                                                $minutos_decorridos -= $tempo_congelado;
+
+                                                // Se estiver pendente agora, descontar também o tempo desde o último congelamento
+                                                if ($row['status'] === 'Pendente' && !empty($row['data_ultimo_congelamento'])) {
+                                                    $data_congelamento = new DateTime($row['data_ultimo_congelamento']);
+                                                    $intervalo_congelamento = $data_congelamento->diff($agora);
+                                                    $minutos_congelamento_atual = ($intervalo_congelamento->days * 24 * 60) + ($intervalo_congelamento->h * 60) + $intervalo_congelamento->i;
+                                                    $minutos_decorridos -= $minutos_congelamento_atual;
+                                                }
+
+                                                // Garantir que não seja negativo
+                                                $minutos_decorridos = max(0, $minutos_decorridos);
 
                                                 // 3. Cálculo da porcentagem do SLA
                                                 if ($sla_total_minutos > 0) {
@@ -274,16 +293,23 @@ $result = mysqli_query($conn, $sql);
                                                 $progress_bar_class = '';
                                                 $sla_status_html = '';
 
-                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento') {
-                                                    if ($minutos_decorridos >= $sla_total_minutos) {
-                                                        $sla_status_text = 'Vencido';
-                                                        $progress_bar_class = 'bg-danger';
-                                                    } elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
-                                                        $sla_status_text = 'Atenção';
-                                                        $progress_bar_class = 'bg-warning';
+                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento' || $row['status'] == 'Pendente') {
+                                                    if ($row['status'] == 'Pendente') {
+                                                        $sla_status_text = 'Pendente';
+                                                        $progress_bar_class = 'bg-secondary';
+                                                        $animation_class = '';
                                                     } else {
-                                                        $sla_status_text = 'No Prazo';
-                                                        $progress_bar_class = 'bg-success';
+                                                        $animation_class = 'progress-bar-striped progress-bar-animated';
+                                                        if ($minutos_decorridos >= $sla_total_minutos) {
+                                                            $sla_status_text = 'Vencido';
+                                                            $progress_bar_class = 'bg-danger';
+                                                        } elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
+                                                            $sla_status_text = 'Atenção';
+                                                            $progress_bar_class = 'bg-warning';
+                                                        } else {
+                                                            $sla_status_text = 'No Prazo';
+                                                            $progress_bar_class = 'bg-success';
+                                                        }
                                                     }
 
                                                     // Formatação do tempo decorrido para exibição
@@ -303,7 +329,7 @@ $result = mysqli_query($conn, $sql);
                 <div class="d-flex flex-column">
                     <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
                     <div class="progress" style="height: 10px; min-width: 100px;">
-                        <div class="progress-bar ' . $progress_bar_class . ' progress-bar-striped progress-bar-animated" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar ' . $progress_bar_class . ' ' . $animation_class . '" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>';
                                                 } elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
@@ -354,9 +380,9 @@ $result = mysqli_query($conn, $sql);
                                                         break;
                                                 }
 
-                                                echo "<tr>
+                                                echo "<tr onclick=\"window.location='editar_chamado.php?id=" . $row['id'] . "'\" style='cursor: pointer;'>
                 <td>" . htmlspecialchars($row['id']) . "</td>
-                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-primary'>" . htmlspecialchars($row['titulo']) . "</a></td>
+                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
                 <td>" . htmlspecialchars($row['categoria']) . "</td>
                 <td><span class='badge " . $prioridade_class . "'>" . htmlspecialchars($prioridade) . "</span></td>
                 <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
@@ -364,10 +390,6 @@ $result = mysqli_query($conn, $sql);
                 <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
                 <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
-                <td>
-                    <a class='btn btn-warning' href='editar_chamado.php?id=" . $row['id'] . "'><i class='fas fa-edit'></i></a>
-                    <a class='btn btn-danger' href='apagar_chamado.php?id=" . $row['id'] . "' onclick=\"return confirm('Tem certeza que deseja apagar este chamado?')\"><i class='fas fa-trash'></i></a>
-                </td>
             </tr>";
                                             }
                                         } else {

@@ -58,20 +58,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
     if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
         $msg = '<div class="alert alert-danger"><strong>Erro:</strong> Para alterar o status (sair de "Aberto"), é obrigatório atribuir um <strong>Responsável</strong> ao chamado.</div>';
     } else {
-        // Lógica para data_fechamento
+        // Buscar status atual para lógica de congelamento
+        $sql_query_atual = "SELECT status, data_ultimo_congelamento FROM chamados WHERE id = $id_chamado";
+        $res_atual = $conn->query($sql_query_atual);
+        $chamado_atual = $res_atual->fetch_assoc();
+
+        // Lógica de Congelamento de SLA
+        $congelamento_sql = "";
+        $status_anterior = $chamado_atual['status'];
+
+        // Se mudou PARA Pendente, registra o início do congelamento
+        if ($status_anterior !== 'Pendente' && $novo_status === 'Pendente') {
+            $congelamento_sql = ", data_ultimo_congelamento = NOW()";
+        }
+        // Se saiu de Pendente, calcula o tempo e acumula
+        elseif ($status_anterior === 'Pendente' && $novo_status !== 'Pendente') {
+            $data_inicio = $chamado_atual['data_ultimo_congelamento'];
+            if (!empty($data_inicio)) {
+                $minutos_adicionais = "TIMESTAMPDIFF(MINUTE, '$data_inicio', NOW())";
+                $congelamento_sql = ", tempo_congelado_minutos = tempo_congelado_minutos + $minutos_adicionais, data_ultimo_congelamento = NULL";
+            }
+        }
+
+        // Lógica para data_fechamento (Restaurada)
         $fechamento_sql = "";
         $status_fechados = ['Resolvido', 'Fechado', 'Cancelado'];
-
         if (in_array($novo_status, $status_fechados)) {
             $fechamento_sql = ", data_fechamento = NOW()";
         } else {
             $fechamento_sql = ", data_fechamento = NULL";
         }
 
-        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', nota_resolucao = '$nota_resolucao' $fechamento_sql WHERE id = $id_chamado";
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
             $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';
+            // Atualizar objeto $chamado para refletir mudanças se necessário (ou redirecionar)
+            $chamado['status'] = $novo_status;
         } else {
             $msg = '<div class="alert alert-danger">Erro ao atualizar: ' . $conn->error . '</div>';
         }

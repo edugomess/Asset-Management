@@ -1,13 +1,17 @@
 <?php
-session_start();
+ob_start(); // Inicia o buffer para evitar qualquer saída acidental antes do JSON
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include 'conexao.php';
+ob_clean(); // Limpa o buffer de qualquer aviso ou erro anterior
 header('Content-Type: application/json');
 
 // ============================================================
 // CONFIGURAÇÃO DA API GEMINI
 // ============================================================
 require_once 'credentials.php';
-$GEMINI_API_KEY = GEMINI_API_KEY;
+$GEMINI_API_KEY = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
 // ============================================================
 
 // Check connection
@@ -134,7 +138,7 @@ function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory 
     }
 
     // Models in order of performance/availability
-    $models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    $models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
 
     // Build payload
     $payload = [
@@ -203,6 +207,7 @@ function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory 
 
             if ($httpCode !== 200) {
                 error_log("Gemini HTTP Error $httpCode ($model): " . $response);
+                $_SESSION['last_ai_error'] = "Model $model returned HTTP $httpCode: " . substr($response, 0, 100);
                 break; // Try next model
             }
 
@@ -469,6 +474,13 @@ if (count($_SESSION['chat_history']) > 20) {
     $_SESSION['chat_history'] = array_slice($_SESSION['chat_history'], -20);
 }
 
-echo json_encode(['reply' => $reply]);
+echo json_encode([
+    'reply' => $reply,
+    'debug' => [
+        'handled_locally' => $handledLocally,
+        'last_ai_error' => $_SESSION['last_ai_error'] ?? null,
+        'api_key_set' => !empty($GEMINI_API_KEY)
+    ]
+]);
 
 $conn->close();

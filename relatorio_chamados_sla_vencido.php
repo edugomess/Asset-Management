@@ -10,9 +10,10 @@ $columns = [
 
 $pdf = new ReportGenerator('Relatório de Chamados com SLA Vencido (> 7 dias)', $columns, $conn);
 // Assuming 7 days SLA for this report
-$sql = "SELECT id, titulo, data_abertura, DATEDIFF(NOW(), data_abertura) as dias_aberto 
+$sql = "SELECT id, titulo, data_abertura, 
+        (DATEDIFF(NOW(), data_abertura) - (COALESCE(tempo_congelado_minutos, 0) / 1440)) as dias_aberto 
         FROM chamados 
         WHERE status NOT IN ('Resolvido', 'Fechado', 'Cancelado') 
-        AND DATEDIFF(NOW(), data_abertura) > 7 
+        AND (DATEDIFF(NOW(), data_abertura) - (COALESCE(tempo_congelado_minutos, 0) / 1440)) > 7 
         ORDER BY dias_aberto DESC";
 $pdf->generate($sql);

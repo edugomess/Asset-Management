@@ -48,6 +48,9 @@
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-toggle="dropdown" href="#"></a>
@@ -245,7 +248,7 @@
             </div>
         </div>
         <!-- End of #content -->
-        <footer class="bg-white sticky-footer">
+        <footer class="sticky-footer">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
                     <span>DEGB&nbsp;Copyright © 2015-2024</span>

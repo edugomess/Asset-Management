@@ -8,6 +8,14 @@
         --sidebar-hover: rgba(255, 255, 255, 0.1);
         --sidebar-text: #edeff3;
         --sidebar-text-active: #ffffff;
+
+        /* Light Mode Defaults */
+        --bg-color: #f8f9fc;
+        --card-bg: #fff;
+        --text-color: #5a5c69;
+        --heading-color: #4e73df;
+        --border-color: #e3e6f0;
+        --topbar-bg: #fff;
     }
 
     .sidebar {
@@ -228,7 +236,14 @@
 
     .sticky-footer {
         flex-shrink: 0;
-        padding: 2rem 0;
+        padding: 1.5rem 0 !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .sticky-footer span {
+        color: #bbbbbb !important;
+        font-size: 0.8rem;
     }
 
     /* Efeito Hover Global para Cards */

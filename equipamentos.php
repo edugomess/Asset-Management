@@ -98,8 +98,7 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
-                    style="margin: 5px 23px;">
+                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top" style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -114,18 +113,20 @@ include 'conexao.php';
                                 style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
+                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-toggle="dropdown" href="#"><span
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
                                             src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                            class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                            class="dropdown-item" href="configuracoes.php"><i
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                        <a class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                        <a class="dropdown-item" href="configuracoes.php"><i
                                                 class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -315,22 +316,57 @@ include 'conexao.php';
                                     <tbody>
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
+                                            // Buscar configurações de depreciação do banco
+                                            $dep_config = [
+                                                'taxa_depreciacao' => 10.00,
+                                                'periodo_anos' => 1,
+                                                'periodo_meses' => 0
+                                            ];
+                                            $res_dep_config = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+                                            if ($res_dep_config && mysqli_num_rows($res_dep_config) > 0) {
+                                                $dep_config = mysqli_fetch_assoc($res_dep_config);
+                                            }
+
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $assigned_to = $row['assigned_to'];
                                                 $valor_original = floatval($row['valor']);
-                                                // Lógica simplificada de valor para o exemplo
-                                                $valor_atual = $valor_original;
+
+                                                // Calcular depreciação
+                                                $data_ativacao = new DateTime($row['dataAtivacao']);
+                                                $data_atual = new DateTime();
+                                                $diff = $data_ativacao->diff($data_atual);
+
+                                                $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                                                $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
+
+                                                if ($periodo_total_meses > 0 && $valor_original > 0) {
+                                                    $meses_ativos = ($diff->y * 12) + $diff->m;
+                                                    $periodos_completos = floor($meses_ativos / $periodo_total_meses);
+                                                    $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
+                                                    $valor_atual = max(0, $valor_original - $depreciacao_total);
+                                                } else {
+                                                    $valor_atual = $valor_original;
+                                                }
                                                 ?>
-                                                <tr>
+                                                <tr class="clickable-row"
+                                                    onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                                                     <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
-                                                            class="font-weight-bold"
-                                                            style="color: #2c404a;"><?php echo htmlspecialchars($row['tag']); ?></a>
+                                                            class="font-weight-bold" style="color: #2c404a;"
+                                                            onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                                    <td>R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?></td>
+                                                    <td>
+                                                        <span class="font-weight-bold" style="color: #2c404a;">
+                                                            R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
+                                                        </span>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
+                                                        </small>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
 
@@ -338,7 +374,7 @@ include 'conexao.php';
                                                         <td>
                                                             <?php
                                                             if ($assigned_to && !empty($row['user_nome'])) {
-                                                                echo "<a href='#' onclick='showUserModal(" . $assigned_to . ", \"" . addslashes($row['user_nome']) . "\", \"" . addslashes($row['user_sobrenome']) . "\", \"" . addslashes($row['user_usuarioAD']) . "\", \"" . addslashes($row['user_email']) . "\", \"" . addslashes($row['user_centroDeCusto']) . "\", " . $row['id_asset'] . ")'>" . htmlspecialchars($row['user_nome']) . "</a>";
+                                                                echo htmlspecialchars($row['user_nome']);
                                                             } else {
                                                                 echo "Não Atribuído";
                                                             }
@@ -370,29 +406,27 @@ include 'conexao.php';
                                                             <?php if (!$row['em_manutencao']): ?>
                                                                 <?php if ($assigned_to): ?>
                                                                     <button class='btn btn-dark btn-tamanho-fixo mr-2'
-                                                                        onclick='unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
+                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
                                                                         <i class='fas fa-user-minus'></i></button>
                                                                 <?php else: ?>
                                                                     <button class='btn btn-info btn-tamanho-fixo mr-2'
-                                                                        onclick='openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
                                                                         <i class='fas fa-user-plus'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
                                                             <a class='btn btn-warning btn-edit mr-2'
                                                                 href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
-                                                                title="Editar"><i class='fas fa-edit'></i></a>
-                                                            <a class='btn btn-info btn-edit mr-2'
-                                                                href='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'
-                                                                title="Histórico"><i class='fas fa-history'></i></a>
+                                                                title="Editar" onclick="event.stopPropagation();"><i
+                                                                    class='fas fa-edit'></i></a>
 
                                                             <?php if ($row['em_manutencao']): ?>
                                                                 <button class="btn btn-success btn-edit"
-                                                                    onclick="releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
                                                                     title="Liberar"><i class="fas fa-check-circle"></i></button>
                                                             <?php else: ?>
-                                                                <button class="btn btn-warning btn-edit"
-                                                                    onclick="sendToMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                <button class="btn btn-primary btn-edit"
+                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
                                                                     title="Manutenção"><i class="fas fa-tools"></i></button>
                                                             <?php endif; ?>
                                                         </div>
@@ -469,7 +503,7 @@ include 'conexao.php';
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>

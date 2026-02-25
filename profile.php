@@ -3,7 +3,8 @@ include 'auth.php';
 include 'conexao.php';
 
 // Fetch User Data
-$id_usuario = $_SESSION['id_usuarios'];
+// Support viewing other user profiles via ID parameter, fallback to current user
+$id_usuario = isset($_GET['id']) ? intval($_GET['id']) : $_SESSION['id_usuarios'];
 $sql_user = "SELECT * FROM usuarios WHERE id_usuarios = $id_usuario";
 $result_user = mysqli_query($conn, $sql_user);
 $user_data = mysqli_fetch_assoc($result_user);
@@ -232,7 +233,7 @@ $result_lic = mysqli_query($conn, $sql_lic);
 
                 </div>
             </div>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
+            <footer class="sticky-footer">
                 <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
                     <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
                 </section>

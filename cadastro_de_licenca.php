@@ -61,7 +61,15 @@ $result_cc = mysqli_query($conn, $sql_cc);
                                     </div>
                                 </div>
                             </li>
-                        </ul>
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                                <div class="theme-switch-wrapper" title="Alternar Modo Noturno">
+                                    <label class="theme-switch" for="darkModeToggle">
+                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <i id="themeIcon" class="fas fa-sun text-warning ml-2"></i>
+                                </div>
+                            </li>
                     </div>
                 </nav>
                 <div class="container-fluid">
@@ -147,7 +155,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     </div>
                 </form>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>

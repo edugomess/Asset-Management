@@ -75,7 +75,15 @@ if ($id > 0) {
                                     </div>
                                 </div>
                             </li>
-                        </ul>
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                                <div class="theme-switch-wrapper" title="Alternar Modo Noturno">
+                                    <label class="theme-switch" for="darkModeToggle">
+                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <i id="themeIcon" class="fas fa-sun text-warning ml-2"></i>
+                                </div>
+                            </li>
                     </div>
                 </nav>
                 <div class="container-fluid">
@@ -179,7 +187,7 @@ if ($id > 0) {
                     </div>
                 </form>
             </div>
-            <footer class="bg-white sticky-footer" style="padding: 10px 0; flex-shrink: 0;">
+            <footer class="sticky-footer">
                 <section class="text-center footer">
                     <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
                 </section>

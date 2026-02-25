@@ -50,6 +50,9 @@ if ($id > 0) {
                         <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1"
                             type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
                                     <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
@@ -62,6 +65,11 @@ if ($id > 0) {
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
                                         <a class="dropdown-item" href="profile.php"><i
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                        <a class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
@@ -268,7 +276,7 @@ if ($id > 0) {
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>

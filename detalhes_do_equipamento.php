@@ -484,9 +484,9 @@
                 formData.append('id_asset', <?php echo $id; ?>);
 
                 fetch('upload_foto_ativo.php', {
-                        method: 'POST',
-                        body: formData
-                    })
+                    method: 'POST',
+                    body: formData
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -509,15 +509,15 @@
             }
 
             fetch('toggle_status.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_asset: id,
-                        novo_status: novoStatus
-                    })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_asset: id,
+                    novo_status: novoStatus
                 })
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -581,7 +581,7 @@
                 }
             };
 
-            html2pdf().set(opt).from(element).save().then(function() {
+            html2pdf().set(opt).from(element).save().then(function () {
                 // Restaurar elementos
                 if (sidebar) sidebar.style.display = sidebarDisplay;
                 if (topbar) topbar.style.display = topbarDisplay;

@@ -51,8 +51,7 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
-                    style="margin: 5px 23px;">
+                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top" style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -167,8 +166,7 @@ include 'conexao.php';
                                             Alerts</a>
                                     </div>
                                 </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="alertsDropdown"></div>
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
@@ -334,7 +332,7 @@ include 'conexao.php';
                     </div>
                 </div>
             </div>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
+            <footer class="sticky-footer">
                 <!-- Start: Simple footer by krissy -->
                 <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
                     <!-- Start: Footer text -->

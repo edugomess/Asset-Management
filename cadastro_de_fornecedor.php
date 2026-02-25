@@ -65,6 +65,16 @@
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                                <div class="theme-switch-wrapper" title="Alternar Modo Noturno">
+                                    <label class="theme-switch" for="darkModeToggle">
+                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <i id="themeIcon" class="fas fa-sun text-warning ml-2"></i>
+                                </div>
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-toggle="dropdown" href="#"></a>
@@ -238,7 +248,7 @@
                     </form><!-- End: Multi-row Form -->
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>

@@ -63,8 +63,7 @@ include
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
-                    style="margin: 5px 23px;">
+                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top" style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -179,8 +178,7 @@ include
                                             Alerts</a>
                                     </div>
                                 </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="alertsDropdown"></div>
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
@@ -189,15 +187,16 @@ include
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
                                             src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                            class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
-                                            class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                        <a class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                        <a class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
                                                 class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
                                             Manutenção</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -308,19 +307,14 @@ include
                                     </form>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <nav
-                                        class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
-                                        <ul class="pagination"></ul>
-                                    </nav>
-                                </div>
+                            <div class="d-flex justify-content-start mt-3">
+                                <ul class="pagination-custom"></ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
+            <footer class="sticky-footer">
                 <!-- Start: Simple footer by krissy -->
                 <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
                     <!-- Start: Footer text -->

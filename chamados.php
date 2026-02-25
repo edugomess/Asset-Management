@@ -242,14 +242,14 @@ $result = mysqli_query($conn, $sql);
 
                                             // Valores padrão corrigidos (Incidente = 6h/360min)
                                             $defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
-                                            
+
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $categoria = $row['categoria'];
                                                 $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
-                                                
+
                                                 // Tempo base da categoria
                                                 $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
-                                                
+
                                                 // Aplicar multiplicadores de prioridade (Alta=1/3, Média=2/3, Baixa=1)
                                                 if ($prioridade === 'Alta') {
                                                     $sla_total_minutos = round($cat_sla / 3);
@@ -258,7 +258,7 @@ $result = mysqli_query($conn, $sql);
                                                 } else {
                                                     $sla_total_minutos = $cat_sla; // Baixa = 100%
                                                 }
-                                        
+
                                                 $data_abertura = new DateTime($row['data_abertura']);
                                                 $agora = new DateTime();
                                                 $intervalo = $data_abertura->diff($agora);
@@ -424,7 +424,7 @@ $result = mysqli_query($conn, $sql);
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>

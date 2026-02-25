@@ -232,29 +232,25 @@ include 'conexao.php';
                                     </tbody>
                                 </table>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <nav>
-                                            <ul class="pagination-custom">
-                                                <?php
-                                                $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-                                                if ($current_page > 1) {
-                                                    echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-                                                }
-                                                for ($page = 1; $page <= $total_pages; $page++) {
-                                                    if ($page == $current_page) {
-                                                        echo "<li class='active'><span>$page</span></li>";
-                                                    } else {
-                                                        echo "<li><a href='?page=$page$search_param'>$page</a></li>";
-                                                    }
-                                                }
-                                                if ($current_page < $total_pages) {
-                                                    echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
-                                                }
-                                                ?>
-                                            </ul>
-                                        </nav>
-                                    </div>
+                                <div class="d-flex justify-content-start mt-3">
+                                    <ul class="pagination-custom">
+                                        <?php
+                                        $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                        if ($current_page > 1) {
+                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                        }
+                                        for ($page = 1; $page <= $total_pages; $page++) {
+                                            if ($page == $current_page) {
+                                                echo "<li class='active'><span>$page</span></li>";
+                                            } else {
+                                                echo "<li><a href='?page=$page$search_param'>$page</a></li>";
+                                            }
+                                        }
+                                        if ($current_page < $total_pages) {
+                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                        }
+                                        ?>
+                                    </ul>
                                 </div>
 
                                 <?php
@@ -265,7 +261,7 @@ include 'conexao.php';
                     </div>
                 </div>
 
-                <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
+                <footer class="sticky-footer">
                     <section class="text-center footer" style="padding: 10px;">
                         <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
                     </section>

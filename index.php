@@ -4,9 +4,18 @@ include_once 'conexao.php';  // Conecta ao banco
 
 // === Toda a sua lógica de SQL deve vir aqui, antes do HTML ===
 $meses = [
-    1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
-    5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
-    9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
+    1 => 'Janeiro',
+    2 => 'Fevereiro',
+    3 => 'Março',
+    4 => 'Abril',
+    5 => 'Maio',
+    6 => 'Junho',
+    7 => 'Julho',
+    8 => 'Agosto',
+    9 => 'Setembro',
+    10 => 'Outubro',
+    11 => 'Novembro',
+    12 => 'Dezembro'
 ];
 $ano_atual = date('Y');
 $count_aberto = 0;
@@ -94,7 +103,7 @@ $closed_string = implode(",", $closed_data);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top"
                     style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
@@ -125,95 +134,8 @@ $closed_string = implode(",", $closed_data);
                                     </form>
                                 </div>
                             </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-primary icon-circle"><i
-                                                        class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i
-                                                        class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i
-                                                        class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your
-                                                    account.</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show
-                                            All Alerts</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
-                                                        help me with a problem I've been having.</span></div>
-                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                                <div class="status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>I have the photos that you ordered
-                                                        last month!</span></div>
-                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                                <div class="bg-warning status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Last month's report looks great, I
-                                                        am very happy with the progress so far, keep up the good
-                                                        work!</span></div>
-                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask
-                                                        is because someone told me that people say this to all dogs,
-                                                        even if they aren't good...</span></div>
-                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show
-                                            All Alerts</a>
-                                    </div>
-                                </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="alertsDropdown"></div>
-                            </li>
+
+
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
@@ -221,23 +143,19 @@ $closed_string = implode(",", $closed_data);
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
                                             src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                            class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                            class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
-                                            class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                        <div class="dropdown-divider"></div><a href="logout.php"
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                        <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                        <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
                             </li>
                         </ul>
                     </div>
                 </nav>
-                <div class="container-fluid" style="background: #ffffff;">
+                <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
                         <h3 class="text-dark mb-0">Dashboard</h3>
                         <div class="d-flex align-items-center">
@@ -333,7 +251,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             }
                         }
                         // (Closed data already computed above, no duplicate query needed)
-                        
+
                         // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
                         $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
                         $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
@@ -387,11 +305,11 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
                         // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
                         // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
-                        
+
                         // Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
                         // ou manter o layout fixo e preencher com o que encontrar.
                         // Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
-                        
+
                         // Card 1: Desktops
                         $total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
                         $disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
@@ -654,7 +572,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         <!-- Preservar filtro de recorrência ao filtrar SLA -->
                                         <input type="hidden" name="mes_recorrencia" value="<?php echo $mes_rec_filtro; ?>">
                                         <input type="hidden" name="ano_recorrencia" value="<?php echo $ano_rec_filtro; ?>">
-                                        
+
                                         <select name="mes_ranking" id="mes_ranking" class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
                                             <?php
                                             foreach ($meses as $num => $nome) {
@@ -672,8 +590,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             ?>
                                         </select>
                                         <button type="submit" class="btn btn-primary btn-sm mr-2" style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
-                                        <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>" 
-                                           id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                        <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
+                                            id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
                                         </a>
                                     </form>
@@ -719,14 +637,14 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                    <?php
+                                                <?php
                                                 endforeach; ?>
                                                 <?php if (empty($ranking_data)): ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">Nenhum chamado finalizado neste
                                                             período.</td>
                                                     </tr>
-                                                    <?php
+                                                <?php
                                                 endif; ?>
                                             </tbody>
                                         </table>
@@ -766,8 +684,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         </select>
                                         <button type="submit" class="btn btn-primary btn-sm mr-2"
                                             style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
-                                        <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>" 
-                                           id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                        <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
+                                            id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
                                         </a>
                                     </form>
@@ -780,7 +698,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
                                             $cor = $cores[$i % count($cores)];
                                             $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
-                                            ?>
+                                    ?>
                                             <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
                                                     class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
                                             <div class="progress mb-4">
@@ -790,7 +708,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                     <?php echo $rec['total']; ?>
                                                 </div>
                                             </div>
-                                            <?php
+                                    <?php
                                         }
                                     } else {
                                         echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
@@ -802,7 +720,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
+            <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>DEGB&nbsp;Copyright © 2015-2024</span>
@@ -827,13 +745,13 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
             const ano = document.getElementById('ano_ranking').value;
             document.getElementById('btn_pdf_sla').href = `relatorio_ranking_sla.php?mes=${mes}&ano=${ano}`;
         }
-        
+
         function updateRecPdfLink() {
             const mes = document.getElementById('mes_recorrencia').value;
             const ano = document.getElementById('ano_recorrencia').value;
             document.getElementById('btn_pdf_recorrencia').href = `relatorio_ranking_recorrencia.php?mes=${mes}&ano=${ano}`;
         }
-        
+
         document.getElementById('mes_ranking').addEventListener('change', updateSlaPdfLink);
         document.getElementById('ano_ranking').addEventListener('change', updateSlaPdfLink);
         document.getElementById('mes_recorrencia').addEventListener('change', updateRecPdfLink);

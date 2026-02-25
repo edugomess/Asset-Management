@@ -58,6 +58,16 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet"
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <?php include 'sidebar_style.php'; ?>
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -188,8 +198,14 @@ if (isset($_GET['id'])) {
                                             Alerts</a>
                                     </div>
                                 </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="alertsDropdown"></div>
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                                <div class="custom-control custom-switch" title="Alternar Modo Noturno">
+                                    <input type="checkbox" class="custom-control-input" id="darkModeToggle"
+                                        onchange="toggleDarkMode()">
+                                    <label class="custom-control-label" for="darkModeToggle">
+                                        <i id="themeIcon" class="fas fa-sun text-warning"></i>
+                                    </label>
+                                </div>
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
@@ -300,14 +316,40 @@ if (isset($_GET['id'])) {
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $assigned_to = $row['assigned_to'];
+                                                $valor_original = floatval($row['valor']);
+
+                                                // Calcular depreciação
+                                                $data_ativacao = new DateTime($row['dataAtivacao']);
+                                                $data_atual = new DateTime();
+                                                $diff = $data_ativacao->diff($data_atual);
+
+                                                $taxa_pct = floatval($dep_config_ini['taxa_depreciacao']);
+                                                $periodo_total_meses = (intval($dep_config_ini['periodo_anos']) * 12) + intval($dep_config_ini['periodo_meses']);
+
+                                                if ($periodo_total_meses > 0 && $valor_original > 0) {
+                                                    $meses_ativos = ($diff->y * 12) + $diff->m;
+                                                    $periodos_completos = floor($meses_ativos / $periodo_total_meses);
+                                                    $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
+                                                    $valor_atual = max(0, $valor_original - $depreciacao_total);
+                                                } else {
+                                                    $valor_atual = $valor_original;
+                                                }
                                                 ?>
-                                                <tr>
+                                                <tr class="clickable-row"
+                                                    onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['modelo']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                                    <td><?php echo htmlspecialchars(number_format($row['valor'], 2, ',', '.')); ?>
+                                                    <td>
+                                                        <span class="font-weight-bold" style="color: #2c404a;">
+                                                            R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
+                                                        </span>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
+                                                        </small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td>
@@ -340,7 +382,7 @@ if (isset($_GET['id'])) {
                                                         } elseif (!$cat_elegivel_ini) {
                                                             echo '<button class="btn btn-secondary btn-sm" disabled title="A categoria &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; não está habilitada para doação." ' . $btn_style . ' >Cat. não elegível</button>';
                                                         } elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
-                                                            echo '<button class="btn btn-success btn-sm" onclick="sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >Doar</button>';
+                                                            echo '<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >Doar</button>';
                                                         } else {
                                                             $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
                                                             $a_ini = floor($restante_ini / 12);

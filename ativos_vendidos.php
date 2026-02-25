@@ -75,6 +75,16 @@
                                 style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
+                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
+                                <div class="custom-control custom-switch" title="Alternar Modo Noturno">
+                                    <input type="checkbox" class="custom-control-input" id="darkModeToggle"
+                                        onchange="toggleDarkMode()">
+                                    <label class="custom-control-label" for="darkModeToggle">
+                                        <i id="themeIcon" class="fas fa-sun text-warning"></i>
+                                    </label>
+                                </div>
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
                                     aria-expanded="false" data-toggle="dropdown" href="#"><i
                                         class="fas fa-search"></i></a>
@@ -298,28 +308,24 @@
                                                 </tbody>
                                             </table>
 
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <nav>
-                                                        <ul class="pagination-custom">
-                                                            <?php
-                                                            if ($current_page > 1) {
-                                                                echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
-                                                            }
-                                                            for ($page = 1; $page <= $total_pages; $page++) {
-                                                                if ($page == $current_page) {
-                                                                    echo "<li class='active'><span>$page</span></li>";
-                                                                } else {
-                                                                    echo "<li><a href='?page=$page'>$page</a></li>";
-                                                                }
-                                                            }
-                                                            if ($current_page < $total_pages) {
-                                                                echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
-                                                            }
-                                                            ?>
-                                                        </ul>
-                                                    </nav>
-                                                </div>
+                                            <div class="d-flex justify-content-start mt-3">
+                                                <ul class="pagination-custom">
+                                                    <?php
+                                                    if ($current_page > 1) {
+                                                        echo "<li><a href='?page=" . ($current_page - 1) . "'>« Anterior</a></li>";
+                                                    }
+                                                    for ($page = 1; $page <= $total_pages; $page++) {
+                                                        if ($page == $current_page) {
+                                                            echo "<li class='active'><span>$page</span></li>";
+                                                        } else {
+                                                            echo "<li><a href='?page=$page'>$page</a></li>";
+                                                        }
+                                                    }
+                                                    if ($current_page < $total_pages) {
+                                                        echo "<li><a href='?page=" . ($current_page + 1) . "'>Próximo »</a></li>";
+                                                    }
+                                                    ?>
+                                                </ul>
                                             </div>
 
                                             <?php

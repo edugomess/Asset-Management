@@ -103,7 +103,7 @@ $closed_string = implode(",", $closed_data);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top"
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
                     style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
@@ -119,43 +119,34 @@ $closed_string = implode(",", $closed_data);
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
                                 style="width: 100%; display: none;"></div>
                         </form>
+
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
-                                    aria-expanded="false" data-toggle="dropdown" href="#"><i
-                                        class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in"
-                                    aria-labelledby="searchDropdown">
-                                    <form class="form-inline mr-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small"
-                                                type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0"
-                                                    type="button"><i class="fas fa-search"></i></button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </li>
-
-
-                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                            class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
+                                    href="#">
+                                    <span
+                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile"
+                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i
+                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i
+                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                        Manutenção</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="logout.php" class="dropdown-item"><i
+                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
                         </ul>
+
                     </div>
                 </nav>
-                <div class="container-fluid">
+                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
                         <h3 class="text-dark mb-0">Dashboard</h3>
                         <div class="d-flex align-items-center">
@@ -251,7 +242,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             }
                         }
                         // (Closed data already computed above, no duplicate query needed)
-
+                        
                         // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
                         $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
                         $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
@@ -305,11 +296,11 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
                         // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
                         // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
-
+                        
                         // Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
                         // ou manter o layout fixo e preencher com o que encontrar.
                         // Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
-
+                        
                         // Card 1: Desktops
                         $total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
                         $disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
@@ -567,13 +558,17 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         <div class="col-lg-12">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos
+                                    </h6>
                                     <form method="GET" class="form-inline">
                                         <!-- Preservar filtro de recorrência ao filtrar SLA -->
-                                        <input type="hidden" name="mes_recorrencia" value="<?php echo $mes_rec_filtro; ?>">
-                                        <input type="hidden" name="ano_recorrencia" value="<?php echo $ano_rec_filtro; ?>">
+                                        <input type="hidden" name="mes_recorrencia"
+                                            value="<?php echo $mes_rec_filtro; ?>">
+                                        <input type="hidden" name="ano_recorrencia"
+                                            value="<?php echo $ano_rec_filtro; ?>">
 
-                                        <select name="mes_ranking" id="mes_ranking" class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                        <select name="mes_ranking" id="mes_ranking"
+                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
                                             <?php
                                             foreach ($meses as $num => $nome) {
                                                 $selected = ($num == $mes_filtro) ? 'selected' : '';
@@ -581,7 +576,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             }
                                             ?>
                                         </select>
-                                        <select name="ano_ranking" id="ano_ranking" class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                        <select name="ano_ranking" id="ano_ranking"
+                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
                                             <?php
                                             for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
                                                 $selected = ($i == $ano_filtro) ? 'selected' : '';
@@ -589,9 +585,11 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             }
                                             ?>
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm mr-2" style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
+                                        <button type="submit" class="btn btn-primary btn-sm mr-2"
+                                            style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
                                         <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
-                                            id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                            id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm"
+                                            style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
                                         </a>
                                     </form>
@@ -637,14 +635,14 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                <?php
+                                                    <?php
                                                 endforeach; ?>
                                                 <?php if (empty($ranking_data)): ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">Nenhum chamado finalizado neste
                                                             período.</td>
                                                     </tr>
-                                                <?php
+                                                    <?php
                                                 endif; ?>
                                             </tbody>
                                         </table>
@@ -664,8 +662,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         <input type="hidden" name="mes_ranking" value="<?php echo $mes_filtro; ?>">
                                         <input type="hidden" name="ano_ranking" value="<?php echo $ano_filtro; ?>">
 
-                                        <select name="mes_recorrencia" id="mes_recorrencia" class="form-control form-control-sm mr-2"
-                                            style="font-size: 0.75rem;">
+                                        <select name="mes_recorrencia" id="mes_recorrencia"
+                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
                                             <?php
                                             foreach ($meses as $num => $nome) {
                                                 $selected = ($num == $mes_rec_filtro) ? 'selected' : '';
@@ -673,8 +671,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             }
                                             ?>
                                         </select>
-                                        <select name="ano_recorrencia" id="ano_recorrencia" class="form-control form-control-sm mr-2"
-                                            style="font-size: 0.75rem;">
+                                        <select name="ano_recorrencia" id="ano_recorrencia"
+                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
                                             <?php
                                             for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
                                                 $selected = ($i == $ano_rec_filtro) ? 'selected' : '';
@@ -685,7 +683,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         <button type="submit" class="btn btn-primary btn-sm mr-2"
                                             style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
                                         <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
-                                            id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm" style="font-size: 0.7rem; background: #e74a3b;">
+                                            id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm"
+                                            style="font-size: 0.7rem; background: #e74a3b;">
                                             <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
                                         </a>
                                     </form>
@@ -698,7 +697,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
                                             $cor = $cores[$i % count($cores)];
                                             $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
-                                    ?>
+                                            ?>
                                             <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
                                                     class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
                                             <div class="progress mb-4">
@@ -708,7 +707,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                     <?php echo $rec['total']; ?>
                                                 </div>
                                             </div>
-                                    <?php
+                                            <?php
                                         }
                                     } else {
                                         echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
@@ -721,11 +720,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                 </div>
             </div>
             <footer class="sticky-footer">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
-                    </div>
-                </div>
+                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                </section>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

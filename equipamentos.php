@@ -98,7 +98,8 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top" style="margin: 5px 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -113,29 +114,32 @@ include 'conexao.php';
                                 style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                            class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="login.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
+                                    href="#">
+                                    <span
+                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile"
+                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i
+                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i
+                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                        Manutenção</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="logout.php"><i
+                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
                         </ul>
                     </div>
                 </nav>
 
-                <div class="container-fluid">
+                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <div class="row">
                         <?php
                         // Buscar contagens de ativos
@@ -504,11 +508,9 @@ include 'conexao.php';
                 </div>
             </div>
             <footer class="sticky-footer">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
-                    </div>
-                </div>
+                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                </section>
             </footer>
         </div>
 

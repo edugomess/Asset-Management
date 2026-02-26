@@ -108,7 +108,8 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand shadow mb-1 topbar static-top" style="margin: 5px 23px;">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <form
@@ -123,41 +124,31 @@ include 'conexao.php';
                                 style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
-                                <div class="theme-switch-wrapper" title="Alternar Modo Noturno">
-                                    <label class="theme-switch" for="darkModeToggle">
-                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                                        <span class="slider round"></span>
-                                    </label>
-                                    <i id="themeIcon" class="fas fa-sun text-warning ml-2"></i>
-                                </div>
-                            </li>
-                            <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small">
-                                            <?php echo htmlspecialchars($_SESSION['nome_usuario']); ?>
-                                        </span><img class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="login.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
+                                    href="#">
+                                    <span
+                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile"
+                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i
+                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i
+                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                        Manutenção</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="login.php" class="dropdown-item"><i
+                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
                         </ul>
                     </div>
                 </nav>
-                <div class="container-fluid">
+                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4">Gestão de Licenças de Software</h3>
                     <div class="card shadow">
                         <div class="card-body">
@@ -569,11 +560,9 @@ include 'conexao.php';
                 }
             </script>
             <footer class="sticky-footer">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>DEGB&nbsp;Copyright © 2015-2024</span>
-                    </div>
-                </div>
+                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                </section>
             </footer>
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

@@ -70,7 +70,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content" style="margin: 0px;">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 23px;">
+                    style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
                         <ul class="navbar-nav flex-nowrap ml-auto">

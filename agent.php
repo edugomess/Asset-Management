@@ -154,30 +154,44 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-1 topbar static-top"
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
                     style="margin: 5px 23px;">
                     <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i
                             class="fas fa-bars"></i></button>
+                    <form
+                        class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                        <div class="input-group">
+                            <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..."
+                                id="globalSearchInput" autocomplete="off">
+                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
+                                    style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
+                        </div>
+                        <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
+                            style="width: 100%; display: none;"></div>
+                    </form>
                     <ul class="navbar-nav flex-nowrap ml-auto">
                         <li class="nav-item dropdown no-arrow">
-                            <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                    aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                        class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>"></a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                        class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                        class="dropdown-item" href="#"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <div class="dropdown-divider"></div><a class="dropdown-item" href="logout.php"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
+                            <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
+                                <span
+                                    class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                <img class="border rounded-circle img-profile"
+                                    src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
+                            </a>
+                            <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                <a class="dropdown-item" href="profile.php"><i
+                                        class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                <a class="dropdown-item" href="configuracoes.php"><i
+                                        class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                        class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="logout.php" class="dropdown-item"><i
+                                        class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                             </div>
                         </li>
                     </ul>
                 </nav>
-                <div class="container-fluid">
+                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4">Agente Inteligente - Assistente Virtual</h3>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -234,10 +248,10 @@ include 'conexao.php';
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer" style="padding: 0;">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>DEGB Copyright © 2015-2024</span></div>
-                </div>
+            <footer class="sticky-footer">
+                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                </section>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
@@ -354,6 +368,8 @@ include 'conexao.php';
             });
         }
     </script>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
 </body>
 
 </html>

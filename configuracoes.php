@@ -55,6 +55,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $message = "Configurações de depreciação atualizadas com sucesso!";
 }
 
+// Process Alerts form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
+    $wa_ativo = isset($_POST['alertas']['whatsapp']) ? 1 : 0;
+    $email_ativo = isset($_POST['alertas']['email']) ? 1 : 0;
+
+    mysqli_query($conn, "UPDATE configuracoes_alertas SET whatsapp_ativo = $wa_ativo, email_ativo = $email_ativo WHERE id = 1");
+    $message = "Configurações de canais de alerta atualizadas com sucesso!";
+}
+
 // Fetch current settings
 $configs = [];
 // Check column name first to be safe or assume rename worked. 
@@ -84,6 +93,13 @@ $dep_config = [
 $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
 if ($result_dep && mysqli_num_rows($result_dep) > 0) {
     $dep_config = mysqli_fetch_assoc($result_dep);
+}
+
+// Fetch alert settings
+$alert_config = ['whatsapp_ativo' => 1, 'email_ativo' => 1];
+$result_alert = mysqli_query($conn, "SELECT * FROM configuracoes_alertas LIMIT 1");
+if ($result_alert && mysqli_num_rows($result_alert) > 0) {
+    $alert_config = mysqli_fetch_assoc($result_alert);
 }
 
 // Fetch per-category donation eligibility
@@ -423,6 +439,52 @@ function getHoursAndMinutes($total_minutes)
                                         <button type="submit" class="btn btn-primary"
                                             style="background: rgb(44,64,74);">Salvar Configurações de
                                             Depreciação</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Seção de Canais de Alerta -->
+                    <div class="card shadow mt-4 mb-4">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 font-weight-bold">Canais de Notificação e Alerta</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="configuracoes.php">
+                                <p class="mb-4">Escolha por quais canais você deseja receber os alertas do sistema (Novos chamados e Manutenções).</p>
+                                
+                                <input type="hidden" name="alertas" value="1">
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">WhatsApp</label>
+                                    <div class="col-sm-9">
+                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                            <input type="checkbox" class="custom-control-input" id="alertWhatsApp"
+                                                name="alertas[whatsapp]" value="1" <?php echo ($alert_config['whatsapp_ativo'] == 1) ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="alertWhatsApp">
+                                                Receber alertas via WhatsApp
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold">E-mail</label>
+                                    <div class="col-sm-9">
+                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                            <input type="checkbox" class="custom-control-input" id="alertEmail"
+                                                name="alertas[email]" value="1" <?php echo ($alert_config['email_ativo'] == 1) ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="alertEmail">
+                                                Receber alertas via E-mail
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-10">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="background: rgb(44,64,74);">Salvar Canais de Alerta</button>
                                     </div>
                                 </div>
                             </form>

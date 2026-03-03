@@ -79,6 +79,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Outros -->
     <div class="sidebar-heading">Inteligência & Ajuda</div>
     <li class="nav-item">
+        <a class="nav-link <?php echo ($current_page == 'insights.php') ? 'active' : ''; ?>" href="/insights.php">
+            <i class="fas fa-lightbulb"></i><span>Previsão & Prevenção</span>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'agent.php') ? 'active' : ''; ?>" href="/agent.php">
             <i class="fas fa-brain"></i><span>Assistente IA</span>
         </a>

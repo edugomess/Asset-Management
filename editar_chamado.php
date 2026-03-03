@@ -187,8 +187,29 @@ $result_users = $conn->query($sql_users);
                                 </div>
                                 <div class="form-group">
                                     <label>Descrição</label>
-                                    <textarea class="form-control" rows="5"
+                                    <textarea id="chamado-descricao" class="form-control" rows="5"
                                         readonly><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
+                                </div>
+
+                                <!-- SUGESTÃO DE IA -->
+                                <div class="form-group mt-3">
+                                    <div class="card bg-light border-left-info shadow-sm">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex align-items-center">
+                                                <div class="mr-3">
+                                                    <i class="fas fa-magic fa-lg text-info"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="small text-info font-weight-bold text-uppercase">
+                                                        Sugestão de Ação (IA)</div>
+                                                    <div id="ai-suggestion-text" class="text-dark small">
+                                                        <span class="spinner-border spinner-border-sm text-info"
+                                                            role="status"></span> Analisando chamado...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <?php if (!empty($chamado['anexo'])): ?>
@@ -362,6 +383,28 @@ $result_users = $conn->query($sql_users);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script>
+        $(document).ready(function() {
+            // Carregar sugestão da IA para o chamado
+            const titulo = "<?php echo addslashes($chamado['titulo']); ?>";
+            const descricao = <?php echo json_encode($chamado['descricao']); ?>;
+            
+            fetch('agent_chamado.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `titulo=${encodeURIComponent(titulo)}&descricao=${encodeURIComponent(descricao)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const textContainer = document.getElementById('ai-suggestion-text');
+                let reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                reply = reply.replace(/\n/g, '<br>');
+                textContainer.innerHTML = reply;
+            })
+            .catch(error => {
+                document.getElementById('ai-suggestion-text').innerHTML = '⚠️ Não foi possível obter sugestão da IA.';
+            });
+        });
+
         function toggleEditNota(btn, idx) {
             var container = btn.closest('.nota-historico');
             var textarea = container.querySelector('textarea');

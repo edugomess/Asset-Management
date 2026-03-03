@@ -76,8 +76,14 @@ function notificarNovoChamado($chamado_id, $conn)
         $email_sucesso = false;
         $wa_sucesso = false;
 
+        // --- BUSCAR CONFIGURAÇÕES DE ALERTA DO BANCO ---
+        $res_alert = $conn->query("SELECT * FROM configuracoes_alertas LIMIT 1");
+        $alert_sys = $res_alert->fetch_assoc();
+        $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
+        $email_allow = $alert_sys['email_ativo'] ?? 1;
+
         // --- ENVIO DE WHATSAPP ---
-        if (defined('WA_ATIVO') && WA_ATIVO) {
+        if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
             $msg_wa = "🆕 *Novo Chamado Aberto (#$chamado_id)*\n\n";
             $msg_wa .= "*Título:* $titulo\n";
             $msg_wa .= "*Solicitante:* $nome_completo\n";
@@ -88,24 +94,25 @@ function notificarNovoChamado($chamado_id, $conn)
         }
 
         // --- ENVIO DE E-MAIL (PHPMailer) ---
-        $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = SMTP_HOST;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USER;
-            $mail->Password = SMTP_PASS;
-            $mail->SMTPSecure = SMTP_SECURE == 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port = SMTP_PORT;
-            $mail->CharSet = 'UTF-8';
+        if ($email_allow) {
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = SMTP_HOST;
+                $mail->SMTPAuth = true;
+                $mail->Username = SMTP_USER;
+                $mail->Password = SMTP_PASS;
+                $mail->SMTPSecure = SMTP_SECURE == 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = SMTP_PORT;
+                $mail->CharSet = 'UTF-8';
 
-            $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
-            $mail->addAddress(EMAIL_ADMIN);
+                $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
+                $mail->addAddress(EMAIL_ADMIN);
 
-            $mail->isHTML(true);
-            $mail->Subject = EMAIL_ASSUNTO_NOVO_CHAMADO;
+                $mail->isHTML(true);
+                $mail->Subject = EMAIL_ASSUNTO_NOVO_CHAMADO;
 
-            $mail->Body = "
+                $mail->Body = "
             <html>
             <head>
                 <style>
@@ -140,10 +147,11 @@ function notificarNovoChamado($chamado_id, $conn)
             </body>
             </html>";
 
-            $mail->send();
-            $email_sucesso = true;
-        } catch (Exception $e) {
-            error_log("Erro e-mail (#$chamado_id): {$mail->ErrorInfo}");
+                $mail->send();
+                $email_sucesso = true;
+            } catch (Exception $e) {
+                error_log("Erro e-mail (#$chamado_id): {$mail->ErrorInfo}");
+            }
         }
 
         return ($email_sucesso || $wa_sucesso);
@@ -186,8 +194,14 @@ function notificarManutencao($id_asset, $conn)
         $wa_sucesso = false;
         $email_sucesso = false;
 
+        // --- BUSCAR CONFIGURAÇÕES DE ALERTA DO BANCO ---
+        $res_alert = $conn->query("SELECT * FROM configuracoes_alertas LIMIT 1");
+        $alert_sys = $res_alert->fetch_assoc();
+        $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
+        $email_allow = $alert_sys['email_ativo'] ?? 1;
+
         // --- WHATSAPP ---
-        if (defined('WA_ATIVO') && WA_ATIVO) {
+        if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
             $msg_wa = "🛠️ *Ativo em Manutenção*\n\n";
             $msg_wa .= "*Ativo:* $hostName ($categoria)\n";
             $msg_wa .= "*Modelo:* $modelo\n";
@@ -196,24 +210,25 @@ function notificarManutencao($id_asset, $conn)
         }
 
         // --- E-MAIL ---
-        $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = SMTP_HOST;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USER;
-            $mail->Password = SMTP_PASS;
-            $mail->SMTPSecure = SMTP_SECURE == 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port = SMTP_PORT;
-            $mail->CharSet = 'UTF-8';
+        if ($email_allow) {
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = SMTP_HOST;
+                $mail->SMTPAuth = true;
+                $mail->Username = SMTP_USER;
+                $mail->Password = SMTP_PASS;
+                $mail->SMTPSecure = SMTP_SECURE == 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = SMTP_PORT;
+                $mail->CharSet = 'UTF-8';
 
-            $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
-            $mail->addAddress(EMAIL_ADMIN);
+                $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
+                $mail->addAddress(EMAIL_ADMIN);
 
-            $mail->isHTML(true);
-            $mail->Subject = "[ALERTA] Ativo enviado para Manutenção - $hostName";
+                $mail->isHTML(true);
+                $mail->Subject = "[ALERTA] Ativo enviado para Manutenção - $hostName";
 
-            $mail->Body = "
+                $mail->Body = "
             <html>
             <body style='font-family: Arial, sans-serif;'>
                 <div style='background: #f84c4c; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0;'>
@@ -227,10 +242,11 @@ function notificarManutencao($id_asset, $conn)
             </body>
             </html>";
 
-            $mail->send();
-            $email_sucesso = true;
-        } catch (Exception $e) {
-            error_log("Erro e-mail manutenção (#$id_asset): {$mail->ErrorInfo}");
+                $mail->send();
+                $email_sucesso = true;
+            } catch (Exception $e) {
+                error_log("Erro e-mail manutenção (#$id_asset): {$mail->ErrorInfo}");
+            }
         }
 
         return ($email_sucesso || $wa_sucesso);

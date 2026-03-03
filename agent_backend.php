@@ -138,7 +138,7 @@ function callGemini($userMessage, $systemContext, $apiKey, $conversationHistory 
     }
 
     // Models in order of performance/availability
-    $models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    $models = ['gemini-flash-latest'];
 
     // Build payload
     $payload = [

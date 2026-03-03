@@ -1,8 +1,9 @@
 <?php
 /**
  * Script para processar notificações em segundo plano (CLI).
- * Este script deve ser chamado via linha de comando passando o ID do chamado.
- * Exemplo: php processar_notificacao.php 123
+ * Este script deve ser chamado via linha de comando passando o ID e o Tipo.
+ * Exemplo: php processar_notificacao.php 123 chamado
+ * Exemplo: php processar_notificacao.php 45 manutencao
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -10,16 +11,22 @@ if (php_sapi_name() !== 'cli') {
 }
 
 if ($argc < 2) {
-    die("Uso: php processar_notificacao.php [ID_CHAMADO]");
+    die("Uso: php processar_notificacao.php [ID] [TIPO]");
 }
 
-$chamado_id = (int) $argv[1];
+$id = (int) $argv[1];
+$tipo = isset($argv[2]) ? $argv[2] : 'chamado';
 
 require_once 'conexao.php';
 require_once 'funcoes_email.php';
 
-// Chama a função que já contém a lógica de e-mail e WhatsApp
-notificarNovoChamado($chamado_id, $conn);
+if ($tipo === 'manutencao') {
+    // Alerta de Ativo em Manutenção
+    notificarManutencao($id, $conn);
+} else {
+    // Alerta de Novo Chamado (Padrão)
+    notificarNovoChamado($id, $conn);
+}
 
 $conn->close();
 ?>

@@ -37,6 +37,11 @@ if ($acao === 'iniciar') {
         $conn->query("UPDATE ativos SET status = 'Inativo' WHERE id_asset = $id_asset");
         // Log no histórico
         $conn->query("INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ($id_asset, $admin_id, 'Manutenção', 'Ativo enviado para manutenção: $observacoes')");
+
+        // Disparar alerta via E-mail e WhatsApp em segundo plano
+        include_once 'funcoes_email.php';
+        dispararNotificacaoBackground($id_asset, 'manutencao');
+
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Erro ao salvar: ' . $conn->error]);

@@ -240,9 +240,7 @@ include 'conexao.php';
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
-                                <small class="text-muted"><i class="fas fa-bolt" style="color: #fbbc05;"></i> Powered by
-                                    Google Gemini 2.0 + Dados do Sistema</small>
-                                <small class="text-muted">v2.0 Intelligent Mode</small>
+
                             </div>
                         </div>
                     </div>
@@ -286,12 +284,12 @@ include 'conexao.php';
 
             // Send to backend
             fetch('agent_backend.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'message=' + encodeURIComponent(message)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
                 .then(response => response.json())
                 .then(data => {
                     removeMessage(loadingId);

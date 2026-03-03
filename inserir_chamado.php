@@ -60,8 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $anexo_escaped = mysqli_real_escape_string($conn, $anexo_path);
         $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id, anexo) 
                 VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id', '$anexo_escaped')";
-    }
-    else {
+    } else {
         $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id) 
                 VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id')";
     }
@@ -69,23 +68,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($conn->query($sql) === TRUE) {
         $last_id = $conn->insert_id;
 
+        // Disparar alerta por e-mail
+        include_once 'funcoes_email.php';
+        notificarNovoChamado($last_id, $conn);
+
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             header('Content-Type: application/json');
             echo json_encode(['status' => 'success', 'id' => $last_id, 'message' => 'Chamado criado com sucesso!']);
             exit();
-        }
-        else {
+        } else {
             header("Location: chamados.php");
             exit();
         }
-    }
-    else {
+    } else {
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             header('Content-Type: application/json');
             echo json_encode(['status' => 'error', 'message' => 'Erro ao criar chamado: ' . $conn->error]);
             exit();
-        }
-        else {
+        } else {
             echo "Erro: " . $sql . "<br>" . $conn->error;
         }
     }

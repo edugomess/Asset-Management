@@ -9,11 +9,49 @@ require 'libs/PHPMailer/SMTP.php';
 include_once 'config_notificacoes.php';
 
 /**
- * Envia um e-mail de alerta para um novo chamado criado usando PHPMailer (SMTP).
+ * Envia uma mensagem via WhatsApp usando a API CallMeBot.
+ * 
+ * @param string $mensagem Texto da mensagem (suporta markdown básico do WA).
+ * @return bool Retorna true se a mensagem foi enfileirada com sucesso.
+ */
+function enviarWhatsApp($mensagem)
+{
+    if (!defined('WA_ATIVO') || !WA_ATIVO || WA_APIKEY === 'COLOQUE_SUA_API_KEY_AQUI') {
+        return false;
+    }
+
+    // Garantir que a mensagem esteja em UTF-8 para evitar caracteres quebrados
+    if (mb_detect_encoding($mensagem, 'UTF-8', true) === false) {
+        $mensagem = mb_convert_encoding($mensagem, 'UTF-8');
+    }
+
+    $mensagem_encoded = urlencode($mensagem);
+    $url = "https://api.callmebot.com/whatsapp.php?phone=" . str_replace("+", "", WA_TELEFONE) . "&text=" . $mensagem_encoded . "&apikey=" . WA_APIKEY;
+
+    $context = stream_context_create([
+        "http" => [
+            "method" => "GET",
+            "header" => "User-Agent: PHPScript",
+            "timeout" => 5 // Timeout de 5 segundos para não travar o sistema
+        ]
+    ]);
+
+    $response = @file_get_contents($url, false, $context);
+
+    if ($response === false) {
+        error_log("Erro de conexão com a API do CallMeBot.");
+        return false;
+    }
+
+    return (strpos($response, 'Message queued') !== false || strpos($response, 'Success') !== false);
+}
+
+/**
+ * Envia um e-mail de alerta e um WhatsApp para um novo chamado criado.
  * 
  * @param int $chamado_id ID do chamado recém-criado.
  * @param mysqli $conn Conexão com o banco de dados.
- * @return bool Retorna true se o envio foi bem-sucedido.
+ * @return bool Retorna true se ao menos uma notificação foi disparada com sucesso.
  */
 function notificarNovoChamado($chamado_id, $conn)
 {
@@ -33,10 +71,29 @@ function notificarNovoChamado($chamado_id, $conn)
     $result = $stmt->get_result();
 
     if ($row = $result->fetch_assoc()) {
-        $mail = new PHPMailer(true);
+        $nome_completo = trim($row['nome'] . ' ' . $row['sobrenome']);
+        $titulo = $row['titulo'];
+        $categoria = $row['categoria'];
+        $prioridade = $row['prioridade'];
+        $descricao = $row['descricao'];
 
+        $email_sucesso = false;
+        $wa_sucesso = false;
+
+        // --- ENVIO DE WHATSAPP ---
+        if (defined('WA_ATIVO') && WA_ATIVO) {
+            $msg_wa = "🆕 *Novo Chamado Aberto (#$chamado_id)*\n\n";
+            $msg_wa .= "*Título:* $titulo\n";
+            $msg_wa .= "*Solicitante:* $nome_completo\n";
+            $msg_wa .= "*Categoria:* $categoria\n";
+            $msg_wa .= "*Prioridade:* $prioridade\n";
+
+            $wa_sucesso = enviarWhatsApp($msg_wa);
+        }
+
+        // --- ENVIO DE E-MAIL (PHPMailer) ---
+        $mail = new PHPMailer(true);
         try {
-            // Configurações do Servidor
             $mail->isSMTP();
             $mail->Host = SMTP_HOST;
             $mail->SMTPAuth = true;
@@ -46,19 +103,11 @@ function notificarNovoChamado($chamado_id, $conn)
             $mail->Port = SMTP_PORT;
             $mail->CharSet = 'UTF-8';
 
-            // Destinatários
-            $mail->setFrom(SMTP_USER, 'Sistema de Chamados Asset Mgt');
+            $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
             $mail->addAddress(EMAIL_ADMIN);
 
-            // Conteúdo
             $mail->isHTML(true);
             $mail->Subject = EMAIL_ASSUNTO_NOVO_CHAMADO;
-
-            $nome_completo = trim($row['nome'] . ' ' . $row['sobrenome']);
-            $titulo = $row['titulo'];
-            $categoria = $row['categoria'];
-            $prioridade = $row['prioridade'];
-            $descricao = $row['descricao'];
 
             $mail->Body = "
             <html>
@@ -96,14 +145,32 @@ function notificarNovoChamado($chamado_id, $conn)
             </html>";
 
             $mail->send();
-            return true;
+            $email_sucesso = true;
         } catch (Exception $e) {
-            // Em caso de erro, podemos logar em um arquivo se necessário
-            error_log("Erro ao enviar e-mail: {$mail->ErrorInfo}");
-            return false;
+            error_log("Erro e-mail (#$chamado_id): {$mail->ErrorInfo}");
         }
+
+        return ($email_sucesso || $wa_sucesso);
     }
 
     return false;
+}
+
+/**
+ * Dispara o processo de notificação em segundo plano (Assíncrono).
+ * 
+ * @param int $chamado_id ID do chamado.
+ */
+function dispararNotificacaoBackground($chamado_id)
+{
+    // Caminho para o executável do PHP no XAMPP
+    $php_path = 'c:\\xampp\\php\\php.exe';
+    $script_path = 'c:\\xampp\\htdocs\\processar_notificacao.php';
+
+    // Comando para rodar em background no Windows (sem abrir janela)
+    // start /B abre o processo em segundo plano
+    $comando = "start /B $php_path $script_path $chamado_id";
+
+    pclose(popen($comando, "r"));
 }
 ?>

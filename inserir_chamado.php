@@ -68,9 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($conn->query($sql) === TRUE) {
         $last_id = $conn->insert_id;
 
-        // Disparar alerta por e-mail
+        // Disparar alerta por e-mail e WhatsApp em segundo plano
         include_once 'funcoes_email.php';
-        notificarNovoChamado($last_id, $conn);
+        dispararNotificacaoBackground($last_id);
 
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             header('Content-Type: application/json');

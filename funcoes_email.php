@@ -81,17 +81,48 @@ function notificarNovoChamado($chamado_id, $conn)
         $alert_sys = $res_alert->fetch_assoc();
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
+        $chamados_allow = $alert_sys['chamados_ativo'] ?? 1;
+
+        if (!$chamados_allow) {
+            return false;
+        }
+
         $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
+
+        // Mapear categoria para coluna do banco
+        $cat_col = "";
+        if ($categoria == 'Incidente')
+            $cat_col = "cat_incidente";
+        elseif ($categoria == 'Mudança')
+            $cat_col = "cat_mudanca";
+        elseif ($categoria == 'Requisição')
+            $cat_col = "cat_requisicao";
+
+        // Verificar se a categoria está ativa globalmente
+        if (!empty($cat_col) && !($alert_sys[$cat_col] ?? 1)) {
+            return false;
+        }
 
         // --- ENVIO DE WHATSAPP ---
         if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
-            $msg_wa = "🆕 *Novo Chamado Aberto (#$chamado_id)*\n\n";
-            $msg_wa .= "*Título:* $titulo\n";
-            $msg_wa .= "*Solicitante:* $nome_completo\n";
-            $msg_wa .= "*Categoria:* $categoria\n";
-            $msg_wa .= "*Prioridade:* $prioridade\n";
+            // Mapear prioridade para coluna do banco
+            $wa_priority_col = "whatsapp_prioridade_baixa";
+            if ($prioridade == 'Alta')
+                $wa_priority_col = "whatsapp_prioridade_alta";
+            elseif ($prioridade == 'Média')
+                $wa_priority_col = "whatsapp_prioridade_media";
 
-            $wa_sucesso = enviarWhatsApp($msg_wa);
+            $should_send_wa = $alert_sys[$wa_priority_col] ?? 1;
+
+            if ($should_send_wa) {
+                $msg_wa = "🆕 *Novo Chamado Aberto (#$chamado_id)*\n\n";
+                $msg_wa .= "*Título:* $titulo\n";
+                $msg_wa .= "*Solicitante:* $nome_completo\n";
+                $msg_wa .= "*Categoria:* $categoria\n";
+                $msg_wa .= "*Prioridade:* $prioridade\n";
+
+                $wa_sucesso = enviarWhatsApp($msg_wa);
+            }
         }
 
         // --- ENVIO DE E-MAIL (PHPMailer) ---
@@ -109,10 +140,18 @@ function notificarNovoChamado($chamado_id, $conn)
 
                 $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
 
-                // Buscar todos os destinatários da tabela dinâmica
+                // Mapear prioridade para coluna do banco
+                $priority_col = "prioridade_baixa";
+                if ($prioridade == 'Alta')
+                    $priority_col = "prioridade_alta";
+                elseif ($prioridade == 'Média')
+                    $priority_col = "prioridade_media";
+
+                // Buscar apenas destinatários que desejam receber esta prioridade, este tipo de evento e esta categoria
                 $res_emails = $conn->query("SELECT u.email 
                                           FROM destinatarios_alertas d 
-                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios");
+                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios
+                                          WHERE d.$priority_col = 1 AND d.recebe_chamados = 1 AND d.$cat_col = 1");
                 $has_recipients = false;
                 while ($dest_email = $res_emails->fetch_assoc()) {
                     $mail->addAddress($dest_email['email']);
@@ -214,6 +253,12 @@ function notificarManutencao($id_asset, $conn)
         $alert_sys = $res_alert->fetch_assoc();
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
+        $manutencao_allow = $alert_sys['manutencao_ativo'] ?? 1;
+
+        if (!$manutencao_allow) {
+            return false;
+        }
+
         $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
         // --- WHATSAPP ---
@@ -240,10 +285,11 @@ function notificarManutencao($id_asset, $conn)
 
                 $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
 
-                // Buscar todos os destinatários da tabela dinâmica
+                // Buscar todos os destinatários da tabela dinâmica que recebem manutenção
                 $res_emails = $conn->query("SELECT u.email 
                                           FROM destinatarios_alertas d 
-                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios");
+                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios
+                                          WHERE d.recebe_manutencao = 1");
                 $has_recipients = false;
                 while ($dest_email = $res_emails->fetch_assoc()) {
                     $mail->addAddress($dest_email['email']);

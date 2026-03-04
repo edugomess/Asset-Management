@@ -160,6 +160,34 @@ function getHoursAndMinutes($total_minutes)
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
     <?php include 'sidebar_style.php'; ?>
+    <style>
+        .badge-priority {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.65rem;
+            padding: 0.3em 0.6em;
+        }
+
+        .badge-priority:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .badge-inactive {
+            background-color: #f8f9fc !important;
+            color: #d1d3e2 !important;
+            border: 1px dashed #d1d3e2 !important;
+            opacity: 0.7;
+        }
+
+        .badge-priority.active {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -472,18 +500,96 @@ function getHoursAndMinutes($total_minutes)
 
                                 <input type="hidden" name="alertas" value="1">
 
-                                <div class="form-group row">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="card bg-light border-0 shadow-none">
+                                            <div
+                                                class="card-body py-2 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-0 font-weight-bold">Novos Chamados</h6>
+                                                    <small class="text-muted">Ativar e-mail e WhatsApp</small>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input event-toggle"
+                                                        id="toggleChamados" data-event="chamados" <?php echo ($alert_config['chamados_ativo'] ?? 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="toggleChamados"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light border-0 shadow-none">
+                                            <div
+                                                class="card-body py-2 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-0 font-weight-bold">Manutenções</h6>
+                                                    <small class="text-muted">Ativar e-mail e WhatsApp</small>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input event-toggle"
+                                                        id="toggleManutencao" data-event="manutencao" <?php echo ($alert_config['manutencao_ativo'] ?? 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="toggleManutencao"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row align-items-center mb-0">
                                     <label class="col-sm-3 col-form-label font-weight-bold">WhatsApp</label>
-                                    <div class="col-sm-9">
+                                    <div class="col-sm-3">
                                         <div class="custom-control custom-switch" style="margin-top: 7px;">
                                             <input type="checkbox" class="custom-control-input" id="alertWhatsApp"
                                                 name="alertas[whatsapp]" value="1" <?php echo ($alert_config['whatsapp_ativo'] == 1) ? 'checked' : ''; ?>>
                                             <label class="custom-control-label" for="alertWhatsApp">
-                                                Receber alertas via WhatsApp
+                                                Receber alertas
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="col-sm-6 d-flex align-items-center">
+                                        <div class="priority-badges-global mr-3">
+                                            <span
+                                                class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_alta'] ?? 1) ? 'badge-danger active' : 'badge-inactive'; ?>"
+                                                data-priority="alta"
+                                                title="<?php echo ($alert_config['whatsapp_prioridade_alta'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Alta</span>
+                                            <span
+                                                class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_media'] ?? 1) ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
+                                                data-priority="media"
+                                                title="<?php echo ($alert_config['whatsapp_prioridade_media'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Média</span>
+                                            <span
+                                                class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_baixa'] ?? 1) ? 'badge-success active' : 'badge-inactive'; ?>"
+                                                data-priority="baixa"
+                                                title="<?php echo ($alert_config['whatsapp_prioridade_baixa'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Baixa</span>
+                                        </div>
+                                        <small class="text-muted"><i class="fas fa-info-circle mr-1"></i> Filtre quais
+                                            prioridades enviar</small>
+                                    </div>
                                 </div>
+
+                                <div class="form-group row align-items-center mb-0 mt-2">
+                                    <label class="col-sm-3 col-form-label font-weight-bold pt-0">Categorias
+                                        (WhatsApp)</label>
+                                    <div class="col-sm-9 d-flex align-items-center">
+                                        <div class="category-badges-global mr-3">
+                                            <span
+                                                class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_incidente'] ?? 1) ? 'badge-info active' : 'badge-inactive'; ?>"
+                                                data-category="incidente"
+                                                title="<?php echo ($alert_config['cat_incidente'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Incidente</span>
+                                            <span
+                                                class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_mudanca'] ?? 1) ? 'badge-primary active' : 'badge-inactive'; ?>"
+                                                data-category="mudanca"
+                                                title="<?php echo ($alert_config['cat_mudanca'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Mudança</span>
+                                            <span
+                                                class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_requisicao'] ?? 1) ? 'badge-secondary active' : 'badge-inactive'; ?>"
+                                                data-category="requisicao"
+                                                title="<?php echo ($alert_config['cat_requisicao'] ?? 1) ? 'Ativo' : 'Inativo'; ?>">Requisição</span>
+                                        </div>
+                                        <small class="text-muted"><i class="fas fa-filter mr-1"></i> Filtre quais tipos
+                                            de chamado enviar</small>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label font-weight-bold">Gerenciar Destinatários
@@ -505,7 +611,7 @@ function getHoursAndMinutes($total_minutes)
                                                 receberão alertas por e-mail:</h6>
                                             <div id="destinatariosList" class="row mt-2">
                                                 <?php
-                                                $res_dest = $conn->query("SELECT d.id, u.nome, u.sobrenome, u.email 
+                                                $res_dest = $conn->query("SELECT d.*, u.nome, u.sobrenome, u.email 
                                                                         FROM destinatarios_alertas d 
                                                                         JOIN usuarios u ON d.usuario_id = u.id_usuarios");
                                                 if ($res_dest->num_rows == 0):
@@ -513,23 +619,64 @@ function getHoursAndMinutes($total_minutes)
                                                 endif;
                                                 while ($dest = $res_dest->fetch_assoc()):
                                                     ?>
-                                                    <div class="col-md-6 mb-2">
-                                                        <div class="card bg-light border-left-primary shadow-sm h-100 py-2">
+                                                    <div class="col-md-6 mb-2 recipient-card"
+                                                        data-id="<?php echo $dest['id']; ?>">
+                                                        <div class="card bg-light border-left-primary shadow-sm h-100 py-1">
                                                             <div
                                                                 class="card-body py-1 d-flex justify-content-between align-items-center">
-                                                                <div>
+                                                                <div style="flex: 1;">
                                                                     <div
                                                                         class="text-xs font-weight-bold text-primary text-uppercase mb-0">
                                                                         <?php echo htmlspecialchars($dest['nome'] . ' ' . $dest['sobrenome']); ?>
                                                                     </div>
-                                                                    <div class="small text-gray-800">
+                                                                    <div class="text-muted small mb-1">
                                                                         <?php echo htmlspecialchars($dest['email']); ?>
+                                                                    </div>
+                                                                    <div class="priority-badges d-flex align-items-center">
+                                                                        <span
+                                                                            class="badge badge-priority pointer <?php echo $dest['prioridade_alta'] ? 'badge-danger active' : 'badge-inactive'; ?>"
+                                                                            data-priority="alta"
+                                                                            title="<?php echo $dest['prioridade_alta'] ? 'Ativo' : 'Inativo'; ?>">Alta</span>
+                                                                        <span
+                                                                            class="badge badge-priority pointer <?php echo $dest['prioridade_media'] ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
+                                                                            data-priority="media"
+                                                                            title="<?php echo $dest['prioridade_media'] ? 'Ativo' : 'Inativo'; ?>">Média</span>
+                                                                        <span
+                                                                            class="badge badge-priority pointer <?php echo $dest['prioridade_baixa'] ? 'badge-success active' : 'badge-inactive'; ?>"
+                                                                            data-priority="baixa"
+                                                                            title="<?php echo $dest['prioridade_baixa'] ? 'Ativo' : 'Inativo'; ?>">Baixa</span>
+
+                                                                        <div
+                                                                            class="ml-2 pl-2 border-left d-flex align-items-center event-toggles-user">
+                                                                            <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 <?php echo ($dest['recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-400'; ?>"
+                                                                                data-event="chamados"
+                                                                                title="Alertas de Chamados: <?php echo ($dest['recebe_chamados'] ?? 1) ? 'Ativo' : 'Inativo'; ?>"></i>
+                                                                            <i class="fas fa-tools pointer user-event-toggle mr-2 <?php echo ($dest['recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-400'; ?>"
+                                                                                data-event="manutencao"
+                                                                                title="Alertas de Manutenção: <?php echo ($dest['recebe_manutencao'] ?? 1) ? 'Ativo' : 'Inativo'; ?>"></i>
+
+                                                                            <div
+                                                                                class="user-cat-toggles border-left pl-2 d-flex">
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer mr-1 <?php echo ($dest['cat_incidente'] ?? 1) ? 'text-info' : 'text-gray-400'; ?>"
+                                                                                    data-cat="incidente"
+                                                                                    title="Incidente">I</span>
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer mr-1 <?php echo ($dest['cat_mudanca'] ?? 1) ? 'text-primary' : 'text-gray-400'; ?>"
+                                                                                    data-cat="mudanca"
+                                                                                    title="Mudança">M</span>
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer <?php echo ($dest['cat_requisicao'] ?? 1) ? 'text-secondary' : 'text-gray-400'; ?>"
+                                                                                    data-cat="requisicao"
+                                                                                    title="Requisição">R</span>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <button type="button"
-                                                                    class="btn btn-circle btn-sm btn-danger remove-destinatario"
+                                                                    class="btn btn-link text-danger remove-recipient p-0 ml-2"
                                                                     data-id="<?php echo $dest['id']; ?>">
-                                                                    <i class="fas fa-times"></i>
+                                                                    <i class="fas fa-times-circle fa-lg"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -665,20 +812,203 @@ function getHoursAndMinutes($total_minutes)
                 $.post('ajax_alertas.php', { action: 'add', usuario_id: uid }, function (data) {
                     let res = JSON.parse(data);
                     if (res.status === 'success') {
-                        location.reload(); // Simples para atualizar a lista
+                        // Dynamically add the new recipient card
+                        let newRecipient = res.recipient; // Assuming res.recipient contains the new recipient data
+                        let newCardHtml = `
+                            <div class="col-md-6 mb-2 recipient-card" data-id="${res.recipient.id}">
+                                <div class="card bg-light border-left-primary shadow-sm h-100 py-1">
+                                    <div class="card-body py-1 d-flex justify-content-between align-items-center">
+                                        <div style="flex: 1;">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-0">${res.recipient.nome} ${res.recipient.sobrenome || ''}</div>
+                                            <div class="text-muted small mb-1">${res.recipient.email}</div>
+                                            <div class="priority-badges d-flex align-items-center">
+                                                <span class="badge badge-priority active badge-danger pointer" data-priority="alta" title="Ativo">Alta</span>
+                                                <span class="badge badge-priority active badge-warning text-white pointer" data-priority="media" title="Ativo">Média</span>
+                                                <span class="badge badge-priority active badge-success pointer" data-priority="baixa" title="Ativo">Baixa</span>
+                                                
+                                                <div class="ml-2 pl-2 border-left d-flex align-items-center event-toggles-user">
+                                                    <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 text-primary" 
+                                                       data-event="chamados" title="Alertas de Chamados: Ativo"></i>
+                                                    <i class="fas fa-tools pointer user-event-toggle mr-2 text-warning" 
+                                                       data-event="manutencao" title="Alertas de Manutenção: Ativo"></i>
+                                                    <div class="user-cat-toggles border-left pl-2 d-flex">
+                                                        <span class="user-cat-toggle pointer mr-1 font-weight-bold text-info" data-cat="incidente" title="Filtro: Incidente">I</span>
+                                                        <span class="user-cat-toggle pointer mr-1 font-weight-bold text-primary" data-cat="mudanca" title="Filtro: Mudança">M</span>
+                                                        <span class="user-cat-toggle pointer font-weight-bold text-secondary" data-cat="requisicao" title="Filtro: Requisição">R</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-link text-danger p-0 ml-2 btn-remove-dest" data-id="${res.recipient.id}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        $('#destinatariosList').append(newCardHtml);
+                        $('#searchResults').hide();
+                        $('#userSearch').val('');
+                        // If there was a "Nenhum destinatário cadastrado" message, remove it
+                        $('#destinatariosList').find('.col-12.text-muted.small').remove();
                     } else {
                         alert(res.message);
                     }
                 });
             });
 
-            $(document).on('click', '.remove-destinatario', function () {
+            $(document).on('click', '.remove-recipient', function () {
                 let id = $(this).data('id');
                 if (confirm('Remover este destinatário?')) {
                     $.post('ajax_alertas.php', { action: 'remove', id: id }, function (data) {
-                        location.reload();
+                        let res = JSON.parse(data);
+                        if (res.status === 'success') {
+                            $(`.recipient-card[data-id="${id}"]`).remove();
+                            if ($('#destinatariosList').children('.recipient-card').length === 0) {
+                                $('#destinatariosList').html('<div class="col-12 text-muted small">Nenhum destinatário cadastrado.</div>');
+                            }
+                        } else {
+                            alert(res.message);
+                        }
                     });
                 }
+            });
+
+            $(document).on('click', '.badge-priority', function () {
+                let $badge = $(this);
+                let $card = $badge.closest('.recipient-card');
+                let id = $card.data('id');
+                let priority = $badge.data('priority');
+                let isActive = $badge.hasClass('active');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_priority', id: id, priority: priority, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $badge.removeClass('badge-inactive').addClass('active').attr('title', 'Ativo');
+                            if (priority == 'alta') $badge.addClass('badge-danger');
+                            else if (priority == 'media') $badge.addClass('badge-warning text-white');
+                            else $badge.addClass('badge-success');
+                        } else {
+                            $badge.addClass('badge-inactive').removeClass('active badge-danger badge-warning text-white badge-success').attr('title', 'Inativo');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.global-wa-priority', function () {
+                let $badge = $(this);
+                let priority = $badge.data('priority');
+                let isActive = $badge.hasClass('active');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_global_priority', priority: priority, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $badge.removeClass('badge-inactive').addClass('active').attr('title', 'Ativo');
+                            if (priority == 'alta') $badge.addClass('badge-danger');
+                            else if (priority == 'media') $badge.addClass('badge-warning text-white');
+                            else $badge.addClass('badge-success');
+                        } else {
+                            $badge.addClass('badge-inactive').removeClass('active badge-danger badge-warning text-white badge-success').attr('title', 'Inativo');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.global-cat-toggle', function () {
+                let $badge = $(this);
+                let category = $badge.data('category');
+                let isActive = $badge.hasClass('active');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_global_category', category: category, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $badge.addClass('active');
+                            if (category == 'incidente') $badge.removeClass('badge-inactive').addClass('badge-info');
+                            else if (category == 'mudanca') $badge.removeClass('badge-inactive').addClass('badge-primary');
+                            else $badge.removeClass('badge-inactive').addClass('badge-secondary');
+                            $badge.attr('title', 'Ativo');
+                        } else {
+                            $badge.removeClass('active badge-info badge-primary badge-secondary').addClass('badge-inactive');
+                            $badge.attr('title', 'Inativo');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.user-cat-toggle', function () {
+                let $span = $(this);
+                let $card = $span.closest('.recipient-card');
+                let id = $card.data('id');
+                let category = $span.data('cat');
+                let isActive = !$span.hasClass('text-gray-400');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_user_category', id: id, category: category, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $span.removeClass('text-gray-400');
+                            if (category == 'incidente') $span.addClass('text-info');
+                            else if (category == 'mudanca') $span.addClass('text-primary');
+                            else $span.addClass('text-secondary');
+                        } else {
+                            $span.addClass('text-gray-400').removeClass('text-info text-primary text-secondary');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.user-event-toggle', function () {
+                let $icon = $(this);
+                let $card = $icon.closest('.recipient-card');
+                let id = $card.data('id');
+                let event = $icon.data('event');
+                let isActive = !$icon.hasClass('text-gray-400');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_user_event', id: id, event: event, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $icon.removeClass('text-gray-400');
+                            if (event == 'chamados') $icon.addClass('text-primary');
+                            else $icon.addClass('text-warning');
+                            $icon.attr('title', 'Alertas de ' + (event == 'chamados' ? 'Chamados' : 'Manutenção') + ': Ativo');
+                        } else {
+                            $icon.addClass('text-gray-400').removeClass('text-primary text-warning');
+                            $icon.attr('title', 'Alertas de ' + (event == 'chamados' ? 'Chamados' : 'Manutenção') + ': Inativo');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('change', '.event-toggle', function () {
+                let $switch = $(this);
+                let event = $switch.data('event');
+                let value = $switch.is(':checked') ? 1 : 0;
+
+                $.post('ajax_alertas.php', { action: 'toggle_event', event: event, value: value }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status !== 'success') {
+                        alert(res.message);
+                        $switch.prop('checked', !value);
+                    }
+                });
             });
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
@@ -688,3 +1018,4 @@ function getHoursAndMinutes($total_minutes)
 </body>
 
 </html>
+```

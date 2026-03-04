@@ -105,6 +105,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Categoria inválida.']);
         }
+    } elseif ($action === 'update_wa_event') {
+        $event = $_POST['event'] ?? '';
+        $value = (int) ($_POST['value'] ?? 0);
+
+        $allowed_events = ['chamados', 'manutencao'];
+        if (in_array($event, $allowed_events)) {
+            $column = "whatsapp_recebe_" . $event;
+            if ($conn->query("UPDATE configuracoes_alertas SET $column = $value WHERE id = 1")) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao atualizar banco.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Evento inválido.']);
+        }
     } elseif ($action === 'update_user_category') {
         $id = (int) ($_POST['id'] ?? 0);
         $category = $_POST['category'] ?? ''; // incidente, mudanca, requisicao

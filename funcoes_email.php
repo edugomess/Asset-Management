@@ -82,6 +82,7 @@ function notificarNovoChamado($chamado_id, $conn)
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
         $chamados_allow = $alert_sys['chamados_ativo'] ?? 1;
+        $wa_chamados_allow = $alert_sys['whatsapp_recebe_chamados'] ?? 1;
 
         if (!$chamados_allow) {
             return false;
@@ -89,22 +90,30 @@ function notificarNovoChamado($chamado_id, $conn)
 
         $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
-        // Mapear categoria para coluna do banco
+        // Mapear categoria para coluna do banco (lidando com acentuação e encoding)
         $cat_col = "";
-        if ($categoria == 'Incidente')
+        $categoria_clean = mb_strtolower($categoria, 'UTF-8');
+
+        if (strpos($categoria_clean, 'incidente') !== false)
             $cat_col = "cat_incidente";
-        elseif ($categoria == 'Mudança')
+        elseif (strpos($categoria_clean, 'mudança') !== false || strpos($categoria_clean, 'mudanca') !== false)
             $cat_col = "cat_mudanca";
-        elseif ($categoria == 'Requisição')
+        elseif (strpos($categoria_clean, 'requisição') !== false || strpos($categoria_clean, 'requisicao') !== false)
             $cat_col = "cat_requisicao";
 
-        // Verificar se a categoria está ativa globalmente
-        if (!empty($cat_col) && !($alert_sys[$cat_col] ?? 1)) {
+        // Se a categoria está ativa globalmente
+        $is_cat_allowed_global = true;
+        if (!empty($cat_col) && isset($alert_sys[$cat_col]) && $alert_sys[$cat_col] == 0) {
+            $is_cat_allowed_global = false;
+        }
+
+        if (!$is_cat_allowed_global) {
+            // Se cair aqui, a categoria foi explicitamente desativada no mestre (global)
             return false;
         }
 
         // --- ENVIO DE WHATSAPP ---
-        if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
+        if ($wa_allow && $wa_chamados_allow && defined('WA_ATIVO') && WA_ATIVO) {
             // Mapear prioridade para coluna do banco
             $wa_priority_col = "whatsapp_prioridade_baixa";
             if ($prioridade == 'Alta')
@@ -140,22 +149,27 @@ function notificarNovoChamado($chamado_id, $conn)
 
                 $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
 
-                // Mapear prioridade para coluna do banco
+                // Mapear prioridade para coluna do banco (robusto)
                 $priority_col = "prioridade_baixa";
-                if ($prioridade == 'Alta')
+                $pri_clean = mb_strtolower($prioridade, 'UTF-8');
+                if (strpos($pri_clean, 'alta') !== false)
                     $priority_col = "prioridade_alta";
-                elseif ($prioridade == 'Média')
+                elseif (strpos($pri_clean, 'média') !== false || strpos($pri_clean, 'media') !== false)
                     $priority_col = "prioridade_media";
 
                 // Buscar apenas destinatários que desejam receber esta prioridade, este tipo de evento e esta categoria
-                $res_emails = $conn->query("SELECT u.email 
-                                          FROM destinatarios_alertas d 
-                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios
-                                          WHERE d.$priority_col = 1 AND d.recebe_chamados = 1 AND d.$cat_col = 1");
+                $where_cat = !empty($cat_col) ? " AND d.$cat_col = 1" : "";
+                $sql_emails = "SELECT u.email 
+                              FROM destinatarios_alertas d 
+                              JOIN usuarios u ON d.usuario_id = u.id_usuarios
+                              WHERE d.$priority_col = 1 AND d.recebe_chamados = 1 $where_cat";
+                $res_emails = $conn->query($sql_emails);
                 $has_recipients = false;
+                $emails_list = [];
                 while ($dest_email = $res_emails->fetch_assoc()) {
                     $mail->addAddress($dest_email['email']);
                     $has_recipients = true;
+                    $emails_list[] = $dest_email['email'];
                 }
 
                 // Fallback para o e-mail antigo se a lista estiver vazia
@@ -254,6 +268,7 @@ function notificarManutencao($id_asset, $conn)
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
         $manutencao_allow = $alert_sys['manutencao_ativo'] ?? 1;
+        $wa_manutencao_allow = $alert_sys['whatsapp_recebe_manutencao'] ?? 1;
 
         if (!$manutencao_allow) {
             return false;
@@ -262,7 +277,7 @@ function notificarManutencao($id_asset, $conn)
         $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
         // --- WHATSAPP ---
-        if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
+        if ($wa_allow && $wa_manutencao_allow && defined('WA_ATIVO') && WA_ATIVO) {
             $msg_wa = "🛠️ *Ativo em Manutenção*\n\n";
             $msg_wa .= "*Ativo:* $hostName ($categoria)\n";
             $msg_wa .= "*Modelo:* $modelo\n";

@@ -425,12 +425,13 @@ $result = mysqli_query($conn, $sql);
                     </div>
                 </div>
             </div>
-            <footer class="sticky-footer">
-                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <footer class="sticky-footer">
+            <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+            </section>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>

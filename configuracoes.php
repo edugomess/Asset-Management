@@ -500,23 +500,17 @@ function getHoursAndMinutes($total_minutes)
 
                                 <input type="hidden" name="alertas" value="1">
 
-                                <!-- SEÇÃO 1: O QUE NOTIFICAR (EVENTOS) -->
-                                <div class="alert alert-info border-0 shadow-sm mb-4">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h6 class="mb-1 font-weight-bold text-info"><i class="fas fa-bell mr-2"></i> O que notificar?</h6>
-                                            <p class="small mb-0 text-muted">Escolha quais tipos de eventos o sistema deve monitorar.</p>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div class="row mb-4">
                                     <div class="col-md-6 mb-3">
                                         <div class="card shadow-sm border-left-info h-100">
-                                            <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                                            <div
+                                                class="card-body py-3 d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <h6 class="mb-0 font-weight-bold"><i class="fas fa-ticket-alt mr-2"></i> Novos Chamados</h6>
-                                                    <small class="text-muted">Status global para abertura de tickets</small>
+                                                    <h6 class="mb-0 font-weight-bold"><i
+                                                            class="fas fa-ticket-alt mr-2"></i> Novos Chamados</h6>
+                                                    <small class="text-muted">Status global para abertura de
+                                                        tickets</small>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input event-toggle"
@@ -528,10 +522,13 @@ function getHoursAndMinutes($total_minutes)
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="card shadow-sm border-left-warning h-100">
-                                            <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                                            <div
+                                                class="card-body py-3 d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <h6 class="mb-0 font-weight-bold"><i class="fas fa-tools mr-2"></i> Manutenções</h6>
-                                                    <small class="text-muted">Status global para ativos em oficina</small>
+                                                    <h6 class="mb-0 font-weight-bold"><i class="fas fa-tools mr-2"></i>
+                                                        Manutenções</h6>
+                                                    <small class="text-muted">Status global para ativos em
+                                                        oficina</small>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input event-toggle"
@@ -550,56 +547,64 @@ function getHoursAndMinutes($total_minutes)
                                         <div class="card shadow-sm border-0 h-100" style="background: #f8fff9;">
                                             <div class="card-header bg-success text-white border-0 py-3">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <h6 class="m-0 font-weight-bold"><i class="fab fa-whatsapp fa-lg mr-2"></i> Canal: WhatsApp</h6>
+                                                    <h6 class="m-0 font-weight-bold"><i
+                                                            class="fab fa-whatsapp fa-lg mr-2"></i> Canal: WhatsApp</h6>
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="alertWhatsApp"
-                                                            name="alertas[whatsapp]" value="1" <?php echo ($alert_config['whatsapp_ativo'] == 1) ? 'checked' : ''; ?>>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="alertWhatsApp" name="alertas[whatsapp]" value="1" <?php echo ($alert_config['whatsapp_ativo'] == 1) ? 'checked' : ''; ?>>
                                                         <label class="custom-control-label" for="alertWhatsApp"></label>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="card-body">
                                                 <div class="mb-3">
-                                                    <label class="small font-weight-bold text-success text-uppercase">Eventos permitidos (Global)</label>
+                                                    <label class="small font-weight-bold text-success text-uppercase">O
+                                                        que notificar? (Global)</label>
                                                     <div class="d-flex align-items-center mt-1">
-                                                        <div class="custom-control custom-switch mr-3">
-                                                            <input type="checkbox" class="custom-control-input wa-event-toggle" id="waEventChamados"
-                                                                data-event="chamados" <?php echo ($alert_config['whatsapp_recebe_chamados'] ?? 1) ? 'checked' : ''; ?>>
-                                                            <label class="custom-control-label small font-weight-bold d-flex align-items-center" for="waEventChamados">
-                                                                <i class="fas fa-ticket-alt mr-1 text-primary"></i> Chamados
-                                                            </label>
-                                                        </div>
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input wa-event-toggle" id="waEventManutencao"
-                                                                data-event="manutencao" <?php echo ($alert_config['whatsapp_recebe_manutencao'] ?? 1) ? 'checked' : ''; ?>>
-                                                            <label class="custom-control-label small font-weight-bold d-flex align-items-center" for="waEventManutencao">
-                                                                <i class="fas fa-tools mr-1 text-warning"></i> Manutenção
-                                                            </label>
-                                                        </div>
+                                                        <i class="fas fa-ticket-alt fa-2x pointer global-wa-event mr-4 <?php echo ($alert_config['whatsapp_recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
+                                                            data-event="chamados" title="Chamados"></i>
+                                                        <i class="fas fa-tools fa-2x pointer global-wa-event <?php echo ($alert_config['whatsapp_recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-300'; ?>"
+                                                            data-event="manutencao" title="Manutenção"></i>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label class="small font-weight-bold text-success text-uppercase">Prioridades permitidas (Global)</label>
+                                                    <label
+                                                        class="small font-weight-bold text-success text-uppercase">Prioridades
+                                                        permitidas (Global)</label>
                                                     <div class="priority-badges-global mt-1">
-                                                        <span class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_alta'] ?? 1) ? 'badge-danger active' : 'badge-inactive'; ?>"
-                                                            data-priority="alta" title="Alternar Prioridade Alta">Alta</span>
-                                                        <span class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_media'] ?? 1) ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
-                                                            data-priority="media" title="Alternar Prioridade Média">Média</span>
-                                                        <span class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_baixa'] ?? 1) ? 'badge-success active' : 'badge-inactive'; ?>"
-                                                            data-priority="baixa" title="Alternar Prioridade Baixa">Baixa</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_alta'] ?? 1) ? 'badge-danger active' : 'badge-inactive'; ?>"
+                                                            data-priority="alta"
+                                                            title="Alternar Prioridade Alta">Alta</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_media'] ?? 1) ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
+                                                            data-priority="media"
+                                                            title="Alternar Prioridade Média">Média</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_baixa'] ?? 1) ? 'badge-success active' : 'badge-inactive'; ?>"
+                                                            data-priority="baixa"
+                                                            title="Alternar Prioridade Baixa">Baixa</span>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="mb-0">
-                                                    <label class="small font-weight-bold text-success text-uppercase">Categorias permitidas (Global)</label>
+                                                    <label
+                                                        class="small font-weight-bold text-success text-uppercase">Categorias
+                                                        permitidas (Global)</label>
                                                     <div class="category-badges-global mt-1">
-                                                        <span class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_incidente'] ?? 1) ? 'badge-info active' : 'badge-inactive'; ?>"
-                                                            data-category="incidente" title="Alternar Incidente">Incidente</span>
-                                                        <span class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_mudanca'] ?? 1) ? 'badge-primary active' : 'badge-inactive'; ?>"
-                                                            data-category="mudanca" title="Alternar Mudança">Mudança</span>
-                                                        <span class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_requisicao'] ?? 1) ? 'badge-secondary active' : 'badge-inactive'; ?>"
-                                                            data-category="requisicao" title="Alternar Requisição">Requisição</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_incidente'] ?? 1) ? 'badge-info active' : 'badge-inactive'; ?>"
+                                                            data-category="incidente"
+                                                            title="Alternar Incidente">Incidente</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_mudanca'] ?? 1) ? 'badge-primary active' : 'badge-inactive'; ?>"
+                                                            data-category="mudanca"
+                                                            title="Alternar Mudança">Mudança</span>
+                                                        <span
+                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_requisicao'] ?? 1) ? 'badge-secondary active' : 'badge-inactive'; ?>"
+                                                            data-category="requisicao"
+                                                            title="Alternar Requisição">Requisição</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -611,10 +616,11 @@ function getHoursAndMinutes($total_minutes)
                                         <div class="card shadow-sm border-0 h-100" style="background: #fdfdff;">
                                             <div class="card-header bg-primary text-white border-0 py-3">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <h6 class="m-0 font-weight-bold"><i class="fas fa-envelope fa-lg mr-2"></i> Canal: E-mail</h6>
+                                                    <h6 class="m-0 font-weight-bold"><i
+                                                            class="fas fa-envelope fa-lg mr-2"></i> Canal: E-mail</h6>
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="alertEmail"
-                                                            name="alertas[email]" value="1" <?php echo ($alert_config['email_ativo'] == 1) ? 'checked' : ''; ?>>
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="alertEmail" name="alertas[email]" value="1" <?php echo ($alert_config['email_ativo'] == 1) ? 'checked' : ''; ?>>
                                                         <label class="custom-control-label" for="alertEmail"></label>
                                                     </div>
                                                 </div>
@@ -624,15 +630,19 @@ function getHoursAndMinutes($total_minutes)
                                                     <input type="text" id="userSearch" class="form-control border-0"
                                                         placeholder="Pesquisar destinatário por nome ou e-mail...">
                                                     <div class="input-group-append">
-                                                        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-gray-400"></i></span>
+                                                        <span class="input-group-text bg-white border-0"><i
+                                                                class="fas fa-search text-gray-400"></i></span>
                                                     </div>
                                                 </div>
                                                 <div id="searchResults" class="list-group shadow-lg"
                                                     style="display:none; position:absolute; z-index:1000; width:92%; max-height:200px; overflow-y:auto;">
                                                 </div>
 
-                                                <label class="small font-weight-bold text-primary text-uppercase mb-2">Destinatários Ativos</label>
-                                                <div id="destinatariosList" class="row no-gutters overflow-auto" style="max-height: 180px;">
+                                                <label
+                                                    class="small font-weight-bold text-primary text-uppercase mb-2">Destinatários
+                                                    Ativos</label>
+                                                <div id="destinatariosList" class="row no-gutters overflow-auto"
+                                                    style="max-height: 180px;">
                                                     <?php
                                                     $res_dest = $conn->query("SELECT d.*, u.nome, u.sobrenome, u.email 
                                                                             FROM destinatarios_alertas d 
@@ -642,29 +652,53 @@ function getHoursAndMinutes($total_minutes)
                                                     endif;
                                                     while ($dest = $res_dest->fetch_assoc()):
                                                         ?>
-                                                        <div class="col-12 mb-2 recipient-card" data-id="<?php echo $dest['id']; ?>">
+                                                        <div class="col-12 mb-2 recipient-card"
+                                                            data-id="<?php echo $dest['id']; ?>">
                                                             <div class="card border-left-primary shadow-sm py-1">
-                                                                <div class="card-body py-1 px-2 d-flex justify-content-between align-items-center">
+                                                                <div
+                                                                    class="card-body py-1 px-2 d-flex justify-content-between align-items-center">
                                                                     <div style="flex: 1; min-width: 0;">
-                                                                        <div class="text-xs font-weight-bold text-primary text-truncate">
+                                                                        <div
+                                                                            class="text-xs font-weight-bold text-primary text-truncate">
                                                                             <?php echo htmlspecialchars($dest['nome'] . ' ' . $dest['sobrenome']); ?>
                                                                         </div>
-                                                                        <div class="priority-badges d-flex align-items-center mt-1">
-                                                                            <span class="badge user-priority-badge pointer <?php echo $dest['prioridade_alta'] ? 'badge-danger active' : 'badge-inactive'; ?>" data-priority="alta">A</span>
-                                                                            <span class="badge user-priority-badge pointer mx-1 <?php echo $dest['prioridade_media'] ? 'badge-warning text-white active' : 'badge-inactive'; ?>" data-priority="media">M</span>
-                                                                            <span class="badge user-priority-badge pointer <?php echo $dest['prioridade_baixa'] ? 'badge-success active' : 'badge-inactive'; ?>" data-priority="baixa">B</span>
-                                                                            
-                                                                            <div class="ml-2 pl-2 border-left d-flex align-items-center user-cat-toggles">
-                                                                                <span class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_incidente'] ?? 1) ? 'text-info' : 'text-gray-300'; ?>" data-cat="incidente" title="Incidente">I</span>
-                                                                                <span class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_mudanca'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>" data-cat="mudanca" title="Mudança">M</span>
-                                                                                <span class="user-cat-toggle pointer font-weight-bold <?php echo ($dest['cat_requisicao'] ?? 1) ? 'text-secondary' : 'text-gray-300'; ?>" data-cat="requisicao" title="Requisição">R</span>
+                                                                        <div
+                                                                            class="priority-badges d-flex align-items-center mt-1">
+                                                                            <span
+                                                                                class="badge user-priority-badge pointer <?php echo $dest['prioridade_alta'] ? 'badge-danger active' : 'badge-inactive'; ?>"
+                                                                                data-priority="alta">A</span>
+                                                                            <span
+                                                                                class="badge user-priority-badge pointer mx-1 <?php echo $dest['prioridade_media'] ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
+                                                                                data-priority="media">M</span>
+                                                                            <span
+                                                                                class="badge user-priority-badge pointer <?php echo $dest['prioridade_baixa'] ? 'badge-success active' : 'badge-inactive'; ?>"
+                                                                                data-priority="baixa">B</span>
+
+                                                                            <div
+                                                                                class="ml-2 pl-2 border-left d-flex align-items-center user-cat-toggles">
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_incidente'] ?? 1) ? 'text-info' : 'text-gray-300'; ?>"
+                                                                                    data-cat="incidente"
+                                                                                    title="Incidente">I</span>
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_mudanca'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
+                                                                                    data-cat="mudanca"
+                                                                                    title="Mudança">M</span>
+                                                                                <span
+                                                                                    class="user-cat-toggle pointer font-weight-bold <?php echo ($dest['cat_requisicao'] ?? 1) ? 'text-secondary' : 'text-gray-300'; ?>"
+                                                                                    data-cat="requisicao"
+                                                                                    title="Requisição">R</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                     <div class="d-flex align-items-center">
-                                                                        <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 <?php echo ($dest['recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>" data-event="chamados" title="Chamados"></i>
-                                                                        <i class="fas fa-tools pointer user-event-toggle mr-2 <?php echo ($dest['recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-300'; ?>" data-event="manutencao" title="Manutenção"></i>
-                                                                        <button type="button" class="btn btn-link text-danger remove-recipient p-0" data-id="<?php echo $dest['id']; ?>">
+                                                                        <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 <?php echo ($dest['recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
+                                                                            data-event="chamados" title="Chamados"></i>
+                                                                        <i class="fas fa-tools pointer user-event-toggle mr-2 <?php echo ($dest['recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-300'; ?>"
+                                                                            data-event="manutencao" title="Manutenção"></i>
+                                                                        <button type="button"
+                                                                            class="btn btn-link text-danger remove-recipient p-0"
+                                                                            data-id="<?php echo $dest['id']; ?>">
                                                                             <i class="fas fa-times-circle"></i>
                                                                         </button>
                                                                     </div>
@@ -672,27 +706,27 @@ function getHoursAndMinutes($total_minutes)
                                                             </div>
                                                         </div>
                                                     <?php endwhile; ?>
-                                </div>
+                                                </div>
 
-                                <div class="form-group row mt-4">
-                                    <div class="col-sm-10">
-                                        <button type="submit" class="btn btn-primary"
-                                            style="background: rgb(44,64,74);">Salvar Canais de Alerta</button>
-                                    </div>
-                                </div>
+                                                <div class="form-group row mt-4">
+                                                    <div class="col-sm-10">
+                                                        <button type="submit" class="btn btn-primary"
+                                                            style="background: rgb(44,64,74);">Salvar Canais de
+                                                            Alerta</button>
+                                                    </div>
+                                                </div>
                             </form>
                         </div>
                     </div>
-                </div>
+                </div> <!-- End of content -->
             </div>
-        </div>
-        <footer class="sticky-footer">
-            <section class="text-center footer" style="padding: 10px;margin-top: 115px;">
-                <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-            </section>
-        </footer>
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-</div>
+            <footer class="sticky-footer">
+                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+                </section>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
@@ -985,26 +1019,34 @@ function getHoursAndMinutes($total_minutes)
                 });
             });
 
+            $(document).on('click', '.global-wa-event', function () {
+                let $icon = $(this);
+                let event = $icon.data('event');
+                let isActive = !$icon.hasClass('text-gray-300');
+                let newValue = isActive ? 0 : 1;
+
+                $.post('ajax_alertas.php', { action: 'update_wa_event', event: event, value: newValue }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        if (newValue) {
+                            $icon.removeClass('text-gray-300');
+                            if (event == 'chamados') $icon.addClass('text-primary');
+                            else $icon.addClass('text-warning');
+                        } else {
+                            $icon.addClass('text-gray-300').removeClass('text-primary text-warning');
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
             $(document).on('change', '.event-toggle', function () {
                 let $switch = $(this);
                 let event = $switch.data('event');
                 let value = $switch.is(':checked') ? 1 : 0;
 
                 $.post('ajax_alertas.php', { action: 'toggle_event', event: event, value: value }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status !== 'success') {
-                        alert(res.message);
-                        $switch.prop('checked', !value);
-                    }
-                });
-            });
-
-            $(document).on('change', '.wa-event-toggle', function () {
-                let $switch = $(this);
-                let event = $switch.data('event');
-                let value = $switch.is(':checked') ? 1 : 0;
-
-                $.post('ajax_alertas.php', { action: 'update_wa_event', event: event, value: value }, function (data) {
                     let res = JSON.parse(data);
                     if (res.status !== 'success') {
                         alert(res.message);

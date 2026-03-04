@@ -507,141 +507,143 @@ include 'conexao.php';
                     </div>
                 </div>
             </div>
-            <footer class="sticky-footer">
-                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
-            </footer>
         </div>
+    </div>
+    <footer class="sticky-footer">
+        <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
+            <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
+        </section>
+    </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-        <script src="/assets/js/bs-init.js"></script>
-        <script src="/assets/js/theme.js"></script>
-        <script src="/assets/js/global_search.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('[data-toggle="tooltip"]').tooltip();
-            });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/bs-init.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
 
-            let currentAssetId = null;
+        let currentAssetId = null;
 
-            function openAssignModal(id) {
-                currentAssetId = id;
-                document.getElementById('assignModal').style.display = 'block';
-            }
+        function openAssignModal(id) {
+            currentAssetId = id;
+            document.getElementById('assignModal').style.display = 'block';
+        }
 
-            function closeAssignModal() {
-                document.getElementById('assignModal').style.display = 'none';
-            }
+        function closeAssignModal() {
+            document.getElementById('assignModal').style.display = 'none';
+        }
 
-            function sendToMaintenance(id) {
-                currentAssetId = id;
-                document.getElementById('maintenanceModal').style.display = 'block';
-            }
+        function sendToMaintenance(id) {
+            currentAssetId = id;
+            document.getElementById('maintenanceModal').style.display = 'block';
+        }
 
-            function closeMaintenanceModal() {
-                document.getElementById('maintenanceModal').style.display = 'none';
-            }
+        function closeMaintenanceModal() {
+            document.getElementById('maintenanceModal').style.display = 'none';
+        }
 
-            function confirmMaintenance() {
-                const obs = document.getElementById('maintenanceDesc').value;
-                if (!obs) return alert('Descrição obrigatória');
-                fetch('save_maintenance.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_asset: currentAssetId,
-                        acao: 'iniciar',
-                        observacoes: obs
-                    })
+        function confirmMaintenance() {
+            const obs = document.getElementById('maintenanceDesc').value;
+            if (!obs) return alert('Descrição obrigatória');
+            fetch('save_maintenance.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_asset: currentAssetId,
+                    acao: 'iniciar',
+                    observacoes: obs
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Erro: ' + data.message);
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Erro na comunicação com o servidor.');
-                    });
-            }
-
-            function releaseFromMaintenance(id) {
-                if (!confirm('Liberar ativo?')) return;
-                fetch('save_maintenance.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_asset: id,
-                        acao: 'liberar'
-                    })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Erro: ' + data.message);
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Erro na comunicação com o servidor.');
+                .catch(err => {
+                    console.error(err);
+                    alert('Erro na comunicação com o servidor.');
+                });
+        }
+
+        function releaseFromMaintenance(id) {
+            if (!confirm('Liberar ativo?')) return;
+            fetch('save_maintenance.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_asset: id,
+                    acao: 'liberar'
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Erro na comunicação com o servidor.');
+                });
+        }
+
+        function unassignUser(id) {
+            if (!confirm('Desatribuir usuário?')) return;
+            fetch('unassign_asset.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_asset: id
+                })
+            }).then(() => location.reload());
+        }
+
+        function searchUsers() {
+            const q = document.getElementById('userSearch').value;
+            fetch(`search_users.php?query=${q}`)
+                .then(r => r.json())
+                .then(users => {
+                    const list = document.getElementById('userList');
+                    list.innerHTML = '';
+                    users.forEach(u => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item list-group-item-action';
+                        li.textContent = u.name;
+                        li.onclick = () => assignUser(u.id);
+                        list.appendChild(li);
                     });
-            }
+                });
+        }
 
-            function unassignUser(id) {
-                if (!confirm('Desatribuir usuário?')) return;
-                fetch('unassign_asset.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_asset: id
-                    })
-                }).then(() => location.reload());
-            }
-
-            function searchUsers() {
-                const q = document.getElementById('userSearch').value;
-                fetch(`search_users.php?query=${q}`)
-                    .then(r => r.json())
-                    .then(users => {
-                        const list = document.getElementById('userList');
-                        list.innerHTML = '';
-                        users.forEach(u => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item list-group-item-action';
-                            li.textContent = u.name;
-                            li.onclick = () => assignUser(u.id);
-                            list.appendChild(li);
-                        });
-                    });
-            }
-
-            function assignUser(uid) {
-                fetch('assign_asset.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id_asset: currentAssetId,
-                        assigned_to: uid
-                    })
-                }).then(() => location.reload());
-            }
-        </script>
+        function assignUser(uid) {
+            fetch('assign_asset.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_asset: currentAssetId,
+                    assigned_to: uid
+                })
+            }).then(() => location.reload());
+        }
+    </script>
 </body>
 
 </html>

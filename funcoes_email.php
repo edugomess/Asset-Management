@@ -81,6 +81,7 @@ function notificarNovoChamado($chamado_id, $conn)
         $alert_sys = $res_alert->fetch_assoc();
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
+        $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
         // --- ENVIO DE WHATSAPP ---
         if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
@@ -107,7 +108,21 @@ function notificarNovoChamado($chamado_id, $conn)
                 $mail->CharSet = 'UTF-8';
 
                 $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
-                $mail->addAddress(EMAIL_ADMIN);
+
+                // Buscar todos os destinatários da tabela dinâmica
+                $res_emails = $conn->query("SELECT u.email 
+                                          FROM destinatarios_alertas d 
+                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios");
+                $has_recipients = false;
+                while ($dest_email = $res_emails->fetch_assoc()) {
+                    $mail->addAddress($dest_email['email']);
+                    $has_recipients = true;
+                }
+
+                // Fallback para o e-mail antigo se a lista estiver vazia
+                if (!$has_recipients && !empty($email_destino)) {
+                    $mail->addAddress($email_destino);
+                }
 
                 $mail->isHTML(true);
                 $mail->Subject = EMAIL_ASSUNTO_NOVO_CHAMADO;
@@ -199,6 +214,7 @@ function notificarManutencao($id_asset, $conn)
         $alert_sys = $res_alert->fetch_assoc();
         $wa_allow = $alert_sys['whatsapp_ativo'] ?? 1;
         $email_allow = $alert_sys['email_ativo'] ?? 1;
+        $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
         // --- WHATSAPP ---
         if ($wa_allow && defined('WA_ATIVO') && WA_ATIVO) {
@@ -223,7 +239,20 @@ function notificarManutencao($id_asset, $conn)
                 $mail->CharSet = 'UTF-8';
 
                 $mail->setFrom(SMTP_USER, 'Sistema Asset Mgt');
-                $mail->addAddress(EMAIL_ADMIN);
+
+                // Buscar todos os destinatários da tabela dinâmica
+                $res_emails = $conn->query("SELECT u.email 
+                                          FROM destinatarios_alertas d 
+                                          JOIN usuarios u ON d.usuario_id = u.id_usuarios");
+                $has_recipients = false;
+                while ($dest_email = $res_emails->fetch_assoc()) {
+                    $mail->addAddress($dest_email['email']);
+                    $has_recipients = true;
+                }
+
+                if (!$has_recipients && !empty($email_destino)) {
+                    $mail->addAddress($email_destino);
+                }
 
                 $mail->isHTML(true);
                 $mail->Subject = "[ALERTA] Ativo enviado para Manutenção - $hostName";

@@ -15,7 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
                 ON DUPLICATE KEY UPDATE tempo_sla_minutos = $total_minutes";
         mysqli_query($conn, $sql);
     }
-    $message = "Configurações de SLA atualizadas com sucesso!";
+    header("Location: configuracoes.php?msg=sla_success");
+    exit();
 }
 
 // Process Depreciation form submission
@@ -52,16 +53,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
         mysqli_query($conn, "INSERT INTO categoria_doacao (categoria, elegivel_doacao) VALUES ('$cat_name', $cat_elegivel) ON DUPLICATE KEY UPDATE elegivel_doacao = $cat_elegivel");
     }
 
-    $message = "Configurações de depreciação atualizadas com sucesso!";
+    header("Location: configuracoes.php?msg=dep_success");
+    exit();
 }
 
 // Process Alerts form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
     $wa_ativo = isset($_POST['alertas']['whatsapp']) ? 1 : 0;
     $email_ativo = isset($_POST['alertas']['email']) ? 1 : 0;
-
     mysqli_query($conn, "UPDATE configuracoes_alertas SET whatsapp_ativo = $wa_ativo, email_ativo = $email_ativo WHERE id = 1");
-    $message = "Configurações de canais de alerta atualizadas com sucesso!";
+    header("Location: configuracoes.php?msg=success");
+    exit();
 }
 
 // Fetch current settings
@@ -217,15 +219,29 @@ function getHoursAndMinutes($total_minutes)
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Configurações do Sistema</h3>
 
-                    <?php if (isset($message)): ?>
+                    <?php
+                    $msg_text = "";
+                    if (isset($_GET['msg'])) {
+                        switch ($_GET['msg']) {
+                            case 'success':
+                                $msg_text = "Configurações de canais de alerta atualizadas com sucesso!";
+                                break;
+                            case 'sla_success':
+                                $msg_text = "Configurações de SLA atualizadas com sucesso!";
+                                break;
+                            case 'dep_success':
+                                $msg_text = "Configurações de depreciação atualizadas com sucesso!";
+                                break;
+                        }
+                    }
+                    if ($msg_text): ?>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?php echo $message; ?>
+                            <?php echo $msg_text; ?>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <?php
-                    endif; ?>
+                    <?php endif; ?>
 
                     <div class="card shadow">
                         <div class="card-header py-3">
@@ -451,10 +467,11 @@ function getHoursAndMinutes($total_minutes)
                         </div>
                         <div class="card-body">
                             <form method="POST" action="configuracoes.php">
-                                <p class="mb-4">Escolha por quais canais você deseja receber os alertas do sistema (Novos chamados e Manutenções).</p>
-                                
+                                <p class="mb-4">Escolha por quais canais você deseja receber os alertas do sistema
+                                    (Novos chamados e Manutenções).</p>
+
                                 <input type="hidden" name="alertas" value="1">
-                                
+
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label font-weight-bold">WhatsApp</label>
                                     <div class="col-sm-9">
@@ -469,14 +486,56 @@ function getHoursAndMinutes($total_minutes)
                                 </div>
 
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">E-mail</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold">Gerenciar Destinatários
+                                        (E-mail)</label>
                                     <div class="col-sm-9">
-                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
-                                            <input type="checkbox" class="custom-control-input" id="alertEmail"
-                                                name="alertas[email]" value="1" <?php echo ($alert_config['email_ativo'] == 1) ? 'checked' : ''; ?>>
-                                            <label class="custom-control-label" for="alertEmail">
-                                                Receber alertas via E-mail
-                                            </label>
+                                        <div class="input-group mb-0">
+                                            <input type="text" id="userSearch" class="form-control"
+                                                placeholder="Digite o nome ou e-mail para buscar e adicionar...">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            </div>
+                                        </div>
+                                        <div id="searchResults" class="list-group shadow-sm"
+                                            style="display:none; position:absolute; z-index:1000; width:95%; max-height:250px; overflow-y:auto;">
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <h6 class="font-weight-bold text-dark border-bottom pb-2">Usuários que
+                                                receberão alertas por e-mail:</h6>
+                                            <div id="destinatariosList" class="row mt-2">
+                                                <?php
+                                                $res_dest = $conn->query("SELECT d.id, u.nome, u.sobrenome, u.email 
+                                                                        FROM destinatarios_alertas d 
+                                                                        JOIN usuarios u ON d.usuario_id = u.id_usuarios");
+                                                if ($res_dest->num_rows == 0):
+                                                    echo '<div class="col-12 text-muted small">Nenhum destinatário cadastrado.</div>';
+                                                endif;
+                                                while ($dest = $res_dest->fetch_assoc()):
+                                                    ?>
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="card bg-light border-left-primary shadow-sm h-100 py-2">
+                                                            <div
+                                                                class="card-body py-1 d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <div
+                                                                        class="text-xs font-weight-bold text-primary text-uppercase mb-0">
+                                                                        <?php echo htmlspecialchars($dest['nome'] . ' ' . $dest['sobrenome']); ?>
+                                                                    </div>
+                                                                    <div class="small text-gray-800">
+                                                                        <?php echo htmlspecialchars($dest['email']); ?>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button"
+                                                                    class="btn btn-circle btn-sm btn-danger remove-destinatario"
+                                                                    data-id="<?php echo $dest['id']; ?>">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php endwhile; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -566,6 +625,61 @@ function getHoursAndMinutes($total_minutes)
                     $row.find('.label-100').text(formatTimeDisplay(total));
                 });
             }
+
+            // Alertas Channel Toggles
+            $('#alertEmail').on('change', function () {      // Not using disabled anymore, but keeping for switch logic if needed
+            });
+
+            // User Search for Alerts
+            $('#userSearch').on('keyup', function () {
+                let term = $(this).val();
+                if (term.length > 2) {
+                    $.post('ajax_alertas.php', { action: 'search', term: term }, function (data) {
+                        let users = JSON.parse(data);
+                        let html = '';
+                        users.forEach(u => {
+                            html += `<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>${u.nome} ${u.sobrenome}</strong><br>
+                                            <span class="small text-muted">${u.email}</span>
+                                        </div>
+                                        <button class="btn btn-success btn-sm add-user" data-id="${u.id}">
+                                            <i class="fas fa-plus mr-1"></i> Adicionar
+                                        </button>
+                                     </div>`;
+                        });
+                        if (html) {
+                            $('#searchResults').html(html).show();
+                        } else {
+                            $('#searchResults').hide();
+                        }
+                    });
+                } else {
+                    $('#searchResults').hide();
+                }
+            });
+
+            $(document).on('click', '.add-user', function (e) {
+                e.preventDefault();
+                let uid = $(this).data('id');
+                $.post('ajax_alertas.php', { action: 'add', usuario_id: uid }, function (data) {
+                    let res = JSON.parse(data);
+                    if (res.status === 'success') {
+                        location.reload(); // Simples para atualizar a lista
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.remove-destinatario', function () {
+                let id = $(this).data('id');
+                if (confirm('Remover este destinatário?')) {
+                    $.post('ajax_alertas.php', { action: 'remove', id: id }, function (data) {
+                        location.reload();
+                    });
+                }
+            });
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
             updateSLABars(); // Initial call

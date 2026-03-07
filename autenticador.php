@@ -22,16 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['email'] = $usuario['email'];
             $_SESSION['nome_usuario'] = $usuario['nome'] . ' ' . $usuario['sobrenome'];
             $_SESSION['foto_perfil'] = $usuario['foto_perfil'];
+            $_SESSION['nivelUsuario'] = $usuario['nivelUsuario']; // Adicionado para controle de acesso
             // Redireciona para a página inicial ou dashboard
             header("Location: index.php");
             exit();
-        }
-        else {
+        } else {
             echo "<script>alert('Senha incorreta. Tente novamente.');
              window.location.href = 'login.php';</script>";
         }
-    }
-    else {
+    } else {
         echo "<script>alert('Email não encontrado.');
         window.location.href = 'login.php';</script>";
     }

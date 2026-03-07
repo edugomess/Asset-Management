@@ -1,4 +1,13 @@
-<?php include 'auth.php'; ?>
+<?php
+include 'auth.php';
+include 'conexao.php';
+
+// Restrição de acesso: Usuário comum não acessa fornecedores
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html>
 

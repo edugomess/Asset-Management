@@ -41,6 +41,16 @@ if (!empty($search)) {
     }
 }
 
+// Restrição para nível "Usuário": vê apenas os próprios chamados
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    $user_id = $_SESSION['id_usuarios'];
+    if (empty($where_clause)) {
+        $where_clause = "WHERE c.usuario_id = $user_id";
+    } else {
+        $where_clause .= " AND c.usuario_id = $user_id";
+    }
+}
+
 $sql_count = "SELECT COUNT(*) AS total FROM chamados c $where_clause";
 $result_count = mysqli_query($conn, $sql_count);
 $row_count = mysqli_fetch_assoc($result_count);
@@ -171,9 +181,11 @@ $result = mysqli_query($conn, $sql);
                                             class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
                                     <a class="dropdown-item" href="configuracoes.php"><i
                                             class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                        Manutenção</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
+                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
                                     <a href="logout.php" class="dropdown-item"><i
                                             class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>

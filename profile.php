@@ -5,6 +5,12 @@ include 'conexao.php';
 // Fetch User Data
 // Support viewing other user profiles via ID parameter, fallback to current user
 $id_usuario = isset($_GET['id']) ? intval($_GET['id']) : $_SESSION['id_usuarios'];
+
+// Restrição para nível "Usuário": só pode ver o próprio perfil
+if ($_SESSION['nivelUsuario'] === 'Usuário') {
+    $id_usuario = $_SESSION['id_usuarios'];
+}
+
 $sql_user = "SELECT * FROM usuarios WHERE id_usuarios = $id_usuario";
 $result_user = mysqli_query($conn, $sql_user);
 $user_data = mysqli_fetch_assoc($result_user);
@@ -76,10 +82,12 @@ $result_lic = mysqli_query($conn, $sql_lic);
                                             class="dropdown-item" href="profile.php"><i
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
                                             class="dropdown-item" href="#"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a><a
-                                            class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                                Manutenção</a>
+                                        <?php endif; ?>
                                         <div class="dropdown-divider"></div><a class="dropdown-item"
                                             href="logout.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
@@ -99,8 +107,9 @@ $result_lic = mysqli_query($conn, $sql_lic);
                                         width="160" height="160">
                                     <div class="mb-3">
                                         <a href="editar_usuario.php?id=<?php echo $id_usuario; ?>"
-                                            class="btn btn-primary btn-sm" style="background: rgb(44,64,74);">Alterar
-                                            Foto / Editar</a>
+                                            class="btn btn-primary btn-sm" style="background: rgb(44,64,74);">
+                                            <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'Alterar Foto' : 'Alterar Foto / Editar'; ?>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

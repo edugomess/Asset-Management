@@ -6,10 +6,25 @@ $id_chamado = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = '';
 
 // Processar atualização
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
-    $novo_status = mysqli_real_escape_string($conn, $_POST['status']); // Update POST handler
-    $responsavel_id = !empty($_POST['responsavel_id']) ? intval($_POST['responsavel_id']) : 'NULL';
-    $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : 'Média';
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_POST['nova_nota']) || isset($_POST['notas_existentes']))) {
+    // Busca os valores atuais do banco como base (caso campos venham desabilitados no POST)
+    $sql_atual = "SELECT status, responsavel_id, prioridade FROM chamados WHERE id = $id_chamado";
+    $res_atual = $conn->query($sql_atual);
+    $chamado_base = $res_atual->fetch_assoc();
+
+    $novo_status = isset($_POST['status']) ? mysqli_real_escape_string($conn, $_POST['status']) : $chamado_base['status'];
+    $responsavel_id = isset($_POST['responsavel_id']) ? (!empty($_POST['responsavel_id']) ? intval($_POST['responsavel_id']) : 'NULL') : (!empty($chamado_base['responsavel_id']) ? intval($chamado_base['responsavel_id']) : 'NULL');
+    $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : $chamado_base['prioridade'];
+
+    // Restrição de Segurança: Se não for Admin/Suporte, ignora alterações de status, responsável e prioridade
+    // mesmo que tentem enviar via ferramentas de desenvolvedor (já coberto acima pela lógica de base, mas mantendo para clareza)
+    $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
+    if (!$is_tecnico) {
+        $novo_status = $chamado_base['status'];
+        $responsavel_id = !empty($chamado_base['responsavel_id']) ? intval($chamado_base['responsavel_id']) : 'NULL';
+        $prioridade = $chamado_base['prioridade'];
+    }
+
     // Processar notas de resolução como histórico (JSON)
     $sql_notas = "SELECT nota_resolucao FROM chamados WHERE id = $id_chamado";
     $res_notas = $conn->query($sql_notas);
@@ -32,9 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status'])) {
         foreach ($_POST['notas_existentes'] as $i => $texto) {
             $i = intval($i);
             if (isset($notas_array[$i])) {
-                $novo_texto = trim($texto);
+                // Normaliza quebras de linha para comparação confiável
+                $texto_original = str_replace("\r\n", "\n", $notas_array[$i]['texto'] ?? '');
+                $novo_texto = str_replace("\r\n", "\n", trim($texto));
+
                 // Só marca como editado se o texto realmente mudou
-                if ($notas_array[$i]['texto'] !== $novo_texto) {
+                if ($texto_original !== $novo_texto) {
                     $notas_array[$i]['texto'] = $novo_texto;
                     $notas_array[$i]['editado_em'] = date('d/m/Y H:i');
                 }
@@ -120,6 +138,7 @@ $chamado = $result->fetch_assoc();
 $sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
 $result_users = $conn->query($sql_users);
 
+$is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
 ?>
 <!DOCTYPE html>
 <html>
@@ -178,7 +197,7 @@ $result_users = $conn->query($sql_users);
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
                                         <label>Prioridade</label>
-                                        <select class="form-control" name="prioridade">
+                                        <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="Baixa" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>>Baixa</option>
                                             <option value="Média" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>>Média</option>
                                             <option value="Alta" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Alta' ? 'selected' : ''; ?>>Alta</option>
@@ -293,8 +312,11 @@ $result_users = $conn->query($sql_users);
                                                         &mdash; <i class="fas fa-clock"></i>
                                                         <?php echo htmlspecialchars($nota_item['data'] ?? ''); ?>
                                                         <?php if (!empty($nota_item['editado_em'])): ?>
-                                                            <span class="badge badge-warning ml-1">Editado em
-                                                                <?php echo htmlspecialchars($nota_item['editado_em']); ?></span>
+                                                            <span class="badge badge-warning ml-1"
+                                                                style="font-size: 85%; font-weight: 600; font-style: italic;">
+                                                                <i class="fas fa-pencil-alt"></i> Editado em
+                                                                <?php echo htmlspecialchars($nota_item['editado_em']); ?>
+                                                            </span>
                                                             <?php
                                                         endif; ?>
                                                     </small>
@@ -318,8 +340,13 @@ $result_users = $conn->query($sql_users);
                                         style="border: 2px dashed #b7c2d0; border-radius: 8px; padding: 12px; background: #fff;">
                                         <label class="mb-1"><i class="fas fa-plus-circle text-primary"></i>
                                             <strong>Adicionar Nova Nota</strong></label>
-                                        <textarea class="form-control" name="nova_nota" rows="3"
+                                        <textarea class="form-control mb-2" name="nova_nota" rows="3"
                                             placeholder="Descreva as ações tomadas, a solução aplicada ou observações relevantes..."></textarea>
+                                        <div class="text-right">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-comment"></i> Comentar
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -329,7 +356,7 @@ $result_users = $conn->query($sql_users);
                                 <div class="form-row align-items-end">
                                     <div class="form-group col-md-4">
                                         <label for="status">Status Atual</label>
-                                        <select class="form-control" name="status" id="status">
+                                        <select class="form-control" name="status" id="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="Aberto" <?php if ($chamado['status'] == 'Aberto')
                                                 echo 'selected'; ?>>Aberto</option>
                                             <option value="Em Andamento" <?php if ($chamado['status'] == 'Em Andamento')
@@ -344,7 +371,7 @@ $result_users = $conn->query($sql_users);
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label for="responsavel">Atribuir Responsável</label>
-                                        <select class="form-control" name="responsavel_id" id="responsavel">
+                                        <select class="form-control" name="responsavel_id" id="responsavel" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="">-- Selecione --</option>
                                             <?php
                                             if ($result_users->num_rows > 0) {
@@ -383,26 +410,26 @@ $result_users = $conn->query($sql_users);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Carregar sugestão da IA para o chamado
             const titulo = "<?php echo addslashes($chamado['titulo']); ?>";
             const descricao = <?php echo json_encode($chamado['descricao']); ?>;
-            
+
             fetch('agent_chamado.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `titulo=${encodeURIComponent(titulo)}&descricao=${encodeURIComponent(descricao)}`
             })
-            .then(response => response.json())
-            .then(data => {
-                const textContainer = document.getElementById('ai-suggestion-text');
-                let reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                reply = reply.replace(/\n/g, '<br>');
-                textContainer.innerHTML = reply;
-            })
-            .catch(error => {
-                document.getElementById('ai-suggestion-text').innerHTML = '⚠️ Não foi possível obter sugestão da IA.';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    const textContainer = document.getElementById('ai-suggestion-text');
+                    let reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    reply = reply.replace(/\n/g, '<br>');
+                    textContainer.innerHTML = reply;
+                })
+                .catch(error => {
+                    document.getElementById('ai-suggestion-text').innerHTML = '⚠️ Não foi possível obter sugestão da IA.';
+                });
         });
 
         function toggleEditNota(btn, idx) {

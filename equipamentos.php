@@ -1,6 +1,12 @@
 <?php
 include 'auth.php';
 include 'conexao.php';
+
+// Restrição de acesso: Usuário comum não acessa o inventário
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -56,6 +62,28 @@ include 'conexao.php';
     .btn-system:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .asset-thumbnail {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .asset-placeholder {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #f8f9fc;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        color: #b7b9cc;
     }
 </style>
 
@@ -300,9 +328,9 @@ include 'conexao.php';
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Categoria</th>
-                                            <th>Fabricante</th>
                                             <th>Modelo</th>
+                                            <th>Fabricante</th>
+                                            <th>Categoria</th>
                                             <th>Tag</th>
                                             <th>HostName</th>
                                             <th>Valor Atual</th>
@@ -354,89 +382,100 @@ include 'conexao.php';
                                                 ?>
                                                 <tr class="clickable-row"
                                                     onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
-                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
-                                                    <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
-                                                            class="font-weight-bold" style="color: #2c404a;"
-                                                            onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
-                                                    </td>
-                                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                                    <td>
-                                                        <span class="font-weight-bold" style="color: #2c404a;">
-                                                            R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
-                                                        </span>
-                                                        <br>
-                                                        <small class="text-muted">
-                                                            (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
-                                                        </small>
-                                                    </td>
-                                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
-
-                                                    <?php if ($status_filter !== 'Manutencao'): ?>
-                                                        <td>
-                                                            <?php
-                                                            if ($assigned_to && !empty($row['user_nome'])) {
-                                                                echo htmlspecialchars($row['user_nome']);
-                                                            } else {
-                                                                echo "Não Atribuído";
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                    <?php else: ?>
-                                                        <td>
-                                                            <?php
-                                                            $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações registradas';
-                                                            $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
-                                                            $has_motivo = !empty($row['manutencao_motivo']);
-                                                            ?>
-                                                            <span data-toggle="tooltip" data-placement="top"
-                                                                title="<?php echo htmlspecialchars($motivo_completo); ?>"
-                                                                style="cursor: help; <?php echo $has_motivo ? 'border-bottom: 1px dashed #ccc;' : 'color: #ccc; font-style: italic;'; ?>">
-                                                                <?php echo htmlspecialchars($motivo_resumo); ?>
-                                                            </span>
-                                                        </td>
-                                                    <?php endif; ?>
-
-                                                    <td>
-                                                        <span
-                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
-                                                            <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
-                                                        </span>
+                                                    <td class="d-flex align-items-center">
+                                                        <?php
+                                                        $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
+                                                        if ($foto) {
+                                                            echo "<img src='$foto' class='asset-thumbnail'>";
+                                                        } else {
+                                                            echo "<div class='asset-placeholder'><i class='fas fa-box'></i></div>";
+                                                        }
+                                                        echo htmlspecialchars($row['modelo']);
+                                                        ?>
                                                     </td>
                                                     <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <?php if (!$row['em_manutencao']): ?>
-                                                                <?php if ($assigned_to): ?>
-                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
-                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
-                                                                        <i class='fas fa-user-minus'></i></button>
-                                                                <?php else: ?>
-                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2'
-                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
-                                                                        <i class='fas fa-user-plus'></i></button>
-                                                                <?php endif; ?>
-                                                            <?php endif; ?>
+                                                        <?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                            <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                            <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
+                                                                    class="font-weight-bold" style="color: #2c404a;"
+                                                                    onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
+                                                            </td>
+                                                            <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                                            <td>
+                                                                <span class="font-weight-bold" style="color: #2c404a;">
+                                                                    R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
+                                                                </span>
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
+                                                                </small>
+                                                            </td>
+                                                            <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                            <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
 
-                                                            <a class='btn btn-warning btn-edit mr-2'
-                                                                href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
-                                                                title="Editar" onclick="event.stopPropagation();"><i
-                                                                    class='fas fa-edit'></i></a>
-
-                                                            <?php if ($row['em_manutencao']): ?>
-                                                                <button class="btn btn-success btn-edit"
-                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
-                                                                    title="Liberar"><i class="fas fa-check-circle"></i></button>
+                                                            <?php if ($status_filter !== 'Manutencao'): ?>
+                                                                    <td>
+                                                                        <?php
+                                                                        if ($assigned_to && !empty($row['user_nome'])) {
+                                                                            echo htmlspecialchars($row['user_nome']);
+                                                                        } else {
+                                                                            echo "Não Atribuído";
+                                                                        }
+                                                                        ?>
+                                                                    </td>
                                                             <?php else: ?>
-                                                                <button class="btn btn-primary btn-edit"
-                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
-                                                                    title="Manutenção"><i class="fas fa-tools"></i></button>
+                                                                    <td>
+                                                                        <?php
+                                                                        $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações registradas';
+                                                                        $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
+                                                                        $has_motivo = !empty($row['manutencao_motivo']);
+                                                                        ?>
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="<?php echo htmlspecialchars($motivo_completo); ?>"
+                                                                            style="cursor: help; <?php echo $has_motivo ? 'border-bottom: 1px dashed #ccc;' : 'color: #ccc; font-style: italic;'; ?>">
+                                                                            <?php echo htmlspecialchars($motivo_resumo); ?>
+                                                                        </span>
+                                                                    </td>
                                                             <?php endif; ?>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <?php
+
+                                                            <td>
+                                                                <span
+                                                                    class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
+                                                                    <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <?php if (!$row['em_manutencao']): ?>
+                                                                            <?php if ($assigned_to): ?>
+                                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
+                                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
+                                                                                        <i class='fas fa-user-minus'></i></button>
+                                                                            <?php else: ?>
+                                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2'
+                                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                                        <i class='fas fa-user-plus'></i></button>
+                                                                            <?php endif; ?>
+                                                                    <?php endif; ?>
+
+                                                                    <a class='btn btn-warning btn-edit mr-2'
+                                                                        href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
+                                                                        title="Editar" onclick="event.stopPropagation();"><i
+                                                                            class='fas fa-edit'></i></a>
+
+                                                                    <?php if ($row['em_manutencao']): ?>
+                                                                            <button class="btn btn-success btn-edit"
+                                                                                onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                                title="Liberar"><i class="fas fa-check-circle"></i></button>
+                                                                    <?php else: ?>
+                                                                            <button class="btn btn-primary btn-edit"
+                                                                                onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                                title="Manutenção"><i class="fas fa-tools"></i></button>
+                                                                    <?php endif; ?>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";

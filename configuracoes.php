@@ -2,6 +2,12 @@
 include 'auth.php';
 include 'conexao.php';
 
+// Restrição de acesso: Apenas Administrador pode acessar as configurações
+if ($_SESSION['nivelUsuario'] !== 'Admin') {
+    header("Location: index.php");
+    exit();
+}
+
 // Process SLA form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     foreach ($_POST['sla'] as $category => $time) {

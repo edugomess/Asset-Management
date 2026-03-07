@@ -1,4 +1,13 @@
-<?php include 'auth.php'; ?>
+<?php
+include 'auth.php';
+include 'conexao.php';
+
+// Restrição de acesso: Usuário comum não acessa controle de usuários
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -27,6 +36,15 @@
 
         .clickable-row:hover {
             background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .user-thumbnail {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -159,8 +177,9 @@
                                                     <?php
                                                     if (mysqli_num_rows($result) > 0) {
                                                         while ($row = mysqli_fetch_assoc($result)) {
+                                                            $foto = !empty($row['foto_perfil']) ? htmlspecialchars($row['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg';
                                                             echo "<tr class='clickable-row' onclick=\"window.location='profile.php?id=" . $row['id_usuarios'] . "'\">
-                    <td>" . htmlspecialchars($row['usuarioAD']) . "</td>
+                    <td class='d-flex align-items-center'><img src='$foto' class='user-thumbnail'>" . htmlspecialchars($row['usuarioAD']) . "</td>
                     <td>" . htmlspecialchars($row['email']) . "</td>
                     <td>" . htmlspecialchars($row['centroDeCusto']) . "</td>
                     <td>" . htmlspecialchars($row['funcao']) . "</td>

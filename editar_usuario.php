@@ -67,9 +67,11 @@ if ($id > 0) {
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
                                         <a class="dropdown-item" href="configuracoes.php"><i
                                                 class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
+                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                                Manutenção</a>
+                                        <?php endif; ?>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="login.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
@@ -93,14 +95,16 @@ if ($id > 0) {
                                         <div class="form-group">
                                             <label>Nome</label>
                                             <input class="form-control" name="nome" type="text"
-                                                value="<?php echo htmlspecialchars($user['nome']); ?>" required="">
+                                                value="<?php echo htmlspecialchars($user['nome']); ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Sobrenome</label>
                                             <input class="form-control" name="sobrenome" type="text"
-                                                value="<?php echo htmlspecialchars($user['sobrenome']); ?>" required="">
+                                                value="<?php echo htmlspecialchars($user['sobrenome']); ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                 </div>
@@ -111,14 +115,16 @@ if ($id > 0) {
                                         <div class="form-group">
                                             <label>Usuário AD</label>
                                             <input class="form-control" name="usuarioAD" type="text"
-                                                value="<?php echo htmlspecialchars($user['usuarioAD']); ?>" required="">
+                                                value="<?php echo htmlspecialchars($user['usuarioAD']); ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Função</label>
                                             <input class="form-control" name="funcao" type="text"
-                                                value="<?php echo htmlspecialchars($user['funcao']); ?>" required="">
+                                                value="<?php echo htmlspecialchars($user['funcao']); ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                 </div>
@@ -129,14 +135,16 @@ if ($id > 0) {
                                         <div class="form-group">
                                             <label>Data de Nascimento</label>
                                             <input class="form-control" name="dataNascimento" type="date"
-                                                value="<?php echo $user['dataNascimento']; ?>" required="">
+                                                value="<?php echo $user['dataNascimento']; ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Email</label>
                                             <input class="form-control" name="email" type="email"
-                                                value="<?php echo htmlspecialchars($user['email']); ?>" required="">
+                                                value="<?php echo htmlspecialchars($user['email']); ?>" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +156,8 @@ if ($id > 0) {
                                             <label class="text-danger">CPF (Somente Números)</label>
                                             <input class="form-control" name="cpf" id="cpf" type="text"
                                                 value="<?php echo htmlspecialchars($user['cpf'] ?? ''); ?>" required=""
-                                                maxlength="14" oninput="maskCPF(this)">
+                                                maxlength="14" oninput="maskCPF(this)"
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                             <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF
                                                 Inválido</div>
                                         </div>
@@ -156,7 +165,7 @@ if ($id > 0) {
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Centro de Custo</label>
-                                            <select class="form-control" name="centroDeCusto">
+                                            <select class="form-control" name="centroDeCusto" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="Nenhum" <?php echo ($user['centroDeCusto'] == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
                                                 <?php
                                                 $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
@@ -169,6 +178,9 @@ if ($id > 0) {
                                                 }
                                                 ?>
                                             </select>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
+                                                <input type="hidden" name="centroDeCusto" value="<?php echo htmlspecialchars($user['centroDeCusto']); ?>">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +200,8 @@ if ($id > 0) {
                                             <label>Telefone</label>
                                             <input class="form-control" name="telefone" type="text"
                                                 value="<?php echo htmlspecialchars($user['telefone']); ?>"
-                                                inputmode="tel" required="">
+                                                inputmode="tel" required=""
+                                                <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
                                         </div>
                                     </div>
                                 </div>
@@ -198,22 +211,34 @@ if ($id > 0) {
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Tipo de Contrato</label>
-                                            <select class="form-control" name="tipoContrato" required="">
-                                                <option value="CLT" <?php echo ($user['tipoContrato'] == 'CLT') ? 'selected' : ''; ?>>CLT</option>
-                                                <option value="PJ" <?php echo ($user['tipoContrato'] == 'PJ') ? 'selected' : ''; ?>>PJ</option>
-                                                <option value="Cooperativa" <?php echo ($user['tipoContrato'] == 'Cooperativa') ? 'selected' : ''; ?>>
+                                            <select class="form-control" name="tipoContrato" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
+                                                <option value="CLT" <?php echo (($user['tipoContrato'] ?? '') == 'CLT') ? 'selected' : ''; ?>>CLT</option>
+                                                <option value="PJ" <?php echo (($user['tipoContrato'] ?? '') == 'PJ') ? 'selected' : ''; ?>>PJ</option>
+                                                <option value="Cooperativa" <?php echo (($user['tipoContrato'] ?? '') == 'Cooperativa') ? 'selected' : ''; ?>>
                                                     Cooperativa</option>
                                             </select>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
+                                                <input type="hidden" name="tipoContrato" value="<?php echo htmlspecialchars($user['tipoContrato'] ?? ''); ?>">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Tipo de Usuário</label>
-                                            <select class="form-control" name="nivelUsuario" required="">
-                                                <option value="1" <?php echo ($user['nivelUsuario'] == '1') ? 'selected' : ''; ?>>Administrador</option>
-                                                <option value="2" <?php echo ($user['nivelUsuario'] == '2') ? 'selected' : ''; ?>>Suporte</option>
-                                                <option value="3" <?php echo ($user['nivelUsuario'] == '3') ? 'selected' : ''; ?>>Usuário</option>
+                                            <select class="form-control" name="nivelUsuario" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
+                                                <option value="1" <?php echo (($user['nivelUsuario'] ?? '') == 'Admin') ? 'selected' : ''; ?>>Administrador</option>
+                                                <option value="2" <?php echo (($user['nivelUsuario'] ?? '') == 'Suporte') ? 'selected' : ''; ?>>Suporte</option>
+                                                <option value="3" <?php echo (($user['nivelUsuario'] ?? '') == 'Usuário' || trim($user['nivelUsuario'] ?? '') == '') ? 'selected' : ''; ?>>Usuário</option>
                                             </select>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
+                                                <?php
+                                                $nivelValue = '3';
+                                                $currentNivel = trim($user['nivelUsuario'] ?? '');
+                                                if ($currentNivel == 'Admin') $nivelValue = '1';
+                                                elseif ($currentNivel == 'Suporte') $nivelValue = '2';
+                                                ?>
+                                                <input type="hidden" name="nivelUsuario" value="<?php echo $nivelValue; ?>">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -223,7 +248,7 @@ if ($id > 0) {
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Unidade</label>
-                                            <select class="form-control" name="unidade">
+                                            <select class="form-control" name="unidade" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <?php
                                                 $sql_un = "SELECT unidade FROM unidade ORDER BY unidade ASC";
                                                 $res_un = $conn->query($sql_un);
@@ -233,15 +258,21 @@ if ($id > 0) {
                                                 }
                                                 ?>
                                             </select>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
+                                                <input type="hidden" name="unidade" value="<?php echo htmlspecialchars($user['unidade']); ?>">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label>Status</label>
-                                            <select class="form-control" name="status">
+                                            <select class="form-control" name="status" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="Ativo" <?php echo ($user['status'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
                                                 <option value="Inativo" <?php echo ($user['status'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
                                             </select>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
+                                                <input type="hidden" name="status" value="<?php echo htmlspecialchars($user['status']); ?>">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

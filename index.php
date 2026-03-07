@@ -63,7 +63,12 @@ $count_pendente = 0;
 $data = [];
 $total_ativos = 0;
 
-$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') GROUP BY status");
+$where_chamados = "";
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    $where_chamados = " AND usuario_id = " . $_SESSION['id_usuarios'];
+}
+
+$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') $where_chamados GROUP BY status");
 if ($res) {
     while ($row = mysqli_fetch_assoc($res)) {
         $data[$row['status']] = $row['total'];
@@ -84,7 +89,7 @@ $data_string = implode(",", [
 
 // === Chamados Fechados por Mês (QUERY UNICA) ===
 $closed_data = array_fill(1, 12, 0);
-$res_closed = mysqli_query($conn, "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) GROUP BY MONTH(data_fechamento)");
+$res_closed = mysqli_query($conn, "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) $where_chamados GROUP BY MONTH(data_fechamento)");
 if ($res_closed) {
     while ($row = mysqli_fetch_assoc($res_closed)) {
         $closed_data[$row['month']] = $row['count'];
@@ -134,9 +139,11 @@ $closed_string = implode(",", $closed_data);
                                             class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
                                     <a class="dropdown-item" href="configuracoes.php"><i
                                             class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                        Manutenção</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
+                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
                                     <a href="logout.php" class="dropdown-item"><i
                                             class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
@@ -151,7 +158,11 @@ $closed_string = implode(",", $closed_data);
                         <h3 class="text-dark mb-0">Dashboard</h3>
                         <div class="d-flex align-items-center">
                             <?php
-                            $sql_total_fechados = "SELECT COUNT(*) as total FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado')";
+                            $where_closed = "";
+                            if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                                $where_closed = " AND usuario_id = " . $_SESSION['id_usuarios'];
+                            }
+                            $sql_total_fechados = "SELECT COUNT(*) as total FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') $where_closed";
                             $res_total_fechados = mysqli_query($conn, $sql_total_fechados);
                             $total_fechados = mysqli_fetch_assoc($res_total_fechados)['total'] ?? 0;
                             ?>
@@ -172,17 +183,19 @@ $closed_string = implode(",", $closed_data);
                     <div class="row px-2 flex-nowrap overflow-auto">
                         <?php
                         // Buscar contagem de ativos por categoria
-                        $categorias_interesse = [
-                            'Computadores' => ['icon' => 'fas fa-desktop', 'color' => 'primary', 'label' => 'Computadores'],
-                            'Laptops' => ['icon' => 'fas fa-laptop', 'color' => 'success', 'label' => 'Laptops'], // Assumindo que Laptops podem estar na categoria Computadores ou separados
-                            'Periféricos' => ['icon' => 'far fa-keyboard', 'color' => 'info', 'label' => 'Periféricos'], // Ajustar conforme nome real na tabela
-                            'Impressoras' => ['icon' => 'fas fa-print', 'color' => 'warning', 'label' => 'Impressoras']
-                        ];
-
+                        $where_ativos = "";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $where_ativos = " WHERE assigned_to = " . $_SESSION['id_usuarios'];
+                        }
 
                         // Query genérica para pegar todas as categorias e contagens
-                        $sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
-                                       FROM ativos GROUP BY categoria";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $sql_ativos = "SELECT categoria, COUNT(*) as total, 0 as disponiveis 
+                                           FROM ativos WHERE assigned_to = " . $_SESSION['id_usuarios'] . " GROUP BY categoria";
+                        } else {
+                            $sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
+                                           FROM ativos GROUP BY categoria";
+                        }
                         $res_ativos = mysqli_query($conn, $sql_ativos);
                         $dados_ativos = [];
                         if ($res_ativos) {
@@ -195,7 +208,8 @@ $closed_string = implode(",", $closed_data);
                         $mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
                         $ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
 
-                        $sql_ranking = "SELECT 
+                        if ($_SESSION['nivelUsuario'] !== 'Usuário') {
+                            $sql_ranking = "SELECT 
     r.nome, r.sobrenome, r.id_usuarios, r.foto_perfil,
     COUNT(*) as total,
     SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
@@ -231,65 +245,84 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
         WHEN c.prioridade = 'Média' THEN 2/3.0
         ELSE 1.0
     END) THEN 1 ELSE 0 END) / COUNT(*)) DESC";
-                        $res_ranking = mysqli_query($conn, $sql_ranking);
-                        $ranking_data = [];
-                        if ($res_ranking) {
-                            while ($row = mysqli_fetch_assoc($res_ranking)) {
-                                $total = (int) $row['total'];
-                                $met_sla = (int) $row['met_sla'];
-                                $row['percentage'] = ($total > 0) ? round(($met_sla / $total) * 100) : 0;
-                                $ranking_data[] = $row;
+                            $res_ranking = mysqli_query($conn, $sql_ranking);
+                            $ranking_data = [];
+                            if ($res_ranking) {
+                                while ($row = mysqli_fetch_assoc($res_ranking)) {
+                                    $total = (int) $row['total'];
+                                    $met_sla = (int) $row['met_sla'];
+                                    $row['percentage'] = ($total > 0) ? round(($met_sla / $total) * 100) : 0;
+                                    $ranking_data[] = $row;
+                                }
                             }
                         }
                         // (Closed data already computed above, no duplicate query needed)
                         
-                        // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
-                        $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
-                        $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
+                        if ($_SESSION['nivelUsuario'] !== 'Usuário') {
+                            // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
+                            $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
+                            $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
 
-                        $sql_recorrencia = "SELECT titulo, COUNT(*) as total 
-                                            FROM chamados 
-                                            WHERE MONTH(data_abertura) = $mes_rec_filtro 
-                                            AND YEAR(data_abertura) = $ano_rec_filtro
-                                            GROUP BY titulo 
-                                            ORDER BY total DESC LIMIT 5";
-                        $res_recorrencia = mysqli_query($conn, $sql_recorrencia);
-                        $recorrencia_data = [];
-                        $max_recorrencia = 0;
-                        if ($res_recorrencia) {
-                            while ($row = mysqli_fetch_assoc($res_recorrencia)) {
-                                $recorrencia_data[] = $row;
-                                if ($row['total'] > $max_recorrencia) {
-                                    $max_recorrencia = $row['total'];
+                            $sql_recorrencia = "SELECT titulo, COUNT(*) as total 
+                                                FROM chamados 
+                                                WHERE MONTH(data_abertura) = $mes_rec_filtro 
+                                                AND YEAR(data_abertura) = $ano_rec_filtro
+                                                GROUP BY titulo 
+                                                ORDER BY total DESC LIMIT 5";
+                            $res_recorrencia = mysqli_query($conn, $sql_recorrencia);
+                            $recorrencia_data = [];
+                            $max_recorrencia = 0;
+                            if ($res_recorrencia) {
+                                while ($row = mysqli_fetch_assoc($res_recorrencia)) {
+                                    $recorrencia_data[] = $row;
+                                    if ($row['total'] > $max_recorrencia) {
+                                        $max_recorrencia = $row['total'];
+                                    }
                                 }
                             }
                         }
 
 
                         // 4. Licenças - Métricas Específicas
+                        $where_lic = "";
+                        $join_lic = "";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $join_lic = " JOIN atribuicoes_licencas al ON l.id_licenca = al.id_licenca ";
+                            $where_lic = " AND al.id_usuario = " . $_SESSION['id_usuarios'];
+                        }
+
                         // M365
-                        $sql_m365 = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%365%'";
+                        $sql_m365 = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%365%' $where_lic";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $sql_m365 = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%365%' $where_lic";
+                        }
                         $res_m365 = mysqli_query($conn, $sql_m365);
                         $data_m365 = mysqli_fetch_assoc($res_m365);
                         $total_m365 = $data_m365['total'] ?? 0;
-                        $disp_m365 = $total_m365 - ($data_m365['em_uso'] ?? 0);
+                        $disp_m365 = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_m365 - ($data_m365['em_uso'] ?? 0));
 
                         // Adobe
-                        $sql_adobe = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%Adobe%' OR fabricante LIKE '%Adobe%'";
+                        $sql_adobe = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE (l.software LIKE '%Adobe%' OR l.fabricante LIKE '%Adobe%') $where_lic";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $sql_adobe = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE (l.software LIKE '%Adobe%' OR l.fabricante LIKE '%Adobe%') $where_lic";
+                        }
                         $res_adobe = mysqli_query($conn, $sql_adobe);
                         $data_adobe = mysqli_fetch_assoc($res_adobe);
                         $total_adobe = $data_adobe['total'] ?? 0;
-                        $disp_adobe = $total_adobe - ($data_adobe['em_uso'] ?? 0);
+                        $disp_adobe = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_adobe - ($data_adobe['em_uso'] ?? 0));
 
                         // Windows
-                        $sql_win = "SELECT SUM(quantidade_total) as total, SUM(quantidade_uso) as em_uso FROM licencas WHERE software LIKE '%Windows%'";
+                        $sql_win = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%Windows%' $where_lic";
+                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+                            $sql_win = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%Windows%' $where_lic";
+                        }
                         $res_win = mysqli_query($conn, $sql_win);
                         $data_win = mysqli_fetch_assoc($res_win);
                         $total_win = $data_win['total'] ?? 0;
-                        $disp_win = $total_win - ($data_win['em_uso'] ?? 0);
+                        $disp_win = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_win - ($data_win['em_uso'] ?? 0));
 
                         // Expiradas ou prestes a vencer (60 dias)
-                        $sql_exp = "SELECT COUNT(*) as total FROM licencas WHERE status = 'Expirada' OR (data_expiracao IS NOT NULL AND data_expiracao <= DATE_ADD(CURDATE(), INTERVAL 60 DAY))";
+                        $sql_exp = "SELECT COUNT(*) as total FROM licencas l $join_lic WHERE (l.status = 'Expirada' OR (l.data_expiracao IS NOT NULL AND l.data_expiracao <= DATE_ADD(CURDATE(), INTERVAL 60 DAY))) $where_lic";
                         $res_exp = mysqli_query($conn, $sql_exp);
                         $count_exp = mysqli_fetch_assoc($res_exp)['total'] ?? 0;
 
@@ -554,169 +587,174 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         </div>
                     </div><!-- End: Charts -->
                     <!-- Start: SLA Ranking -->
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos
-                                    </h6>
-                                    <form method="GET" class="form-inline">
-                                        <!-- Preservar filtro de recorrência ao filtrar SLA -->
-                                        <input type="hidden" name="mes_recorrencia"
-                                            value="<?php echo $mes_rec_filtro; ?>">
-                                        <input type="hidden" name="ano_recorrencia"
-                                            value="<?php echo $ano_rec_filtro; ?>">
+                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                        <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos
+                                        </h6>
+                                        <form method="GET" class="form-inline">
+                                            <!-- Preservar filtro de recorrência ao filtrar SLA -->
+                                            <input type="hidden" name="mes_recorrencia"
+                                                value="<?php echo $mes_rec_filtro; ?>">
+                                            <input type="hidden" name="ano_recorrencia"
+                                                value="<?php echo $ano_rec_filtro; ?>">
 
-                                        <select name="mes_ranking" id="mes_ranking"
-                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
-                                            <?php
-                                            foreach ($meses as $num => $nome) {
-                                                $selected = ($num == $mes_filtro) ? 'selected' : '';
-                                                echo "<option value='$num' $selected>$nome</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <select name="ano_ranking" id="ano_ranking"
-                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
-                                            <?php
-                                            for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
-                                                $selected = ($i == $ano_filtro) ? 'selected' : '';
-                                                echo "<option value='$i' $selected>$i</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                            style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
-                                        <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
-                                            id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm"
-                                            style="font-size: 0.7rem; background: #e74a3b;">
-                                            <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
-                                        </a>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Responsável</th>
-                                                    <th>Chamados Resolvidos</th>
-                                                    <th>Dentro do Prazo </th>
-                                                    <th>% SLA Atingido</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($ranking_data as $rank): ?>
+                                            <select name="mes_ranking" id="mes_ranking"
+                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                <?php
+                                                foreach ($meses as $num => $nome) {
+                                                    $selected = ($num == $mes_filtro) ? 'selected' : '';
+                                                    echo "<option value='$num' $selected>$nome</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <select name="ano_ranking" id="ano_ranking"
+                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                <?php
+                                                for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
+                                                    $selected = ($i == $ano_filtro) ? 'selected' : '';
+                                                    echo "<option value='$i' $selected>$i</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm mr-2"
+                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
+                                            <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
+                                                id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm"
+                                                style="font-size: 0.7rem; background: #e74a3b;">
+                                                <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                            </a>
+                                        </form>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                                <thead>
                                                     <tr>
-                                                        <td class="align-middle">
-                                                            <img class="img-profile rounded-circle"
-                                                                style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;"
-                                                                src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
-                                                            <?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?>
-                                                        </td>
-                                                        <td class="align-middle"><?php echo $rank['total']; ?></td>
-                                                        <td class="align-middle"><?php echo $rank['met_sla']; ?></td>
-                                                        <td class="align-middle">
-                                                            <div class="progress" style="height: 20px;">
-                                                                <?php
-                                                                $color = 'bg-danger';
-                                                                if ($rank['percentage'] >= 80)
-                                                                    $color = 'bg-success';
-                                                                elseif ($rank['percentage'] >= 50)
-                                                                    $color = 'bg-warning';
-                                                                ?>
-                                                                <div class="progress-bar <?php echo $color; ?>"
-                                                                    role="progressbar"
-                                                                    style="width: <?php echo $rank['percentage']; ?>%"
-                                                                    aria-valuenow="<?php echo $rank['percentage']; ?>"
-                                                                    aria-valuemin="0" aria-valuemax="100">
-                                                                    <?php echo $rank['percentage']; ?>%
+                                                        <th>Responsável</th>
+                                                        <th>Chamados Resolvidos</th>
+                                                        <th>Dentro do Prazo </th>
+                                                        <th>% SLA Atingido</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($ranking_data as $rank): ?>
+                                                        <tr>
+                                                            <td class="align-middle">
+                                                                <img class="img-profile rounded-circle"
+                                                                    style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;"
+                                                                    src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
+                                                                <?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?>
+                                                            </td>
+                                                            <td class="align-middle"><?php echo $rank['total']; ?></td>
+                                                            <td class="align-middle"><?php echo $rank['met_sla']; ?></td>
+                                                            <td class="align-middle">
+                                                                <div class="progress" style="height: 20px;">
+                                                                    <?php
+                                                                    $color = 'bg-danger';
+                                                                    if ($rank['percentage'] >= 80)
+                                                                        $color = 'bg-success';
+                                                                    elseif ($rank['percentage'] >= 50)
+                                                                        $color = 'bg-warning';
+                                                                    ?>
+                                                                    <div class="progress-bar <?php echo $color; ?>"
+                                                                        role="progressbar"
+                                                                        style="width: <?php echo $rank['percentage']; ?>%"
+                                                                        aria-valuenow="<?php echo $rank['percentage']; ?>"
+                                                                        aria-valuemin="0" aria-valuemax="100">
+                                                                        <?php echo $rank['percentage']; ?>%
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <?php
-                                                endforeach; ?>
-                                                <?php if (empty($ranking_data)): ?>
-                                                    <tr>
-                                                        <td colspan="4" class="text-center">Nenhum chamado finalizado neste
-                                                            período.</td>
-                                                    </tr>
-                                                    <?php
-                                                endif; ?>
-                                            </tbody>
-                                        </table>
+                                                            </td>
+                                                        </tr>
+                                                        <?php
+                                                    endforeach; ?>
+                                                    <?php if (empty($ranking_data)): ?>
+                                                        <tr>
+                                                            <td colspan="4" class="text-center">Nenhum chamado finalizado neste
+                                                                período.</td>
+                                                        </tr>
+                                                        <?php
+                                                    endif; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div><!-- End: SLA Ranking -->
-                    <div class="row">
-                        <div class="col-lg-12 mb-4">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por Recorrência
-                                    </h6>
-                                    <form method="GET" class="form-inline">
-                                        <!-- Preservar filtro de SLA ao filtrar Recorrência -->
-                                        <input type="hidden" name="mes_ranking" value="<?php echo $mes_filtro; ?>">
-                                        <input type="hidden" name="ano_ranking" value="<?php echo $ano_filtro; ?>">
+                    <?php endif; ?>
+                    <!-- End: SLA Ranking -->
+                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                        <div class="row">
+                            <div class="col-lg-12 mb-4">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                        <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por Recorrência
+                                        </h6>
+                                        <form method="GET" class="form-inline">
+                                            <!-- Preservar filtro de SLA al filtrar Recorrência -->
+                                            <input type="hidden" name="mes_ranking" value="<?php echo $mes_filtro; ?>">
+                                            <input type="hidden" name="ano_ranking" value="<?php echo $ano_filtro; ?>">
 
-                                        <select name="mes_recorrencia" id="mes_recorrencia"
-                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
-                                            <?php
-                                            foreach ($meses as $num => $nome) {
-                                                $selected = ($num == $mes_rec_filtro) ? 'selected' : '';
-                                                echo "<option value='$num' $selected>$nome</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <select name="ano_recorrencia" id="ano_recorrencia"
-                                            class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
-                                            <?php
-                                            for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
-                                                $selected = ($i == $ano_rec_filtro) ? 'selected' : '';
-                                                echo "<option value='$i' $selected>$i</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                            style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
-                                        <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
-                                            id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm"
-                                            style="font-size: 0.7rem; background: #e74a3b;">
-                                            <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
-                                        </a>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <?php
-                                    if (!empty($recorrencia_data)) {
-                                        $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
-                                        foreach ($recorrencia_data as $i => $rec) {
-                                            $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
-                                            $cor = $cores[$i % count($cores)];
-                                            $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
-                                            ?>
-                                            <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
-                                                    class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
-                                            <div class="progress mb-4">
-                                                <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
-                                                    aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
-                                                    style="width: <?php echo $pct; ?>%;">
-                                                    <?php echo $rec['total']; ?>
+                                            <select name="mes_recorrencia" id="mes_recorrencia"
+                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                <?php
+                                                foreach ($meses as $num => $nome) {
+                                                    $selected = ($num == $mes_rec_filtro) ? 'selected' : '';
+                                                    echo "<option value='$num' $selected>$nome</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <select name="ano_recorrencia" id="ano_recorrencia"
+                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                <?php
+                                                for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
+                                                    $selected = ($i == $ano_rec_filtro) ? 'selected' : '';
+                                                    echo "<option value='$i' $selected>$i</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm mr-2"
+                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
+                                            <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
+                                                id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm"
+                                                style="font-size: 0.7rem; background: #e74a3b;">
+                                                <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                            </a>
+                                        </form>
+                                    </div>
+                                    <div class="card-body">
+                                        <?php
+                                        if (!empty($recorrencia_data)) {
+                                            $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
+                                            foreach ($recorrencia_data as $i => $rec) {
+                                                $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
+                                                $cor = $cores[$i % count($cores)];
+                                                $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
+                                                ?>
+                                                <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
+                                                        class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
+                                                <div class="progress mb-4">
+                                                    <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
+                                                        aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
+                                                        style="width: <?php echo $pct; ?>%;">
+                                                        <?php echo $rec['total']; ?>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php
+                                                <?php
+                                            }
+                                        } else {
+                                            echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
                                         }
-                                    } else {
-                                        echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
-                                    }
-                                    ?>
+                                        ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

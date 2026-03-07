@@ -31,6 +31,28 @@ include 'conexao.php';
         background-color: #17a2b8 !important;
         color: #fff !important;
     }
+
+    .asset-thumbnail {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .asset-placeholder {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #f8f9fc;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        color: #b7b9cc;
+    }
 </style>
 
 <head>
@@ -191,9 +213,9 @@ include 'conexao.php';
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Categoria</th>
-                                            <th>Fabricante</th>
                                             <th>Modelo</th>
+                                            <th>Fabricante</th>
+                                            <th>Categoria</th>
                                             <th>Tag</th>
                                             <th>HostName</th>
                                             <th>Doado para</th>
@@ -211,9 +233,19 @@ include 'conexao.php';
                                                 $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td class="d-flex align-items-center">
+                                                        <?php
+                                                        $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
+                                                        if ($foto) {
+                                                            echo "<img src='$foto' class='asset-thumbnail'>";
+                                                        } else {
+                                                            echo "<div class='asset-placeholder'><i class='fas fa-box'></i></div>";
+                                                        }
+                                                        echo htmlspecialchars($row['modelo']);
+                                                        ?>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td><?php echo htmlspecialchars($recebedor); ?></td>

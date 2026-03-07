@@ -92,9 +92,11 @@ include
                                             class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
                                     <a class="dropdown-item" href="configuracoes.php"><i
                                             class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                        Manutenção</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
+                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
                                     <a href="logout.php" class="dropdown-item"><i
                                             class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
@@ -116,87 +118,102 @@ include
                                         <select id="reportType" class="form-control mr-3" style="height: 50px;">
                                             <option value="">Selecione um relatório...</option>
 
-                                            <optgroup label="Ativos">
-                                                <option value="relatorio_ativo.php">Geral de Ativos</option>
-                                                <option value="relatorio_ativos_status.php">Por Status</option>
-                                                <option value="relatorio_ativos_cc.php">Por Centro de Custo</option>
-                                                <option value="relatorio_financeiro.php">Resumo Financeiro</option>
-                                                <option value="relatorio_ativos_fabricante.php">Por Fabricante</option>
-                                                <option value="relatorio_ativos_modelo.php">Por Modelo</option>
-                                                <option value="relatorio_ativos_categoria.php">Por Categoria</option>
-                                                <option value="relatorio_ativos_antigos.php">Ativos Antigos (> 3 anos)
-                                                </option>
-                                                <option value="relatorio_ativos_recentes.php">Ativos Recentes (< 1
-                                                        ano)</option>
-                                                <option value="relatorio_ativos_valor_alto.php">Alto Valor (> R$ 5k)
-                                                </option>
-                                                <option value="relatorio_ativos_valor_baixo.php">Baixo Valor (< R$
-                                                        1k)</option>
-                                                <option value="relatorio_ativos_disponiveis.php">Disponíveis</option>
-                                                <option value="relatorio_ativos_em_uso.php">Em Uso</option>
-                                                <option value="relatorio_ativos_manutencao.php">Em Manutenção</option>
-                                                <option value="relatorio_ativos_sem_cc.php">Sem Centro de Custo</option>
-                                                <option value="relatorio_ativos_por_usuario.php">Por Usuário</option>
-                                                <option value="ativos_doados.php">Doações</option>
-                                            </optgroup>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                <optgroup label="Ativos">
+                                                    <option value="relatorio_ativo.php">Geral de Ativos</option>
+                                                    <option value="relatorio_ativos_status.php">Por Status</option>
+                                                    <option value="relatorio_ativos_cc.php">Por Centro de Custo</option>
+                                                    <option value="relatorio_financeiro.php">Resumo Financeiro</option>
+                                                    <option value="relatorio_ativos_fabricante.php">Por Fabricante</option>
+                                                    <option value="relatorio_ativos_modelo.php">Por Modelo</option>
+                                                    <option value="relatorio_ativos_categoria.php">Por Categoria</option>
+                                                    <option value="relatorio_ativos_antigos.php">Ativos Antigos (> 3 anos)
+                                                    </option>
+                                                    <option value="relatorio_ativos_recentes.php">Ativos Recentes (< 1
+                                                            ano)</option>
+                                                    <option value="relatorio_ativos_valor_alto.php">Alto Valor (> R$ 5k)
+                                                    </option>
+                                                    <option value="relatorio_ativos_valor_baixo.php">Baixo Valor (< R$
+                                                            1k)</option>
+                                                    <option value="relatorio_ativos_disponiveis.php">Disponíveis</option>
+                                                    <option value="relatorio_ativos_em_uso.php">Em Uso</option>
+                                                    <option value="relatorio_ativos_manutencao.php">Em Manutenção</option>
+                                                    <option value="relatorio_ativos_sem_cc.php">Sem Centro de Custo</option>
+                                                    <option value="relatorio_ativos_por_usuario.php">Por Usuário</option>
+                                                    <option value="ativos_doados.php">Doações</option>
+                                                </optgroup>
+                                            <?php else: ?>
+                                                <optgroup label="Meus Ativos">
+                                                    <option value="relatorio_ativos_por_usuario.php">Meus Ativos Atribuídos
+                                                    </option>
+                                                </optgroup>
+                                            <?php endif; ?>
 
                                             <optgroup label="Chamados">
-                                                <option value="relatorio_chamados_mensal.php">Resumo Mensal</option>
-                                                <option value="relatorio_chamados_abertos.php">Abertos</option>
-                                                <option value="relatorio_chamados_fechados.php">Fechados</option>
-                                                <option value="relatorio_chamados_categoria.php">Por Categoria</option>
-                                                <option value="relatorio_chamados_tecnico.php">Por Técnico</option>
-                                                <option value="relatorio_chamados_solicitante.php">Por Solicitante
+                                                <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                    <option value="relatorio_chamados_mensal.php">Resumo Mensal</option>
+                                                <?php endif; ?>
+                                                <option value="relatorio_chamados_abertos.php">Meus Chamados Abertos
                                                 </option>
-                                                <option value="relatorio_chamados_sla_vencido.php">SLA Vencido</option>
-                                                <option value="relatorio_chamados_sem_atribuicao.php">Sem Atribuição
+                                                <option value="relatorio_chamados_fechados.php">Meus Chamados Fechados
                                                 </option>
-                                                <option value="relatorio_chamados_recentes.php">Recentes (30 dias)
-                                                </option>
+                                                <option value="relatorio_chamados_recentes.php">Meus Chamados Recentes
+                                                    (30 dias)</option>
+                                                <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                    <option value="relatorio_chamados_categoria.php">Por Categoria</option>
+                                                    <option value="relatorio_chamados_tecnico.php">Por Técnico</option>
+                                                    <option value="relatorio_chamados_solicitante.php">Por Solicitante
+                                                    </option>
+                                                    <option value="relatorio_chamados_sla_vencido.php">SLA Vencido</option>
+                                                    <option value="relatorio_chamados_sem_atribuicao.php">Sem Atribuição
+                                                    </option>
+                                                <?php endif; ?>
                                             </optgroup>
 
-                                            <optgroup label="Usuários">
-                                                <option value="relatorio_usuario.php">Lista Geral</option>
-                                                <option value="relatorio_usuarios_cc.php">Por Centro de Custo</option>
-                                                <option value="relatorio_usuarios_inativos.php">Inativos</option>
-                                                <option value="relatorio_usuarios_sem_ativos.php">Sem Ativos</option>
-                                                <option value="relatorio_usuarios_com_ativos.php">Com Ativos</option>
-                                                <option value="relatorio_usuarios_funcao.php">Por Função</option>
-                                                <option value="relatorio_usuarios_vips.php">VIPs</option>
-                                            </optgroup>
+                                            <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                <optgroup label="Usuários">
+                                                    <option value="relatorio_usuario.php">Lista Geral</option>
+                                                    <option value="relatorio_usuarios_cc.php">Por Centro de Custo</option>
+                                                    <option value="relatorio_usuarios_inativos.php">Inativos</option>
+                                                    <option value="relatorio_usuarios_sem_ativos.php">Sem Ativos</option>
+                                                    <option value="relatorio_usuarios_com_ativos.php">Com Ativos</option>
+                                                    <option value="relatorio_usuarios_funcao.php">Por Função</option>
+                                                    <option value="relatorio_usuarios_vips.php">VIPs</option>
+                                                </optgroup>
 
-                                            <optgroup label="Licenças">
-                                                <option value="relatorio_licencas_geral.php">Geral de Licenças</option>
-                                                <option value="relatorio_licencas_expiradas.php">Expiradas / Próximas ao
-                                                    Vencimento</option>
-                                                <option value="relatorio_licencas_cc.php">Por Centro de Custo</option>
-                                                <option value="relatorio_licencas_em_uso.php">Uso de Seats (Ocupação)
-                                                </option>
-                                                <option value="relatorio_atribuicoes_geral.php">Relatório Geral de
-                                                    Atribuições</option>
-                                            </optgroup>
+                                                <optgroup label="Licenças">
+                                                    <option value="relatorio_licencas_geral.php">Geral de Licenças</option>
+                                                    <option value="relatorio_licencas_expiradas.php">Expiradas / Próximas ao
+                                                        Vencimento</option>
+                                                    <option value="relatorio_licencas_cc.php">Por Centro de Custo</option>
+                                                    <option value="relatorio_licencas_em_uso.php">Uso de Seats (Ocupação)
+                                                    </option>
+                                                    <option value="relatorio_atribuicoes_geral.php">Relatório Geral de
+                                                        Atribuições</option>
+                                                </optgroup>
 
-                                            <optgroup label="Manutenção">
-                                                <option value="relatorio_manutencao_atual.php">Manutenções Ativas
-                                                </option>
-                                                <option value="relatorio_manutencao_historico.php">Histórico de
-                                                    Manutenções</option>
-                                                <option value="relatorio_manutencao_estatistico.php">Resumo Estatístico
-                                                </option>
-                                            </optgroup>
+                                                <optgroup label="Manutenção">
+                                                    <option value="relatorio_manutencao_atual.php">Manutenções Ativas
+                                                    </option>
+                                                    <option value="relatorio_manutencao_historico.php">Histórico de
+                                                        Manutenções</option>
+                                                    <option value="relatorio_manutencao_estatistico.php">Resumo Estatístico
+                                                    </option>
+                                                </optgroup>
 
-                                            <optgroup label="Outros">
-                                                <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)
-                                                </option>
-                                                <option value="relatorio_cc_detalhado.php">Centros de Custo (Detalhado)
-                                                </option>
-                                                <option value="relatorio_fornecedores_lista.php">Fornecedores (Lista)
-                                                </option>
-                                                <option value="relatorio_fornecedores_servico.php">Fornecedores
-                                                    (Serviços)</option>
-                                                <option value="relatorio_resumo_geral.php">Resumo Geral do Sistema
-                                                </option>
-                                            </optgroup>
+                                                <optgroup label="Outros">
+                                                    <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)
+                                                    </option>
+                                                    <option value="relatorio_cc_detalhado.php">Centros de Custo (Detalhado)
+                                                    </option>
+                                                    <option value="relatorio_fornecedores_lista.php">Fornecedores (Lista)
+                                                    </option>
+                                                    <option value="relatorio_fornecedores_servico.php">Fornecedores
+                                                        (Serviços)</option>
+                                                    <option value="relatorio_resumo_geral.php">Resumo Geral do Sistema
+                                                    </option>
+                                                </optgroup>
+                                            <?php endif; ?>
                                         </select>
                                         <button class="btn btn-success active text-white pulse animated btn-user"
                                             type="button" onclick="generateReport()"

@@ -10,52 +10,56 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-chart-pie"></i><span>Dashboard</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo ($current_page == 'inicio.php') ? 'active' : ''; ?>" href="/inicio.php">
-            <i class="fas fa-tachometer-alt"></i><span>Visão Geral</span>
-        </a>
-    </li>
+    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
+        <li class="nav-item">
+            <a class="nav-link <?php echo ($current_page == 'inicio.php') ? 'active' : ''; ?>" href="/inicio.php">
+                <i class="fas fa-tachometer-alt"></i><span>Visão Geral</span>
+            </a>
+        </li>
+    <?php endif; ?>
 
-    <hr class="sidebar-divider">
+    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
+        <hr class="sidebar-divider">
 
-    <!-- Gestão -->
-    <div class="sidebar-heading">Gestão de Ativos</div>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'equipamento') !== false || strpos($current_page, 'ativo') !== false) && !isset($_GET['status']) ? 'active' : ''; ?>"
-            href="/equipamentos.php">
-            <i class="fas fa-laptop-medical"></i><span>Inventário de Ativos</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo isset($_GET['status']) && $_GET['status'] == 'Manutencao' ? 'active' : ''; ?>"
-            href="/equipamentos.php?status=Manutencao">
-            <i class="fas fa-tools"></i><span>Ativos em Manutenção</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'licenca') !== false) ? 'active' : ''; ?>"
-            href="/licencas.php">
-            <i class="fas fa-file-contract"></i><span>Licenças & Software</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'centro_de_custo') !== false) ? 'active' : ''; ?>"
-            href="/centro_de_custo.php">
-            <i class="fas fa-wallet"></i><span>Centros de Custo</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'fornecedor') !== false) ? 'active' : ''; ?>"
-            href="/fornecedores.php">
-            <i class="fas fa-handshake"></i><span>Fornecedores</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'usuario') !== false) ? 'active' : ''; ?>"
-            href="/usuarios.php">
-            <i class="fas fa-user-shield"></i><span>Controle de Usuários</span>
-        </a>
-    </li>
+        <!-- Gestão -->
+        <div class="sidebar-heading">Gestão de Ativos</div>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'equipamento') !== false || strpos($current_page, 'ativo') !== false) && !isset($_GET['status']) ? 'active' : ''; ?>"
+                href="/equipamentos.php">
+                <i class="fas fa-laptop-medical"></i><span>Inventário de Ativos</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo isset($_GET['status']) && $_GET['status'] == 'Manutencao' ? 'active' : ''; ?>"
+                href="/equipamentos.php?status=Manutencao">
+                <i class="fas fa-tools"></i><span>Ativos em Manutenção</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'licenca') !== false) ? 'active' : ''; ?>"
+                href="/licencas.php">
+                <i class="fas fa-file-contract"></i><span>Licenças & Software</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'centro_de_custo') !== false) ? 'active' : ''; ?>"
+                href="/centro_de_custo.php">
+                <i class="fas fa-wallet"></i><span>Centros de Custo</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'fornecedor') !== false) ? 'active' : ''; ?>"
+                href="/fornecedores.php">
+                <i class="fas fa-handshake"></i><span>Fornecedores</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'usuario') !== false) ? 'active' : ''; ?>"
+                href="/usuarios.php">
+                <i class="fas fa-user-shield"></i><span>Controle de Usuários</span>
+            </a>
+        </li>
+    <?php endif; ?>
 
     <hr class="sidebar-divider">
 
@@ -78,11 +82,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <!-- Outros -->
     <div class="sidebar-heading">Inteligência & Ajuda</div>
-    <li class="nav-item">
-        <a class="nav-link <?php echo ($current_page == 'insights.php') ? 'active' : ''; ?>" href="/insights.php">
-            <i class="fas fa-lightbulb"></i><span>Previsão & Prevenção</span>
-        </a>
-    </li>
+    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
+        <li class="nav-item">
+            <a class="nav-link <?php echo ($current_page == 'insights.php') ? 'active' : ''; ?>" href="/insights.php">
+                <i class="fas fa-lightbulb"></i><span>Previsão & Prevenção</span>
+            </a>
+        </li>
+    <?php endif; ?>
     <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'agent.php') ? 'active' : ''; ?>" href="/agent.php">
             <i class="fas fa-brain"></i><span>Assistente IA</span>

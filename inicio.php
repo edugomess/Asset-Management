@@ -2,6 +2,12 @@
 include 'auth.php';
 include 'conexao.php';
 
+// Restrição de acesso: Usuário comum não acessa a visão geral
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
+
 // Verifica se o ID do ativo foi passado para transferir os dados
 if (isset($_GET['id'])) {
     $ativoId = $_GET['id'];
@@ -66,6 +72,28 @@ if (isset($_GET['id'])) {
 
         .clickable-row:hover {
             background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .asset-thumbnail {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .asset-placeholder {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #f8f9fc;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #b7b9cc;
         }
     </style>
 </head>
@@ -186,9 +214,9 @@ if (isset($_GET['id'])) {
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Categoria</th>
-                                            <th>Fabricante</th>
                                             <th>Modelo</th>
+                                            <th>Fabricante</th>
+                                            <th>Categoria</th>
                                             <th>Tag</th>
                                             <th>HostName</th>
                                             <th>Valor</th>
@@ -226,9 +254,19 @@ if (isset($_GET['id'])) {
                                                 ?>
                                                 <tr class="clickable-row"
                                                     onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
-                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td class="d-flex align-items-center">
+                                                        <?php
+                                                        $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
+                                                        if ($foto) {
+                                                            echo "<img src='$foto' class='asset-thumbnail'>";
+                                                        } else {
+                                                            echo "<div class='asset-placeholder'><i class='fas fa-box'></i></div>";
+                                                        }
+                                                        echo htmlspecialchars($row['modelo']);
+                                                        ?>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['modelo']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td>

@@ -57,11 +57,11 @@ $sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 // Nota: Usei 'centroDeCusto' conforme o nome da coluna no DESCRIBE recebido anteriormente.
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centroDeCusto, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centroDeCusto, matricula, telefone, tipoContrato, senha, nivelUsuario, unidade, status, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $cpfClean, $centroDeCusto, $matricula, $telefone, $senhaHash, $nivelUsuarioEnum, $unidade, $status, $foto_perfil);
+$stmt->bind_param("ssssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $cpfClean, $centroDeCusto, $matricula, $telefone, $tipoContrato, $senhaHash, $nivelUsuarioEnum, $unidade, $status, $foto_perfil);
 
 if ($stmt->execute()) {
     echo "<script>

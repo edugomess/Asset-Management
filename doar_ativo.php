@@ -38,11 +38,25 @@ try {
         }
 
         // Transferir o ativo para a tabela "venda" (que agora representa doações)
-        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, imagem, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtDoacao = $conn->prepare($queryDoacao);
-        $stmtDoacao->bind_param('sssssssssssi',
-            $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], $ativo['tag'], $ativo['hostName'], $ativo['valor'], $ativo['macAdress'], $ativo['status'], $ativo['dataAtivacao'], $ativo['centroDeCusto'], $ativo['descricao'], $ativo['assigned_to']);
+        $stmtDoacao->bind_param(
+            'sssssssssssi i',
+            $ativo['categoria'],
+            $ativo['fabricante'],
+            $ativo['modelo'],
+            $ativo['tag'],
+            $ativo['hostName'],
+            $ativo['valor'],
+            $ativo['macAdress'],
+            $ativo['imagem'],
+            $ativo['status'],
+            $ativo['dataAtivacao'],
+            $ativo['centroDeCusto'],
+            $ativo['descricao'],
+            $ativo['assigned_to']
+        );
         if ($stmtDoacao->execute()) {
             // Remover o ativo da tabela "ativos"
             $queryDelete = "DELETE FROM ativos WHERE id_asset = ?";
@@ -51,12 +65,10 @@ try {
             $stmtDelete->execute();
 
             echo json_encode(['success' => true]);
-        }
-        else {
+        } else {
             echo json_encode(['success' => false, 'message' => 'Erro ao transferir o ativo para a tabela de doações.']);
         }
-    }
-    else {
+    } else {
         echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
     }
 
@@ -65,8 +77,7 @@ try {
 
     $stmt->close();
     $conn->close();
-}
-catch (Exception $e) {
+} catch (Exception $e) {
     // Retornar erro
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

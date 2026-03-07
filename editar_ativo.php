@@ -228,7 +228,7 @@ $id = intval($id);
                         </div>
                         <div class="col-sm-6 col-xl-6 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Fabricante</label>
                                 <input class="form-control" name="fabricante" type="text" placeholder="Fabricante"
                                     value="<?php echo $fabricante ?>">
                             </div>
@@ -239,28 +239,28 @@ $id = intval($id);
                     <div class="form-row">
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Modelo</label>
                                 <input class="form-control" name="modelo" type="text" placeholder="Modelo"
                                     value="<?php echo $modelo ?>">
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Tag</label>
                                 <input class="form-control" name="tag" type="text" placeholder="Tag"
                                     value="<?php echo $tag ?>" disabled>
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Host Name</label>
                                 <input class="form-control" name="hostName" type="text" placeholder="Host Name"
                                     value="<?php echo $hostName ?>">
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                             <div class="form-group">
-                                <label></label>
+                                <label>Valor R$</label>
                                 <input class="form-control" name="valor" type="step" placeholder="Valor R$: '999.99' "
                                     value="<?php echo $valor ?>">
                             </div>
@@ -269,8 +269,10 @@ $id = intval($id);
                     <!-- Start: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
                         <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group"><input class="form-control" name="macAdress" type="text"
-                                    placeholder="MAC Adress" value="<?php echo $macAdress ?>" style="margin-top: 24px;">
+                            <div class="form-group">
+                                <label>MAC Adress</label>
+                                <input class="form-control" name="macAdress" type="text" placeholder="MAC Adress"
+                                    value="<?php echo $macAdress ?>">
                             </div>
                         </div>
                         <div class="col-sm-4 col-xl-1">
@@ -306,15 +308,21 @@ $id = intval($id);
                         </div>
                     </div><!-- End: 3-column form row -->
                     <div class="form-row" style="height: 80px;">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex"
-                                name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
+                        <div class="col-sm-4 col-xl-5 offset-xl-1">
+                            <div class="form-group">
+                                <label>Upload de Imagem</label>
+                                <input class="form-control-file d-xl-flex" name="imagem" type="file"
+                                    style="height: 30px;" accept="image/*">
+                            </div>
+                        </div>
                     </div><!-- End: 3-column form row -->
 
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control"
-                                name="descricao" placeholder="Descrição..."
-                                style="height: 100px;margin-top: 10px; margin-bottom: 0px;"><?php echo $descricao; ?></textarea>
+                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;">
+                            <label>Descrição/Observações</label>
+                            <textarea class="form-control" name="descricao" placeholder="Descrição..."
+                                style="height: 100px;margin-bottom: 0px;"><?php echo $descricao; ?></textarea>
                         </div>
                         <div class="col-xl-4 offset-xl-4"><button
                                 class="btn btn-success btn-block active text-white pulse animated btn-user"

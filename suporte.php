@@ -1,4 +1,11 @@
-<?php include 'auth.php'; ?>
+<?php
+include 'auth.php';
+include 'conexao.php';
+
+// Fetch Cost Centers for the dropdown
+$sql_cc = "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+$result_cc = mysqli_query($conn, $sql_cc);
+?>
 <!DOCTYPE html>
 <html>
 
@@ -255,8 +262,16 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="small font-weight-bold">Empresa/Centro de Custo</label>
-                                            <input type="text" class="form-control modern-input"
-                                                placeholder="Ex: TI Matriz">
+                                            <select class="form-control modern-input" name="centro_custo" required>
+                                                <option value="">Selecione...</option>
+                                                <?php
+                                                if ($result_cc) {
+                                                    while ($row_cc = mysqli_fetch_assoc($result_cc)) {
+                                                        echo "<option value='" . htmlspecialchars($row_cc['id_centro_de_custo']) . "'>" . htmlspecialchars($row_cc['nomeSetor']) . "</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="mb-3">

@@ -261,20 +261,51 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
-                                <?php if (!isset($_GET['status']) || $_GET['status'] !== 'Manutencao'): ?>
-                                    <div class="col-md-6 col-xl-3 text-nowrap">
-                                        <div id="dataTable_length" class="dataTables_length"><a
-                                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                                role="button"
-                                                style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
-                                                href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
-                                    </div>
-                                <?php endif; ?>
-                                <div class="col-md-6 col-xl-9">
+                                <div class="col-md-6 col-xl-2 text-nowrap">
+                                    <div id="dataTable_length" class="dataTables_length"><a
+                                            class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            role="button"
+                                            style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
+                                            href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
+                                </div>
+                                <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter">
-                                        <form method="GET" action=""><label><input type="search" name="search"
-                                                    class="form-control form-control-sm" placeholder="Buscar..."
-                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label>
+                                        <form method="GET" action="" class="form-inline justify-content-end">
+                                            <div class="form-group mr-2">
+                                                <select name="cc_filter" class="form-control form-control-sm"
+                                                    onchange="this.form.submit()">
+                                                    <option value="">Centro de Custo (Todos)</option>
+                                                    <?php
+                                                    $res_cc_filter = mysqli_query($conn, "SELECT DISTINCT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC");
+                                                    while ($cc_row = mysqli_fetch_assoc($res_cc_filter)) {
+                                                        $selected = (isset($_GET['cc_filter']) && $_GET['cc_filter'] == $cc_row['nomeSetor']) ? 'selected' : '';
+                                                        echo "<option value='" . htmlspecialchars($cc_row['nomeSetor']) . "' $selected>" . htmlspecialchars($cc_row['nomeSetor']) . "</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group mr-2">
+                                                <select name="status" class="form-control form-control-sm"
+                                                    onchange="this.form.submit()">
+                                                    <option value="">Status (Todos)</option>
+                                                    <?php
+                                                    $status_options = ['Disponível', 'Em Uso', 'Manutenção'];
+                                                    foreach ($status_options as $opt) {
+                                                        $selected = (isset($_GET['status']) && $_GET['status'] == $opt) ? 'selected' : '';
+                                                        echo "<option value='$opt' $selected>$opt</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="search" name="search" class="form-control form-control-sm"
+                                                    placeholder="Buscar..."
+                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                            </div>
+                                            <?php if (isset($_GET['cc_filter']) && $_GET['cc_filter'] != ''): ?>
+                                                <input type="hidden" name="cc_filter"
+                                                    value="<?php echo htmlspecialchars($_GET['cc_filter']); ?>">
+                                            <?php endif; ?>
                                         </form>
                                     </div>
                                 </div>
@@ -285,6 +316,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 $results_per_page = 10;
                                 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
                                 $status_filter = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : '';
+                                $cc_filter = isset($_GET['cc_filter']) ? mysqli_real_escape_string($conn, $_GET['cc_filter']) : '';
                                 $maintenance_join = "";
 
                                 $where_clauses = [];
@@ -300,6 +332,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     if (!empty($status_filter)) {
                                         $where_clauses[] = "a.status LIKE '%$status_filter%'";
                                     }
+                                }
+                                if (!empty($cc_filter)) {
+                                    $where_clauses[] = "a.centroDeCusto = '$cc_filter'";
                                 }
 
                                 $where_clause = count($where_clauses) > 0 ? "WHERE " . implode(" AND ", $where_clauses) : "";
@@ -394,88 +429,89 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         ?>
                                                     </td>
                                                     <td>
-                                                        <?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                            <td><?php echo htmlspecialchars($row['categoria']); ?></td>
-                                                            <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
-                                                                    class="font-weight-bold" style="color: #2c404a;"
-                                                                    onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
-                                                            </td>
-                                                            <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                                            <td>
-                                                                <span class="font-weight-bold" style="color: #2c404a;">
-                                                                    R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
-                                                                </span>
-                                                                <br>
-                                                                <small class="text-muted">
-                                                                    (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
-                                                                </small>
-                                                            </td>
-                                                            <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                            <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                                        <?php echo htmlspecialchars($row['fabricante']); ?>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td><a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
+                                                            class="font-weight-bold" style="color: #2c404a;"
+                                                            onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                                    <td>
+                                                        <span class="font-weight-bold" style="color: #2c404a;">
+                                                            R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
+                                                        </span>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
+                                                        </small>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
 
-                                                            <?php if ($status_filter !== 'Manutencao'): ?>
-                                                                    <td>
-                                                                        <?php
-                                                                        if ($assigned_to && !empty($row['user_nome'])) {
-                                                                            echo htmlspecialchars($row['user_nome']);
-                                                                        } else {
-                                                                            echo "Não Atribuído";
-                                                                        }
-                                                                        ?>
-                                                                    </td>
-                                                            <?php else: ?>
-                                                                    <td>
-                                                                        <?php
-                                                                        $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações registradas';
-                                                                        $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
-                                                                        $has_motivo = !empty($row['manutencao_motivo']);
-                                                                        ?>
-                                                                        <span data-toggle="tooltip" data-placement="top"
-                                                                            title="<?php echo htmlspecialchars($motivo_completo); ?>"
-                                                                            style="cursor: help; <?php echo $has_motivo ? 'border-bottom: 1px dashed #ccc;' : 'color: #ccc; font-style: italic;'; ?>">
-                                                                            <?php echo htmlspecialchars($motivo_resumo); ?>
-                                                                        </span>
-                                                                    </td>
+                                                    <?php if ($status_filter !== 'Manutencao'): ?>
+                                                        <td>
+                                                            <?php
+                                                            if ($assigned_to && !empty($row['user_nome'])) {
+                                                                echo htmlspecialchars($row['user_nome']);
+                                                            } else {
+                                                                echo "Não Atribuído";
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                    <?php else: ?>
+                                                        <td>
+                                                            <?php
+                                                            $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações registradas';
+                                                            $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
+                                                            $has_motivo = !empty($row['manutencao_motivo']);
+                                                            ?>
+                                                            <span data-toggle="tooltip" data-placement="top"
+                                                                title="<?php echo htmlspecialchars($motivo_completo); ?>"
+                                                                style="cursor: help; <?php echo $has_motivo ? 'border-bottom: 1px dashed #ccc;' : 'color: #ccc; font-style: italic;'; ?>">
+                                                                <?php echo htmlspecialchars($motivo_resumo); ?>
+                                                            </span>
+                                                        </td>
+                                                    <?php endif; ?>
+
+                                                    <td>
+                                                        <span
+                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
+                                                            <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <?php if (!$row['em_manutencao']): ?>
+                                                                <?php if ($assigned_to): ?>
+                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
+                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
+                                                                        <i class='fas fa-user-minus'></i></button>
+                                                                <?php else: ?>
+                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2'
+                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                        <i class='fas fa-user-plus'></i></button>
+                                                                <?php endif; ?>
                                                             <?php endif; ?>
 
-                                                            <td>
-                                                                <span
-                                                                    class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
-                                                                    <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="d-flex align-items-center">
-                                                                    <?php if (!$row['em_manutencao']): ?>
-                                                                            <?php if ($assigned_to): ?>
-                                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
-                                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Desatribuir
-                                                                                        <i class='fas fa-user-minus'></i></button>
-                                                                            <?php else: ?>
-                                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2'
-                                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
-                                                                                        <i class='fas fa-user-plus'></i></button>
-                                                                            <?php endif; ?>
-                                                                    <?php endif; ?>
+                                                            <a class='btn btn-warning btn-edit mr-2'
+                                                                href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
+                                                                title="Editar" onclick="event.stopPropagation();"><i
+                                                                    class='fas fa-edit'></i></a>
 
-                                                                    <a class='btn btn-warning btn-edit mr-2'
-                                                                        href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
-                                                                        title="Editar" onclick="event.stopPropagation();"><i
-                                                                            class='fas fa-edit'></i></a>
-
-                                                                    <?php if ($row['em_manutencao']): ?>
-                                                                            <button class="btn btn-success btn-edit"
-                                                                                onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
-                                                                                title="Liberar"><i class="fas fa-check-circle"></i></button>
-                                                                    <?php else: ?>
-                                                                            <button class="btn btn-primary btn-edit"
-                                                                                onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
-                                                                                title="Manutenção"><i class="fas fa-tools"></i></button>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <?php
+                                                            <?php if ($row['em_manutencao']): ?>
+                                                                <button class="btn btn-success btn-edit"
+                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                    title="Liberar"><i class="fas fa-check-circle"></i></button>
+                                                            <?php else: ?>
+                                                                <button class="btn btn-primary btn-edit"
+                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
+                                                                    title="Manutenção"><i class="fas fa-tools"></i></button>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <?php
                                             }
                                         } else {
                                             echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";

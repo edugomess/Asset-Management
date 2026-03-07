@@ -104,19 +104,38 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 col-xl-3 text-nowrap">
+                                <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
                                     </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                         role="button"
                                         style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;"
                                         href="/cadastro_de_usuario.php">Cadastrar Novo</a>
                                 </div>
-                                <div class="col-md-6 col-xl-9">
+                                <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
-                                        <form method="GET" action=""><label><input type="search" name="search"
-                                                    class="form-control form-control-sm" aria-controls="dataTable"
-                                                    placeholder="Buscar..."
-                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label>
+                                        <form method="GET" action="" class="form-inline justify-content-end">
+                                            <div class="form-group mr-2">
+                                                <select name="cc_filter" class="form-control form-control-sm"
+                                                    onchange="this.form.submit()">
+                                                    <option value="">Centro de Custo (Todos)</option>
+                                                    <?php
+                                                    $res_cc_filter = mysqli_query($conn, "SELECT DISTINCT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC");
+                                                    while ($cc_row = mysqli_fetch_assoc($res_cc_filter)) {
+                                                        $selected = (isset($_GET['cc_filter']) && $_GET['cc_filter'] == $cc_row['nomeSetor']) ? 'selected' : '';
+                                                        echo "<option value='" . htmlspecialchars($cc_row['nomeSetor']) . "' $selected>" . htmlspecialchars($cc_row['nomeSetor']) . "</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="search" name="search" class="form-control form-control-sm"
+                                                    aria-controls="dataTable" placeholder="Buscar..."
+                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                            </div>
+                                            <?php if (isset($_GET['cc_filter']) && $_GET['cc_filter'] != ''): ?>
+                                                <input type="hidden" name="cc_filter"
+                                                    value="<?php echo htmlspecialchars($_GET['cc_filter']); ?>">
+                                            <?php endif; ?>
                                         </form>
                                     </div>
                                 </div>
@@ -134,11 +153,21 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             // Define how many results you want per page
                                             $results_per_page = 10;
 
-                                            // Buscar termo de pesquisa
+                                            // Buscar termo de pesquisa e filtro de CC
                                             $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-                                            $where_clause = "";
+                                            $cc_filter = isset($_GET['cc_filter']) ? mysqli_real_escape_string($conn, $_GET['cc_filter']) : '';
+
+                                            $where_clauses = [];
                                             if (!empty($search)) {
-                                                $where_clause = "WHERE nome LIKE '%$search%' OR sobrenome LIKE '%$search%' OR email LIKE '%$search%' OR usuarioAD LIKE '%$search%'";
+                                                $where_clauses[] = "(nome LIKE '%$search%' OR sobrenome LIKE '%$search%' OR email LIKE '%$search%' OR usuarioAD LIKE '%$search%')";
+                                            }
+                                            if (!empty($cc_filter)) {
+                                                $where_clauses[] = "centroDeCusto = '$cc_filter'";
+                                            }
+
+                                            $where_clause = "";
+                                            if (count($where_clauses) > 0) {
+                                                $where_clause = "WHERE " . implode(" AND ", $where_clauses);
                                             }
 
                                             // Find out the number of results in the database
@@ -213,18 +242,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 <ul class="pagination-custom">
                                                     <?php
                                                     $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                                    $cc_param = !empty($cc_filter) ? "&cc_filter=" . urlencode($cc_filter) : "";
                                                     if ($current_page > 1) {
-                                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param$cc_param'>« Anterior</a></li>";
                                                     }
                                                     for ($page = 1; $page <= $total_pages; $page++) {
                                                         if ($page == $current_page) {
                                                             echo "<li class='active'><span>$page</span></li>";
                                                         } else {
-                                                            echo "<li><a href='?page=$page$search_param'>$page</a></li>";
+                                                            echo "<li><a href='?page=$page$search_param$cc_param'>$page</a></li>";
                                                         }
                                                     }
                                                     if ($current_page < $total_pages) {
-                                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param$cc_param'>Próximo »</a></li>";
                                                     }
                                                     ?>
                                                 </ul>

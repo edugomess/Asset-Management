@@ -168,11 +168,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </div>
                                 <div class="col-md-6 col-xl-9">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
-                                        <form method="GET" action="">
-                                            <label><input type="search" name="search"
-                                                    class="form-control form-control-sm" aria-controls="dataTable"
-                                                    placeholder="Buscar software..."
-                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label>
+                                        <form method="GET" action="" class="form-inline justify-content-end">
+                                            <div class="form-group mr-2">
+                                                <input type="search" name="search"
+                                                    class="form-control form-control-sm premium-filter"
+                                                    aria-controls="dataTable" placeholder="Buscar software..."
+                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                            </div>
                                         </form>
                                     </div>
                                 </div>

@@ -272,7 +272,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <div class="text-md-right dataTables_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">
-                                                <select name="cc_filter" class="form-control form-control-sm"
+                                                <select name="cc_filter"
+                                                    class="form-control form-control-sm premium-filter"
                                                     onchange="this.form.submit()">
                                                     <option value="">Centro de Custo (Todos)</option>
                                                     <?php
@@ -285,7 +286,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 </select>
                                             </div>
                                             <div class="form-group mr-2">
-                                                <select name="status" class="form-control form-control-sm"
+                                                <select name="status"
+                                                    class="form-control form-control-sm premium-filter"
                                                     onchange="this.form.submit()">
                                                     <option value="">Status (Todos)</option>
                                                     <?php
@@ -297,15 +299,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group">
-                                                <input type="search" name="search" class="form-control form-control-sm"
-                                                    placeholder="Buscar..."
+                                            <div class="form-group mr-2">
+                                                <input type="search" name="search"
+                                                    class="form-control form-control-sm premium-filter"
+                                                    placeholder="Buscar..." onsearch="this.form.submit()"
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                             </div>
-                                            <?php if (isset($_GET['cc_filter']) && $_GET['cc_filter'] != ''): ?>
-                                                <input type="hidden" name="cc_filter"
-                                                    value="<?php echo htmlspecialchars($_GET['cc_filter']); ?>">
-                                            <?php endif; ?>
                                         </form>
                                     </div>
                                 </div>
@@ -323,7 +322,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 if (!empty($search)) {
                                     $where_clauses[] = "(a.modelo LIKE '%$search%' OR a.tag LIKE '%$search%' OR a.hostName LIKE '%$search%')";
                                 }
-                                if ($status_filter === 'Manutencao') {
+                                if ($status_filter === 'Manutenção') {
                                     $maintenance_join = " JOIN manutencao m ON a.id_asset = m.id_asset ";
                                     $where_clauses[] = "m.status_manutencao = 'Em Manutenção'";
                                 } else {
@@ -347,7 +346,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 $start_from = ($current_page - 1) * $results_per_page;
 
                                 $order_by = "a.id_asset DESC";
-                                if ($status_filter === 'Manutencao') {
+                                if ($status_filter === 'Manutenção') {
                                     $order_by = "m.id_manutencao DESC";
                                 }
 

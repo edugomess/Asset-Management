@@ -115,7 +115,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">
-                                                <select name="cc_filter" class="form-control form-control-sm"
+                                                <select name="cc_filter"
+                                                    class="form-control form-control-sm premium-filter"
                                                     onchange="this.form.submit()">
                                                     <option value="">Centro de Custo (Todos)</option>
                                                     <?php
@@ -127,8 +128,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group">
-                                                <input type="search" name="search" class="form-control form-control-sm"
+                                            <div class="form-group mr-2">
+                                                <input type="search" name="search"
+                                                    class="form-control form-control-sm premium-filter"
                                                     aria-controls="dataTable" placeholder="Buscar..."
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                             </div>

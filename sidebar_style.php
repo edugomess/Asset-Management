@@ -234,17 +234,6 @@
         flex: 1 0 auto;
     }
 
-    .sticky-footer {
-        flex-shrink: 0;
-        padding: 1.5rem 0 !important;
-        background-color: #000000 !important;
-        color: #ffffff !important;
-    }
-
-    .sticky-footer span {
-        color: #bbbbbb !important;
-        font-size: 0.8rem;
-    }
 
     /* Efeito Hover Global para Cards */
     .card {
@@ -256,19 +245,40 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
     }
 
-    /* Registration Form Label Styling - Standardize UI Across All Forms */
-    .form-group label {
-        display: block !important;
-        margin-bottom: 0.25rem !important;
-        color: #5a5c69 !important;
-        font-weight: 700 !important;
+    /* Premium Filter Styling - Standardized UI */
+    .premium-filter {
+        border-radius: 10px !important;
+        height: 45px !important;
+        padding: 5px 15px !important;
+        border: 1px solid #d1d3e2 !important;
+        background-color: #fff !important;
+        color: #6e707e !important;
         font-size: 0.85rem !important;
-        text-transform: none;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
     }
 
-    .form-control::placeholder {
-        color: #b7b9cc !important;
-        opacity: 0.7;
+    .premium-filter:focus {
+        border-color: #4e73df !important;
+        outline: 0 !important;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25) !important;
+        background-color: #fff !important;
+    }
+
+    select.premium-filter {
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        background-size: 16px 12px !important;
+        padding-right: 2.5rem !important;
+    }
+
+    .form-inline .form-group {
+        margin-bottom: 0px !important;
     }
 </style>
 <?php include_once 'pagination_style.php'; ?>

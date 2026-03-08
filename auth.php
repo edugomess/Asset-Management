@@ -1,8 +1,42 @@
 <?php
-// 1. Verifica se a sessão já foi iniciada para evitar o erro de "Notice"
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Configurar timeout de inatividade (Busca do banco de dados, padrão 10 minutos)
+$idle_timeout = 600; // Default
+if (file_exists('conexao.php')) {
+    include_once 'conexao.php';
+    // Obter o timeout configurado do banco de dados (idle_timeout_minutos, admin ou suporte)
+    $res_config = $conn->query("SELECT idle_timeout_minutos, idle_timeout_admin, idle_timeout_suporte FROM configuracoes_alertas LIMIT 1");
+    $alert_config = $res_config->fetch_assoc();
+
+    // Determinar o timeout com base no nível do usuário
+    // Certifique-se de que 'nivelUsuario' está definido na sessão, caso contrário, use 'Usuário' como padrão
+    $nivel = $_SESSION['nivelUsuario'] ?? 'Usuário';
+    $idle_timeout_minutos = $alert_config['idle_timeout_minutos'] ?? 10; // Default global do banco de dados
+
+    if ($nivel === 'Admin' && isset($alert_config['idle_timeout_admin'])) {
+        $idle_timeout_minutos = $alert_config['idle_timeout_admin'];
+    } elseif ($nivel === 'Suporte' && isset($alert_config['idle_timeout_suporte'])) {
+        $idle_timeout_minutos = $alert_config['idle_timeout_suporte'];
+    }
+
+    $idle_timeout = (int) $idle_timeout_minutos * 60; // Converter para segundos
+}
+
+if (isset($_SESSION['last_activity'])) {
+    $session_life = time() - $_SESSION['last_activity'];
+    if ($session_life > $idle_timeout) {
+        // Encerra a sessão se o tempo de inatividade for maior que o configurado
+        session_unset();
+        session_destroy();
+        header("Location: login.php?timeout=true");
+        exit();
+    }
+}
+// Atualiza o registro da última atividade
+$_SESSION['last_activity'] = time();
 
 // 2. Verifique se o usuário está logado
 if (!isset($_SESSION['id_usuarios'])) {

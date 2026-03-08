@@ -72,6 +72,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
     exit();
 }
 
+// Process Session/Security form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
+    $idle_timeout = (int) $_POST['idle_timeout'];
+    $idle_timeout_admin = (int) $_POST['idle_timeout_admin'];
+    $idle_timeout_suporte = (int) $_POST['idle_timeout_suporte'];
+
+    $sql = "UPDATE configuracoes_alertas SET 
+            idle_timeout_minutos = $idle_timeout,
+            idle_timeout_admin = $idle_timeout_admin,
+            idle_timeout_suporte = $idle_timeout_suporte
+            WHERE id = 1";
+    mysqli_query($conn, $sql);
+    header("Location: configuracoes.php?msg=session_success");
+    exit();
+}
+
+
 // Fetch current settings
 $configs = [];
 // Check column name first to be safe or assume rename worked. 
@@ -266,6 +283,9 @@ function getHoursAndMinutes($total_minutes)
                             case 'dep_success':
                                 $msg_text = "Configurações de depreciação atualizadas com sucesso!";
                                 break;
+                            case 'session_success':
+                                $msg_text = "Configurações de sessão atualizadas com sucesso!";
+                                break;
                         }
                     }
                     if ($msg_text): ?>
@@ -352,7 +372,7 @@ function getHoursAndMinutes($total_minutes)
                                 } ?>
 
                                 <div class="form-group row mt-4">
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-12 text-right">
                                         <button type="submit" class="btn btn-primary"
                                             style="background: rgb(44,64,74);">Salvar Alterações</button>
                                     </div>
@@ -485,7 +505,7 @@ function getHoursAndMinutes($total_minutes)
                                 </div>
 
                                 <div class="form-group row mt-4">
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-12 text-right">
                                         <button type="submit" class="btn btn-primary"
                                             style="background: rgb(44,64,74);">Salvar Configurações de
                                             Depreciação</button>
@@ -640,7 +660,7 @@ function getHoursAndMinutes($total_minutes)
                                                                 class="fas fa-search text-gray-400"></i></span>
                                                     </div>
                                                 </div>
-                                                <div id="searchResults" class="list-group shadow-lg"
+                                                <div id="searchResults" class="dropdown-menu shadow animated--grow-in"
                                                     style="display:none; position:absolute; z-index:1000; width:92%; max-height:200px; overflow-y:auto;">
                                                 </div>
 
@@ -648,7 +668,7 @@ function getHoursAndMinutes($total_minutes)
                                                     class="small font-weight-bold text-primary text-uppercase mb-2">Destinatários
                                                     Ativos</label>
                                                 <div id="destinatariosList" class="row no-gutters overflow-auto"
-                                                    style="max-height: 180px;">
+                                                    style="max-height: 130px;">
                                                     <?php
                                                     $res_dest = $conn->query("SELECT d.*, u.nome, u.sobrenome, u.email 
                                                                             FROM destinatarios_alertas d 
@@ -712,23 +732,88 @@ function getHoursAndMinutes($total_minutes)
                                                             </div>
                                                         </div>
                                                     <?php endwhile; ?>
-                                                </div>
+                                                </div> <!-- End of destinatariosList -->
+                                            </div> <!-- End of Email card-body -->
+                                        </div> <!-- End of Email card shadow-sm -->
+                                    </div> <!-- End of Email col-xl-6 -->
+                                </div> <!-- End of WhatsApp/Email row -->
 
-                                                <div class="form-group row mt-4">
-                                                    <div class="col-sm-10">
-                                                        <button type="submit" class="btn btn-primary"
-                                                            style="background: rgb(44,64,74);">Salvar Canais de
-                                                            Alerta</button>
-                                                    </div>
-                                                </div>
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-12 text-right">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="background: rgb(44,64,74);">Salvar Canais de Alerta</button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
-                </div> <!-- End of content -->
-            </div>
-        </div>
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+                    <!-- SESSÃO E SEGURANÇA -->
+                    <div class="card shadow mt-4 mb-4">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 font-weight-bold">Sessão e Segurança</p>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                <input type="hidden" name="session_config" value="1">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold">Tempo Geral
+                                            (Padrão)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="idle_timeout"
+                                                value="<?php echo $alert_config['idle_timeout_minutos'] ?? 10; ?>"
+                                                min="1">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">minutos</span>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Logout para usuários
+                                            comuns.</small>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold text-primary">Tempo
+                                            para Administradores</label>
+                                        <div class="input-group border-left-primary">
+                                            <input type="number" class="form-control" name="idle_timeout_admin"
+                                                value="<?php echo $alert_config['idle_timeout_admin'] ?? 10; ?>"
+                                                min="1">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-primary text-white">minutos</span>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Logout para nível Admin.</small>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold text-info">Tempo
+                                            para Suporte</label>
+                                        <div class="input-group border-left-info">
+                                            <input type="number" class="form-control" name="idle_timeout_suporte"
+                                                value="<?php echo $alert_config['idle_timeout_suporte'] ?? 10; ?>"
+                                                min="1">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text bg-info text-white">minutos</span>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Logout para nível Suporte.</small>
+                                    </div>
+                                </div>
+                                    <div class="text-right mt-3">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
+                                    </div>
+                            </form>
+                        </div>
+                    </div>
+        </div> <!-- End of tab content / main container -->
     </div>
+    </div>
+    </div>
+    </div>
+    </div> <!-- End of content -->
+    </div>
+    </div> <!-- End of Page Wrapper -->
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
@@ -1061,7 +1146,9 @@ function getHoursAndMinutes($total_minutes)
             updateSLABars(); // Initial call
         });
     </script>
+    </div>
+
 </body>
 
+
 </html>
-```

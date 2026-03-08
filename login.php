@@ -179,6 +179,19 @@
                                     <div class="col-lg-6">
                                         <div class="login-padding d-flex flex-column justify-content-center h-100">
                                             <div class="text-center w-100">
+                                                <?php if (isset($_GET['timeout'])): ?>
+                                                    <div class="alert alert-warning alert-dismissible fade show mb-4"
+                                                        role="alert"
+                                                        style="border-radius: 10px; border: none; background-color: rgba(246, 194, 62, 0.2); color: #f6c23e;">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        <strong>Sessão Expirada!</strong> Por inatividade, sua sessão foi
+                                                        encerrada.
+                                                        <button type="button" class="close" data-dismiss="alert"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                <?php endif; ?>
                                                 <h3 class="brand-title"><strong>ASSET MANAGEMENT</strong></h3>
                                             </div>
                                             <div class="user w-100">

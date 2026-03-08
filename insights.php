@@ -150,7 +150,8 @@ if ($res_recentes) {
                                             <tbody>
                                                 <?php if ($res_ativos->num_rows > 0): ?>
                                                     <?php while ($row = $res_ativos->fetch_assoc()): ?>
-                                                        <tr class="clickable-row" onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
+                                                        <tr class="clickable-row"
+                                                            onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
                                                             <td>
                                                                 <strong><?php echo htmlspecialchars($row['hostName']); ?></strong>
                                                             </td>
@@ -250,11 +251,6 @@ if ($res_recentes) {
 
                 </div>
             </div>
-            <footer class="sticky-footer">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Asset Mgt 2024</span></div>
-                </div>
-            </footer>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -13,7 +13,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo ($current_page == 'inicio.php') ? 'active' : ''; ?>" href="/inicio.php">
-                <i class="fas fa-tachometer-alt"></i><span>Visão Geral</span>
+                <i class="fas fa-tachometer-alt"></i><span>Console Operacional</span>
             </a>
         </li>
     <?php endif; ?>

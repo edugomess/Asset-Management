@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title>Console Operacional - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -200,7 +200,7 @@ if (isset($_GET['id'])) {
                         }
                     }
                     ?>
-                    <h3 class="text-dark mb-4">Ativos Atribuídos</h3>
+                    <h3 class="text-dark mb-4">Operação</h3>
                     <div class="card shadow">
                         <div class="col-md-6 col-xl-3 text-nowrap">
                             <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
@@ -400,11 +400,6 @@ if (isset($_GET['id'])) {
 
 
 
-                <footer class="sticky-footer">
-                    <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
-                        <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                    </section>
-                </footer>
             </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

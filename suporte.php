@@ -301,11 +301,6 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     </div>
                 </div>
             </div>
-            <footer class="sticky-footer">
-                <section class="text-center footer" style="padding: 10px; background-color: #212121; color: white;">
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                </section>
-            </footer>
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

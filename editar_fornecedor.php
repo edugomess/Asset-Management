@@ -250,14 +250,6 @@ $id = intval($id);
                     </div>
                 </div>
             <?php } ?>
-            <footer class="sticky-footer" style="background: transparent; padding: 0;">
-                <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px; margin-top: 70px;">
-                    <!-- Start: Footer text -->
-                    <p style="margin-bottom: 0px; font-size: 15px;">DEGB&nbsp;Copyright © 2015-2024<br></p>
-                    <!-- End: Footer text -->
-                </section><!-- End: Simple footer by krissy -->
-            </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

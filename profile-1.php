@@ -412,14 +412,7 @@
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer" style="background: rgb(34,40,39);padding: 0;">
-                <!-- Start: Simple footer by krissy -->
-                <section class="text-center footer" style="padding: 10px;margin-top: 70px;">
-                    <!-- Start: Footer text -->
-                    <p style="margin-bottom: 0px;font-size: 15px;">DEGB&nbsp;Copyright © 2015-2021&nbsp;<br></p>
-                    <!-- End: Footer text -->
-                </section><!-- End: Simple footer by krissy -->
-            </footer>
+
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="/assets/js/jquery.min.js"></script>

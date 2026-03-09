@@ -124,8 +124,12 @@ if (isset($_GET['id'])) {
                             <div class="input-group">
                                 <input class="bg-light form-control border-0 small" type="text"
                                     placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
-                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button"
+                                        style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
                                 style="width: 100%; display: none;"></div>

@@ -103,3 +103,4 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <div class="text-center d-none d-md-inline">
     <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button>
 </div>
+<?php include_once 'idle_timeout_modal.php'; ?>

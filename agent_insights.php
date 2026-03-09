@@ -1,13 +1,22 @@
 <?php
-ob_start();
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Segurança: Verificar se o usuário está logado antes de processar
+if (!isset($_SESSION['id_usuarios'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['reply' => '⚠️ Acesso negado. Por favor, faça login.']);
+    exit;
+}
+
+// Liberar a sessão para evitar travamento de navegação
+session_write_close();
+
 include 'conexao.php';
 require_once 'credentials.php';
 $GEMINI_API_KEY = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
 
-ob_clean();
 header('Content-Type: application/json');
 
 if (empty($GEMINI_API_KEY)) {

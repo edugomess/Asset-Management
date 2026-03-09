@@ -175,8 +175,17 @@
         }
 
         .btn-maintenance-system {
-            background-color: #f6953e;
-            color: white;
+            background-color: #ff8c00 !important;
+            border-color: #ff8c00 !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-maintenance-system:hover {
+            background-color: #e67e00 !important;
+            border-color: #e67e00 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
         }
     </style>
 </head>

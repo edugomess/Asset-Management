@@ -19,19 +19,29 @@ $sql_ativos_críticos = "SELECT a.id_asset, a.hostName, a.modelo, COUNT(m.id_man
                         ORDER BY total_manut DESC LIMIT 5";
 $res_ativos = $conn->query($sql_ativos_críticos);
 
-// 3. Cruzamento de Sugestões baseadas nos chamados recentes
+// 3. Cruzamento de Sugestões baseadas nos chamados recentes (Otimizado)
 $sugestoes = [];
 $sql_chamados_recentes = "SELECT DISTINCT titulo FROM chamados ORDER BY data_abertura DESC LIMIT 20";
 $res_recentes = $conn->query($sql_chamados_recentes);
 
-if ($res_recentes) {
+if ($res_recentes && $res_recentes->num_rows > 0) {
+    // Buscar todas as sugestões possíveis uma única vez
+    $sql_all_sugestoes = "SELECT palavra_chave, sugestao FROM sugestoes_prevencao";
+    $res_all = $conn->query($sql_all_sugestoes);
+    $lista_sugestoes = [];
+    if ($res_all) {
+        while ($s = $res_all->fetch_assoc()) {
+            $lista_sugestoes[] = $s;
+        }
+    }
+
     while ($row_chamado = $res_recentes->fetch_assoc()) {
         $titulo = $row_chamado['titulo'];
-        // Buscar se alguma palavra-chave bate com o título
-        $sql_match = "SELECT sugestao FROM sugestoes_prevencao WHERE '$titulo' LIKE CONCAT('%', palavra_chave, '%')";
-        $res_match = $conn->query($sql_match);
-        if ($res_match && $row_match = $res_match->fetch_assoc()) {
-            $sugestoes[$titulo] = $row_match['sugestao'];
+        foreach ($lista_sugestoes as $item) {
+            if (stripos($titulo, $item['palavra_chave']) !== false) {
+                $sugestoes[$titulo] = $item['sugestao'];
+                break; // Pega a primeira correspondência e vai para o próximo título
+            }
         }
     }
 }

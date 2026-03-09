@@ -21,8 +21,28 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     }
 
     .btn-maintenance-system {
-        background-color: #f6953e;
-        color: white;
+        background-color: #ff8c00 !important;
+        border-color: #ff8c00 !important;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+
+    .btn-maintenance-system:hover {
+        background-color: #e67e00 !important;
+        border-color: #e67e00 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
+    }
+
+    .badge-maintenance-system {
+        background-color: #ff8c00 !important;
+        color: #fff !important;
+        font-weight: bold;
+        padding: 0.5em 0.8em;
+    }
+
+    .border-left-maintenance-system {
+        border-left: .25rem solid #ff8c00 !important;
     }
 
     .btn-medium {
@@ -236,11 +256,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-left-warning py-2">
+                            <div class="card shadow border-left-maintenance-system py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1">
+                                            <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"
+                                                style="color: #ff8c00 !important;">
                                                 <span>Manutenção</span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
@@ -262,43 +283,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 col-xl-2 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length"><a
-                                            class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                            role="button"
-                                            style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
-                                            href="/cadastro_de_equipamentos.php">Cadastrar Novo</a></div>
+                                    <div id="dataTable_length" class="dataTables_length">
+                                        <?php if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')): ?>
+                                            <a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                                role="button"
+                                                style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
+                                                href="/cadastro_de_equipamentos.php">Cadastrar Novo</a>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
-                                            <div class="form-group mr-2">
-                                                <select name="cc_filter"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    onchange="this.form.submit()">
-                                                    <option value="">Centro de Custo (Todos)</option>
-                                                    <?php
-                                                    $res_cc_filter = mysqli_query($conn, "SELECT DISTINCT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC");
-                                                    while ($cc_row = mysqli_fetch_assoc($res_cc_filter)) {
-                                                        $selected = (isset($_GET['cc_filter']) && $_GET['cc_filter'] == $cc_row['nomeSetor']) ? 'selected' : '';
-                                                        echo "<option value='" . htmlspecialchars($cc_row['nomeSetor']) . "' $selected>" . htmlspecialchars($cc_row['nomeSetor']) . "</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-                                            <div class="form-group mr-2">
-                                                <select name="status"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    onchange="this.form.submit()">
-                                                    <option value="">Status (Todos)</option>
-                                                    <?php
-                                                    $status_options = ['Disponível', 'Em Uso', 'Manutenção'];
-                                                    foreach ($status_options as $opt) {
-                                                        $selected = (isset($_GET['status']) && $_GET['status'] == $opt) ? 'selected' : '';
-                                                        echo "<option value='$opt' $selected>$opt</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
+                                            <!-- Filtros removidos conforme solicitado -->
                                             <div class="form-group mr-2">
                                                 <input type="search" name="search"
                                                     class="form-control form-control-sm premium-filter"
@@ -322,7 +319,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 if (!empty($search)) {
                                     $where_clauses[] = "(a.modelo LIKE '%$search%' OR a.tag LIKE '%$search%' OR a.hostName LIKE '%$search%')";
                                 }
-                                if ($status_filter === 'Manutenção') {
+                                if ($status_filter === 'Manutenção' || $status_filter === 'Manutencao') {
                                     $maintenance_join = " JOIN manutencao m ON a.id_asset = m.id_asset ";
                                     $where_clauses[] = "m.status_manutencao = 'Em Manutenção'";
                                 } else {
@@ -346,7 +343,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 $start_from = ($current_page - 1) * $results_per_page;
 
                                 $order_by = "a.id_asset DESC";
-                                if ($status_filter === 'Manutenção') {
+                                if ($status_filter === 'Manutenção' || $status_filter === 'Manutencao') {
                                     $order_by = "m.id_manutencao DESC";
                                 }
 
@@ -475,7 +472,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                                                     <td>
                                                         <span
-                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao') ? 'badge-warning' : 'badge-danger'); ?>">
+                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-maintenance-system' : 'badge-danger'); ?>">
                                                             <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
                                                         </span>
                                                     </td>
@@ -503,7 +500,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                                     onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"
                                                                     title="Liberar"><i class="fas fa-check-circle"></i></button>
                                                             <?php else: ?>
-                                                                <button class="btn btn-primary btn-edit"
+                                                                <button class="btn btn-maintenance-system btn-edit"
                                                                     onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"
                                                                     title="Manutenção"><i class="fas fa-tools"></i></button>
                                                             <?php endif; ?>
@@ -559,7 +556,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" onclick="closeMaintenanceModal()">Cancelar</button>
-                            <button class="btn btn-primary" onclick="confirmMaintenance()">Confirmar</button>
+                            <button class="btn btn-maintenance-system" onclick="confirmMaintenance()">Confirmar</button>
                         </div>
                     </div>
                 </div>

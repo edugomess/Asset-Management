@@ -1,6 +1,10 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * PAINEL DE CONFIGURAÇÕES: configuracoes.php
+ * Interface central para ajustes de SLA, regras de depreciação de ativos, canais de alerta e segurança de sessão.
+ */
+include 'auth.php';    // Validação de sessão obrigatória
+include 'conexao.php'; // Conexão com o banco de dados
 
 // Restrição de acesso: Apenas Administrador pode acessar as configurações
 if ($_SESSION['nivelUsuario'] !== 'Admin') {
@@ -8,7 +12,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
     exit();
 }
 
-// Process SLA form submission
+// === PROCESSAMENTO DE SLA: Salva ou atualiza os tempos de resposta por categoria ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     foreach ($_POST['sla'] as $category => $time) {
         $category = mysqli_real_escape_string($conn, $category);
@@ -25,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     exit();
 }
 
-// Process Depreciation form submission
+// === PROCESSAMENTO DE DEPRECIAÇÃO: Configura taxas financeiras e regras de doação de ativos ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $taxa = floatval($_POST['depreciacao']['taxa']);
     $periodo_anos = (int) $_POST['depreciacao']['periodo_anos'];
@@ -63,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     exit();
 }
 
-// Process Alerts form submission
+// === PROCESSAMENTO DE CANAIS DE ALERTA: Ativa/Desativa notificações por e-mail e WhatsApp ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
     $wa_ativo = isset($_POST['alertas']['whatsapp']) ? 1 : 0;
     $email_ativo = isset($_POST['alertas']['email']) ? 1 : 0;
@@ -72,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
     exit();
 }
 
-// Process Session/Security form submission
+// === CONFIGURAÇÃO DE SEGURANÇA: Ajusta os tempos de expiração de sessão por nível de usuário ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
     $idle_timeout = (int) $_POST['idle_timeout'];
     $idle_timeout_admin = (int) $_POST['idle_timeout_admin'];
@@ -89,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
 }
 
 
-// Fetch current settings
+// === COLETA DE DADOS ATUAIS: Busca as configurações salvas para preencher o formulário ===
 $configs = [];
 // Check column name first to be safe or assume rename worked. 
 // We know we ran: ALTER TABLE configuracoes_sla CHANGE tempo_sla_horas tempo_sla_minutos INT...
@@ -136,7 +140,9 @@ if ($result_cat_doacao) {
     }
 }
 
-// Helper function to get hours and minutes from total minutes
+/**
+ * AUXILIAR DE FORMATAÇÃO: Converte minutos totais em um array de Horas e Minutos
+ */
 function getHoursAndMinutes($total_minutes)
 {
     if ($total_minutes === null)
@@ -798,16 +804,16 @@ function getHoursAndMinutes($total_minutes)
                                         <small class="text-muted">Logout para nível Suporte.</small>
                                     </div>
                                 </div>
-                                    <div class="text-right mt-3">
-                                        <button type="submit" class="btn btn-primary"
-                                            style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
-                                    </div>
+                                <div class="text-right mt-3">
+                                    <button type="submit" class="btn btn-primary"
+                                        style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
+                                </div>
                             </form>
                         </div>
                     </div>
-        </div> <!-- End of tab content / main container -->
-    </div>
-    </div>
+                </div> <!-- End of tab content / main container -->
+            </div>
+        </div>
     </div>
     </div>
     </div> <!-- End of content -->

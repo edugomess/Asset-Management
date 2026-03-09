@@ -1,4 +1,10 @@
-<?php include 'auth.php'; ?>
+<?php
+/**
+ * NOVO CHAMADO: cadastro_de_chamados.php
+ * Formulário para abertura de tickets de suporte com upload de evidências e envio via AJAX.
+ */
+include 'auth.php';
+?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
 
@@ -256,36 +262,31 @@
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
-        // AJAX Form Submission
-        document.getElementById('form-novo-chamado').addEventListener('submit', function (e) {
-            e.preventDefault();
+        // ENVIO VIA AJAX: Processa o formulário sem recarregar a página
+        fetch('inserir_chamado.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('modal-chamado-id').textContent = '#' + data.id;
+                    $('#successModal').modal('show');
 
-            var formData = new FormData(this);
-
-            fetch('inserir_chamado.php', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    document.getElementById('btn-redirect-chamados').onclick = function () {
+                        window.location.href = 'chamados.php';
+                    };
+                } else {
+                    alert('Erro ao criar chamado: ' + data.message);
                 }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        document.getElementById('modal-chamado-id').textContent = '#' + data.id;
-                        $('#successModal').modal('show');
-
-                        document.getElementById('btn-redirect-chamados').onclick = function () {
-                            window.location.href = 'chamados.php';
-                        };
-                    } else {
-                        alert('Erro ao criar chamado: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Ocorreu um erro na requisição.');
-                });
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocorreu um erro na requisição.');
+            });
         });
     </script>
     <script src="/assets/js/global_search.js"></script>

@@ -1,20 +1,27 @@
 <?php
+/**
+ * NÚCLEO DE AUTENTICAÇÃO E SESSÃO: auth.php
+ * Este arquivo controla a segurança de acesso, expiração por inatividade e 
+ * carregamento de dados do perfil do usuário em todas as páginas do sistema.
+ */
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Configurar timeout de inatividade (Busca do banco de dados, padrão 10 minutos)
-$idle_timeout = 600; // Default
+// 1. GESTÃO DE TIMEOUT (Inatividade)
+$idle_timeout = 600; // Padrão: 10 minutos (em segundos)
+
 if (file_exists('conexao.php')) {
     include_once 'conexao.php';
-    // Obter o timeout configurado do banco de dados (idle_timeout_minutos, admin ou suporte)
+
+    // Busca as configurações de expiração customizadas no banco de dados
     $res_config = $conn->query("SELECT idle_timeout_minutos, idle_timeout_admin, idle_timeout_suporte FROM configuracoes_alertas LIMIT 1");
     $alert_config = $res_config->fetch_assoc();
 
-    // Determinar o timeout com base no nível do usuário
-    // Certifique-se de que 'nivelUsuario' está definido na sessão, caso contrário, use 'Usuário' como padrão
+    // Define o tempo limite dinâmico de acordo com o nível de privilégio do usuário
     $nivel = $_SESSION['nivelUsuario'] ?? 'Usuário';
-    $idle_timeout_minutos = $alert_config['idle_timeout_minutos'] ?? 10; // Default global do banco de dados
+    $idle_timeout_minutos = $alert_config['idle_timeout_minutos'] ?? 10;
 
     if ($nivel === 'Admin' && isset($alert_config['idle_timeout_admin'])) {
         $idle_timeout_minutos = $alert_config['idle_timeout_admin'];
@@ -22,36 +29,37 @@ if (file_exists('conexao.php')) {
         $idle_timeout_minutos = $alert_config['idle_timeout_suporte'];
     }
 
-    $idle_timeout = (int) $idle_timeout_minutos * 60; // Converter para segundos
+    $idle_timeout = (int) $idle_timeout_minutos * 60; // Converte para segundos para comparação
 }
 
+// Verifica se houve inatividade prolongada desde a última ação registrada
 if (isset($_SESSION['last_activity'])) {
     $session_life = time() - $_SESSION['last_activity'];
     if ($session_life > $idle_timeout) {
-        // Encerra a sessão se o tempo de inatividade for maior que o configurado
+        // Encerra a sessão e apaga os dados se o tempo expirou
         session_unset();
         session_destroy();
         header("Location: login.php?timeout=true");
         exit();
     }
 }
-// Atualiza o registro da última atividade
+
+// Registra o horário atual como a última atividade realizada pelo usuário
 $_SESSION['last_activity'] = time();
 
-// 2. Verifique se o usuário está logado
+// 2. VERIFICAÇÃO DE LOGIN: Bloqueia o acesso a usuários não autenticados
 if (!isset($_SESSION['id_usuarios'])) {
-    // Redireciona e encerra a execução para segurança
     header("Location: login.php");
     exit();
 }
 
-// 3. Se o nome do usuário não estiver na sessão, busque no banco de dados
+// 3. CARREGAMENTO DE PERFIL: Sincroniza nome e foto do banco se não estiverem na sessão
 if (!isset($_SESSION['nome_usuario'])) {
     include_once 'conexao.php';
 
     $id_usuario_sessao = $_SESSION['id_usuarios'];
 
-    // Preparação da query
+    // Recupera dados atualizados do usuário logado
     $stmt_nome = $conn->prepare("SELECT nome, sobrenome, foto_perfil FROM usuarios WHERE id_usuarios = ?");
 
     if ($stmt_nome) {
@@ -60,13 +68,15 @@ if (!isset($_SESSION['nome_usuario'])) {
         $result_nome = $stmt_nome->get_result();
 
         if ($row_nome = $result_nome->fetch_assoc()) {
-            // Combina nome e sobrenome e limpa espaços extras
+            // Consolida o nome completo e armazena o caminho da foto de perfil
             $_SESSION['nome_usuario'] = trim($row_nome['nome'] . ' ' . $row_nome['sobrenome']);
             $_SESSION['foto_perfil'] = $row_nome['foto_perfil'];
         } else {
+            // Caso falhe na busca, define valores genéricos de segurança
             $_SESSION['nome_usuario'] = 'Usuário';
-            $_SESSION['foto_perfil'] = 'default.png'; // Recomendado ter um padrão
+            $_SESSION['foto_perfil'] = 'default.png';
         }
         $stmt_nome->close();
     }
 }
+?>

@@ -246,6 +246,10 @@ include
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
+        /**
+         * Abre o arquivo de relatório selecionado em uma nova aba.
+         * Verifica se uma opção válida foi escolhida antes de tentar abrir.
+         */
         function generateReport() {
             var url = document.getElementById('reportType').value;
             if (url) {

@@ -1,8 +1,19 @@
 <?php
-include_once 'auth.php';
+/**
+ * EDIÇÃO DE ATIVO: editar_ativo.php
+ * Interface para alteração de dados técnicos e administrativos de equipamentos existentes.
+ */
+// Inclui arquivos de segurança e conexão
+include 'auth.php';
 include_once 'conexao.php';
-$id = isset($_GET['id']) ? $_GET['id'] : 0;
-$id = intval($id);
+
+// Captura e valida o ID do ativo vindo da URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+// Se o ID for inválido, redireciona ou trata o erro
+if ($id <= 0) {
+    header("Location: equipamentos.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -176,13 +187,15 @@ $id = intval($id);
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Editar Ativo</h3>
                 </div><!-- Start: Multi-row Form -->
-                <form action="update_ativo.php" method="post">
+                <form action="update_ativo.php" method="post" enctype="multipart/form-data">
                     <?php
+                    // Busca os dados do ativo no banco para pré-preencher o formulário
                     $sql = "SELECT * FROM ativos WHERE id_asset = '$id'";
                     $result = mysqli_query($conn, $sql);
-                    while ($array = mysqli_fetch_array($result)) {
+                    if ($array = mysqli_fetch_array($result)) {
                         echo "<input type='hidden' name='id_asset' value='" . $array['id_asset'] . "'>";
 
+                        // Atribui os valores às variáveis para facilitar o uso no HTML
                         $categoria = $array['categoria'];
                         $fabricante = $array['fabricante'];
                         $modelo = $array['modelo'];
@@ -277,6 +290,7 @@ $id = intval($id);
                         </div>
                         <div class="col-sm-4 col-xl-1">
                             <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                <!-- Input hidden garante que o valor 'Inativo' seja enviado se o checkbox não estiver marcado -->
                                 <input type="hidden" name="status" value="Inativo">
                                 <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
                                     value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
@@ -294,6 +308,7 @@ $id = intval($id);
                                 <select class="form-control" name="centroDeCusto">
                                     <option value="" <?php echo ($centroDeCusto == '' || $centroDeCusto == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
                                     <?php
+                                    // Lista dinamicamente os centros de custo disponíveis para seleção
                                     $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                     $res_cc = $conn->query($sql_cc);
                                     if ($res_cc && $res_cc->num_rows > 0) {

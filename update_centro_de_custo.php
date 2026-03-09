@@ -1,4 +1,8 @@
 <?php
+/**
+ * PROCESSAMENTO DE EDIÇÃO DE CENTRO DE CUSTO: update_centro_de_custo.php
+ * Atualiza os dados do setor, tratando opcionalmente a troca da imagem representativa.
+ */
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -51,8 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 alert('Centro de Custo atualizado com sucesso!');
                 window.location.href = 'centro_de_custo.php';
               </script>";
-    }
-    else {
+    } else {
         echo "Erro ao atualizar: " . $conn->error;
     }
 

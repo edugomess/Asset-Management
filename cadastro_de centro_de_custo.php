@@ -1,11 +1,17 @@
-<?php include 'auth.php'; ?>
+<?php
+/**
+ * CADASTRO DE CENTRO DE CUSTO: cadastro_de centro_de_custo.php
+ * Define os setores e unidades para alocação financeira e organizacional de ativos.
+ */
+include 'auth.php';
+?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title>Cadastro de Centro de Custo - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -189,10 +195,10 @@
                                         <<option value="FLMA" selected="">
                                             </option>
                                             <?php
-                                            // Conectar ao banco de dados
-                                            include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
-                                            
-                                            // Verificar conexão
+                                            // Carrega as unidades cadastradas no banco para popular o select dinamicamente
+                                            include 'conexao.php';
+
+                                            // Verifica a saúde da conexão antes de prosseguir
                                             if ($conn->connect_error) {
                                                 die("Conexão falhou: " . $conn->connect_error);
                                             }

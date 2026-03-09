@@ -1,8 +1,12 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * GESTÃO DE LICENÇAS: licencas.php
+ * Módulo para controle de softwares, chaves de ativação, expiração e atribuição a usuários.
+ */
+include 'auth.php';    // Proteção de sessão
+include 'conexao.php'; // Vínculo com banco
 
-// Restrição de acesso: Usuário comum não acessa licenciamento
+// SEGURANÇA: Apenas perfis 'Admin' ou 'Suporte' podem gerenciar o licenciamento corporativo
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     header("Location: index.php");
     exit();
@@ -195,24 +199,29 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     </thead>
                                     <tbody>
                                         <?php
+                                        // CONFIGURAÇÃO DA LISTAGEM: Paginação e Filtros
                                         $results_per_page = 10;
                                         $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
                                         $where = !empty($search) ? "WHERE software LIKE '%$search%' OR fabricante LIKE '%$search%'" : "";
 
+                                        // Busca o total de registros para calcular as páginas
                                         $res_count = mysqli_query($conn, "SELECT COUNT(*) as total FROM licencas $where");
                                         $row_count = mysqli_fetch_assoc($res_count);
                                         $total_pages = ceil($row_count['total'] / $results_per_page);
                                         $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                                         $start = ($current_page - 1) * $results_per_page;
 
+                                        // Consulta as licenças com limite de página
                                         $sql = "SELECT * FROM licencas $where ORDER BY id_licenca DESC LIMIT $start, $results_per_page";
                                         $result = mysqli_query($conn, $sql);
 
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
+                                                // LÓGICA DE UTILIZAÇÃO: Calcula a barra de progresso (uso vs total)
                                                 $uso_percent = ($row['quantidade_total'] > 0) ? ($row['quantidade_uso'] / $row['quantidade_total']) * 100 : 0;
                                                 $prog_class = ($uso_percent > 90) ? 'bg-danger' : (($uso_percent > 70) ? 'bg-warning' : 'bg-success');
 
+                                                // LÓGICA DE VALIDADE: Verifica se a licença já expirou
                                                 $hoje = new DateTime();
                                                 $exp = $row['data_expiracao'] ? new DateTime($row['data_expiracao']) : null;
                                                 $status_badge = 'badge-success';

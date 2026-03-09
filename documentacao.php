@@ -1,7 +1,13 @@
-<?php include 'auth.php';
-include 'conexao.php'; ?>
+<?php
+/**
+ * CENTRAL DE CONHECIMENTO: documentacao.php
+ * Página de FAQ e downloads de manuais para auxiliar usuários no uso do sistema.
+ */
+include 'auth.php';
+include 'conexao.php';
+?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8">

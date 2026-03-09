@@ -1,5 +1,8 @@
 <?php
-// Dados de conexão com o banco de dados
+/**
+ * EXCLUSÃO DE FORNECEDOR: apagar_fornecedor.php
+ * Remove uma empresa parceira do sistema com base no ID.
+ */
 include 'conexao.php';
 
 // Obtém o valor de $id da URL
@@ -39,6 +42,3 @@ echo "<script>
       </script>";
 exit();
 ?>
-
-
-

@@ -1,4 +1,9 @@
 <?php
+/**
+ * MOTOR DE NOTIFICAÇÕES: funcoes_email.php
+ * Centraliza o envio de e-mails via PHPMailer e WhatsApp via CallMeBot.
+ * Gerencia a lógica de destinatários com base em prioridade e categoria.
+ */
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;

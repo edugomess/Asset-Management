@@ -1,4 +1,9 @@
 <?php
+/**
+ * ATUALIZAÇÃO DE LICENÇAS: update_licenca.php
+ * Processa as modificações nos dados de licenças existentes,
+ * como renovação de datas de expiração e alteração de status.
+ */
 include 'auth.php';
 include 'conexao.php';
 

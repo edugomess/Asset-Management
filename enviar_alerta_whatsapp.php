@@ -1,4 +1,9 @@
 <?php
+/**
+ * ALERTA DE SLA VIA WHATSAPP: enviar_alerta_whatsapp.php
+ * Script de rotina que verifica chamados próximos ao vencimento do SLA (7 dias)
+ * e dispara notificações automáticas via CallMeBot.
+ */
 include 'conexao.php';
 
 // Configuração
@@ -56,18 +61,15 @@ if ($result->num_rows > 0) {
                 $stmt->bind_param("is", $row['id'], $telefone_destino);
                 $stmt->execute();
                 echo "<p style='color:green'>Sucesso! Mensagem enviada e registrada.</p>";
-            }
-            else {
+            } else {
                 echo "<p style='color:red'>Erro ao enviar: $resp</p>";
             }
-        }
-        else {
+        } else {
             echo "<p style='color:orange'>Simulação: Mensagem seria '{$msg}'. <br>Configure a API Key no arquivo para enviar de verdade.</p>";
         }
 
     }
-}
-else {
+} else {
     echo "<p>Nenhum chamado crítico pendente de notificação.</p>";
 }
 

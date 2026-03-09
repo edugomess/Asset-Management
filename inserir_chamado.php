@@ -1,4 +1,9 @@
 <?php
+/**
+ * ABERTURA DE CHAMADOS: inserir_chamado.php
+ * Cria novos tíquetes de suporte, processa uploads de evidências (anexos)
+ * e dispara notificações automáticas para a equipe técnica.
+ */
 include 'auth.php';
 include_once 'conexao.php';
 

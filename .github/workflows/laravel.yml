@@ -1,35 +1,51 @@
-name: Laravel
+name: Pipeline de Testes (Laravel)
 
+# GATILHOS: Define quando o workflow será executado (ao fazer push ou pull request na branch main)
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   laravel-tests:
-
+    # AMBIENTE: Executa em uma máquina virtual Ubuntu atualizada
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: '8.0'
-    - uses: actions/checkout@v4
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test
+      # CONFIGURAÇÃO DO PHP: Instala a versão correta do ambiente
+      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: "8.0"
+
+      # CHECKOUT: Baixa o código do repositório para o runner
+      - uses: actions/checkout@v4
+
+      # CONFIGURAÇÃO DE AMBIENTE: Prepara o arquivo .env a partir do exemplo
+      - name: Copiar arquivo .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      # DEPENDÊNCIAS: Instala as bibliotecas do projeto via Composer de forma silenciosa
+      - name: Instalar Dependências (Composer)
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      # SEGURANÇA: Gera a chave de criptografia da aplicação
+      - name: Gerar Chave da Aplicação (App Key)
+        run: php artisan key:generate
+
+      # PERMISSÕES: Garante que o PHP possa escrever nos diretórios de sistema
+      - name: Configurar Permissões de Diretório
+        run: chmod -R 777 storage bootstrap/cache
+
+      # BANCO DE DADOS DE TESTE: Cria um banco SQLite temporário
+      - name: Criar Banco de Dados SQLite
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      # EXECUÇÃO: Roda os testes unitários e de funcionalidade via PHPUnit/Pest
+      - name: Executar Testes Automatizados
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test

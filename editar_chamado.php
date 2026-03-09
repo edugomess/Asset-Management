@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         $prioridade = $chamado_base['prioridade'];
     }
 
-    // Processar notas de resolução como histórico (JSON)
+    // HISTÓRICO DE NOTAS: Recupera as notas de resolução armazenadas em formato JSON
     $sql_notas = "SELECT nota_resolucao FROM chamados WHERE id = $id_chamado";
     $res_notas = $conn->query($sql_notas);
     $row_notas = $res_notas->fetch_assoc();
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         $res_atual = $conn->query($sql_query_atual);
         $chamado_atual = $res_atual->fetch_assoc();
 
-        // Lógica de Congelamento de SLA
+        // LÓGICA DE CONGELAMENTO DE SLA: Pausa o contador quando o chamado está "Pendente"
         $congelamento_sql = "";
         $status_anterior = $chamado_atual['status'];
 
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         if ($status_anterior !== 'Pendente' && $novo_status === 'Pendente') {
             $congelamento_sql = ", data_ultimo_congelamento = NOW()";
         }
-        // Se saiu de Pendente, calcula o tempo e acumula
+        // Se saiu de Pendente, calcula o tempo e acumula os minutos congelados
         elseif ($status_anterior === 'Pendente' && $novo_status !== 'Pendente') {
             $data_inicio = $chamado_atual['data_ultimo_congelamento'];
             if (!empty($data_inicio)) {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * INTERFACE DO CHATBOT: agent.php
+ * Página frontal do Agente Inteligente, fornecendo a interface de chat
+ * para interação com a IA Gemini e comandos rápidos do sistema.
+ */
 include 'auth.php';
 include 'conexao.php';
 ?>

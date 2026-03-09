@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br"> <!-- Define o idioma como português do Brasil -->
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Login - Brand</title>
+    <title>Login - Asset Management</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -179,7 +179,9 @@
                                     <div class="col-lg-6">
                                         <div class="login-padding d-flex flex-column justify-content-center h-100">
                                             <div class="text-center w-100">
-                                                <?php if (isset($_GET['timeout'])): ?>
+                                                <?php
+                                                // Exibe um alerta visual se o redirecionamento vier de um timeout de sessão (gerado em auth.php)
+                                                if (isset($_GET['timeout'])): ?>
                                                     <div class="alert alert-warning alert-dismissible fade show mb-4"
                                                         role="alert"
                                                         style="border-radius: 10px; border: none; background-color: rgba(246, 194, 62, 0.2); color: #f6c23e;">
@@ -195,14 +197,15 @@
                                                 <h3 class="brand-title"><strong>ASSET MANAGEMENT</strong></h3>
                                             </div>
                                             <div class="user w-100">
+                                                <!-- Formulário de login: envia as credenciais para o autenticador.php processar -->
                                                 <div class="form-group">
                                                     <input class="form-control form-control-user" type="email"
-                                                        id="exampleInputEmail" placeholder="Email..." name="email"
-                                                        required>
+                                                        id="exampleInputEmail" placeholder="Digite seu E-mail..."
+                                                        name="email" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <input class="form-control form-control-user" type="password"
-                                                        id="exampleInputPassword" placeholder="Senha" name="senha"
+                                                        id="exampleInputPassword" placeholder="Sua Senha" name="senha"
                                                         required>
                                                 </div>
                                                 <div class="form-group">

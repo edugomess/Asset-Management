@@ -1,4 +1,10 @@
-<?php include 'auth.php'; ?>
+<?php
+/**
+ * CADASTRO DE EQUIPAMENTO: cadastro_de_equipamentos.php
+ * Interface para registro de novos ativos de TI (Notebooks, Desktops, etc) com suporte a imagem.
+ */
+include 'auth.php';
+?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
 
@@ -181,19 +187,13 @@
                                     <optgroup label="Categoria">
 
                                         <?php
-                                        // Conectar ao banco de dados
-                                        include 'conexao.php'; // Lembre-se do ponto e vírgula aqui
-                                        
-                                        // Verificar conexão
-                                        if ($conn->connect_error) {
-                                            die("Conexão falhou: " . $conn->connect_error);
-                                        }
+                                        // BANCO DE DADOS: Busca as categorias disponíveis para o seletor
+                                        include 'conexao.php';
 
                                         $sql = "SELECT categoria FROM categoria";
                                         $result = $conn->query($sql);
 
                                         if ($result->num_rows > 0) {
-                                            // Saída dos dados de cada linha
                                             while ($row = $result->fetch_assoc()) {
                                                 echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
                                             }

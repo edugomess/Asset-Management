@@ -1,11 +1,16 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
-date_default_timezone_set('America/Sao_Paulo');
+/**
+ * GESTÃO DE CHAMADOS: chamados.php
+ * Interface central de suporte para usuários e técnicos, com lógica de SLA em tempo real.
+ */
+include 'auth.php';    // Autenticação de sessão
+include 'conexao.php'; // Banco de dados
+date_default_timezone_set('America/Sao_Paulo'); // Alinha o tempo com o fuso local
 
-$results_per_page = 10;
+// === CONFIGURAÇÃO DE PAGINAÇÃO ===
+$results_per_page = 10; // Define o número de registros por página
 
-// Filtro de Status
+// === LÓGICA DE FILTRAGEM: Busca o status selecionado ou define 'aberto' como padrão ===
 $filtro_status = isset($_GET['filtro_status']) ? $_GET['filtro_status'] : 'aberto';
 $where_clause = "";
 
@@ -23,15 +28,15 @@ switch ($filtro_status) {
         $where_clause = "WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado')";
         break;
     case 'todos':
-        $where_clause = ""; // Sem filtro
+        $where_clause = "";
         break;
     default:
-        $where_clause = "WHERE c.status = 'Aberto'"; // Default
+        $where_clause = "WHERE c.status = 'Aberto'";
         $filtro_status = 'aberto';
         break;
 }
 
-// Search Logic
+// === BUSCA GLOBAL: Integração com filtros de texto (Título ou ID) ===
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 if (!empty($search)) {
     if (empty($where_clause)) {
@@ -41,7 +46,7 @@ if (!empty($search)) {
     }
 }
 
-// Restrição para nível "Usuário": vê apenas os próprios chamados
+// === RESTRIÇÃO DE USUÁRIO: Garante que usuários comuns vejam apenas seus próprios tickets ===
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     $user_id = $_SESSION['id_usuarios'];
     if (empty($where_clause)) {
@@ -85,7 +90,7 @@ $result = mysqli_query($conn, $sql);
         /* Metade da largura */
     }
 
-    <style>.badge-success {
+    .badge-success {
         background-color: #28a745 !important;
         /* Verde para ativo */
         color: #fff !important;
@@ -127,6 +132,7 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <?php include 'sidebar_style.php'; ?>
+    <?php include 'pagination_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -208,8 +214,8 @@ $result = mysqli_query($conn, $sql);
                                 </div>
                                 <div class="col-md-6 col-xl-5">
                                     <form method="GET" class="form-inline" style="margin-top: 0px;">
-                                        <label class="mr-2 font-weight-bold">Filtrar por:</label>
-                                        <select name="filtro_status" class="form-control mr-2"
+                                        <label for="filtro_status" class="mr-2 font-weight-bold">Filtrar por:</label>
+                                        <select name="filtro_status" id="filtro_status" class="form-control mr-2"
                                             onchange="this.form.submit()">
                                             <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
                                             <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
@@ -223,9 +229,9 @@ $result = mysqli_query($conn, $sql);
                                     </form>
                                 </div>
                             </div>
-                            <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                            <div class="table-responsive table mt-2" id="chamadosWrapper" role="grid"
                                 aria-describedby="dataTable_info">
-                                <table class="table table-hover my-0" id="dataTable">
+                                <table class="table table-hover my-0" id="chamadosTable">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -242,9 +248,8 @@ $result = mysqli_query($conn, $sql);
                                     <tbody>
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
-                                            // 1. Busca as configurações de SLA ANTES de iniciar o loop dos chamados
+                                            // 1. GESTÃO DE SLA: Busca metas configuradas no painel administrativo
                                             $sla_configs = [];
-                                            // Alterado para buscar a coluna correta de MINUTOS
                                             $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
 
                                             if ($res_config) {
@@ -253,37 +258,34 @@ $result = mysqli_query($conn, $sql);
                                                 }
                                             }
 
-                                            // Valores padrão corrigidos (Incidente = 6h/360min)
+                                            // Fallback: Tempos padrão em minutos caso não haja definição no banco
                                             $defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
 
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $categoria = $row['categoria'];
                                                 $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
 
-                                                // Tempo base da categoria
+                                                // 2. CÁLCULO DE TEMPO BASE: Ajusta SLA conforme prioridade (Alta reduz o tempo drasticamente)
                                                 $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
 
-                                                // Aplicar multiplicadores de prioridade (Alta=1/3, Média=2/3, Baixa=1)
                                                 if ($prioridade === 'Alta') {
                                                     $sla_total_minutos = round($cat_sla / 3);
                                                 } elseif ($prioridade === 'Média') {
                                                     $sla_total_minutos = round(($cat_sla * 2) / 3);
                                                 } else {
-                                                    $sla_total_minutos = $cat_sla; // Baixa = 100%
+                                                    $sla_total_minutos = $cat_sla;
                                                 }
 
                                                 $data_abertura = new DateTime($row['data_abertura']);
                                                 $agora = new DateTime();
                                                 $intervalo = $data_abertura->diff($agora);
 
-                                                // Calcula minutos decorridos totais
+                                                // 3. LÓGICA DE CONGELAMENTO: Desconta tempo em que o chamado ficou 'Pendente'
                                                 $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
 
-                                                // Descontar tempo congelado anteriormente
                                                 $tempo_congelado = intval($row['tempo_congelado_minutos'] ?? 0);
                                                 $minutos_decorridos -= $tempo_congelado;
 
-                                                // Se estiver pendente agora, descontar também o tempo desde o último congelamento
                                                 if ($row['status'] === 'Pendente' && !empty($row['data_ultimo_congelamento'])) {
                                                     $data_congelamento = new DateTime($row['data_ultimo_congelamento']);
                                                     $intervalo_congelamento = $data_congelamento->diff($agora);
@@ -291,7 +293,6 @@ $result = mysqli_query($conn, $sql);
                                                     $minutos_decorridos -= $minutos_congelamento_atual;
                                                 }
 
-                                                // Garantir que não seja negativo
                                                 $minutos_decorridos = max(0, $minutos_decorridos);
 
                                                 // 3. Cálculo da porcentagem do SLA

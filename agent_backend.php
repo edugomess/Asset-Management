@@ -1,4 +1,10 @@
 <?php
+/**
+ * BACKEND DO CHATBOT (IA): agent_backend.php
+ * Interface principal de IA que utiliza a API do Google Gemini para 
+ * responder dúvidas sobre o inventário, chamados e gestão de TI.
+ * Possui lógica de fallback para comandos locais caso a API falhe.
+ */
 ob_start(); // Inicia o buffer para evitar qualquer saída acidental antes do JSON
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

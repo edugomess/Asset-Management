@@ -1,4 +1,9 @@
 <?php
+/**
+ * GESTÃO DE MANUTENÇÃO: save_maintenance.php
+ * Controla os estados de manutenção dos ativos (iniciar/liberar),
+ * registra logs no histórico e atualiza o status de disponibilidade do equipamento.
+ */
 header('Content-Type: application/json');
 include 'conexao.php';
 session_start();

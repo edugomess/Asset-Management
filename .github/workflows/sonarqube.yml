@@ -1,57 +1,45 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# Este workflow utiliza ações que não são certificadas pelo GitHub.
+# Elas são fornecidas por terceiros e regidas por termos de serviço específicos.
 
-# This workflow helps you trigger a SonarQube analysis of your code and populates
-# GitHub Code Scanning alerts with the vulnerabilities found.
-# (this feature is available starting from SonarQube 9.7, Developer Edition and above)
+# Este workflow aciona uma análise do SonarCloud para identificar vulnerabilidades e bugs.
+# Os resultados serão enviados para o painel do SonarCloud.
 
-# 1. Make sure you add a valid GitHub configuration to your SonarQube (Administration > DevOps platforms > GitHub)
+# Passos para configurar:
+# 1. Garanta que o projeto esteja importado no SonarCloud.
+# 2. Configure os segredos no GitHub (Settings > Secrets):
+#    - SONAR_TOKEN: Token gerado no SonarCloud.
+#    - SONAR_HOST_URL: https://sonarcloud.io
 
-# 2. Import your project on SonarQube
-#     * Add your repository as a new project by clicking "Create project" from your homepage.
-#
-# 3. Select GitHub Actions as your CI and follow the tutorial
-#     * a. Generate a new token and add it to your GitHub repository's secrets using the name SONAR_TOKEN
-#          (On SonarQube, click on your avatar on top-right > My account > Security or ask your administrator)
-#
-#     * b. Copy/paste your SonarQube host URL to your GitHub repository's secrets using the name SONAR_HOST_URL
-#
-#     * c. Copy/paste the project Key into the args parameter below
-#          (You'll find this information in SonarQube by following the tutorial or by clicking on Project Information at the top-right of your project's homepage)
+name: Análise SonarQube
 
-# Feel free to take a look at our documentation (https://docs.sonarqube.org/latest/analysis/github-integration/)
-# or reach out to our community forum if you need some help (https://community.sonarsource.com/c/sq/10)
-
-name: SonarQube analysis
-
+# Define quando o workflow será executado
 on:
   push:
-    branches: ["main"]
+    branches: ["main"] # Executa ao enviar código para a branch main
   pull_request:
-    branches: ["main"]
-  workflow_dispatch:
+    branches: ["main"] # Executa ao abrir ou atualizar um Pull Request para a main
+  workflow_dispatch: # Permite execução manual pela interface do GitHub
 
 permissions:
-  pull-requests: read # allows SonarQube to decorate PRs with analysis results
+  pull-requests: read # Permite que o SonarQube leia informações de PRs para comentários
 
 jobs:
   Analysis:
+    name: Execução da Análise Estática
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout do código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # O Sonar precisa disso para análise de histórico
+          fetch-depth: 0 # O Sonar precisa do histórico completo para análise precisa de autoria (git blame)
 
-      - name: Analyze with SonarCloud
+      - name: Analisar com SonarCloud
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático do GitHub para integração
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Token de autenticação do SonarCloud
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # URL do servidor (https://sonarcloud.io)
         with:
           args: >
             -Dsonar.organization=edugomess

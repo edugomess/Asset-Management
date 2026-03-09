@@ -1,8 +1,12 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * CADASTRO DE USUÁRIO: cadastro_de_usuario.php
+ * Central de criação de novos usuários, com validação de CPF, upload de foto e níveis de acesso.
+ */
+include 'auth.php';    // Segurança de acesso
+include 'conexao.php'; // Banco de Dados
 
-// Fetch next user ID for Matricula
+// LÓGICA DE MATRÍCULA: Descobre o próximo ID auto-incremento para sugerir como matrícula
 $sql_id = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$dbname' AND TABLE_NAME = 'usuarios'";
 $res_id = $conn->query($sql_id);
 $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
@@ -425,6 +429,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                 }
             }
 
+            // VALIDAÇÃO TÉCNICA DE CPF (Algoritmo de dígitos verificadores)
             function validateCPF(cpf) {
                 cpf = cpf.replace(/[^\d]+/g, '');
                 if (cpf == '') return false;
@@ -469,6 +474,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                 return true;
             }
 
+            // Interface Visual de Erro no CPF
             function showCPFError(hasError) {
                 const errorEl = document.getElementById('cpf-error');
                 const inputEl = document.getElementById('cpf');

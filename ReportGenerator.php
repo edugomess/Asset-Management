@@ -76,8 +76,7 @@ class ReportGenerator extends FPDF
                     if (isset($col['format'])) {
                         if ($col['format'] == 'money') {
                             $val = 'R$ ' . number_format($val, 2, ',', '.');
-                        }
-                        elseif ($col['format'] == 'date') {
+                        } elseif ($col['format'] == 'date') {
                             $val = date('d/m/Y', strtotime($val));
                         }
                     }
@@ -88,8 +87,7 @@ class ReportGenerator extends FPDF
                 }
                 $this->Ln();
             }
-        }
-        else {
+        } else {
             $this->Cell(0, 10, $this->utf8_to_iso88591('Nenhum registro encontrado.'), 1, 1, 'C');
         }
 

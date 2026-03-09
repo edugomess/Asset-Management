@@ -105,8 +105,7 @@ if ($result_status->num_rows > 0) {
         $pdf->Cell(0, 10, utf8_to_iso88591("Total de ativos neste status: $count"), 0, 1);
         $pdf->Ln(5);
     }
-}
-else {
+} else {
     $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(0, 10, utf8_to_iso88591('Nenhum status encontrado.'), 0, 1);
 }

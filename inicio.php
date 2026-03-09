@@ -1,23 +1,27 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * CONSOLE OPERACIONAL (VISÃO ADMIN): inicio.php
+ * Página restrita para técnicos e administradores gerenciarem a distribuição de ativos.
+ */
+include 'auth.php';    // Validação de sessão
+include 'conexao.php'; // Conexão com banco
 
-// Restrição de acesso: Usuário comum não acessa a visão geral
+// SEGURANÇA: Bloqueia acesso de 'Usuário' comum, redirecionando para o dashboard pessoal
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     header("Location: index.php");
     exit();
 }
 
-// Verifica se o ID do ativo foi passado para transferir os dados
+// LÓGICA DE TRANSFERÊNCIA: Processa doações de ativos enviadas via AJAX/ID
 if (isset($_GET['id'])) {
     $ativoId = $_GET['id'];
 
-    // Transfere o ativo para a tabela 'venda'
+    // Move os dados básicos do ativo para o histórico de 'venda' (doações)
     $sql = "INSERT INTO venda (categoria, modelo, tag) 
             SELECT categoria, modelo, tag FROM ativos WHERE id = '$ativoId'";
 
     if (mysqli_query($conn, $sql)) {
-        // Remove o ativo da tabela 'ativos'
+        // Exclui o ativo do inventário ativo após o registro da transferência
         $deleteSql = "DELETE FROM ativos WHERE id = '$ativoId'";
         if (mysqli_query($conn, $deleteSql)) {
             echo json_encode(['success' => true]);

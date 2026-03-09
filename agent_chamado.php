@@ -1,4 +1,9 @@
 <?php
+/**
+ * ASSISTENTE DE RESOLUÇÃO DE CHAMADOS: agent_chamado.php
+ * Analisa o título e a descrição de um chamado via Gemini AI para
+ * sugerir causas raízes e ações imediatas de suporte técnico.
+ */
 ob_start();
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

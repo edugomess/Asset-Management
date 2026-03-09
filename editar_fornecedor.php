@@ -1,5 +1,11 @@
 <?php
-include_once 'auth.php';
+/**
+ * EDIÇÃO DE FORNECEDOR: editar_fornecedor.php
+ * Script para atualização de dados de contato, CNPJ e serviços prestados por parceiros.
+ */
+include 'auth.php';
+?>
+<?php
 include_once 'conexao.php';
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $id = intval($id);

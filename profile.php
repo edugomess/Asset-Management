@@ -1,9 +1,12 @@
 <?php
+/**
+ * PERFIL DO USUÁRIO: profile.php
+ * Exibe dados pessoais, ativos atribuídos e licenças vinculadas ao usuário.
+ */
 include 'auth.php';
 include 'conexao.php';
 
-// Fetch User Data
-// Support viewing other user profiles via ID parameter, fallback to current user
+// RECUPERAÇÃO DE DADOS: Suporta visualização de outros perfis (Admin) ou o próprio (Usuário comum)
 $id_usuario = isset($_GET['id']) ? intval($_GET['id']) : $_SESSION['id_usuarios'];
 
 // Restrição para nível "Usuário": só pode ver o próprio perfil
@@ -15,11 +18,11 @@ $sql_user = "SELECT * FROM usuarios WHERE id_usuarios = $id_usuario";
 $result_user = mysqli_query($conn, $sql_user);
 $user_data = mysqli_fetch_assoc($result_user);
 
-// Fetch Assigned Assets
+// BUSCA DE ATIVOS: Recupera todos os equipamentos que estão atualmente sob responsabilidade do usuário
 $sql_assets = "SELECT * FROM ativos WHERE assigned_to = $id_usuario";
 $result_assets = mysqli_query($conn, $sql_assets);
 
-// Fetch Assigned Licenses
+// BUSCA DE LICENÇAS: Recupera softwares vinculados via tabela de junção (n:n)
 $sql_lic = "SELECT l.* FROM licencas l 
             JOIN atribuicoes_licencas al ON l.id_licenca = al.id_licenca 
             WHERE al.id_usuario = $id_usuario";

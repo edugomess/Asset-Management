@@ -1,12 +1,17 @@
 <?php
+/**
+ * PROCESSADOR DE LOGIN: autenticador.php
+ * Script responsável por receber as credenciais via POST, validar no banco de dados
+ * e inicializar a sessão segura do usuário.
+ */
 session_start();
-include 'conexao.php';
+include 'conexao.php'; // Conexão com o banco
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    // Prepara a consulta para evitar SQL Injection
+    // PREPARAÇÃO: Busca o usuário pelo e-mail (Prepara para evitar SQL Injection)
     $stmt = $conn->prepare("SELECT * FROM usuarios WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -15,15 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($resultado->num_rows > 0) {
         $usuario = $resultado->fetch_assoc();
 
-        // Verifica a senha usando SHA-1
+        // VALIDAÇÃO: Compara a senha informada com o hash SHA-1 armazenado no banco
         if ($usuario['senha'] === sha1($senha)) {
-            // Armazena informações na sessão
+            // SESSÃO: Armazena os dados básicos para uso em todo o sistema
             $_SESSION['id_usuarios'] = $usuario['id_usuarios'];
             $_SESSION['email'] = $usuario['email'];
             $_SESSION['nome_usuario'] = $usuario['nome'] . ' ' . $usuario['sobrenome'];
             $_SESSION['foto_perfil'] = $usuario['foto_perfil'];
-            $_SESSION['nivelUsuario'] = $usuario['nivelUsuario']; // Adicionado para controle de acesso
-            // Redireciona para a página inicial ou dashboard
+            $_SESSION['nivelUsuario'] = $usuario['nivelUsuario']; // Controle de Acesso (ACL)
+
+            // Redirecionamento bem-sucedido: Dashboard
             header("Location: index.php");
             exit();
         } else {

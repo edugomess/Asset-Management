@@ -1,6 +1,10 @@
 <?php
-include_once 'auth.php';     // Verifica sessão
-include_once 'conexao.php';  // Conecta ao banco
+/**
+ * DASHBOARD PRINCIPAL: index.php
+ * Esta página consolida as principais métricas de chamados, ativos e inventário.
+ */
+include_once 'auth.php';     // Validação de segurança obrigatória
+include_once 'conexao.php';  // Conexão com a base de dados
 
 // === Toda a sua lógica de SQL deve vir aqui, antes do HTML ===
 $meses = [
@@ -56,7 +60,7 @@ $count_andamento = 0;
 </head>
 
 <?php
-// === Contagem de Chamados (QUERY UNICA para todos os status) ===
+// === PROCESSAMENTO DE DADOS: Contagem de Chamados com base no nível de acesso ===
 $count_aberto = 0;
 $count_andamento = 0;
 $count_pendente = 0;
@@ -64,6 +68,7 @@ $data = [];
 $total_ativos = 0;
 
 $where_chamados = "";
+// Filtro de Segurança: Usuários comuns veem apenas seus próprios chamados
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     $where_chamados = " AND usuario_id = " . $_SESSION['id_usuarios'];
 }
@@ -182,13 +187,13 @@ $closed_string = implode(",", $closed_data);
                     </div>
                     <div class="row px-2 flex-nowrap overflow-auto">
                         <?php
-                        // Buscar contagem de ativos por categoria
+                        // 1. GESTÃO DE ATIVOS: Coleta métricas de hardware por categoria
                         $where_ativos = "";
                         if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
                             $where_ativos = " WHERE assigned_to = " . $_SESSION['id_usuarios'];
                         }
 
-                        // Query genérica para pegar todas as categorias e contagens
+                        // Busca quantidades totais e disponibilidade (ativos não atribuídos)
                         if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
                             $sql_ativos = "SELECT categoria, COUNT(*) as total, 0 as disponiveis 
                                            FROM ativos WHERE assigned_to = " . $_SESSION['id_usuarios'] . " GROUP BY categoria";
@@ -204,7 +209,7 @@ $closed_string = implode(",", $closed_data);
                             }
                         }
 
-                        // SLA Ranking Logic - Filtro de Mês/Ano
+                        // 2. RANKING DE EFICIÊNCIA (SLA): Melhores técnicos do período
                         $mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
                         $ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
 

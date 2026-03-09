@@ -55,8 +55,7 @@ if ($inserir) {
             window.location.href = 'equipamentos.php';
           </script>";
     exit();
-}
-else {
+} else {
     echo "Erro ao inserir dados: " . mysqli_error($conn);
 }
 ?>

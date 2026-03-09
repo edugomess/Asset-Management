@@ -1,9 +1,11 @@
 <?php
+// Inclui os arquivos de autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';
 
-// Restrição de acesso: Usuário comum não acessa fornecedores
+// Restrição de acesso: Verifica se o usuário tem nível 'Admin' ou 'Suporte'
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    // Redireciona para a página inicial se não tiver permissão
     header("Location: index.php");
     exit();
 }
@@ -14,9 +16,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Table - Brand</title>
+    <title>Fornecedores - Gestão</title>
+    <!-- Favicon e Estilos Base -->
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
+    <!-- Fontes e Ícones -->
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
     <link rel="stylesheet" href="/assets/css/Nunito.css?h=3532322f32770367812050c1dddc256c">
     <link rel="stylesheet" href="/assets/css/Raleway.css?h=f3d9abe8d5aa7831c01bfaa2a1563712">
@@ -43,12 +47,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
+    <!-- Estilos Customizados do Sistema -->
     <?php include 'sidebar_style.php'; ?>
     <?php include 'pagination_style.php'; ?>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
+        <!-- Barra Lateral de Navegação -->
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
             <div class="container-fluid d-flex flex-column p-0">
                 <?php include 'sidebar_brand.php'; ?>
@@ -57,10 +63,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
+                <!-- Barra Superior (Topbar) -->
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
                     style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <!-- Campo de Busca Global -->
                         <form
                             class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
                             <div class="input-group">
@@ -72,6 +80,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
                                 style="width: 100%; display: none;"></div>
                         </form>
+                        <!-- Menu do Usuário -->
                         <ul class="navbar-nav flex-nowrap ml-auto">
 
 
@@ -123,7 +132,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         <span
                                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
                                                         <img class="border rounded-circle img-profile"
-                                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>">
+                                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
                                                     </a>
                                                     <div
                                                         class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
@@ -148,6 +157,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
+                                <!-- Botão para Cadastro de Novo Fornecedor -->
                                 <div class="col-md-6 col-xl-3 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
                                     </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
@@ -155,6 +165,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;"
                                         href="/cadastro_de_fornecedor.php">Cadastrar Novo</a>
                                 </div>
+                                <!-- Filtro de Busca na Tabela -->
                                 <div class="col-md-6 col-xl-9">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
@@ -168,6 +179,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     </div>
                                 </div>
                             </div>
+                            <!-- Tabela de Dados -->
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">
                                 <table class="table my-0" id="dataTable">
@@ -183,17 +195,18 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Define how many results you want per page
+                                        // Configuração da Paginação
                                         $results_per_page = 10;
 
                                         // Buscar termo de pesquisa
                                         $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
                                         $where_clause = "";
+                                        // Constrói a cláusula WHERE se houver termo de busca
                                         if (!empty($search)) {
                                             $where_clause = "WHERE nomeEmpresa LIKE '%$search%' OR email LIKE '%$search%' OR cnpj LIKE '%$search%'";
                                         }
 
-                                        // Find out the number of results in the database
+                                        // Busca o total de registros para cálculo de páginas
                                         $sql = "SELECT COUNT(*) AS total FROM fornecedor $where_clause";
                                         $result = mysqli_query($conn, $sql);
                                         $row = mysqli_fetch_assoc($result);
@@ -202,16 +215,17 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         // Determine number of pages needed
                                         $total_pages = ceil($total_results / $results_per_page);
 
-                                        // Determine the current page number from the URL, if not set default to 1
+                                        // Página atual e cálculo do offset para o SQL
                                         $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 
                                         // Calculate the starting limit for the records
                                         $start_from = ($current_page - 1) * $results_per_page;
 
-                                        // Fetch the selected results from the database
+                                        // Busca os registros limitados pela página atual
                                         $sql = "SELECT * FROM fornecedor $where_clause ORDER BY id_fornecedor DESC LIMIT $start_from, $results_per_page";
                                         $result = mysqli_query($conn, $sql);
 
+                                        // Lista os fornecedores na tabela
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 echo "<tr>
@@ -221,13 +235,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>" . htmlspecialchars($row['servico']) . "</td>
                                                     <td>" . htmlspecialchars($row['cnpj']) . "</td>
                                                     <td>
-                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-edit'></i></a>
-                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-trash'></i></a>
+                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='Editar'><i class='fas fa-edit'></i></a>
+                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='Excluir'><i class='fas fa-trash'></i></a>
                                                     </td>
                                                 </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='6'>Nenhum dado encontrado.</td></tr>";
+                                            echo "<tr><td colspan='6'>Nenhum fornecedor encontrado.</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -244,13 +258,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </table>
                             </div>
 
+                            <!-- Marcador de Páginas (Paginação) -->
                             <div class="d-flex justify-content-start mt-3">
                                 <ul class="pagination-custom">
                                     <?php
                                     $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                    // Botão Anterior
                                     if ($current_page > 1) {
                                         echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
                                     }
+                                    // Números das Páginas
                                     for ($page = 1; $page <= $total_pages; $page++) {
                                         if ($page == $current_page) {
                                             echo "<li class='active'><span>$page</span></li>";
@@ -258,9 +275,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             echo "<li><a href='?page=$page$search_param'>$page</a></li>";
                                         }
                                     }
+                                    // Botão Próximo
                                     if ($current_page < $total_pages) {
                                         echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
                                     }
+                                    // Fecha a conexão com o banco
                                     mysqli_close($conn);
                                     ?>
                                 </ul>

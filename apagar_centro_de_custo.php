@@ -1,5 +1,8 @@
 <?php
-// Dados de conexão com o banco de dados
+/**
+ * EXCLUSÃO DE CENTRO DE CUSTO: apagar_centro_de_custo.php
+ * Remove um setor do sistema com base no ID recebido.
+ */
 include 'conexao.php';
 
 // Obtém o valor de $id da URL
@@ -30,5 +33,3 @@ echo "<script>
       </script>";
 exit();
 ?>
-
-

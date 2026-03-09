@@ -6,8 +6,7 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['id_asset'])) {
         $id_asset = $_POST['id_asset'];
-    }
-    else {
+    } else {
         echo "id_asset não está definido.";
         exit;
     }
@@ -47,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $msg = isset($errorMessages[$uploadError]) ? $errorMessages[$uploadError] : 'Erro desconhecido no upload.';
                 echo "<script>alert('Erro no upload: $msg');</script>";
             }
-        }
-        else {
+        } else {
             // Processing successful upload
             $uploadDir = 'assets/img/ativos/';
             // Ensure directory exists - absolute path is safer sometimes but relative should work if CWD is htdocs
@@ -67,13 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (move_uploaded_file($_FILES['imagem']['tmp_name'], $targetPath)) {
                     $imagePathForDb = '/' . $targetPath;
                     $imagemSql = ", imagem='$imagePathForDb'";
-                }
-                else {
+                } else {
                     $lastError = error_get_last();
                     echo "<script>alert('Erro ao mover arquivo para: $targetPath. Detalhes: " . ($lastError['message'] ?? '') . "');</script>";
                 }
-            }
-            else {
+            } else {
                 echo "<script>alert('Formato de imagem inválido. Permitidos: jpg, jpeg, png, gif, webp');</script>";
             }
         }
@@ -135,8 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 window.location.href = 'equipamentos.php';
               </script>";
         exit();
-    }
-    else {
+    } else {
         echo "Erro ao atualizar dados: " . mysqli_error($conn);
     }
 }

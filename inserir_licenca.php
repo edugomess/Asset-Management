@@ -1,4 +1,9 @@
 <?php
+/**
+ * CADASTRO DE LICENÇAS: inserir_licenca.php
+ * Registra novas licenças de software, vinculando-as a fabricantes,
+ * tipos, custos e centros de custo responsáveis.
+ */
 include 'auth.php';
 include 'conexao.php';
 

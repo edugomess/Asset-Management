@@ -1,8 +1,12 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * CADASTRO DE LICENÇA: cadastro_de_licenca.php
+ * Script para registro de softwares, controle de seats (vagas), valores e expiração.
+ */
+include 'auth.php';    // Validação de sessão
+include 'conexao.php'; // Conectividade
 
-// Fetch Cost Centers
+// CONSULTA DE APOIO: Busca Centros de Custo para vincular à licença
 $sql_cc = "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
 $result_cc = mysqli_query($conn, $sql_cc);
 ?>

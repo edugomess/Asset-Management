@@ -95,6 +95,23 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
                                                 <div class="status-indicator"></div>
                                             </div>
+                                            <?php
+                                            // 3. LÓGICA DE CONGELAMENTO: Desconta tempo em que o chamado ficou 'Pendente'
+                                            // Esta lógica é um exemplo e deve ser aplicada onde o cálculo de tempo decorrido é feito.
+                                            // $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
+                                            
+                                            // $tempo_congelado = intval($row['tempo_congelado_minutos'] ?? 0);
+                                            // $minutos_decorridos -= $tempo_congelado;
+                                            
+                                            // if ($row['status'] === 'Pendente' && !empty($row['data_ultimo_congelamento'])) {
+                                            //     $data_congelamento = new DateTime($row['data_ultimo_congelamento']);
+                                            //     $intervalo_congelamento = $data_congelamento->diff($agora);
+                                            //     $minutos_congelamento_atual = ($intervalo_congelamento->days * 24 * 60) + ($intervalo_congelamento->h * 60) + $intervalo_congelamento->i;
+                                            //     $minutos_decorridos -= $minutos_congelamento_atual;
+                                            // }
+                                            
+                                            // $minutos_decorridos = max(0, $minutos_decorridos);
+                                            ?>
                                             <div class="font-weight-bold">
                                                 <div class="text-truncate"><span>I have the photos that you ordered last
                                                         month!</span></div>
@@ -159,35 +176,28 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">
                                 <?php
-                                // include 'auth.php'; -- Moved to top
-                                // include 'conexao.php'; -- Moved to top
-                                
-                                // Define how many results you want per page
+                                // CONFIGURAÇÃO DA LISTAGEM: Paginação e Busca
                                 $results_per_page = 10;
 
-                                // Buscar termo de pesquisa
+                                // LÓGICA DE PESQUISA: Filtra por nome do setor ou código do centro de custo
                                 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
                                 $where_clause = "";
                                 if (!empty($search)) {
                                     $where_clause = "WHERE nomeSetor LIKE '%$search%' OR codigo LIKE '%$search%'";
                                 }
 
-                                // Find out the number of results in the database
+                                // CÁLCULO DE PAGINAÇÃO: Define o total de páginas baseada na busca
                                 $sql = "SELECT COUNT(*) AS total FROM centro_de_custo $where_clause";
                                 $result = mysqli_query($conn, $sql);
                                 $row = mysqli_fetch_assoc($result);
                                 $total_results = $row['total'];
-
-                                // Determine number of pages needed
                                 $total_pages = ceil($total_results / $results_per_page);
 
-                                // Determine the current page number from the URL, if not set default to 1
+                                // Identifica a página atual (padrão 1)
                                 $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-
-                                // Calculate the starting limit for the records
                                 $start_from = ($current_page - 1) * $results_per_page;
 
-                                // Fetch the selected results from the database
+                                // CONSULTA DINÂMICA: Recupera os dados ordenados por ID decrescente
                                 $sql = "SELECT * FROM centro_de_custo $where_clause ORDER BY id_centro_de_custo DESC LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
@@ -207,7 +217,34 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <tbody>
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
+                                            // 1. GESTÃO DE SLA: Busca metas configuradas no painel administrativo
+                                            // Esta lógica é um exemplo e deve ser aplicada onde o cálculo de SLA é feito.
+                                            // $sla_configs = [];
+                                            // $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
+                                        
+                                            // if ($res_config) {
+                                            //     while ($row_config = mysqli_fetch_assoc($res_config)) {
+                                            //         $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
+                                            //     }
+                                            // }
+                                        
+                                            // Fallback: Tempos padrão em minutos caso não haja definição no banco
+                                            // $defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
+                                        
                                             while ($row = mysqli_fetch_assoc($result)) {
+                                                // $categoria = $row['categoria'];
+                                                // $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
+                                        
+                                                // 2. CÁLCULO DE TEMPO BASE: Ajusta SLA conforme prioridade (Alta reduz o tempo drasticamente)
+                                                // $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
+                                        
+                                                // if ($prioridade === 'Alta') {
+                                                //     $sla_total_minutos = round($cat_sla / 3);
+                                                // } elseif ($prioridade === 'Média') {
+                                                //     $sla_total_minutos = round(($cat_sla * 2) / 3);
+                                                // } else {
+                                                //     $sla_total_minutos = $cat_sla;
+                                                // }
                                                 echo "<tr>
                     <td>" . htmlspecialchars($row['nomeSetor']) . "</td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>

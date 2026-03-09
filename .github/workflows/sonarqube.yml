@@ -54,6 +54,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=Asset-Management
+            -Dsonar.organization=edugomess
+            -Dsonar.projectKey=edugomess_Asset-Management
             -Dsonar.sources=.
             -Dsonar.verbose=false

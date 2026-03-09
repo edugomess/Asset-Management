@@ -171,143 +171,124 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">
                                 <table class="table my-0" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Fornecedor</th>
+                                            <th>E-Mail</th>
+                                            <th>Telefone</th>
+                                            <th>Serviço</th>
+                                            <th>CNPJ</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
-                                        <div class="table-responsive table mt-2" id="dataTable" role="grid"
-                                            aria-describedby="dataTable_info">
-                                            <?php
+                                        <?php
+                                        // Define how many results you want per page
+                                        $results_per_page = 10;
 
-                                            include 'conexao.php';
+                                        // Buscar termo de pesquisa
+                                        $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+                                        $where_clause = "";
+                                        if (!empty($search)) {
+                                            $where_clause = "WHERE nomeEmpresa LIKE '%$search%' OR email LIKE '%$search%' OR cnpj LIKE '%$search%'";
+                                        }
 
-                                            // Define how many results you want per page
-                                            $results_per_page = 10;
+                                        // Find out the number of results in the database
+                                        $sql = "SELECT COUNT(*) AS total FROM fornecedor $where_clause";
+                                        $result = mysqli_query($conn, $sql);
+                                        $row = mysqli_fetch_assoc($result);
+                                        $total_results = $row['total'];
 
-                                            // Buscar termo de pesquisa
-                                            $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-                                            $where_clause = "";
-                                            if (!empty($search)) {
-                                                $where_clause = "WHERE nomeEmpresa LIKE '%$search%' OR email LIKE '%$search%' OR cnpj LIKE '%$search%'";
+                                        // Determine number of pages needed
+                                        $total_pages = ceil($total_results / $results_per_page);
+
+                                        // Determine the current page number from the URL, if not set default to 1
+                                        $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+
+                                        // Calculate the starting limit for the records
+                                        $start_from = ($current_page - 1) * $results_per_page;
+
+                                        // Fetch the selected results from the database
+                                        $sql = "SELECT * FROM fornecedor $where_clause ORDER BY id_fornecedor DESC LIMIT $start_from, $results_per_page";
+                                        $result = mysqli_query($conn, $sql);
+
+                                        if (mysqli_num_rows($result) > 0) {
+                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                echo "<tr>
+                                                    <td>" . htmlspecialchars($row['nomeEmpresa']) . "</td>
+                                                    <td>" . htmlspecialchars($row['email']) . "</td>
+                                                    <td>" . htmlspecialchars($row['telefone']) . "</td>
+                                                    <td>" . htmlspecialchars($row['servico']) . "</td>
+                                                    <td>" . htmlspecialchars($row['cnpj']) . "</td>
+                                                    <td>
+                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-edit'></i></a>
+                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-trash'></i></a>
+                                                    </td>
+                                                </tr>";
                                             }
+                                        } else {
+                                            echo "<tr><td colspan='6'>Nenhum dado encontrado.</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Fornecedor</th>
+                                            <th>E-Mail</th>
+                                            <th>Telefone</th>
+                                            <th>Serviço</th>
+                                            <th>CNPJ</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
 
-                                            // Find out the number of results in the database
-                                            $sql = "SELECT COUNT(*) AS total FROM fornecedor $where_clause";
-                                            $result = mysqli_query($conn, $sql);
-                                            $row = mysqli_fetch_assoc($result);
-                                            $total_results = $row['total'];
-
-                                            // Determine number of pages needed
-                                            $total_pages = ceil($total_results / $results_per_page);
-
-                                            // Determine the current page number from the URL, if not set default to 1
-                                            $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-
-                                            // Calculate the starting limit for the records
-                                            $start_from = ($current_page - 1) * $results_per_page;
-
-                                            // Fetch the selected results from the database
-                                            $sql = "SELECT * FROM fornecedor $where_clause ORDER BY id_fornecedor DESC LIMIT $start_from, $results_per_page";
-                                            $result = mysqli_query($conn, $sql);
-                                            ?>
-
-                                            <table class="table my-0" id="dataTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Fornecedor</th>
-                                                        <th>E-Mail</th>
-                                                        <th>Telefone</th>
-                                                        <th>Serviço</th>
-                                                        <th>CNPJ</th>
-                                                        <th>Ações</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    if (mysqli_num_rows($result) > 0) {
-                                                        while ($row = mysqli_fetch_assoc($result)) {
-                                                            echo "<tr>
-                      <td>" . htmlspecialchars($row['nomeEmpresa']) . "</td>
-                      <td>" . htmlspecialchars($row['email']) . "</td>
-                      <td>" . htmlspecialchars($row['telefone']) . "</td>
-                      <td>" . htmlspecialchars($row['servico']) . "</td>
-                      <td>" . htmlspecialchars($row['cnpj']) . "</td>
-                      <td>
-                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "'><i class='fas fa-trash'></i></a>
-                    </td>
-                </tr>";
-                                                        }
-                                                    } else {
-                                                        echo "<tr><td colspan='11'>Nenhum dado encontrado.</td></tr>";
-                                                    }
-                                                    ?>
-                                                </tbody>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Fornecedor</th>
-                                                        <th>E-Mail</th>
-                                                        <th>Telefone</th>
-                                                        <th>Serviço</th>
-                                                        <th>CNPJ</th>
-                                                        <th>Ações</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-
-                                            <div class="row">
-                                                <div class="d-flex justify-content-start mt-3">
-                                                    <ul class="pagination-custom">
-                                                        <?php
-                                                        $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-                                                        if ($current_page > 1) {
-                                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
-                                                        }
-                                                        for ($page = 1; $page <= $total_pages; $page++) {
-                                                            if ($page == $current_page) {
-                                                                echo "<li class='active'><span>$page</span></li>";
-                                                            } else {
-                                                                echo "<li><a href='?page=$page$search_param'>$page</a></li>";
-                                                            }
-                                                        }
-                                                        if ($current_page < $total_pages) {
-                                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
-                                                        }
-                                                        ?>
-                                                    </ul>
-                                                </div>
-                                            </div>
-
-
-                                            <?php
-                                            mysqli_close($conn);
-                                            ?>
-
-
-
-                                        </div>
+                            <div class="d-flex justify-content-start mt-3">
+                                <ul class="pagination-custom">
+                                    <?php
+                                    $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
+                                    if ($current_page > 1) {
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                    }
+                                    for ($page = 1; $page <= $total_pages; $page++) {
+                                        if ($page == $current_page) {
+                                            echo "<li class='active'><span>$page</span></li>";
+                                        } else {
+                                            echo "<li><a href='?page=$page$search_param'>$page</a></li>";
+                                        }
+                                    }
+                                    if ($current_page < $total_pages) {
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                    }
+                                    mysqli_close($conn);
+                                    ?>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-            </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-        </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-        <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-        <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-        <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-        <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-        <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-        <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-        <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-        <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-        <script src="/assets/js/global_search.js"></script>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
+    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
+    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
+    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
+    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
+    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

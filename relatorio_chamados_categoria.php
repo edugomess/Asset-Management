@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS POR CATEGORIA: relatorio_chamados_categoria.php
+ * Quantifica a demanda de suporte técnico agrupada por tipo de problema/solicitação.
+ */
 require('ReportGenerator.php');
 
 $columns = [

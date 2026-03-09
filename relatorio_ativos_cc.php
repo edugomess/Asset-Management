@@ -1,4 +1,9 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR CENTRO DE CUSTO: relatorio_ativos_cc.php
+ * Agrupa os ativos por unidade de negócio, exibindo subtotais e contagem por grupo.
+ * UtilizaF PDF diretamente para permitir agrupamentos visuais complexos.
+ */
 require('fpdf/fpdf.php');
 include 'conexao.php';
 
@@ -108,8 +113,7 @@ if ($result_cc->num_rows > 0) {
         $pdf->Cell(30, 7, number_format($total_value, 2, ',', '.'), 1, 1, 'R');
         $pdf->Ln(5);
     }
-}
-else {
+} else {
     $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(0, 10, utf8_to_iso88591('Nenhum centro de custo encontrado.'), 0, 1);
 }

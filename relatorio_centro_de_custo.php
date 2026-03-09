@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CENTROS DE CUSTO: relatorio_centro_de_custo.php
+ * Listagem administrativa de todas as unidades de custo cadastradas no sistema.
+ */
 require('ReportGenerator.php');
 
 $columns = [

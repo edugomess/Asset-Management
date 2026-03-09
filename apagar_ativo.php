@@ -1,5 +1,8 @@
 <?php
-// Dados de conexão com o banco de dados
+/**
+ * EXCLUSÃO DE ATIVO: apagar_ativo.php
+ * Remove permanentemente um equipamento do inventário com base no ID.
+ */
 include 'conexao.php';
 
 try {

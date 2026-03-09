@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS SEM ATRIBUIÇÃO: relatorio_chamados_sem_atribuicao.php
+ * Identifica tickets pendentes que ainda não possuem um técnico responsável designado.
+ */
 require('ReportGenerator.php');
 
 $columns = [

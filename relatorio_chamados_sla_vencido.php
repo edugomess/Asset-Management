@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS COM SLA VENCIDO: relatorio_chamados_sla_vencido.php
+ * Destaca tickets em aberto por mais de 7 dias, auxiliando no controle de prazos.
+ */
 require('ReportGenerator.php');
 
 $columns = [

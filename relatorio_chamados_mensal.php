@@ -1,4 +1,9 @@
 <?php
+/**
+ * RELATÓRIO MENSAL DE CHAMADOS: relatorio_chamados_mensal.php
+ * Análise histórica de volumetria de tickets e taxa de resolução por mês.
+ * UtilizaF PDF diretamente para permitir cálculos de porcentagem no corpo do relatório.
+ */
 require('fpdf/fpdf.php');
 include 'conexao.php';
 
@@ -92,8 +97,7 @@ if ($result && $result->num_rows > 0) {
         $pdf->Cell(50, 10, number_format($taxa, 1) . '%', 1, 0, 'C');
         $pdf->Ln();
     }
-}
-else {
+} else {
     $pdf->Cell(0, 10, utf8_to_iso88591('Nenhum registro de chamados encontrado.'), 1, 1, 'C');
 }
 

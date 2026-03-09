@@ -90,12 +90,13 @@ function notificarNovoChamado($chamado_id, $conn)
         $wa_chamados_allow = $alert_sys['whatsapp_recebe_chamados'] ?? 1;
 
         if (!$chamados_allow) {
+            // Notificações para chamados estão desabilitadas globalmente
             return false;
         }
 
         $email_destino = $alert_sys['email_destino'] ?? (defined('EMAIL_ADMIN') ? EMAIL_ADMIN : '');
 
-        // Mapear categoria para coluna do banco (lidando com acentuação e encoding)
+        // Mapear categoria para identificação no banco de dados (lidando com acentuação)
         $cat_col = "";
         $categoria_clean = mb_strtolower($categoria, 'UTF-8');
 

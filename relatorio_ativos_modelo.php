@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR MODELO: relatorio_ativos_modelo.php
+ * Agrupa os ativos por modelo e fabricante, contabilizando quantidades e valores totais.
+ */
 require('ReportGenerator.php');
 
 $columns = [

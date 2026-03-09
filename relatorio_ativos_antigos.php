@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS ANTIGOS: relatorio_ativos_antigos.php
+ * Lista equipamentos com data de aquisição mais remota para planejamento de ciclo de vida.
+ */
 require('ReportGenerator.php');
 
 $columns = [

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO GERAL DE ATIVOS: relatorio_ativo.php
+ * Gera um PDF em modo paisagem com todos os ativos do inventário.
+ */
 require('ReportGenerator.php');
 
 $columns = [

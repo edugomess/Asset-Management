@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS ABERTOS: relatorio_chamados_abertos.php
+ * Lista todos os tickets que ainda não foram resolvidos ou fechados.
+ */
 require('ReportGenerator.php');
 
 $columns = [

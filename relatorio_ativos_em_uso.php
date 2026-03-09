@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS EM USO: relatorio_ativos_em_uso.php
+ * Lista todos os equipamentos que possuem um usuário responsável vinculado.
+ */
 require('ReportGenerator.php');
 
 $columns = [

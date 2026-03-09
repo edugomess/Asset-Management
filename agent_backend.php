@@ -42,9 +42,10 @@ if (empty($message)) {
 
 $reply = "";
 $userId = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 0;
+// Nome amigável para personalização da resposta da IA
 $userName = isset($_SESSION['nome_usuario']) ? $_SESSION['nome_usuario'] : 'Usuário';
 
-// Helper function to format money
+// Função auxiliar para formatar valores monetários (Padrão PT-BR)
 function formatMoney($val)
 {
     return 'R$ ' . number_format($val, 2, ',', '.');
@@ -53,6 +54,7 @@ function formatMoney($val)
 // Helper: Get system context for Gemini (summarized DB data)
 function getSystemContext($conn, $userName)
 {
+    // Define o comportamento e tom de voz da inteligência artificial
     $context = "Você é o assistente virtual do sistema Asset Management (Asset MGT). ";
     $context .= "O usuário atual é: " . $userName . ".\n";
     $context .= "O sistema gerencia ativos de TI, usuários, fornecedores, centros de custo, licenças e chamados de suporte. ";
@@ -60,7 +62,7 @@ function getSystemContext($conn, $userName)
     $context .= "Seja um consultor de TI: não apenas liste dados, mas interprete-os e sugira melhorias se apropriado.\n\n";
     $context .= "Dados atuais do sistema:\n";
 
-    // Safe query helper
+    // Função interna para execução segura de queries (evita travamento do chat por erros de SQL)
     $safeQuery = function ($sql) use ($conn) {
         try {
             $r = @$conn->query($sql);
@@ -70,14 +72,14 @@ function getSystemContext($conn, $userName)
         }
     };
 
-    // Total assets
+    // Total de Ativos no Inventário
     $r = $safeQuery("SELECT COUNT(*) as total FROM ativos");
     if ($r) {
         $row = $r->fetch_assoc();
         $context .= "- Total de ativos: " . $row['total'] . "\n";
     }
 
-    // Assets by status (including Maintenance)
+    // Distribuição de Ativos por Status
     $r = $safeQuery("SELECT status, COUNT(*) as total FROM ativos GROUP BY status");
     if ($r && $r->num_rows > 0) {
         $statuses = [];

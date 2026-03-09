@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR CATEGORIA: relatorio_ativos_categoria.php
+ * Consolida a quantidade e o valor total de equipamentos agrupados por categoria.
+ */
 require('ReportGenerator.php');
 
 $columns = [

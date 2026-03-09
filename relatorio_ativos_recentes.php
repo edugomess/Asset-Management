@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS RECENTES: relatorio_ativos_recentes.php
+ * Monitora as aquisições de equipamentos realizadas no último ano.
+ */
 require('ReportGenerator.php');
 
 $columns = [

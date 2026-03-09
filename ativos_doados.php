@@ -1,4 +1,9 @@
 <?php
+/**
+ * LISTAGEM DE ATIVOS DOADOS: ativos_doados.php
+ * Exibe o histórico de doações de ativos de TI para terceiros ou colaboradores.
+ * Permite a geração de relatórios PDF para prestação de contas.
+ */
 include 'auth.php';
 include 'conexao.php';
 ?>

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR FABRICANTE: relatorio_ativos_fabricante.php
+ * Lista os equipamentos agrupados por marca/fabricante para análise de padronização.
+ */
 require('ReportGenerator.php');
 
 $columns = [

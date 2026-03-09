@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS POR SOLICITANTE: relatorio_chamados_solicitante.php
+ * Quantifica o volume de pedidos de suporte por colaborador para identificar perfis de uso.
+ */
 require('ReportGenerator.php');
 
 $columns = [

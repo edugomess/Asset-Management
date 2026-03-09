@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS FECHADOS: relatorio_chamados_fechados.php
+ * Lista todos os tickets com status de conclusão (Resolvido/Fechado).
+ */
 require('ReportGenerator.php');
 
 $columns = [

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR USUÁRIO: relatorio_ativos_por_usuario.php
+ * Lista todos os equipamentos atribuídos a colaboradores, ordenados alfabeticamente.
+ */
 require('ReportGenerator.php');
 
 $columns = [

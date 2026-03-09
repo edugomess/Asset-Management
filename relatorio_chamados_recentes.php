@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS RECENTES: relatorio_chamados_recentes.php
+ * Monitora os atendimentos iniciados nos últimos 30 dias.
+ */
 require('ReportGenerator.php');
 
 $columns = [

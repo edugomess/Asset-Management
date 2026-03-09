@@ -1,4 +1,9 @@
 <?php
+/**
+ * GERENCIAMENTO DE ALERTAS (AJAX): ajax_alertas.php
+ * Processa requisições assíncronas para configurar destinatários de alertas,
+ * prioridades de notificação (Email/WhatsApp) e status dos eventos.
+ */
 require_once 'conexao.php';
 require_once 'auth.php'; // Garantir que apenas usuários logados acessem
 
@@ -6,11 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'add') {
+        // Adicionar novo usuário à lista de destinatários de alertas
         $usuario_id = (int) ($_POST['usuario_id'] ?? 0);
         if ($usuario_id > 0) {
-            // Verificar se já existe
+            // Verificar se o usuário já existe na lista para evitar duplicidade
             $check = $conn->query("SELECT id FROM destinatarios_alertas WHERE usuario_id = $usuario_id");
             if ($check->num_rows == 0) {
+                // Insere com todas as permissões ativas por padrão
                 if ($conn->query("INSERT INTO destinatarios_alertas (usuario_id, prioridade_alta, prioridade_media, prioridade_baixa, recebe_chamados, recebe_manutencao, cat_incidente, cat_mudanca, cat_requisicao) VALUES ($usuario_id, 1, 1, 1, 1, 1, 1, 1, 1)")) {
                     $new_id = $conn->insert_id;
                     $res = $conn->query("SELECT d.*, u.nome, u.sobrenome, u.email FROM destinatarios_alertas d JOIN usuarios u ON d.usuario_id = u.id_usuarios WHERE d.id = $new_id");
@@ -32,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         echo json_encode(['status' => 'success']);
     } elseif ($action === 'update_priority') {
+        // Atualiza a preferência de prioridade para um usuário específico
         $id = (int) ($_POST['id'] ?? 0);
         $priority = $_POST['priority'] ?? '';
         $value = (int) ($_POST['value'] ?? 0);
@@ -45,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['status' => 'error', 'message' => 'Dados inválidos.']);
         }
     } elseif ($action === 'update_global_priority') {
+        // Atualiza as configurações globais de prioridade para WhatsApp
         $priority = $_POST['priority'] ?? '';
         $value = (int) ($_POST['value'] ?? 0);
 

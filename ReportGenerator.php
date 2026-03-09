@@ -1,4 +1,9 @@
 <?php
+/**
+ * GERADOR DE RELATÓRIOS PDF: ReportGenerator.php
+ * Classe extendida do FPDF para padronizar a criação de relatórios do sistema.
+ * Gerencia automaticamente cabeçalho, rodapé, conversão de caracteres e formatação.
+ */
 require('fpdf/fpdf.php');
 include 'conexao.php';
 
@@ -10,6 +15,7 @@ class ReportGenerator extends FPDF
 
     function __construct($title, $columns, $conn, $orientation = 'P')
     {
+        // Inicializa o FPDF com orientação (P=Retrato, L=Paisagem) e papel A4
         parent::__construct($orientation, 'mm', 'A4');
         $this->reportTitle = $title;
         $this->columns = $columns;

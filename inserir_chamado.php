@@ -8,6 +8,7 @@ include 'auth.php';
 include_once 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Escapar strings para evitar SQL Injection
     $titulo = mysqli_real_escape_string($conn, $_POST['titulo']);
     $categoria = mysqli_real_escape_string($conn, $_POST['categoria']);
     $usuario_id = intval($_POST['usuario_id']);
@@ -30,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $file_tmp = $file['tmp_name'];
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
-        // Validar extensão
+        // Validar extensões de arquivos permitidas (Imagens e Documentos)
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf', 'doc', 'docx'];
         if (!in_array($file_ext, $allowed_ext)) {
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {

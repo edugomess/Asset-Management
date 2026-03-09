@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS DISPONÍVEIS: relatorio_ativos_disponiveis.php
+ * Filtra equipamentos que estão com status 'Ativo' mas sem nenhum usuário atribuído.
+ */
 require('ReportGenerator.php');
 
 $columns = [

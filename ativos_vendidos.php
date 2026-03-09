@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<?php
+/**
+ * LISTAGEM DE ATIVOS VENDIDOS: ativos_vendidos.php
+ * Exibe o histórico de equipamentos que foram retirados do inventário via venda.
+ * Inclui paginação e busca global.
+ */
+?>
 <html>
 
 <head>
@@ -238,7 +245,7 @@
                                             <?php
                                             include 'conexao.php';
 
-                                            // Define how many results you want per page
+                                            // Define a quantidade de registros exibidos por página (Padronizado)
                                             $results_per_page = 10;
 
                                             // Find out the number of results in the database (for vendidos status)

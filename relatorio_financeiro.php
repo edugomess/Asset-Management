@@ -1,4 +1,9 @@
 <?php
+/**
+ * RELATÓRIO FINANCEIRO: relatorio_financeiro.php
+ * Gera uma análise de custos detalhada por categoria de ativo.
+ * Utiliza FPDF diretamente para customizações complexas de layout.
+ */
 require('fpdf/fpdf.php');
 include 'conexao.php';
 
@@ -99,8 +104,7 @@ if ($result && $result->num_rows > 0) {
     $pdf->Ln();
 
 
-}
-else {
+} else {
     $pdf->Cell(0, 10, utf8_to_iso88591('Nenhum dado financeiro encontrado.'), 1, 1, 'C');
 }
 

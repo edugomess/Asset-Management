@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE CHAMADOS POR TÉCNICO: relatorio_chamados_tecnico.php
+ * Avalia a distribuição de carga de trabalho entre os membros da equipe de TI.
+ */
 require('ReportGenerator.php');
 
 $columns = [

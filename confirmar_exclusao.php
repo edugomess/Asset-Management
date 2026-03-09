@@ -1,4 +1,8 @@
 <?php
+/**
+ * CONFIRMAÇÃO DE EXCLUSÃO: confirmar_exclusao.php
+ * Script final que executa a Remoção de Fornecedores após a confirmação do usuário.
+ */
 include 'conexao.php';
 
 if (isset($_GET['id'])) {

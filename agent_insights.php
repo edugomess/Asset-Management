@@ -20,17 +20,7 @@ if (!isset($_SESSION['id_usuarios'])) {
 session_write_close();
 
 include 'conexao.php';
-require_once 'credentials.php';
-
-// Verifica se a chave da API está devidamente configurada
-$GEMINI_API_KEY = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
-
-header('Content-Type: application/json');
-
-if (empty($GEMINI_API_KEY)) {
-    echo json_encode(['reply' => '⚠️ Integração com IA pendente: API Key não encontrada em credentials.php.']);
-    exit;
-}
+require_once 'funcoes_ai.php';
 
 // 1. ENGENHARIA DE PROMPT (Contextualização de Negócio para a IA)
 $contexto = "Você é um Consultor de TI Sênior e Analista de Dados especializado em Gestão de Ativos.\n\n";
@@ -60,45 +50,8 @@ if ($res_at && $res_at->num_rows > 0) {
 // Define o objetivo final do prompt
 $prompt = $contexto . "\n\nCom base nestes indicadores de infraestrutura, elabore um sumário executivo sobre a 'Saúde Operacional' atual. Em seguida, forneça 5 recomendações táticas prioritárias para mitigar falhas e otimizar custos. Adote um tom de consultoria estratégica, use negrito para destacar alertas e seja direto nos planos de ação.";
 
-/**
- * Realiza a comunicação direta com a API do Google Gemini
- */
-function callGeminiInsights($prompt, $apiKey)
-{
-    $model = "gemini-flash-latest"; // Versão otimizada para velocidade e custo
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=" . $apiKey;
-
-    $payload = [
-        'contents' => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
-        'generationConfig' => [
-            'temperature' => 0.6, // Criatividade equilibrada para sugestões práticas
-            'maxOutputTokens' => 1200
-        ]
-    ];
-
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_SSL_VERIFYPEER => false, // Ajustar para true em produção com certificados válidos
-        CURLOPT_TIMEOUT => 30
-    ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($httpCode === 200) {
-        $data = json_decode($response, true);
-        return $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-    }
-    return null;
-}
-
 // Executa a chamada e retorna o resultado em JSON
-$reply = callGeminiInsights($prompt, $GEMINI_API_KEY);
+$reply = callAI($prompt);
 
 if ($reply) {
     echo json_encode(['reply' => $reply]);

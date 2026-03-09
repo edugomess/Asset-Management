@@ -71,8 +71,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
     $wa_ativo = isset($_POST['alertas']['whatsapp']) ? 1 : 0;
     $email_ativo = isset($_POST['alertas']['email']) ? 1 : 0;
-    mysqli_query($conn, "UPDATE configuracoes_alertas SET whatsapp_ativo = $wa_ativo, email_ativo = $email_ativo WHERE id = 1");
+    $ia_ativo = isset($_POST['alertas']['ia_agente']) ? 1 : 0;
+    mysqli_query($conn, "UPDATE configuracoes_alertas SET whatsapp_ativo = $wa_ativo, email_ativo = $email_ativo, ia_agente_ativo = $ia_ativo WHERE id = 1");
     header("Location: configuracoes.php?msg=success");
+    exit();
+}
+
+// === PROCESSAMENTO DE IA: Ativa/Desativa o Agente de IA ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ia_config'])) {
+    $ia_ativo = isset($_POST['ia_agente_ativo']) ? 1 : 0;
+    mysqli_query($conn, "UPDATE configuracoes_alertas SET ia_agente_ativo = $ia_ativo WHERE id = 1");
+    header("Location: configuracoes.php?msg=ia_success");
     exit();
 }
 
@@ -583,7 +592,7 @@ function getHoursAndMinutes($total_minutes)
                                                             class="fab fa-whatsapp fa-lg mr-2"></i> Canal: WhatsApp</h6>
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="alertWhatsApp" name="alertas[whatsapp]" value="1" <?php echo ($alert_config['whatsapp_ativo'] == 1) ? 'checked' : ''; ?>>
+                                                            id="alertWhatsApp" name="alertas[whatsapp]" value="1" <?php echo (($alert_config['whatsapp_ativo'] ?? 0) == 1) ? 'checked' : ''; ?>>
                                                         <label class="custom-control-label" for="alertWhatsApp"></label>
                                                     </div>
                                                 </div>
@@ -652,7 +661,7 @@ function getHoursAndMinutes($total_minutes)
                                                             class="fas fa-envelope fa-lg mr-2"></i> Canal: E-mail</h6>
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" class="custom-control-input"
-                                                            id="alertEmail" name="alertas[email]" value="1" <?php echo ($alert_config['email_ativo'] == 1) ? 'checked' : ''; ?>>
+                                                            id="alertEmail" name="alertas[email]" value="1" <?php echo (($alert_config['email_ativo'] ?? 0) == 1) ? 'checked' : ''; ?>>
                                                         <label class="custom-control-label" for="alertEmail"></label>
                                                     </div>
                                                 </div>
@@ -807,6 +816,43 @@ function getHoursAndMinutes($total_minutes)
                                 <div class="text-right mt-3">
                                     <button type="submit" class="btn btn-primary"
                                         style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- CONFIGURAÇÕES DE IA (STANDALONE) -->
+                    <div class="card shadow mt-4 mb-4" style="border-left: 0.25rem solid #4e73df!important;">
+                        <div class="card-header py-3 bg-white">
+                            <h6 class="text-primary m-0 font-weight-bold">
+                                <i class="fas fa-robot mr-2"></i> Inteligência Artificial (IA)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                <input type="hidden" name="ia_config" value="1">
+                                <div class="row align-items-center">
+                                    <div class="col-md-9 border-right">
+                                        <p class="mb-0 text-muted">Habilitar ou desabilitar o Agente de IA em todo o
+                                            sistema. Quando desativado, o chat e outros recursos de IA ficarão
+                                            indisponíveis para todos os usuários.</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="iaAgenteAtivoBottom"
+                                                name="ia_agente_ativo" value="1" <?php echo ($alert_config['ia_agente_ativo'] ?? 1) ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label font-weight-bold"
+                                                for="iaAgenteAtivoBottom" style="cursor: pointer; font-size: 1.1rem;">
+                                                <?php echo ($alert_config['ia_agente_ativo'] ?? 1) ? 'Ativo' : 'Inativo'; ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);">
+                                        <i class="fas fa-save mr-2"></i> Salvar Configuração de IA
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -1149,8 +1195,7 @@ function getHoursAndMinutes($total_minutes)
             });
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
-            updateSLABars(); // Initial call
-        });
+            updateSLABars(); // Initial call     });
     </script>
     </div>
 

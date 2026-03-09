@@ -714,20 +714,27 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
         // Finaliza o status de manutenção do ativo
         function releaseFromMaintenance(id) {
-        });
-        }
-
-        function unassignUser(id) {
-            if (!confirm('Desatribuir usuário?')) return;
-            fetch('unassign_asset.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_asset: id
-                })
-            }).then(() => location.reload());
+            Swal.fire({
+                title: 'Finalizar Manutenção?',
+                text: "O ativo voltará a ficar disponível e o registro de manutenção será encerrado.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, finalizar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('ajax_ativos.php', {
+                        action: 'release_maintenance',
+                        id_asset: id
+                    }, function (res) {
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            Swal.fire('Erro', res.message || 'Erro ao liberar manutenção', 'error');
+                        }
+                    }, 'json');
+                }
+            });
         }
 
         function searchUsers() {

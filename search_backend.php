@@ -28,14 +28,19 @@ if ($res_users) {
 }
 
 // 2. Search Assets (Ativos - 'ativos' table)
-// Correct columns: modelo, tag, hostName (from cadastro_de_equipamentos.php)
-$sql_assets = "SELECT id_asset, modelo, tag, hostName FROM ativos WHERE modelo LIKE '$search' OR tag LIKE '$search' OR hostName LIKE '$search' LIMIT 5";
+// Correct columns: modelo, tag, hostName, categoria (from cadastro_de_equipamentos.php)
+$sql_assets = "SELECT id_asset, modelo, tag, hostName, categoria FROM ativos 
+               WHERE modelo LIKE '$search' 
+                  OR tag LIKE '$search' 
+                  OR hostName LIKE '$search' 
+                  OR categoria LIKE '$search' 
+               LIMIT 5";
 $res_assets = mysqli_query($conn, $sql_assets);
 if ($res_assets) {
     while ($row = mysqli_fetch_assoc($res_assets)) {
         $results[] = [
             'category' => 'Ativos',
-            'label' => $row['modelo'] . ' - Tag: ' . $row['tag'],
+            'label' => $row['modelo'] . ' - Tag: ' . $row['tag'] . ' (' . $row['categoria'] . ')',
             'url' => 'equipamentos.php?search=' . urlencode($row['tag']),
             'type' => 'asset'
         ];

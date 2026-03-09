@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE LISTA DE FORNECEDORES: relatorio_fornecedores_lista.php
+ * Exibe os dados de contato e serviços dos parceiros comerciais cadastrados.
+ */
 require('ReportGenerator.php');
 
 $columns = [

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS SEM CENTRO DE CUSTO: relatorio_ativos_sem_cc.php
+ * Identifica equipamentos que ainda não foram vinculados a uma unidade financeira.
+ */
 require('ReportGenerator.php');
 
 $columns = [

@@ -65,7 +65,7 @@ $prompt = $contexto . "\n\nCom base nestes indicadores de infraestrutura, elabor
  */
 function callGeminiInsights($prompt, $apiKey)
 {
-    $model = "gemini-1.5-flash"; // Versão otimizada para velocidade e custo
+    $model = "gemini-flash-latest"; // Versão otimizada para velocidade e custo
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=" . $apiKey;
 
     $payload = [

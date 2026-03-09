@@ -1,9 +1,10 @@
 <?php
 /**
- * NOVO CHAMADO: cadastro_de_chamados.php
- * Formulário para abertura de tickets de suporte com upload de evidências e envio via AJAX.
+ * ABERTURA DE CHAMADOS: cadastro_de_chamados.php
+ * Interface para usuários e técnicos registrarem novos tickets de suporte.
+ * Inclui campos para título, categoria, solicitante, prioridade e anexos.
  */
-include 'auth.php';
+include 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
@@ -181,7 +182,7 @@ include 'auth.php';
                                 <select class="form-control" name="usuario_id" required="">
                                     <optgroup label="Selecione o Solicitante">
                                         <?php
-
+                                        // SOLICITANTES: Lista todos os usuários cadastrados para seleção no chamado
                                         include_once 'conexao.php';
                                         $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
                                         $result = $conn->query($sql);

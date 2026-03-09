@@ -1,12 +1,13 @@
 <?php
 /**
- * CADASTRO DE LICENÇA: cadastro_de_licenca.php
- * Script para registro de softwares, controle de seats (vagas), valores e expiração.
+ * CADASTRO DE LICENÇAS: cadastro_de_licenca.php
+ * Interface para gestão de ativos de software e compliance.
+ * Controla fabricante, tipo de licença ( vitalícia/assinatura), seats e expiração.
  */
-include 'auth.php';    // Validação de sessão
-include 'conexao.php'; // Conectividade
+include 'auth.php';    // Segurança
+include 'conexao.php'; // Dados
 
-// CONSULTA DE APOIO: Busca Centros de Custo para vincular à licença
+// AUXILIAR: Carrega centros de custo para faturamento da licença
 $sql_cc = "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
 $result_cc = mysqli_query($conn, $sql_cc);
 ?>

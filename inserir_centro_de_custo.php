@@ -1,4 +1,8 @@
 <?php
+/**
+ * PROCESSADOR DE CENTRO DE CUSTO: inserir_centro_de_custo.php
+ * Cria novos setores/centros de custo para organização financeira e de ativos.
+ */
 include 'conexao.php';
 
 $nomeSetor = $_POST['nomeSetor'];

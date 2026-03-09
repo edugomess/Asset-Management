@@ -1,4 +1,8 @@
 <?php
+/**
+ * PROCESSADOR DE FORNECEDOR: inserir_fornecedor.php
+ * Salva os dados cadastrais de novas empresas parceiras e redireciona para a listagem.
+ */
 include 'conexao.php';
 
 

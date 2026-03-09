@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE USUÁRIOS: relatorio_usuario.php
+ * Cadastro geral de colaboradores com acesso ao sistema ou ativos vinculados.
+ */
 require('ReportGenerator.php');
 
 $columns = [

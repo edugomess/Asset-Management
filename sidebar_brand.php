@@ -1,4 +1,11 @@
-<a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="/index.php">
+<?php
+/**
+ * MARCA DA SIDEBAR: sidebar_brand.php
+ * Define o logotipo e o nome exibidos no topo do menu lateral.
+ */
+?>
+<!-- Sidebar Brand -->
+<a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="index.php">
     <div class="sidebar-brand-icon rotate-n-15">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2"
             stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"

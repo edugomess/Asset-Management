@@ -1,4 +1,8 @@
 <?php
+/**
+ * GESTÃO DE CENTROS DE CUSTO: centro_de_custo.php
+ * Visualização e administração das unidades de negócio e setores da organização.
+ */
 include 'auth.php';
 include 'conexao.php';
 

@@ -1,4 +1,8 @@
 <?php
+/**
+ * GESTÃO DE USUÁRIOS: usuarios.php
+ * Controle de níveis de acesso, perfis e dados cadastrais dos colaboradores.
+ */
 // Inclui os arquivos de autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';
@@ -119,22 +123,6 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <!-- Formulário de Filtros: Centro de Custo e Busca Textual -->
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">
-                                                <select name="cc_filter"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    onchange="this.form.submit()"
-                                                    aria-label="Filtrar por Centro de Custo">
-                                                    <option value="">Centro de Custo (Todos)</option>
-                                                    <?php
-                                                    // Busca os centros de custo únicos para o filtro
-                                                    $res_cc_filter = mysqli_query($conn, "SELECT DISTINCT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC");
-                                                    while ($cc_row = mysqli_fetch_assoc($res_cc_filter)) {
-                                                        $selected = (isset($_GET['cc_filter']) && $_GET['cc_filter'] == $cc_row['nomeSetor']) ? 'selected' : '';
-                                                        echo "<option value='" . htmlspecialchars($cc_row['nomeSetor']) . "' $selected>" . htmlspecialchars($cc_row['nomeSetor']) . "</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-                                            <div class="form-group mr-2">
                                                 <input type="search" name="search"
                                                     class="form-control form-control-sm premium-filter"
                                                     placeholder="Buscar..."
@@ -149,18 +137,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <?php
                                 // Configuração de Paginação
                                 $results_per_page = 10; // Resultados por página
-
+                                
                                 // Sanitização dos parâmetros de busca
                                 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-                                $cc_filter = isset($_GET['cc_filter']) ? mysqli_real_escape_string($conn, $_GET['cc_filter']) : '';
 
                                 $where_clauses = [];
                                 // Aplica filtros se existirem
                                 if (!empty($search)) {
                                     $where_clauses[] = "(nome LIKE '%$search%' OR sobrenome LIKE '%$search%' OR email LIKE '%$search%' OR usuarioAD LIKE '%$search%')";
-                                }
-                                if (!empty($cc_filter)) {
-                                    $where_clauses[] = "centroDeCusto = '$cc_filter'";
                                 }
 
                                 $where_clause = count($where_clauses) > 0 ? "WHERE " . implode(" AND ", $where_clauses) : "";
@@ -199,9 +183,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 $foto = !empty($row['foto_perfil']) ? htmlspecialchars($row['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg';
                                                 ?>
-                                                <tr class="clickable-row" onclick="window.location='profile.php?id=<?php echo $row['id_usuarios']; ?>'">
+                                                <tr class="clickable-row"
+                                                    onclick="window.location='profile.php?id=<?php echo $row['id_usuarios']; ?>'">
                                                     <td class="d-flex align-items-center">
-                                                        <img src="<?php echo $foto; ?>" class="user-thumbnail" alt="Foto de <?php echo htmlspecialchars($row['nome']); ?>">
+                                                        <img src="<?php echo $foto; ?>" class="user-thumbnail"
+                                                            alt="Foto de <?php echo htmlspecialchars($row['nome']); ?>">
                                                         <?php echo htmlspecialchars($row['usuarioAD']); ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
@@ -209,16 +195,21 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo htmlspecialchars($row['funcao']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['unidade']); ?></td>
                                                     <td>
-                                                        <span class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>">
+                                                        <span
+                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>">
                                                             <?php echo htmlspecialchars($row['status']); ?>
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <!-- Ações de Edição e Exclusão -->
-                                                        <a class="btn btn-warning" href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>" title="Editar Usuário" onclick="event.stopPropagation();">
+                                                        <a class="btn btn-warning"
+                                                            href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
+                                                            title="Editar Usuário" onclick="event.stopPropagation();">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a class="btn btn-danger" href="apagar_usuario.php?id=<?php echo $row['id_usuarios']; ?>" title="Excluir Usuário" onclick="event.stopPropagation();">
+                                                        <a class="btn btn-danger"
+                                                            href="apagar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
+                                                            title="Excluir Usuário" onclick="event.stopPropagation();">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>
@@ -239,25 +230,24 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <ul class="pagination-custom">
                                     <?php
                                     $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
-                                    $cc_param = !empty($cc_filter) ? "&cc_filter=" . urlencode($cc_filter) : "";
-                                    
+
                                     // Botão Anterior
                                     if ($current_page > 1) {
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param$cc_param'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
                                     }
-                                    
+
                                     // Números das Páginas
                                     for ($page = 1; $page <= $total_pages; $page++) {
                                         if ($page == $current_page) {
                                             echo "<li class='active'><span>$page</span></li>";
                                         } else {
-                                            echo "<li><a href='?page=$page$search_param$cc_param'>$page</a></li>";
+                                            echo "<li><a href='?page=$page$search_param'>$page</a></li>";
                                         }
                                     }
-                                    
+
                                     // Botão Próximo
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param$cc_param'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
                                     }
                                     ?>
                                 </ul>
@@ -284,5 +274,6 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
 </body>
+
 </html>
 <?php mysqli_close($conn); // Fecha a conexão com o banco de dados ?>

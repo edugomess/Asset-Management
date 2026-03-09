@@ -1,9 +1,10 @@
 <?php
 /**
- * CADASTRO DE FORNECEDOR: cadastro_de_fornecedor.php
- * Formulário para registro de novas empresas parceiras e prestadores de serviço.
+ * CADASTRO DE FORNECEDORES: cadastro_de_fornecedor.php
+ * Interface para registro de parceiros de negócios e prestadores de serviços técnicos.
+ * Armazena dados de contato, CNPJ e especialidade de serviço.
  */
-include 'auth.php';
+include 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE ATIVOS POR STATUS: relatorio_ativos_status.php
+ * Agrupamento de equipamentos por estado operacional (Em uso, Disponível, Manutenção, etc).
+ */
 require('fpdf/fpdf.php');
 include 'conexao.php';
 

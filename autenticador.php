@@ -1,8 +1,7 @@
 <?php
 /**
  * PROCESSADOR DE LOGIN: autenticador.php
- * Script responsável por receber as credenciais via POST, validar no banco de dados
- * e inicializar a sessão segura do usuário.
+ * Recebe as credenciais do formulário de login, valida contra o banco e inicia a sessão.
  */
 session_start();
 include 'conexao.php'; // Conexão com o banco

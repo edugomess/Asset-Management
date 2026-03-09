@@ -1,3 +1,9 @@
+<?php
+/**
+ * PÁGINA DE ACESSO: login.php
+ * Interface de autenticação e processamento de credenciais dos usuários.
+ */
+?>
 <!DOCTYPE html>
 <html lang="pt-br"> <!-- Define o idioma como português do Brasil -->
 

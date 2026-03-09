@@ -1,4 +1,8 @@
 <?php
+/**
+ * PROCESSADOR DE USUÁRIOS: inserir_usuario.php
+ * Realiza o cadastro de novos usuários, criptografando a senha em SHA1 e tratando a foto de perfil.
+ */
 include 'conexao.php';
 
 $nome = $_POST['nome'];

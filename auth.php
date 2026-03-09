@@ -1,8 +1,7 @@
 <?php
 /**
- * NÚCLEO DE AUTENTICAÇÃO E SESSÃO: auth.php
- * Este arquivo controla a segurança de acesso, expiração por inatividade e 
- * carregamento de dados do perfil do usuário em todas as páginas do sistema.
+ * CONTROLE DE SESSÃO: auth.php
+ * Validação de login, permissões de usuário e gerenciamento de timeout por inatividade.
  */
 
 if (session_status() === PHP_SESSION_NONE) {

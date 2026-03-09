@@ -1,4 +1,8 @@
 <?php
+/**
+ * PROCESSADOR DE ATIVOS: inserir_equipamento.php
+ * Executa a inserção de novos equipamentos no inventário, tratando o upload da imagem do ativo.
+ */
 include 'conexao.php';
 session_start();
 

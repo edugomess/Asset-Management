@@ -1,9 +1,10 @@
 <?php
 /**
  * CADASTRO DE CENTRO DE CUSTO: cadastro_de centro_de_custo.php
- * Define os setores e unidades para alocação financeira e organizacional de ativos.
+ * Interface para criação de novos centros de custo (setores/unidades).
+ * Permite definir nome, código, ramal, unidade física e gestor responsável.
  */
-include 'auth.php';
+include 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -194,25 +195,23 @@ include 'auth.php';
                                     <optgroup label="Unidade">
                                         <<option value="FLMA" selected="">
                                             </option>
-                                            <?php
-                                            // Carrega as unidades cadastradas no banco para popular o select dinamicamente
+                                            // LISTAGEM DINÂMICA: Carrega as unidades disponíveis para o seletor
                                             include 'conexao.php';
 
-                                            // Verifica a saúde da conexão antes de prosseguir
                                             if ($conn->connect_error) {
-                                                die("Conexão falhou: " . $conn->connect_error);
+                                            die("Conexão falhou: " . $conn->connect_error);
                                             }
 
                                             $sql = "SELECT unidade FROM unidade";
                                             $result = $conn->query($sql);
 
                                             if ($result->num_rows > 0) {
-                                                // Saída dos dados de cada linha
-                                                while ($row = $result->fetch_assoc()) {
-                                                    echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '</option>';
-                                                }
+                                            while ($row = $result->fetch_assoc()) {
+                                            echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '
+                                            </option>';
+                                            }
                                             } else {
-                                                echo '<option value="">Nenhuma unidade encontrada</option>';
+                                            echo '<option value="">Nenhuma unidade encontrada</option>';
                                             }
                                             $conn->close();
                                             ?>

@@ -1,9 +1,10 @@
 <?php
 /**
- * CADASTRO DE EQUIPAMENTO: cadastro_de_equipamentos.php
- * Interface para registro de novos ativos de TI (Notebooks, Desktops, etc) com suporte a imagem.
+ * CADASTRO DE EQUIPAMENTOS: cadastro_de_equipamentos.php
+ * Interface para inclusão de novos itens ao inventário de hardware.
+ * Captura dados técnicos (MAC, Tags), financeiros (Valor) e organizacionais (Centro de Custo).
  */
-include 'auth.php';
+include 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
 <html style="margin: 0px, 0px, 0px;margin-bottom: 0px;margin-top: 0px;">
@@ -270,23 +271,22 @@ include 'auth.php';
                                 value="<?php echo date('Y-m-d'); ?>" readonly>
                         </div>
 
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label>Centro de Custo</label>
-                                <?php include_once 'conexao.php'; ?>
-                                <select class="form-control" name="centroDeCusto">
-                                    <option value="Nenhum">Nenhum</option>
-                                    <?php
-                                    $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
-                                    $res_cc = $conn->query($sql_cc);
-                                    if ($res_cc && $res_cc->num_rows > 0) {
-                                        while ($row_cc = $res_cc->fetch_assoc()) {
-                                            echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
+                        <?php
+                        // CENTROS DE CUSTO: Lista os setores para alocação do equipamento
+                        include_once 'conexao.php';
+                        ?>
+                        <select class="form-control" name="centroDeCusto">
+                            <option value="Nenhum">Nenhum</option>
+                            <?php
+                            $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                            $res_cc = $conn->query($sql_cc);
+                            if ($res_cc && $res_cc->num_rows > 0) {
+                                while ($row_cc = $res_cc->fetch_assoc()) {
+                                    echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>
                     </div><!-- End: 3-column form row -->
                     <!-- Start: 3-column form row -->
                     <div class="form-row mt-4">

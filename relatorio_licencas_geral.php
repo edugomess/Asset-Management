@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO GERAL DE LICENÇAS: relatorio_licencas_geral.php
+ * Visão consolidada do software em uso, total de licenças e datas de expiração.
+ */
 require('ReportGenerator.php');
 
 $columns = [

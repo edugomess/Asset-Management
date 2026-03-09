@@ -1,4 +1,8 @@
 <?php
+/**
+ * GESTÃO DE FORNECEDORES: fornecedores.php
+ * Cadastro e manutenção de parceiros comerciais e prestadores de suporte técnico.
+ */
 // Inclui os arquivos de autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';

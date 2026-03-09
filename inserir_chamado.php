@@ -1,11 +1,9 @@
 <?php
 /**
- * ABERTURA DE CHAMADOS: inserir_chamado.php
- * Cria novos tíquetes de suporte, processa uploads de evidências (anexos)
- * e dispara notificações automáticas para a equipe técnica.
+ * PROCESSADOR DE CHAMADOS: inserir_chamado.php
+ * Recebe os dados do formulário de novo chamado, processa o upload de anexo e salva no banco.
  */
-include 'auth.php';
-include_once 'conexao.php';
+include 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Escapar strings para evitar SQL Injection

@@ -1,4 +1,8 @@
 <?php
+/**
+ * RELATÓRIO DE MANUTENÇÕES ATIVAS: relatorio_manutencao_atual.php
+ * Lista todos os ativos que estão atualmente em processo de reparo ou manutenção.
+ */
 require('ReportGenerator.php');
 
 $columns = [

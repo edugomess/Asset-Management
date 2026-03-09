@@ -1,10 +1,8 @@
 <?php
 /**
- * CADASTRO DE LICENÇAS: inserir_licenca.php
- * Registra novas licenças de software, vinculando-as a fabricantes,
- * tipos, custos e centros de custo responsáveis.
+ * PROCESSADOR DE LICENÇAS: inserir_licenca.php
+ * Registra novas licenças de software no sistema, vinculando-as a fornecedores e datas de validade.
  */
-include 'auth.php';
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

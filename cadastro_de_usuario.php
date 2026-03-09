@@ -1,12 +1,13 @@
 <?php
 /**
- * CADASTRO DE USUÁRIO: cadastro_de_usuario.php
- * Central de criação de novos usuários, com validação de CPF, upload de foto e níveis de acesso.
+ * GESTÃO DE USUÁRIOS: cadastro_de_usuario.php
+ * Interface administrativa para criação de novos acessos ao sistema Asset MGT.
+ * Define níveis de permissão (Admin, Suporte, Usuário) e dados contratuais.
  */
-include 'auth.php';    // Segurança de acesso
+include 'auth.php';    // Validação de autoridade
 include 'conexao.php'; // Banco de Dados
 
-// LÓGICA DE MATRÍCULA: Descobre o próximo ID auto-incremento para sugerir como matrícula
+// LÓGICA DE MATRÍCULA: Sugere o próximo ID disponível como matrícula provisória
 $sql_id = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$dbname' AND TABLE_NAME = 'usuarios'";
 $res_id = $conn->query($sql_id);
 $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
@@ -257,6 +258,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <select class="form-control" name="centroDeCusto">
                                     <option value="Nenhum">Nenhum</option>
                                     <?php
+                                    // CENTROS DE CUSTO: Permite vincular o usuário à sua unidade orçamentária
                                     include_once 'conexao.php';
                                     $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                     $res_cc = $conn->query($sql_cc);

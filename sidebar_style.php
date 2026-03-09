@@ -24,6 +24,7 @@
         border-right: 0px solid rgba(255, 255, 255, 0.05);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         z-index: 1050;
+        min-height: 100vh !important;
     }
 
     .sidebar-brand {
@@ -67,6 +68,7 @@
         align-items: center !important;
         border: 1px solid transparent !important;
         overflow: hidden;
+        white-space: nowrap !important;
     }
 
     .nav-link i {
@@ -139,6 +141,7 @@
     .sidebar-divider {
         border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
         margin: 1.25rem 1.2rem 0.25rem !important;
+        width: calc(100% - 2.4rem);
     }
 
     /* Global Table Fixes - Optimized for Asset Management */

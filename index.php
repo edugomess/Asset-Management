@@ -1,8 +1,9 @@
 <?php
 /**
- * DASHBOARD PRINCIPAL: index.php
- * Esta página consolida as principais métricas de chamados, ativos e inventário.
+ * TELA DE LOGIN: index.php
+ * Ponto de entrada do sistema. Gerencia a autenticação inicial e redirecionamento de sessão.
  */
+session_start();
 include_once 'auth.php';     // Validação de segurança obrigatória
 include_once 'conexao.php';  // Conexão com a base de dados
 

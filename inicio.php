@@ -1,9 +1,10 @@
 <?php
 /**
- * CONSOLE OPERACIONAL (VISÃO ADMIN): inicio.php
- * Página restrita para técnicos e administradores gerenciarem a distribuição de ativos.
+ * PAINEL DE CONTROLE: inicio.php
+ * Página inicial após login, exibindo resumos estatísticos e indicadores de performance (KPIs).
  */
-include 'auth.php';    // Validação de sessão
+include 'auth.php';
+// Validação de sessão
 include 'conexao.php'; // Conexão com banco
 
 // SEGURANÇA: Bloqueia acesso de 'Usuário' comum, redirecionando para o dashboard pessoal

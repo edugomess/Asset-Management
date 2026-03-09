@@ -1,4 +1,8 @@
 <?php
+/**
+ * DETALHES DO ATIVO: detalhes_do_equipamento.php
+ * Exibição aprofundada de um equipamento, incluindo histórico, depreciação e doação.
+ */
 // Inclui o arquivo de autenticação para garantir que o usuário esteja logado
 include_once 'auth.php';
 ?>
@@ -14,7 +18,11 @@ include_once 'auth.php';
     // Obtém o ID do ativo via parâmetro GET
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    if (mysqli_num_rows($result_ativo) > 0) {
+    // Busca os dados do ativo
+    $sql_ativo = "SELECT * FROM ativos WHERE id_asset = $id";
+    $result_ativo = mysqli_query($conn, $sql_ativo);
+
+    if ($result_ativo && mysqli_num_rows($result_ativo) > 0) {
         $ativo = mysqli_fetch_assoc($result_ativo);
 
         // Configurações padrão de depreciação (caso não existam no banco)

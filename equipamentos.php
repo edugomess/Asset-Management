@@ -1,4 +1,8 @@
 <?php
+/**
+ * INVENTÁRIO DE ATIVOS: equipamentos.php
+ * Listagem principal para gestão, filtragem e acompanhamento de todo o hardware da empresa.
+ */
 // Inclui os arquivos de autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';
@@ -289,9 +293,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     </div>
 
                     <h3 class="text-dark mb-4">
-                        <?php 
+                        <?php
                         // Define o título da página com base no filtro de status
-                        echo (isset($_GET['status']) && $_GET['status'] === 'Manutencao') ? 'Ativos em Manutenção' : 'Ativos'; 
+                        echo (isset($_GET['status']) && $_GET['status'] === 'Manutencao') ? 'Ativos em Manutenção' : 'Ativos';
                         ?>
                     </h3>
 
@@ -300,10 +304,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             <div class="row">
                                 <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div class="dataTables_length">
-                                        <?php 
+                                        <?php
                                         // Exibe o botão de cadastro apenas se não estivermos na visualização de manutenção
-                                        if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')): 
-                                        ?>
+                                        if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')):
+                                            ?>
                                             <a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                                 role="button"
                                                 style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
@@ -431,7 +435,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     $valor_atual = $valor_original;
                                                 }
                                                 ?>
-                                                <tr class="clickable-row" onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
+                                                <tr class="clickable-row"
+                                                    onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         // Exibe miniatura da foto do ativo ou ícone padrão
@@ -457,7 +462,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
                                                         </span>
                                                         <br>
-                                                        <small class="text-muted">(Original: R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
+                                                        <small class="text-muted">(Original: R$
+                                                            <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
@@ -473,14 +479,17 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações';
                                                             $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
                                                             ?>
-                                                            <span data-toggle="tooltip" title="<?php echo htmlspecialchars($motivo_completo); ?>" style="cursor: help;">
+                                                            <span data-toggle="tooltip"
+                                                                title="<?php echo htmlspecialchars($motivo_completo); ?>"
+                                                                style="cursor: help;">
                                                                 <?php echo htmlspecialchars($motivo_resumo); ?>
                                                             </span>
                                                         </td>
                                                     <?php endif; ?>
 
                                                     <td>
-                                                        <span class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-maintenance-system' : 'badge-danger'); ?>">
+                                                        <span
+                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-maintenance-system' : 'badge-danger'); ?>">
                                                             <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
                                                         </span>
                                                     </td>
@@ -489,23 +498,31 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         <div class="d-flex align-items-center">
                                                             <?php if (!$row['em_manutencao']): ?>
                                                                 <?php if ($assigned_to): ?>
-                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2' title="Desatribuir"
-                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Liberar <i class='fas fa-user-minus'></i></button>
+                                                                    <button class='btn btn-dark btn-tamanho-fixo mr-2'
+                                                                        title="Desatribuir"
+                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Liberar
+                                                                        <i class='fas fa-user-minus'></i></button>
                                                                 <?php else: ?>
                                                                     <button class='btn btn-info btn-tamanho-fixo mr-2' title="Atribuir"
-                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir <i class='fas fa-user-plus'></i></button>
+                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                        <i class='fas fa-user-plus'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
-                                                            <a class='btn btn-warning btn-edit mr-2' href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
-                                                                title="Editar" onclick="event.stopPropagation();"><i class='fas fa-edit'></i></a>
+                                                            <a class='btn btn-warning btn-edit mr-2'
+                                                                href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
+                                                                title="Editar" onclick="event.stopPropagation();"><i
+                                                                    class='fas fa-edit'></i></a>
 
                                                             <?php if ($row['em_manutencao']): ?>
                                                                 <button class="btn btn-success btn-edit" title="Liberar Manutenção"
-                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"><i class="fas fa-check-circle"></i></button>
+                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"><i
+                                                                        class="fas fa-check-circle"></i></button>
                                                             <?php else: ?>
-                                                                <button class="btn btn-maintenance-system btn-edit" title="Enviar para Manutenção"
-                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"><i class="fas fa-tools"></i></button>
+                                                                <button class="btn btn-maintenance-system btn-edit"
+                                                                    title="Enviar para Manutenção"
+                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"><i
+                                                                        class="fas fa-tools"></i></button>
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
@@ -546,81 +563,80 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             </div>
                         </div>
                     </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            <!-- Modal para Atribuir Ativo a um Usuário -->
-            <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="assignModalLabel">Atribuir Ativo</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form id="assignForm">
-                            <div class="modal-body">
-                                <input type="hidden" id="assign_asset_id" name="id_asset">
-                                <div class="form-group">
-                                    <label for="select_user_assign">Selecionar Usuário</label>
-                                    <select class="form-control" id="select_user_assign" name="id_usuario" required aria-label="Selecionar usuário para atribuição">
-                                        <option value="">Selecione...</option>
-                                        <?php
-                                        // Busca apenas usuários ativos para atribuição
-                                        $users_res = mysqli_query($conn, "SELECT id_usuarios, nome FROM usuarios WHERE status = 'Ativo' ORDER BY nome");
-                                        while($u = mysqli_fetch_assoc($users_res)) {
-                                            echo "<option value='".$u['id_usuarios']."'>".htmlspecialchars($u['nome'])."</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Atribuir</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal para Enviar Ativo para Manutenção -->
-            <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="maintenanceModalLabel">Enviar para Manutenção</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form id="maintenanceForm">
-                            <div class="modal-body">
-                                <input type="hidden" id="maintenance_asset_id" name="id_asset">
-                                <div class="form-group">
-                                    <label for="maintenance_obs">Observações / Motivo</label>
-                                    <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="3" required aria-label="Observações sobre a manutenção"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-maintenance-system">Confirmar Manutenção</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <footer class="bg-white sticky-footer">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"><span>Copyright © Asset Management 2025</span></div>
-                </div>
-            </footer>
         </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+
+    <!-- Modal para Atribuir Ativo a um Usuário -->
+    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignModalLabel">Atribuir Ativo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="assignForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="assign_asset_id" name="id_asset">
+                        <div class="form-group">
+                            <label for="select_user_assign">Selecionar Usuário</label>
+                            <select class="form-control" id="select_user_assign" name="id_usuario" required
+                                aria-label="Selecionar usuário para atribuição">
+                                <option value="">Selecione...</option>
+                                <?php
+                                // Busca apenas usuários ativos para atribuição
+                                $users_res = mysqli_query($conn, "SELECT id_usuarios, nome FROM usuarios WHERE status = 'Ativo' ORDER BY nome");
+                                while ($u = mysqli_fetch_assoc($users_res)) {
+                                    echo "<option value='" . $u['id_usuarios'] . "'>" . htmlspecialchars($u['nome']) . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Atribuir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Enviar Ativo para Manutenção -->
+    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="maintenanceModalLabel">Enviar para Manutenção</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="maintenanceForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="maintenance_asset_id" name="id_asset">
+                        <div class="form-group">
+                            <label for="maintenance_obs">Observações / Motivo</label>
+                            <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="3" required
+                                aria-label="Observações sobre a manutenção"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-maintenance-system">Confirmar Manutenção</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
     <!-- Bibliotecas JavaScript (jQuery, Bootstrap, Easing) -->
@@ -641,14 +657,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         }
 
         // Envia os dados para atribuir o usuário
-        $('#assignForm').on('submit', function(e) {
+        $('#assignForm').on('submit', function (e) {
             e.preventDefault();
             $.post('ajax_ativos.php', {
                 action: 'assign',
                 id_asset: $('#assign_asset_id').val(),
                 id_usuario: $('#select_user_assign').val()
-            }, function(res) {
-                if(res.success) {
+            }, function (res) {
+                if (res.success) {
                     location.reload();
                 } else {
                     Swal.fire('Erro', res.message || 'Erro ao atribuir', 'error');
@@ -667,8 +683,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function(res) {
-                        if(res.success) location.reload();
+                    $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function (res) {
+                        if (res.success) location.reload();
                     }, 'json');
                 }
             });
@@ -681,14 +697,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         }
 
         // Envia os dados para colocar o ativo em manutenção
-        $('#maintenanceForm').on('submit', function(e) {
+        $('#maintenanceForm').on('submit', function (e) {
             e.preventDefault();
             $.post('ajax_ativos.php', {
                 action: 'send_to_maintenance',
                 id_asset: $('#maintenance_asset_id').val(),
                 observacoes: $('#maintenance_obs').val()
-            }, function(res) {
-                if(res.success) {
+            }, function (res) {
+                if (res.success) {
                     location.reload();
                 } else {
                     Swal.fire('Erro', res.message || 'Erro ao enviar para manutenção', 'error');
@@ -698,7 +714,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
         // Finaliza o status de manutenção do ativo
         function releaseFromMaintenance(id) {
-                });
+        });
         }
 
         function unassignUser(id) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * GESTÃO DE LICENÇAS: licencas.php
- * Módulo para controle de softwares, chaves de ativação, expiração e atribuição a usuários.
+ * Inventário de softwares, chaves de ativação e controle de vencimentos de assinaturas.
  */
 include 'auth.php';    // Proteção de sessão
 include 'conexao.php'; // Vínculo com banco

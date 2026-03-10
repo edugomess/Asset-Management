@@ -1,7 +1,7 @@
 <?php
 require_once 'credentials.php';
 $GEMINI_API_KEY = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
-$GITHUB_TOKEN = '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'; // Provided by user
+$GITHUB_TOKEN = ''; // Provided by user
 
 function testGemini($model, $apiKey, $version = 'v1beta')
 {

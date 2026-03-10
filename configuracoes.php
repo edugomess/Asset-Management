@@ -86,9 +86,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
 
 
 
-// === PROCESSAMENTO DE IA: Mantém o Agente de IA sempre ativo conforme solicitação ===
+// === PROCESSAMENTO DE IA: Configuração detalhada do Agente de IA ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ia_config'])) {
-    $success = mysqli_query($conn, "UPDATE configuracoes_alertas SET ia_agente_ativo = 1 WHERE id = 1");
+    $ia_chat = isset($_POST['ia_chat_ativo']) ? 1 : 0;
+    $ia_chamados = isset($_POST['ia_chamados_ativo']) ? 1 : 0;
+    $ia_preve = isset($_POST['ia_preve_ativo']) ? 1 : 0;
+
+    $sql = "UPDATE configuracoes_alertas SET 
+            ia_chat_ativo = $ia_chat, 
+            ia_chamados_ativo = $ia_chamados, 
+            ia_preve_ativo = $ia_preve 
+            WHERE id = 1";
+    
+    $success = mysqli_query($conn, $sql);
 
     $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     if ($isAjax) {
@@ -124,7 +134,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
 
 // === PROCESSAMENTO DE ALERTAS: Salva as configurações de canais e tipos de alerta ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
-    file_put_contents('debug_post.txt', print_r($_POST, true));
     $chamados = isset($_POST['chamados_ativo']) ? 1 : 0;
     $manutencao = isset($_POST['manutencao_ativo']) ? 1 : 0;
     $whatsapp = isset($_POST['whatsapp_ativo']) ? 1 : 0;
@@ -1087,8 +1096,8 @@ function getHoursAndMinutes($total_minutes)
                     </div>
 
                     <!-- CONFIGURAÇÕES DE IA (STANDALONE) -->
-                    <div class="card shadow mt-4 mb-4" style="border-left: 0.25rem solid #4e73df!important;">
-                        <div class="card-header py-3 bg-white">
+                    <div class="card shadow mt-4 mb-4">
+                        <div class="card-header py-3">
                             <h6 class="text-primary m-0 font-weight-bold">
                                 <i class="fas fa-robot mr-2"></i> Inteligência Artificial (IA)
                             </h6>
@@ -1096,28 +1105,66 @@ function getHoursAndMinutes($total_minutes)
                         <div class="card-body">
                             <form id="formIA" method="POST">
                                 <input type="hidden" name="ia_config" value="1">
-                                <div class="row align-items-center">
-                                    <div class="col-md-9 border-right">
-                                        <p class="mb-0 text-muted">A Inteligência Artificial (IA) está configurada para
-                                            permanecer <strong>sempre ativa</strong>, garantindo insights e assistência
-                                            contínua em todo o sistema. </p>
+                                <p class="text-muted small mb-4 mt-2">Configure onde o Agente de IA deve atuar no sistema, ativando ou desativando cada módulo de forma independente.</p>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card border-0 bg-light h-100">
+                                            <div class="card-body d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="fas fa-comments text-primary mr-2 fa-lg"></i>
+                                                        <span class="font-weight-bold">Chat Agent</span>
+                                                    </div>
+                                                    <p class="small text-muted mb-3">Permite que usuários conversem com o Agente de IA pelo chat do sistema.</p>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="iaChatAtivo"
+                                                        name="ia_chat_ativo" value="1" <?php echo (($alert_config['ia_chat_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="iaChatAtivo">Ativar no Chat</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3 text-center">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="iaAgenteAtivoBottom"
-                                                name="ia_agente_ativo" value="1" checked disabled>
-                                            <label class="custom-control-label font-weight-bold"
-                                                for="iaAgenteAtivoBottom"
-                                                style="cursor: default; font-size: 1.1rem; opacity: 0.8;">
-                                                Ativo (Permanente)
-                                            </label>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card border-0 bg-light h-100">
+                                            <div class="card-body d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="fas fa-ticket-alt text-info mr-2 fa-lg"></i>
+                                                        <span class="font-weight-bold">Assistente de Chamados</span>
+                                                    </div>
+                                                    <p class="small text-muted mb-3">Exibe sugestões de ação automáticas ao abrir um chamado técnico.</p>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="iaChamadosAtivo"
+                                                        name="ia_chamados_ativo" value="1" <?php echo (($alert_config['ia_chamados_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="iaChamadosAtivo">Ativar nos Chamados</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card border-0 bg-light h-100">
+                                            <div class="card-body d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="fas fa-shield-alt text-success mr-2 fa-lg"></i>
+                                                        <span class="font-weight-bold">Previsão e Prevenção</span>
+                                                    </div>
+                                                    <p class="small text-muted mb-3">Gera consultoria estratégica automática com base nos dados de infraestrutura.</p>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="iaPreveAtivo"
+                                                        name="ia_preve_ativo" value="1" <?php echo (($alert_config['ia_preve_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="iaPreveAtivo">Ativar Prevenções</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-primary btn-save-ajax"
-                                        style="background: rgb(44,64,74);">
+                                <div class="text-right mt-3">
+                                    <button type="submit" class="btn btn-primary"
+                                        style="background: rgb(44,64,74);" id="btnSalvarIA">
                                         <i class="fas fa-save mr-2"></i> Salvar Configuração de IA
                                     </button>
                                 </div>
@@ -1289,7 +1336,8 @@ function getHoursAndMinutes($total_minutes)
 
             $('#formIA').on('submit', function (e) {
                 e.preventDefault();
-                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'IA configurada com sucesso!');
+                var $btn = $('#btnSalvarIA');
+                handleAjaxSave($(this), $btn, '<i class="fas fa-save mr-2"></i> Salvar Configuração de IA', 'IA configurada com sucesso!');
             });
 
             // --- INÍCIO: Lógica de Destinatários de E-mail --- //

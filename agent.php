@@ -6,6 +6,17 @@
  */
 include 'auth.php';
 include 'conexao.php';
+
+// Buscar configuração de ativação do chat
+$chat_ativo = true;
+$sql_config = "SELECT ia_chat_ativo, ia_agente_ativo FROM configuracoes_alertas LIMIT 1";
+$res_config = mysqli_query($conn, $sql_config);
+if ($res_config && mysqli_num_rows($res_config) > 0) {
+    $row_config = mysqli_fetch_assoc($res_config);
+    if (($row_config['ia_chat_ativo'] ?? 1) == 0 || ($row_config['ia_agente_ativo'] ?? 1) == 0) {
+        $chat_ativo = false;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -216,43 +227,54 @@ include 'conexao.php';
                             </button>
                         </div>
                         <div class="card-body">
-                            <div id="chat-history" class="chat-container mb-3">
-                                <div class="chat-message message-bot">
-                                    <div class="message-content">
-                                        Olá,
-                                        <strong><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></strong>! Eu
-                                        sou o assistente virtual do sistema. Posso ajudar com informações sobre ativos,
-                                        chamados ou tirar dúvidas. Como posso ajudar hoje?
+                            <?php if (!$chat_ativo): ?>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-comment-slash fa-4x text-gray-300 mb-4"></i>
+                                    <h5 class="text-secondary">O Chat por IA está desativado</h5>
+                                    <p class="text-muted">Esta funcionalidade foi desabilitada nas configurações do sistema pelo administrador.</p>
+                                    <a href="configuracoes.php" class="btn btn-primary btn-sm mt-3" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-cogs mr-1"></i> Ir para Configurações
+                                    </a>
+                                </div>
+                            <?php else: ?>
+                                <div id="chat-history" class="chat-container mb-3">
+                                    <div class="chat-message message-bot">
+                                        <div class="message-content">
+                                            Olá,
+                                            <strong><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></strong>! Eu
+                                            sou o assistente virtual do sistema. Posso ajudar com informações sobre ativos,
+                                            chamados ou tirar dúvidas. Como posso ajudar hoje?
+                                        </div>
+                                        <div class="message-time"><?php echo date('H:i'); ?></div>
                                     </div>
-                                    <div class="message-time"><?php echo date('H:i'); ?></div>
                                 </div>
-                            </div>
-                            <div id="quick-suggestions" class="mb-3 d-flex flex-wrap gap-2">
-                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
-                                    onclick="useSuggestion('Resumo do sistema')">📊 Resumo do sistema</button>
-                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
-                                    onclick="useSuggestion('Quais licenças temos?')">🔑 Licenças atuais</button>
-                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
-                                    onclick="useSuggestion('Ativos em manutenção')">🔧 Em manutenção</button>
-                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
-                                    onclick="useSuggestion('Meus ativos')">📦 Meus ativos</button>
-                                <button class="btn btn-sm btn-outline-info mr-2 mb-2"
-                                    onclick="useSuggestion('Sugira melhorias')">💡 Sugerir melhorias</button>
-                            </div>
-                            <div class="input-group">
-                                <input type="text" id="user-input" class="form-control"
-                                    placeholder="Pergunte qualquer coisa... (ex: 'resumo do sistema', 'sugira melhorias')"
-                                    onkeypress="handleKeyPress(event)"
-                                    style="border-radius: 8px 0 0 8px; border-color: rgba(44,64,74,0.3);">
-                                <div class="input-group-append">
-                                    <button class="btn text-white" type="button" onclick="sendMessage()"
-                                        style="background: rgb(44,64,74); border-radius: 0 8px 8px 0;">Enviar <i
-                                            class="fas fa-paper-plane"></i></button>
+                                <div id="quick-suggestions" class="mb-3 d-flex flex-wrap gap-2">
+                                    <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                        onclick="useSuggestion('Resumo do sistema')">📊 Resumo do sistema</button>
+                                    <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                        onclick="useSuggestion('Quais licenças temos?')">🔑 Licenças atuais</button>
+                                    <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                        onclick="useSuggestion('Ativos em manutenção')">🔧 Em manutenção</button>
+                                    <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                        onclick="useSuggestion('Meus ativos')">📦 Meus ativos</button>
+                                    <button class="btn btn-sm btn-outline-info mr-2 mb-2"
+                                        onclick="useSuggestion('Sugira melhorias')">💡 Sugerir melhorias</button>
                                 </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="input-group">
+                                    <input type="text" id="user-input" class="form-control"
+                                        placeholder="Pergunte qualquer coisa... (ex: 'resumo do sistema', 'sugira melhorias')"
+                                        onkeypress="handleKeyPress(event)"
+                                        style="border-radius: 8px 0 0 8px; border-color: rgba(44,64,74,0.3);">
+                                    <div class="input-group-append">
+                                        <button class="btn text-white" type="button" onclick="sendMessage()"
+                                            style="background: rgb(44,64,74); border-radius: 0 8px 8px 0;">Enviar <i
+                                                class="fas fa-paper-plane"></i></button>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
 
-                            </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

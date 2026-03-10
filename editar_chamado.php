@@ -139,6 +139,17 @@ $sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
 $result_users = $conn->query($sql_users);
 
 $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
+
+// Buscar configurações de IA (Geral e Chamados)
+$sql_config_ia = "SELECT ia_agente_ativo, ia_chamados_ativo FROM configuracoes_alertas LIMIT 1";
+$res_config_ia = mysqli_query($conn, $sql_config_ia);
+$ia_geral_ativo = true;
+$ia_chamados_ativo = true;
+if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
+    $row_ia = mysqli_fetch_assoc($res_config_ia);
+    $ia_geral_ativo = (bool) ($row_ia['ia_agente_ativo'] ?? 1);
+    $ia_chamados_ativo = (bool) ($row_ia['ia_chamados_ativo'] ?? 1);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -211,25 +222,27 @@ $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'
                                 </div>
 
                                 <!-- SUGESTÃO DE IA -->
-                                <div class="form-group mt-3">
-                                    <div class="card bg-light border-left-info shadow-sm">
-                                        <div class="card-body py-2">
-                                            <div class="d-flex align-items-center">
-                                                <div class="mr-3">
-                                                    <i class="fas fa-magic fa-lg text-info"></i>
-                                                </div>
-                                                <div>
-                                                    <div class="small text-info font-weight-bold text-uppercase">
-                                                        Sugestão de Ação (IA)</div>
-                                                    <div id="ai-suggestion-text" class="text-dark small">
-                                                        <span class="spinner-border spinner-border-sm text-info"
-                                                            role="status"></span> Analisando chamado...
+                                <?php if ($ia_geral_ativo && $ia_chamados_ativo): ?>
+                                    <div class="form-group mt-3">
+                                        <div class="card bg-light border-left-info shadow-sm">
+                                            <div class="card-body py-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="mr-3">
+                                                        <i class="fas fa-magic fa-lg text-info"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="small text-info font-weight-bold text-uppercase">
+                                                            Sugestão de Ação (IA)</div>
+                                                        <div id="ai-suggestion-text" class="text-dark small">
+                                                            <span class="spinner-border spinner-border-sm text-info"
+                                                                role="status"></span> Analisando chamado...
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
 
                                 <?php if (!empty($chamado['anexo'])): ?>
                                     <div class="form-group">

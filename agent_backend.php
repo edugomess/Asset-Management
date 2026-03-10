@@ -28,18 +28,22 @@ $message = isset($_POST['message']) ? mb_strtolower(trim($_POST['message'])) : '
 $userId = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 0;
 $userName = isset($_SESSION['nome_usuario']) ? $_SESSION['nome_usuario'] : 'Usuário';
 
-// Pre-check: Verify if AI Agent is globally enabled in settings
-$iaStatusQuery = mysqli_query($conn, "SELECT ia_agente_ativo FROM configuracoes_alertas LIMIT 1");
+// Pre-check: Verify if AI Agent is globally enabled or specific module is enabled
+$iaStatusQuery = mysqli_query($conn, "SELECT ia_agente_ativo, ia_chat_ativo FROM configuracoes_alertas LIMIT 1");
 $iaEnabled = true;
+$chatEnabled = true;
+
 if ($iaStatusQuery && mysqli_num_rows($iaStatusQuery) > 0) {
     $iaRow = mysqli_fetch_assoc($iaStatusQuery);
-    $iaEnabled = (bool) $iaRow['ia_agente_ativo'];
+    $iaEnabled = (bool) ($iaRow['ia_agente_ativo'] ?? 1);
+    $chatEnabled = (bool) ($iaRow['ia_chat_ativo'] ?? 1);
 }
 
-if (!$iaEnabled) {
+if (!$iaEnabled || !$chatEnabled) {
+    $reason = !$iaEnabled ? 'Agente de IA' : 'Chat por IA';
     echo json_encode([
-        'reply' => '⚠️ O Agente de IA está desabilitado no momento. Entre em contato com o administrador para mais informações.',
-        'debug' => ['ai_enabled' => false]
+        'reply' => "⚠️ O $reason está desabilitado no momento. Entre em contato com o administrador para mais informações.",
+        'debug' => ['ai_enabled' => $iaEnabled, 'chat_enabled' => $chatEnabled]
     ]);
     exit;
 }

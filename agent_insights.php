@@ -22,6 +22,22 @@ session_write_close();
 include 'conexao.php';
 require_once 'funcoes_ai.php';
 
+// Verificar se o Agente de IA e a Prevenção estão ativos
+$sql_config = "SELECT ia_agente_ativo, ia_preve_ativo FROM configuracoes_alertas LIMIT 1";
+$res_config = mysqli_query($conn, $sql_config);
+$ia_geral = true;
+$ia_preve = true;
+if ($res_config && mysqli_num_rows($res_config) > 0) {
+    $row = mysqli_fetch_assoc($res_config);
+    $ia_geral = (bool) ($row['ia_agente_ativo'] ?? 1);
+    $ia_preve = (bool) ($row['ia_preve_ativo'] ?? 1);
+}
+
+if (!$ia_geral || !$ia_preve) {
+    echo json_encode(['reply' => '⚠️ O motor de inteligência estratégica está desabilitado no momento.']);
+    exit;
+}
+
 // 1. ENGENHARIA DE PROMPT (Contextualização de Negócio para a IA)
 $contexto = "Você é um Consultor de TI Sênior e Analista de Dados especializado em Gestão de Ativos.\n\n";
 

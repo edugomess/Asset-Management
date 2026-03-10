@@ -14,6 +14,23 @@ require_once 'funcoes_ai.php';
 ob_clean();
 header('Content-Type: application/json');
 
+// Verificar se o Agente de IA e o Assistente de Chamados estão ativos
+$sql_config = "SELECT ia_agente_ativo, ia_chamados_ativo FROM configuracoes_alertas LIMIT 1";
+$res_config = mysqli_query($conn, $sql_config);
+$ia_geral = true;
+$ia_chamados = true;
+if ($res_config && mysqli_num_rows($res_config) > 0) {
+    $row = mysqli_fetch_assoc($res_config);
+    $ia_geral = (bool) ($row['ia_agente_ativo'] ?? 1);
+    $ia_chamados = (bool) ($row['ia_chamados_ativo'] ?? 1);
+}
+
+if (!$ia_geral || !$ia_chamados) {
+    $reason = !$ia_geral ? 'Agente de IA' : 'Assistente de Chamados';
+    echo json_encode(['reply' => "⚠️ O $reason está desabilitado no momento."]);
+    exit;
+}
+
 $titulo = isset($_POST['titulo']) ? $_POST['titulo'] : '';
 $descricao = isset($_POST['descricao']) ? $_POST['descricao'] : '';
 

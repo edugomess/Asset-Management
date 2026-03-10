@@ -3,6 +3,17 @@
 include 'auth.php';
 include 'conexao.php';
 
+// Buscar configurações de IA (Geral e Prevenção)
+$sql_ia = "SELECT ia_agente_ativo, ia_preve_ativo FROM configuracoes_alertas LIMIT 1";
+$res_ia = mysqli_query($conn, $sql_ia);
+$ia_geral_ativo = true;
+$ia_preve_ativo = true;
+if ($res_ia && mysqli_num_rows($res_ia) > 0) {
+    $row_ia = mysqli_fetch_assoc($res_ia);
+    $ia_geral_ativo = (bool) ($row_ia['ia_agente_ativo'] ?? 1);
+    $ia_preve_ativo = (bool) ($row_ia['ia_preve_ativo'] ?? 1);
+}
+
 // 1. ANÁLISE DE RECORRÊNCIA: Identifica incidentes com títulos similares para detectar problemas sistêmicos
 $sql_recorrencia = "SELECT titulo, COUNT(*) as total 
                     FROM chamados 
@@ -231,28 +242,30 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                 </div>
                                 <div class="card-body">
                                     <!-- CONSULTORIA ESTRATÉGICA POR IA -->
-                                    <div class="row mb-5">
-                                        <div class="col-12">
-                                            <div class="card shadow-sm border-left-primary bg-light">
-                                                <div class="card-body">
-                                                    <div class="row align-items-center no-gutters">
-                                                        <div class="col-auto mr-3">
-                                                            <div
-                                                                style="width: 60px; height: 60px; background: rgb(44,64,74); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                                <i class="fas fa-robot fa-2x text-white"></i>
+                                    <?php if ($ia_geral_ativo && $ia_preve_ativo): ?>
+                                        <div class="row mb-5">
+                                            <div class="col-12">
+                                                <div class="card shadow-sm border-left-primary bg-light">
+                                                    <div class="card-body">
+                                                        <div class="row align-items-center no-gutters">
+                                                            <div class="col-auto mr-3">
+                                                                <div
+                                                                    style="width: 60px; height: 60px; background: rgb(44,64,74); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                                    <i class="fas fa-robot fa-2x text-white"></i>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <div
-                                                                class="text-uppercase text-primary font-weight-bold text-xs mb-1">
-                                                                Consultoria Estratégica Automática <span
-                                                                    class="badge badge-primary">Gemini 2.0 AI</span>
-                                                            </div>
-                                                            <div id="ai-analysis-text"
-                                                                class="text-dark mb-0 font-italic">
-                                                                <div class="typing-dots">
-                                                                    <span></span><span></span><span></span> Analisando
-                                                                    dados da infraestrutura em tempo real...
+                                                            <div class="col">
+                                                                <div
+                                                                    class="text-uppercase text-primary font-weight-bold text-xs mb-1">
+                                                                    Consultoria Estratégica Automática <span
+                                                                        class="badge badge-primary">Gemini 2.0 AI</span>
+                                                                </div>
+                                                                <div id="ai-analysis-text"
+                                                                    class="text-dark mb-0 font-italic">
+                                                                    <div class="typing-dots">
+                                                                        <span></span><span></span><span></span> Analisando
+                                                                        dados da infraestrutura em tempo real...
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -260,7 +273,16 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    <?php else: ?>
+                                        <div class="alert alert-info border-left-info shadow-sm mb-5">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-info-circle fa-2x mr-3"></i>
+                                                <div>
+                                                    <strong>Consultoria de IA Desativada:</strong> A análise preditiva estratégica foi desabilitada nas configurações do sistema.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
 
                                     <!-- Sugestões baseadas na base de conhecimento local -->
                                     <div class="row">

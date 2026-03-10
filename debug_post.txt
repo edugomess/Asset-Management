@@ -1,0 +1,13 @@
+Array
+(
+    [config_alertas] => 1
+    [whatsapp_ativo] => 1
+    [whatsapp_recebe_chamados] => 1
+    [whatsapp_recebe_manutencao] => 1
+    [whatsapp_prioridade_alta] => 1
+    [whatsapp_prioridade_media] => 1
+    [whatsapp_tipo_incidente] => 1
+    [whatsapp_tipo_mudanca] => 1
+    [whatsapp_tipo_requisicao] => 1
+    [email_ativo] => 1
+)

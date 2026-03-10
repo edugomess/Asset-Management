@@ -124,6 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
 
 // === PROCESSAMENTO DE ALERTAS: Salva as configurações de canais e tipos de alerta ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
+    file_put_contents('debug_post.txt', print_r($_POST, true));
     $chamados = isset($_POST['chamados_ativo']) ? 1 : 0;
     $manutencao = isset($_POST['manutencao_ativo']) ? 1 : 0;
     $whatsapp = isset($_POST['whatsapp_ativo']) ? 1 : 0;

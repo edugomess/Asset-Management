@@ -98,6 +98,12 @@ switch ($action) {
 
             recordHistory($conn, $id_asset, $admin_id, 'Manutenção', "Enviado para manutenção: $observacoes");
 
+            // ALERTAS (Background - Email e WhatsApp)
+            $php_path = 'c:\xampp\php\php.exe';
+            $script_path = 'c:\xampp\htdocs\processar_alertas.php';
+            $cmd = "start /B $php_path $script_path manutencao $id_asset \"$observacoes\" > NUL 2>&1";
+            pclose(popen($cmd, "r"));
+
             $conn->commit();
             echo json_encode(['success' => true]);
         } catch (Exception $e) {

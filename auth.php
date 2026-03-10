@@ -16,16 +16,16 @@ if (file_exists('conexao.php')) {
 
     // Busca as configurações de expiração customizadas no banco de dados
     $res_config = $conn->query("SELECT idle_timeout_minutos, idle_timeout_admin, idle_timeout_suporte FROM configuracoes_alertas LIMIT 1");
-    $alert_config = $res_config->fetch_assoc();
+    $idle_config = $res_config->fetch_assoc();
 
     // Define o tempo limite dinâmico de acordo com o nível de privilégio do usuário
     $nivel = $_SESSION['nivelUsuario'] ?? 'Usuário';
-    $idle_timeout_minutos = $alert_config['idle_timeout_minutos'] ?? 10;
+    $idle_timeout_minutos = $idle_config['idle_timeout_minutos'] ?? 10;
 
-    if ($nivel === 'Admin' && isset($alert_config['idle_timeout_admin'])) {
-        $idle_timeout_minutos = $alert_config['idle_timeout_admin'];
-    } elseif ($nivel === 'Suporte' && isset($alert_config['idle_timeout_suporte'])) {
-        $idle_timeout_minutos = $alert_config['idle_timeout_suporte'];
+    if ($nivel === 'Admin' && isset($idle_config['idle_timeout_admin'])) {
+        $idle_timeout_minutos = $idle_config['idle_timeout_admin'];
+    } elseif ($nivel === 'Suporte' && isset($idle_config['idle_timeout_suporte'])) {
+        $idle_timeout_minutos = $idle_config['idle_timeout_suporte'];
     }
 
     $idle_timeout = (int) $idle_timeout_minutos * 60; // Converte para segundos para comparação

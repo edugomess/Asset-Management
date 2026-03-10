@@ -72,9 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($conn->query($sql) === TRUE) {
         $last_id = $conn->insert_id;
 
-        // Disparar alerta por e-mail e WhatsApp em segundo plano
-        include_once 'funcoes_email.php';
-        dispararNotificacaoBackground($last_id);
+        // ALERTAS (Background - Email e WhatsApp)
+        $php_path = 'c:\xampp\php\php.exe';
+        $script_path = 'c:\xampp\htdocs\processar_alertas.php';
+        $cmd = "start /B $php_path $script_path chamado $last_id > NUL 2>&1";
+        pclose(popen($cmd, "r"));
+
 
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             header('Content-Type: application/json');

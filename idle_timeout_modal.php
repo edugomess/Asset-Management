@@ -4,14 +4,14 @@ $dynamic_idle_timeout = 600; // Padrão 10 min
 if (file_exists('conexao.php')) {
     include_once 'conexao.php';
     $res_config = $conn->query("SELECT idle_timeout_minutos, idle_timeout_admin, idle_timeout_suporte FROM configuracoes_alertas LIMIT 1");
-    if ($alert_config = $res_config->fetch_assoc()) {
+    if ($idle_config = $res_config->fetch_assoc()) {
         $nivel = $_SESSION['nivelUsuario'] ?? 'Usuário';
-        $timeout_min = $alert_config['idle_timeout_minutos'] ?? 10;
+        $timeout_min = $idle_config['idle_timeout_minutos'] ?? 10;
 
-        if ($nivel === 'Admin' && isset($alert_config['idle_timeout_admin'])) {
-            $timeout_min = $alert_config['idle_timeout_admin'];
-        } elseif ($nivel === 'Suporte' && isset($alert_config['idle_timeout_suporte'])) {
-            $timeout_min = $alert_config['idle_timeout_suporte'];
+        if ($nivel === 'Admin' && isset($idle_config['idle_timeout_admin'])) {
+            $timeout_min = $idle_config['idle_timeout_admin'];
+        } elseif ($nivel === 'Suporte' && isset($idle_config['idle_timeout_suporte'])) {
+            $timeout_min = $idle_config['idle_timeout_suporte'];
         }
 
         $dynamic_idle_timeout = (int) $timeout_min * 60;

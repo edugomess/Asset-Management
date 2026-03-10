@@ -14,18 +14,26 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
 
 // === PROCESSAMENTO DE SLA: Salva ou atualiza os tempos de resposta por categoria ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
+    $success = true;
     foreach ($_POST['sla'] as $category => $time) {
         $category = mysqli_real_escape_string($conn, $category);
         $hours = (int) $time['hours'];
         $minutes = (int) $time['minutes'];
-
         $total_minutes = ($hours * 60) + $minutes;
 
         $sql = "INSERT INTO configuracoes_sla (categoria, tempo_sla_minutos) VALUES ('$category', $total_minutes) 
                 ON DUPLICATE KEY UPDATE tempo_sla_minutos = $total_minutes";
-        mysqli_query($conn, $sql);
+        if (!mysqli_query($conn, $sql)) {
+            $success = false;
+        }
     }
-    header("Location: configuracoes.php?msg=sla_success");
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "sla_success" : "error"));
+    }
     exit();
 }
 
@@ -54,34 +62,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
         $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
             VALUES ($taxa, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
     }
-    mysqli_query($conn, $sql_dep);
+
+    $success = mysqli_query($conn, $sql_dep);
+
     // Salvar elegibilidade por categoria
     $result_cats = mysqli_query($conn, "SELECT categoria FROM categoria");
     while ($cat_row = mysqli_fetch_assoc($result_cats)) {
         $cat_name = mysqli_real_escape_string($conn, $cat_row['categoria']);
         $cat_elegivel = isset($_POST['cat_doacao'][$cat_name]) ? 1 : 0;
-        mysqli_query($conn, "INSERT INTO categoria_doacao (categoria, elegivel_doacao) VALUES ('$cat_name', $cat_elegivel) ON DUPLICATE KEY UPDATE elegivel_doacao = $cat_elegivel");
+        if (!mysqli_query($conn, "INSERT INTO categoria_doacao (categoria, elegivel_doacao) VALUES ('$cat_name', $cat_elegivel) ON DUPLICATE KEY UPDATE elegivel_doacao = $cat_elegivel")) {
+            $success = false;
+        }
     }
 
-    header("Location: configuracoes.php?msg=dep_success");
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "dep_success" : "error"));
+    }
     exit();
 }
 
-// === PROCESSAMENTO DE CANAIS DE ALERTA: Ativa/Desativa notificações por e-mail e WhatsApp ===
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['alertas'])) {
-    $wa_ativo = isset($_POST['alertas']['whatsapp']) ? 1 : 0;
-    $email_ativo = isset($_POST['alertas']['email']) ? 1 : 0;
-    $ia_ativo = isset($_POST['alertas']['ia_agente']) ? 1 : 0;
-    mysqli_query($conn, "UPDATE configuracoes_alertas SET whatsapp_ativo = $wa_ativo, email_ativo = $email_ativo, ia_agente_ativo = $ia_ativo WHERE id = 1");
-    header("Location: configuracoes.php?msg=success");
-    exit();
-}
 
-// === PROCESSAMENTO DE IA: Ativa/Desativa o Agente de IA ===
+
+// === PROCESSAMENTO DE IA: Mantém o Agente de IA sempre ativo conforme solicitação ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ia_config'])) {
-    $ia_ativo = isset($_POST['ia_agente_ativo']) ? 1 : 0;
-    mysqli_query($conn, "UPDATE configuracoes_alertas SET ia_agente_ativo = $ia_ativo WHERE id = 1");
-    header("Location: configuracoes.php?msg=ia_success");
+    $success = mysqli_query($conn, "UPDATE configuracoes_alertas SET ia_agente_ativo = 1 WHERE id = 1");
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "ia_success" : "error"));
+    }
     exit();
 }
 
@@ -96,8 +110,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
             idle_timeout_admin = $idle_timeout_admin,
             idle_timeout_suporte = $idle_timeout_suporte
             WHERE id = 1";
-    mysqli_query($conn, $sql);
-    header("Location: configuracoes.php?msg=session_success");
+
+    $success = mysqli_query($conn, $sql);
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "session_success" : "error"));
+    }
+    exit();
+}
+
+// === PROCESSAMENTO DE ALERTAS: Salva as configurações de canais e tipos de alerta ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
+    $chamados = isset($_POST['chamados_ativo']) ? 1 : 0;
+    $manutencao = isset($_POST['manutencao_ativo']) ? 1 : 0;
+    $whatsapp = isset($_POST['whatsapp_ativo']) ? 1 : 0;
+    $email = isset($_POST['email_ativo']) ? 1 : 0;
+    $wa_chamados = isset($_POST['whatsapp_recebe_chamados']) ? 1 : 0;
+    $wa_manutencao = isset($_POST['whatsapp_recebe_manutencao']) ? 1 : 0;
+    $wa_baixa = isset($_POST['whatsapp_prioridade_baixa']) ? 1 : 0;
+    $wa_media = isset($_POST['whatsapp_prioridade_media']) ? 1 : 0;
+    $wa_alta = isset($_POST['whatsapp_prioridade_alta']) ? 1 : 0;
+    $wa_incidente = isset($_POST['whatsapp_tipo_incidente']) ? 1 : 0;
+    $wa_requisicao = isset($_POST['whatsapp_tipo_requisicao']) ? 1 : 0;
+    $wa_mudanca = isset($_POST['whatsapp_tipo_mudanca']) ? 1 : 0;
+
+    $email_chamados = isset($_POST['email_recebe_chamados']) ? 1 : 0;
+    $email_manutencao = isset($_POST['email_recebe_manutencao']) ? 1 : 0;
+    $email_baixa = isset($_POST['email_prioridade_baixa']) ? 1 : 0;
+    $email_media = isset($_POST['email_prioridade_media']) ? 1 : 0;
+    $email_alta = isset($_POST['email_prioridade_alta']) ? 1 : 0;
+    $email_incidente = isset($_POST['email_tipo_incidente']) ? 1 : 0;
+    $email_requisicao = isset($_POST['email_tipo_requisicao']) ? 1 : 0;
+    $email_mudanca = isset($_POST['email_tipo_mudanca']) ? 1 : 0;
+
+    $sql = "UPDATE configuracoes_alertas SET 
+            chamados_ativo = 1,
+            manutencao_ativo = 1,
+            whatsapp_ativo = $whatsapp,
+            email_ativo = $email,
+            whatsapp_recebe_chamados = $wa_chamados,
+            whatsapp_recebe_manutencao = $wa_manutencao,
+            whatsapp_prioridade_baixa = $wa_baixa,
+            whatsapp_prioridade_media = $wa_media,
+            whatsapp_prioridade_alta = $wa_alta,
+            cat_incidente = $wa_incidente,
+            cat_requisicao = $wa_requisicao,
+            cat_mudanca = $wa_mudanca,
+            email_recebe_chamados = $email_chamados,
+            email_recebe_manutencao = $email_manutencao,
+            email_prioridade_baixa = $email_baixa,
+            email_prioridade_media = $email_media,
+            email_prioridade_alta = $email_alta,
+            email_tipo_incidente = $email_incidente,
+            email_tipo_requisicao = $email_requisicao,
+            email_tipo_mudanca = $email_mudanca
+            WHERE id = 1";
+
+    // Check if the request is an AJAX request
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+    if (mysqli_query($conn, $sql)) {
+        if ($isAjax) {
+            echo json_encode(['success' => true]);
+        } else {
+            header("Location: configuracoes.php?msg=success");
+        }
+    } else {
+        if ($isAjax) {
+            echo json_encode(['success' => false, 'message' => mysqli_error($conn)]);
+        } else {
+            header("Location: configuracoes.php?msg=error&detail=" . urlencode(mysqli_error($conn)));
+        }
+    }
     exit();
 }
 
@@ -199,6 +286,285 @@ function getHoursAndMinutes($total_minutes)
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
     <?php include 'sidebar_style.php'; ?>
     <style>
+        /* Estilos dos Novos Cards de Notificação */
+        .notification-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e3e6f0;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.05);
+        }
+
+        .notification-card:hover {
+            box-shadow: 0 0.5rem 1rem 0 rgba(58, 59, 69, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .inactive-card {
+            opacity: 0.6;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+        }
+
+        .card-chamados {
+            border-left: 4px solid #4e73df;
+        }
+
+        .card-manutencao {
+            border-left: 4px solid #f6c23e;
+        }
+
+        .card-whatsapp,
+        .card-email {
+            border-top: 4px solid #25d366;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card-email {
+            border-top-color: #4e73df;
+        }
+
+        .card-whatsapp .card-body,
+        .card-email .card-body {
+            flex: 1;
+        }
+
+        .notif-icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            background: #f8f9fc;
+            color: #5a5c69;
+            font-size: 1.2rem;
+        }
+
+        .notif-info {
+            flex-grow: 1;
+        }
+
+        .notif-title {
+            font-weight: 700;
+            color: #4e73df;
+            margin-bottom: 2px;
+            font-size: 0.95rem;
+        }
+
+        .card-manutencao .notif-title {
+            color: #5a5c69;
+        }
+
+        .card-whatsapp .notif-title,
+        .card-email .notif-title {
+            color: #fff;
+        }
+
+        .notif-desc {
+            font-size: 0.8rem;
+            color: #858796;
+            margin: 0;
+        }
+
+        .card-header-custom {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .bg-whatsapp {
+            background: #25d366;
+        }
+
+        .bg-email {
+            background: #4e73df;
+        }
+
+        /* Estilos dos novos Badges de Notificação */
+        .badge-checkbox {
+            display: none;
+        }
+
+        .badge-label {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            opacity: 0.4;
+            filter: grayscale(80%);
+        }
+
+        .badge-checkbox:checked+.badge-label {
+            opacity: 1;
+            filter: grayscale(0%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-icon-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+            opacity: 0.4;
+            filter: grayscale(80%);
+            background-color: #4e73df;
+            /* default blue */
+        }
+
+        .badge-icon-label.bg-warning {
+            background-color: #f6c23e !important;
+        }
+
+        .badge-checkbox:checked+.badge-icon-label {
+            opacity: 1;
+            filter: grayscale(0%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-alta {
+            background-color: #e74a3b;
+        }
+
+        .badge-media {
+            background-color: #f6c23e;
+            color: #fff;
+        }
+
+        .badge-baixa {
+            background-color: #1cc88a;
+        }
+
+        .badge-incidente {
+            background-color: #0dcaf0;
+        }
+
+        .badge-mudanca {
+            background-color: #6610f2;
+        }
+
+        .badge-requisicao {
+            background-color: #858796;
+        }
+
+        /* Estilos Email Recipents */
+        .recipient-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #e3e6f0;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .recipient-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .recipient-item:last-child {
+            border-bottom: none;
+        }
+
+        .recipient-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .recipient-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .recipient-badge-group {
+            display: flex;
+            gap: 2px;
+        }
+
+        .mini-badge-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: all 0.2s;
+            border: none;
+            padding: 0;
+            outline: none !important;
+        }
+
+        .mini-badge-btn.active {
+            opacity: 1;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .mini-icon-btn {
+            color: #b7b9cc;
+            cursor: pointer;
+            transition: color 0.2s;
+            font-size: 1rem;
+        }
+
+        .mini-icon-btn.active.fa-ticket-alt {
+            color: #4e73df;
+        }
+
+        .mini-icon-btn.active.fa-tools {
+            color: #f6c23e;
+        }
+
+        .mini-icon-btn.fa-times-circle:hover {
+            color: #e74a3b;
+            opacity: 1;
+        }
+
+
+        #autoSaveStatus {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1cc88a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         .badge-priority {
             cursor: pointer;
             transition: all 0.2s;
@@ -289,32 +655,159 @@ function getHoursAndMinutes($total_minutes)
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Configurações do Sistema</h3>
 
-                    <?php
-                    $msg_text = "";
-                    if (isset($_GET['msg'])) {
-                        switch ($_GET['msg']) {
-                            case 'success':
-                                $msg_text = "Configurações de canais de alerta atualizadas com sucesso!";
-                                break;
-                            case 'sla_success':
-                                $msg_text = "Configurações de SLA atualizadas com sucesso!";
-                                break;
-                            case 'dep_success':
-                                $msg_text = "Configurações de depreciação atualizadas com sucesso!";
-                                break;
-                            case 'session_success':
-                                $msg_text = "Configurações de sessão atualizadas com sucesso!";
-                                break;
-                        }
-                    }
-                    if ($msg_text): ?>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?php echo $msg_text; ?>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <div id="autoSaveStatus"><i class="fas fa-check-circle mr-2"></i> <span
+                            id="autoSaveMessage">Alteração salva!</span></div>
+
+                    <!-- CANAIS DE NOTIFICAÇÃO (DESIGN NOVO) -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="text-primary m-0 font-weight-bold">Canais de Notificação e Alerta</h6>
                         </div>
-                    <?php endif; ?>
+                        <div class="card-body">
+                            <form id="formAlertasConfig" autocomplete="off">
+                                <input type="hidden" name="config_alertas" value="1">
+                                <p class="text-muted small mb-4 mt-2">Filtre os alertas ativando ou inativando os canais
+                                    de
+                                    envio separadamente.</p>
+
+                                <div class="row">
+                                    <!-- Canal WhatsApp -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm border-0 card-whatsapp">
+                                            <div class="card-header-custom bg-whatsapp">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fab fa-whatsapp mr-2"></i>
+                                                    <span class="font-weight-bold">Canal: WhatsApp</span>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input channel-toggle"
+                                                        id="toggle_whatsapp" name="whatsapp_ativo" value="1" <?php echo (($alert_config['whatsapp_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="toggle_whatsapp"></label>
+                                                </div>
+                                            </div>
+                                            <!-- Sub-Filtros do WhatsApp -->
+                                            <div class="card-body bg-light p-3 border-top pb-4"
+                                                style="border-radius: 0 0 12px 12px; border-top-color: #e3e6f0 !important;">
+
+                                                <div class="mb-3">
+                                                    <div
+                                                        class="small font-weight-bold text-success mb-2 text-uppercase">
+                                                        O QUE NOTIFICAR? (GLOBAL)</div>
+                                                    <input type="checkbox" id="wa_chamados"
+                                                        name="whatsapp_recebe_chamados" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['whatsapp_recebe_chamados'] ?? 0) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_chamados" class="badge-icon-label"><i
+                                                            class="fas fa-ticket-alt"></i></label>
+
+                                                    <input type="checkbox" id="wa_manutencao"
+                                                        name="whatsapp_recebe_manutencao" value="1"
+                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_recebe_manutencao'] ?? 0) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_manutencao" class="badge-icon-label bg-warning"><i
+                                                            class="fas fa-tools"></i></label>
+                                                </div>
+
+                                                <div class="mb-3 wa-priority-group">
+                                                    <div
+                                                        class="small font-weight-bold text-success mb-2 text-uppercase">
+                                                        PRIORIDADES PERMITIDAS (GLOBAL)</div>
+                                                    <input type="checkbox" id="wa_prio_alta"
+                                                        name="whatsapp_prioridade_alta" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['whatsapp_prioridade_alta'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_alta"
+                                                        class="badge-label badge-alta">Alta</label>
+
+                                                    <input type="checkbox" id="wa_prio_media"
+                                                        name="whatsapp_prioridade_media" value="1"
+                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_media'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_media"
+                                                        class="badge-label badge-media">Média</label>
+
+                                                    <input type="checkbox" id="wa_prio_baixa"
+                                                        name="whatsapp_prioridade_baixa" value="1"
+                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_baixa'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_baixa"
+                                                        class="badge-label badge-baixa">Baixa</label>
+                                                </div>
+
+                                                <div class="wa-category-group">
+                                                    <div
+                                                        class="small font-weight-bold text-success mb-2 text-uppercase">
+                                                        CATEGORIAS PERMITIDAS (GLOBAL)</div>
+                                                    <input type="checkbox" id="wa_tipo_incidente"
+                                                        name="whatsapp_tipo_incidente" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['cat_incidente'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_tipo_incidente"
+                                                        class="badge-label badge-incidente">Incidente</label>
+
+                                                    <input type="checkbox" id="wa_tipo_mudanca"
+                                                        name="whatsapp_tipo_mudanca" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['cat_mudanca'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_tipo_mudanca"
+                                                        class="badge-label badge-mudanca">Mudança</label>
+
+                                                    <input type="checkbox" id="wa_tipo_requisicao"
+                                                        name="whatsapp_tipo_requisicao" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['cat_requisicao'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_tipo_requisicao"
+                                                        class="badge-label badge-requisicao">Requisição</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Canal E-mail -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm border-0 card-email">
+                                            <div class="card-header-custom bg-email">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-envelope mr-2"></i>
+                                                    <span class="font-weight-bold">Canal: E-mail</span>
+                                                </div>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input channel-toggle"
+                                                        id="toggle_email" name="email_ativo" value="1" <?php echo (($alert_config['email_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="toggle_email"></label>
+                                                </div>
+                                            </div>
+                                            <!-- Sub-Filtros do E-mail -->
+                                            <div class="card-body bg-light p-3 border-top pb-4"
+                                                style="border-radius: 0 0 12px 12px; border-top-color: #e3e6f0 !important;">
+
+                                                <div class="position-relative mb-3">
+                                                    <input type="text" id="emailRecipientSearch"
+                                                        class="form-control form-control-sm"
+                                                        placeholder="Pesquisar destinatário por nome ou e-mail..."
+                                                        style="border-radius: 20px; padding-left: 15px;">
+                                                    <i class="fas fa-search position-absolute text-muted"
+                                                        style="right: 15px; top: 10px; font-size: 0.8rem;"></i>
+                                                    <div id="emailRecipientDropdown"
+                                                        class="dropdown-menu w-100 shadow-sm"
+                                                        style="display:none; position:absolute; top: 100%; left:0; z-index:1000; border-radius: 8px;">
+                                                    </div>
+                                                </div>
+
+                                                <div class="small font-weight-bold text-primary mb-2 text-uppercase">
+                                                    DESTINATÁRIOS ATIVOS</div>
+                                                <div class="recipient-list" id="activeEmailRecipients">
+                                                    <!-- Loading or empty state -->
+                                                    <div class="p-3 text-center text-muted small"><i
+                                                            class="fas fa-spinner fa-spin mr-1"></i> Carregando
+                                                        destinatários...</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-right mt-3">
+                                    <button type="submit" id="btnSalvarAlertas" class="btn btn-primary"
+                                        style="background: rgb(44,64,74);">
+                                        <i class="fas fa-save mr-2"></i> Salvar Configurações
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     <div class="card shadow">
                         <div class="card-header py-3">
@@ -322,7 +815,7 @@ function getHoursAndMinutes($total_minutes)
                             </p>
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="configuracoes.php">
+                            <form id="formSLA" method="POST" action="configuracoes.php">
                                 <p class="mb-4">Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria
                                     de chamado.</p>
 
@@ -392,7 +885,7 @@ function getHoursAndMinutes($total_minutes)
 
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-12 text-right">
-                                        <button type="submit" class="btn btn-primary"
+                                        <button type="submit" class="btn btn-primary btn-save-ajax"
                                             style="background: rgb(44,64,74);">Salvar Alterações</button>
                                     </div>
                                 </div>
@@ -407,7 +900,7 @@ function getHoursAndMinutes($total_minutes)
                             </p>
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="configuracoes.php">
+                            <form id="formDepreciacao" method="POST" action="configuracoes.php">
                                 <p class="mb-4">Defina a taxa de depreciação dos ativos e as regras de elegibilidade
                                     para doação.</p>
 
@@ -525,242 +1018,9 @@ function getHoursAndMinutes($total_minutes)
 
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-12 text-right">
-                                        <button type="submit" class="btn btn-primary"
+                                        <button type="submit" class="btn btn-primary btn-save-ajax"
                                             style="background: rgb(44,64,74);">Salvar Configurações de
                                             Depreciação</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- Seção de Canais de Alerta -->
-                    <div class="card shadow mt-4 mb-4">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Canais de Notificação e Alerta</p>
-                        </div>
-                        <div class="card-body">
-                            <form method="POST" action="configuracoes.php">
-                                <p class="mb-4">Escolha por quais canais você deseja receber os alertas do sistema
-                                    (Novos chamados e Manutenções).</p>
-
-                                <input type="hidden" name="alertas" value="1">
-
-
-                                <div class="row mb-4">
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card shadow-sm border-left-info h-100">
-                                            <div
-                                                class="card-body py-3 d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h6 class="mb-0 font-weight-bold"><i
-                                                            class="fas fa-ticket-alt mr-2"></i> Novos Chamados</h6>
-                                                    <small class="text-muted">Status global para abertura de
-                                                        tickets</small>
-                                                </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input event-toggle"
-                                                        id="toggleChamados" data-event="chamados" <?php echo ($alert_config['chamados_ativo'] ?? 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="toggleChamados"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card shadow-sm border-left-warning h-100">
-                                            <div
-                                                class="card-body py-3 d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h6 class="mb-0 font-weight-bold"><i class="fas fa-tools mr-2"></i>
-                                                        Manutenções</h6>
-                                                    <small class="text-muted">Status global para ativos em
-                                                        oficina</small>
-                                                </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input event-toggle"
-                                                        id="toggleManutencao" data-event="manutencao" <?php echo ($alert_config['manutencao_ativo'] ?? 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="toggleManutencao"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- SEÇÃO 2: COMO NOTIFICAR (CANAIS) -->
-                                <div class="row">
-                                    <!-- CANAL WHATSAPP -->
-                                    <div class="col-xl-6 mb-4">
-                                        <div class="card shadow-sm border-0 h-100" style="background: #f8fff9;">
-                                            <div class="card-header bg-success text-white border-0 py-3">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <h6 class="m-0 font-weight-bold"><i
-                                                            class="fab fa-whatsapp fa-lg mr-2"></i> Canal: WhatsApp</h6>
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="alertWhatsApp" name="alertas[whatsapp]" value="1" <?php echo (($alert_config['whatsapp_ativo'] ?? 0) == 1) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label" for="alertWhatsApp"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="mb-3">
-                                                    <label class="small font-weight-bold text-success text-uppercase">O
-                                                        que notificar? (Global)</label>
-                                                    <div class="d-flex align-items-center mt-1">
-                                                        <i class="fas fa-ticket-alt fa-2x pointer global-wa-event mr-4 <?php echo ($alert_config['whatsapp_recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
-                                                            data-event="chamados" title="Chamados"></i>
-                                                        <i class="fas fa-tools fa-2x pointer global-wa-event <?php echo ($alert_config['whatsapp_recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-300'; ?>"
-                                                            data-event="manutencao" title="Manutenção"></i>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label
-                                                        class="small font-weight-bold text-success text-uppercase">Prioridades
-                                                        permitidas (Global)</label>
-                                                    <div class="priority-badges-global mt-1">
-                                                        <span
-                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_alta'] ?? 1) ? 'badge-danger active' : 'badge-inactive'; ?>"
-                                                            data-priority="alta"
-                                                            title="Alternar Prioridade Alta">Alta</span>
-                                                        <span
-                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_media'] ?? 1) ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
-                                                            data-priority="media"
-                                                            title="Alternar Prioridade Média">Média</span>
-                                                        <span
-                                                            class="badge badge-priority pointer global-wa-priority <?php echo ($alert_config['whatsapp_prioridade_baixa'] ?? 1) ? 'badge-success active' : 'badge-inactive'; ?>"
-                                                            data-priority="baixa"
-                                                            title="Alternar Prioridade Baixa">Baixa</span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-0">
-                                                    <label
-                                                        class="small font-weight-bold text-success text-uppercase">Categorias
-                                                        permitidas (Global)</label>
-                                                    <div class="category-badges-global mt-1">
-                                                        <span
-                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_incidente'] ?? 1) ? 'badge-info active' : 'badge-inactive'; ?>"
-                                                            data-category="incidente"
-                                                            title="Alternar Incidente">Incidente</span>
-                                                        <span
-                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_mudanca'] ?? 1) ? 'badge-primary active' : 'badge-inactive'; ?>"
-                                                            data-category="mudanca"
-                                                            title="Alternar Mudança">Mudança</span>
-                                                        <span
-                                                            class="badge badge-priority pointer global-cat-toggle <?php echo ($alert_config['cat_requisicao'] ?? 1) ? 'badge-secondary active' : 'badge-inactive'; ?>"
-                                                            data-category="requisicao"
-                                                            title="Alternar Requisição">Requisição</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- CANAL E-MAIL -->
-                                    <div class="col-xl-6 mb-4">
-                                        <div class="card shadow-sm border-0 h-100" style="background: #fdfdff;">
-                                            <div class="card-header bg-primary text-white border-0 py-3">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <h6 class="m-0 font-weight-bold"><i
-                                                            class="fas fa-envelope fa-lg mr-2"></i> Canal: E-mail</h6>
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="alertEmail" name="alertas[email]" value="1" <?php echo (($alert_config['email_ativo'] ?? 0) == 1) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label" for="alertEmail"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-body px-3 py-3">
-                                                <div class="input-group input-group-sm mb-3 shadow-sm">
-                                                    <input type="text" id="userSearch" class="form-control border-0"
-                                                        placeholder="Pesquisar destinatário por nome ou e-mail...">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text bg-white border-0"><i
-                                                                class="fas fa-search text-gray-400"></i></span>
-                                                    </div>
-                                                </div>
-                                                <div id="searchResults" class="dropdown-menu shadow animated--grow-in"
-                                                    style="display:none; position:absolute; z-index:1000; width:92%; max-height:200px; overflow-y:auto;">
-                                                </div>
-
-                                                <label
-                                                    class="small font-weight-bold text-primary text-uppercase mb-2">Destinatários
-                                                    Ativos</label>
-                                                <div id="destinatariosList" class="row no-gutters overflow-auto"
-                                                    style="max-height: 130px;">
-                                                    <?php
-                                                    $res_dest = $conn->query("SELECT d.*, u.nome, u.sobrenome, u.email 
-                                                                            FROM destinatarios_alertas d 
-                                                                            JOIN usuarios u ON d.usuario_id = u.id_usuarios");
-                                                    if ($res_dest->num_rows == 0):
-                                                        echo '<div class="col-12 text-muted small text-center italic py-2">Nenhum e-mail cadastrado.</div>';
-                                                    endif;
-                                                    while ($dest = $res_dest->fetch_assoc()):
-                                                        ?>
-                                                        <div class="col-12 mb-2 recipient-card"
-                                                            data-id="<?php echo $dest['id']; ?>">
-                                                            <div class="card border-left-primary shadow-sm py-1">
-                                                                <div
-                                                                    class="card-body py-1 px-2 d-flex justify-content-between align-items-center">
-                                                                    <div style="flex: 1; min-width: 0;">
-                                                                        <div
-                                                                            class="text-xs font-weight-bold text-primary text-truncate">
-                                                                            <?php echo htmlspecialchars($dest['nome'] . ' ' . $dest['sobrenome']); ?>
-                                                                        </div>
-                                                                        <div
-                                                                            class="priority-badges d-flex align-items-center mt-1">
-                                                                            <span
-                                                                                class="badge user-priority-badge pointer <?php echo $dest['prioridade_alta'] ? 'badge-danger active' : 'badge-inactive'; ?>"
-                                                                                data-priority="alta">A</span>
-                                                                            <span
-                                                                                class="badge user-priority-badge pointer mx-1 <?php echo $dest['prioridade_media'] ? 'badge-warning text-white active' : 'badge-inactive'; ?>"
-                                                                                data-priority="media">M</span>
-                                                                            <span
-                                                                                class="badge user-priority-badge pointer <?php echo $dest['prioridade_baixa'] ? 'badge-success active' : 'badge-inactive'; ?>"
-                                                                                data-priority="baixa">B</span>
-
-                                                                            <div
-                                                                                class="ml-2 pl-2 border-left d-flex align-items-center user-cat-toggles">
-                                                                                <span
-                                                                                    class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_incidente'] ?? 1) ? 'text-info' : 'text-gray-300'; ?>"
-                                                                                    data-cat="incidente"
-                                                                                    title="Incidente">I</span>
-                                                                                <span
-                                                                                    class="user-cat-toggle pointer mr-1 font-weight-bold <?php echo ($dest['cat_mudanca'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
-                                                                                    data-cat="mudanca"
-                                                                                    title="Mudança">M</span>
-                                                                                <span
-                                                                                    class="user-cat-toggle pointer font-weight-bold <?php echo ($dest['cat_requisicao'] ?? 1) ? 'text-secondary' : 'text-gray-300'; ?>"
-                                                                                    data-cat="requisicao"
-                                                                                    title="Requisição">R</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 <?php echo ($dest['recebe_chamados'] ?? 1) ? 'text-primary' : 'text-gray-300'; ?>"
-                                                                            data-event="chamados" title="Chamados"></i>
-                                                                        <i class="fas fa-tools pointer user-event-toggle mr-2 <?php echo ($dest['recebe_manutencao'] ?? 1) ? 'text-warning' : 'text-gray-300'; ?>"
-                                                                            data-event="manutencao" title="Manutenção"></i>
-                                                                        <button type="button"
-                                                                            class="btn btn-link text-danger remove-recipient p-0"
-                                                                            data-id="<?php echo $dest['id']; ?>">
-                                                                            <i class="fas fa-times-circle"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    <?php endwhile; ?>
-                                                </div> <!-- End of destinatariosList -->
-                                            </div> <!-- End of Email card-body -->
-                                        </div> <!-- End of Email card shadow-sm -->
-                                    </div> <!-- End of Email col-xl-6 -->
-                                </div> <!-- End of WhatsApp/Email row -->
-
-                                <div class="form-group row mt-4">
-                                    <div class="col-sm-12 text-right">
-                                        <button type="submit" class="btn btn-primary"
-                                            style="background: rgb(44,64,74);">Salvar Canais de Alerta</button>
                                     </div>
                                 </div>
                             </form>
@@ -773,7 +1033,7 @@ function getHoursAndMinutes($total_minutes)
                             <p class="text-primary m-0 font-weight-bold">Sessão e Segurança</p>
                         </div>
                         <div class="card-body">
-                            <form method="POST">
+                            <form id="formSessao" method="POST">
                                 <input type="hidden" name="session_config" value="1">
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
@@ -818,7 +1078,7 @@ function getHoursAndMinutes($total_minutes)
                                     </div>
                                 </div>
                                 <div class="text-right mt-3">
-                                    <button type="submit" class="btn btn-primary"
+                                    <button type="submit" class="btn btn-primary btn-save-ajax"
                                         style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
                                 </div>
                             </form>
@@ -833,28 +1093,30 @@ function getHoursAndMinutes($total_minutes)
                             </h6>
                         </div>
                         <div class="card-body">
-                            <form method="POST">
+                            <form id="formIA" method="POST">
                                 <input type="hidden" name="ia_config" value="1">
                                 <div class="row align-items-center">
                                     <div class="col-md-9 border-right">
-                                        <p class="mb-0 text-muted">Habilitar ou desabilitar o Agente de IA em todo o
-                                            sistema. Quando desativado, o chat e outros recursos de IA ficarão
-                                            indisponíveis para todos os usuários.</p>
+                                        <p class="mb-0 text-muted">A Inteligência Artificial (IA) está configurada para
+                                            permanecer <strong>sempre ativa</strong>, garantindo insights e assistência
+                                            contínua em todo o sistema. </p>
                                     </div>
                                     <div class="col-md-3 text-center">
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input" id="iaAgenteAtivoBottom"
-                                                name="ia_agente_ativo" value="1" <?php echo ($alert_config['ia_agente_ativo'] ?? 1) ? 'checked' : ''; ?>>
+                                                name="ia_agente_ativo" value="1" checked disabled>
                                             <label class="custom-control-label font-weight-bold"
-                                                for="iaAgenteAtivoBottom" style="cursor: pointer; font-size: 1.1rem;">
-                                                <?php echo ($alert_config['ia_agente_ativo'] ?? 1) ? 'Ativo' : 'Inativo'; ?>
+                                                for="iaAgenteAtivoBottom"
+                                                style="cursor: default; font-size: 1.1rem; opacity: 0.8;">
+                                                Ativo (Permanente)
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="text-right">
-                                    <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);">
+                                    <button type="submit" class="btn btn-primary btn-save-ajax"
+                                        style="background: rgb(44,64,74);">
                                         <i class="fas fa-save mr-2"></i> Salvar Configuração de IA
                                     </button>
                                 </div>
@@ -888,7 +1150,20 @@ function getHoursAndMinutes($total_minutes)
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
     <script>
+        // Helper: mostra feedback de auto-save
+        function showAutoSaved(message) {
+            var $status = $('#autoSaveStatus');
+            var $msg = $('#autoSaveMessage');
+            if ($status.length) {
+                if (message) $msg.text(message);
+                else $msg.text('Alteração salva!');
+
+                $status.stop(true, true).fadeIn(200).delay(2500).fadeOut(400);
+            }
+        }
+
         $(document).ready(function () {
+
             var $switch = $('#elegivelDoacao');
             var $doacaoRow = $('#tempoDoacaoRow');
             var $catSection = $('#categoriasDoacaoSection');
@@ -938,268 +1213,216 @@ function getHoursAndMinutes($total_minutes)
                 });
             }
 
-            // Alertas Channel Toggles
-            $('#alertEmail').on('change', function () {      // Not using disabled anymore, but keeping for switch logic if needed
-            });
+            // (handler vazio removido - tratado por .channel-toggle abaixo)
 
-            // User Search for Alerts
-            $('#userSearch').on('keyup', function () {
-                let term = $(this).val();
-                if (term.length > 2) {
-                    $.post('ajax_alertas.php', { action: 'search', term: term }, function (data) {
-                        let users = JSON.parse(data);
-                        let html = '';
-                        users.forEach(u => {
-                            html += `<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>${u.nome} ${u.sobrenome}</strong><br>
-                                            <span class="small text-muted">${u.email}</span>
-                                        </div>
-                                        <button class="btn btn-success btn-sm add-user" data-id="${u.id}">
-                                            <i class="fas fa-plus mr-1"></i> Adicionar
-                                        </button>
-                                     </div>`;
-                        });
-                        if (html) {
-                            $('#searchResults').html(html).show();
-                        } else {
-                            $('#searchResults').hide();
-                        }
-                    });
-                } else {
-                    $('#searchResults').hide();
-                }
-            });
-
-            $(document).on('click', '.add-user', function (e) {
-                e.preventDefault();
-                let uid = $(this).data('id');
-                $.post('ajax_alertas.php', { action: 'add', usuario_id: uid }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        // Dynamically add the new recipient card
-                        let newRecipient = res.recipient; // Assuming res.recipient contains the new recipient data
-                        let newCardHtml = `
-                            <div class="col-md-6 mb-2 recipient-card" data-id="${res.recipient.id}">
-                                <div class="card bg-light border-left-primary shadow-sm h-100 py-1">
-                                    <div class="card-body py-1 d-flex justify-content-between align-items-center">
-                                        <div style="flex: 1;">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-0">${res.recipient.nome} ${res.recipient.sobrenome || ''}</div>
-                                            <div class="text-muted small mb-1">${res.recipient.email}</div>
-                                            <div class="priority-badges d-flex align-items-center">
-                                                <span class="badge badge-priority active badge-danger pointer" data-priority="alta" title="Ativo">Alta</span>
-                                                <span class="badge badge-priority active badge-warning text-white pointer" data-priority="media" title="Ativo">Média</span>
-                                                <span class="badge badge-priority active badge-success pointer" data-priority="baixa" title="Ativo">Baixa</span>
-                                                
-                                                <div class="ml-2 pl-2 border-left d-flex align-items-center event-toggles-user">
-                                                    <i class="fas fa-ticket-alt pointer user-event-toggle mr-2 text-primary" 
-                                                       data-event="chamados" title="Alertas de Chamados: Ativo"></i>
-                                                    <i class="fas fa-tools pointer user-event-toggle mr-2 text-warning" 
-                                                       data-event="manutencao" title="Alertas de Manutenção: Ativo"></i>
-                                                    <div class="user-cat-toggles border-left pl-2 d-flex">
-                                                        <span class="user-cat-toggle pointer mr-1 font-weight-bold text-info" data-cat="incidente" title="Filtro: Incidente">I</span>
-                                                        <span class="user-cat-toggle pointer mr-1 font-weight-bold text-primary" data-cat="mudanca" title="Filtro: Mudança">M</span>
-                                                        <span class="user-cat-toggle pointer font-weight-bold text-secondary" data-cat="requisicao" title="Filtro: Requisição">R</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-link text-danger p-0 ml-2 btn-remove-dest" data-id="${res.recipient.id}">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>`;
-                        $('#destinatariosList').append(newCardHtml);
-                        $('#searchResults').hide();
-                        $('#userSearch').val('');
-                        // If there was a "Nenhum destinatário cadastrado" message, remove it
-                        $('#destinatariosList').find('.col-12.text-muted.small').remove();
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.remove-recipient', function () {
-                let id = $(this).data('id');
-                if (confirm('Remover este destinatário?')) {
-                    $.post('ajax_alertas.php', { action: 'remove', id: id }, function (data) {
-                        let res = JSON.parse(data);
-                        if (res.status === 'success') {
-                            $(`.recipient-card[data-id="${id}"]`).remove();
-                            if ($('#destinatariosList').children('.recipient-card').length === 0) {
-                                $('#destinatariosList').html('<div class="col-12 text-muted small">Nenhum destinatário cadastrado.</div>');
-                            }
-                        } else {
-                            alert(res.message);
-                        }
-                    });
-                }
-            });
-
-            $(document).on('click', '.user-priority-badge', function () {
-                let $badge = $(this);
-                let $card = $badge.closest('.recipient-card');
-                let id = $card.data('id');
-                let priority = $badge.data('priority');
-                let isActive = $badge.hasClass('active');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_priority', id: id, priority: priority, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $badge.removeClass('badge-inactive').addClass('active').attr('title', 'Ativo');
-                            if (priority == 'alta') $badge.addClass('badge-danger');
-                            else if (priority == 'media') $badge.addClass('badge-warning text-white');
-                            else $badge.addClass('badge-success');
-                        } else {
-                            $badge.addClass('badge-inactive').removeClass('active badge-danger badge-warning text-white badge-success').attr('title', 'Inativo');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.global-wa-priority', function () {
-                let $badge = $(this);
-                let priority = $badge.data('priority');
-                let isActive = $badge.hasClass('active');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_global_priority', priority: priority, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $badge.removeClass('badge-inactive').addClass('active').attr('title', 'Ativo');
-                            if (priority == 'alta') $badge.addClass('badge-danger');
-                            else if (priority == 'media') $badge.addClass('badge-warning text-white');
-                            else $badge.addClass('badge-success');
-                        } else {
-                            $badge.addClass('badge-inactive').removeClass('active badge-danger badge-warning text-white badge-success').attr('title', 'Inativo');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.global-cat-toggle', function () {
-                let $badge = $(this);
-                let category = $badge.data('category');
-                let isActive = $badge.hasClass('active');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_global_category', category: category, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $badge.addClass('active');
-                            if (category == 'incidente') $badge.removeClass('badge-inactive').addClass('badge-info');
-                            else if (category == 'mudanca') $badge.removeClass('badge-inactive').addClass('badge-primary');
-                            else $badge.removeClass('badge-inactive').addClass('badge-secondary');
-                            $badge.attr('title', 'Ativo');
-                        } else {
-                            $badge.removeClass('active badge-info badge-primary badge-secondary').addClass('badge-inactive');
-                            $badge.attr('title', 'Inativo');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.user-cat-toggle', function () {
-                let $span = $(this);
-                let $card = $span.closest('.recipient-card');
-                let id = $card.data('id');
-                let category = $span.data('cat');
-                let isActive = !$span.hasClass('text-gray-400');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_user_category', id: id, category: category, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $span.removeClass('text-gray-400');
-                            if (category == 'incidente') $span.addClass('text-info');
-                            else if (category == 'mudanca') $span.addClass('text-primary');
-                            else $span.addClass('text-secondary');
-                        } else {
-                            $span.addClass('text-gray-400').removeClass('text-info text-primary text-secondary');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.user-event-toggle', function () {
-                let $icon = $(this);
-                let $card = $icon.closest('.recipient-card');
-                let id = $card.data('id');
-                let event = $icon.data('event');
-                let isActive = !$icon.hasClass('text-gray-400');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_user_event', id: id, event: event, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $icon.removeClass('text-gray-400');
-                            if (event == 'chamados') $icon.addClass('text-primary');
-                            else $icon.addClass('text-warning');
-                            $icon.attr('title', 'Alertas de ' + (event == 'chamados' ? 'Chamados' : 'Manutenção') + ': Ativo');
-                        } else {
-                            $icon.addClass('text-gray-400').removeClass('text-primary text-warning');
-                            $icon.attr('title', 'Alertas de ' + (event == 'chamados' ? 'Chamados' : 'Manutenção') + ': Inativo');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('click', '.global-wa-event', function () {
-                let $icon = $(this);
-                let event = $icon.data('event');
-                let isActive = !$icon.hasClass('text-gray-300');
-                let newValue = isActive ? 0 : 1;
-
-                $.post('ajax_alertas.php', { action: 'update_wa_event', event: event, value: newValue }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status === 'success') {
-                        if (newValue) {
-                            $icon.removeClass('text-gray-300');
-                            if (event == 'chamados') $icon.addClass('text-primary');
-                            else $icon.addClass('text-warning');
-                        } else {
-                            $icon.addClass('text-gray-300').removeClass('text-primary text-warning');
-                        }
-                    } else {
-                        alert(res.message);
-                    }
-                });
-            });
-
-            $(document).on('change', '.event-toggle', function () {
-                let $switch = $(this);
-                let event = $switch.data('event');
-                let value = $switch.is(':checked') ? 1 : 0;
-
-                $.post('ajax_alertas.php', { action: 'toggle_event', event: event, value: value }, function (data) {
-                    let res = JSON.parse(data);
-                    if (res.status !== 'success') {
-                        alert(res.message);
-                        $switch.prop('checked', !value);
-                    }
-                });
-            });
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
-            updateSLABars(); // Initial call     });
+            updateSLABars(); // Initial call 
+
+            // Toggle Label Updates (Real-time feedback)
+            $('#iaAgenteAtivoBottom').on('change', function () {
+                $(this).next('label').text(this.checked ? 'Ativo' : 'Inativo');
+            });
+
+            // Visual feedback for notification cards
+            $('.channel-toggle').on('change', function () {
+                var $card = $(this).closest('.notification-card, .card');
+                if ($(this).is(':checked')) {
+                    $card.removeClass('inactive-card');
+                } else {
+                    $card.addClass('inactive-card');
+                }
+            });
+
+            // Trigger initial visual state on page load
+            $('.channel-toggle').trigger('change');
+
+            // Generic AJAX save handler for all forms
+            function handleAjaxSave($form, $btn, originalHtml, successMsg) {
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Salvando...');
+
+                $.ajax({
+                    url: 'configuracoes.php',
+                    method: 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp && resp.success) {
+                            showAutoSaved(successMsg);
+                        } else {
+                            alert('Erro ao salvar: ' + (resp.message || 'Erro desconhecido'));
+                        }
+                    },
+                    error: function () {
+                        alert('Erro na comunicação com o servidor.');
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            }
+
+            // Bind all forms marked for AJAX
+            $('#formAlertasConfig').on('submit', function (e) {
+                e.preventDefault();
+                var $form = $(this);
+                var $btn = $('#btnSalvarAlertas');
+                var originalHtml = '<i class="fas fa-save mr-2"></i> Salvar Configurações';
+                handleAjaxSave($form, $btn, originalHtml, 'Canais de alerta salvos!');
+            });
+
+            $('#formSLA').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'SLA atualizado com sucesso!');
+            });
+
+            $('#formDepreciacao').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'Depreciação salva com sucesso!');
+            });
+
+            $('#formSessao').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'Sessão e Segurança salvas!');
+            });
+
+            $('#formIA').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'IA configurada com sucesso!');
+            });
+
+            // --- INÍCIO: Lógica de Destinatários de E-mail --- //
+
+            const $searchReq = $('#emailRecipientSearch');
+            const $dropdownReq = $('#emailRecipientDropdown');
+            const $listReq = $('#activeEmailRecipients');
+
+            let searchTimeoutReq = null;
+
+            // Busca destinatários via AJAX
+            $searchReq.on('keyup', function () {
+                clearTimeout(searchTimeoutReq);
+                const query = $(this).val();
+
+                if (query.length < 2) {
+                    $dropdownReq.hide();
+                    return;
+                }
+
+                searchTimeoutReq = setTimeout(() => {
+                    $.ajax({
+                        url: 'ajax_alertas_usuarios.php',
+                        type: 'POST',
+                        data: { action: 'search', query: query },
+                        success: function (resp) {
+                            $dropdownReq.html(resp).show();
+                        }
+                    });
+                }, 400);
+            });
+
+            // Oculta o dropdown quando clica fora
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#emailRecipientSearch, #emailRecipientDropdown').length) {
+                    $dropdownReq.hide();
+                }
+            });
+
+            // Adiciona um novo destinatário
+            $(document).on('click', '.select-recipient', function (e) {
+                e.preventDefault();
+                const uid = $(this).data('uid');
+
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'add', user_id: uid },
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp.success) {
+                            $searchReq.val('');
+                            $dropdownReq.hide();
+                            loadActiveRecipients(); // Recarrega a lista
+                            showAutoSaved();
+                        } else {
+                            alert(resp.message || 'Erro ao adicionar destinatário.');
+                        }
+                    }
+                });
+            });
+
+            // Função para renderizar a lista
+            function loadActiveRecipients() {
+                $.ajax({
+                    url: 'ajax_list_alertas_usuarios.php',
+                    type: 'GET',
+                    success: function (resp) {
+                        $listReq.html(resp);
+                    }
+                });
+            }
+
+            // Ação de Toggle de botões mini
+            $(document).on('click', '.mini-badge-btn, .mini-icon-btn', function () {
+                // não é o remover
+                if ($(this).hasClass('fa-times-circle')) return;
+
+                const uid = $(this).closest('.recipient-item').data('uid');
+                const pref = $(this).data('pref');
+                const currentState = $(this).hasClass('active') ? 1 : 0;
+                const newState = currentState === 1 ? 0 : 1;
+
+                const $btn = $(this);
+
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'toggle', user_id: uid, pref: pref, state: newState },
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp.success) {
+                            if (newState) {
+                                $btn.addClass('active');
+                            } else {
+                                $btn.removeClass('active');
+                            }
+                            showAutoSaved();
+                        }
+                    }
+                });
+            });
+
+            // Remover destinatário
+            $(document).on('click', '.remove-recipient', function () {
+                if (!confirm('Deseja remover este destinatário da lista de E-mail globais?')) return;
+
+                const uid = $(this).closest('.recipient-item').data('uid');
+
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'remove', user_id: uid },
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp.success) {
+                            loadActiveRecipients();
+                            showAutoSaved();
+                        }
+                    }
+                });
+            });
+
+            // Carrega na inicialização
+            loadActiveRecipients();
+
+            // --- FIM: Lógica de Destinatários de E-mail --- //
+
+            // Auto-save WhatsApp configurations when checkboxes change
+            $('#formAlertasConfig .badge-checkbox, #formAlertasConfig .channel-toggle').on('change', function () {
+                $('#formAlertasConfig').submit();
+            });
+
+        });
     </script>
     </div>
 

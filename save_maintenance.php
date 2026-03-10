@@ -43,9 +43,12 @@ if ($acao === 'iniciar') {
         // Log no histórico
         $conn->query("INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ($id_asset, $admin_id, 'Manutenção', 'Ativo enviado para manutenção: $observacoes')");
 
-        // Disparar alerta via E-mail e WhatsApp em segundo plano
-        include_once 'funcoes_email.php';
-        dispararNotificacaoBackground($id_asset, 'manutencao');
+        // ALERTAS (Background - Email e WhatsApp)
+        $php_path = 'c:\xampp\php\php.exe';
+        $script_path = 'c:\xampp\htdocs\processar_alertas.php';
+        $cmd = "start /B $php_path $script_path manutencao $id_asset \"$observacoes\" > NUL 2>&1";
+        pclose(popen($cmd, "r"));
+
 
         echo json_encode(['success' => true]);
     } else {

@@ -1,0 +1,69 @@
+<?php
+require 'conexao.php';
+
+$sql = "SELECT au.*, u.nome, u.sobrenome, u.email 
+        FROM alertas_usuarios au 
+        JOIN usuarios u ON au.usuario_id = u.id_usuarios 
+        ORDER BY u.nome ASC";
+
+$res = $conn->query($sql);
+
+if ($res && $res->num_rows > 0) {
+    while ($row = $res->fetch_assoc()) {
+        $name = htmlspecialchars(trim($row['nome'] . ' ' . $row['sobrenome']));
+        $initials = strtoupper(substr($row['nome'], 0, 1) . substr($row['sobrenome'], 0, 1));
+
+        // Ativos
+        $isActiveChamados = $row['recebe_chamados'] == 1 ? 'active' : '';
+        $isActiveManutencao = $row['recebe_manutencao'] == 1 ? 'active' : '';
+
+        $cBaixa = $row['prioridade_baixa'] == 1 ? 'active' : '';
+        $cMedia = $row['prioridade_media'] == 1 ? 'active' : '';
+        $cAlta = $row['prioridade_alta'] == 1 ? 'active' : '';
+
+        $cInc = $row['tipo_incidente'] == 1 ? 'active' : '';
+        $cReq = $row['tipo_requisicao'] == 1 ? 'active' : '';
+        $cMud = $row['tipo_mudanca'] == 1 ? 'active' : '';
+
+        echo '
+        <div class="recipient-item" data-uid="' . $row['usuario_id'] . '">
+            <div class="d-flex align-items-center recipient-info">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 35px; height: 35px; font-size: 0.8rem; font-weight: bold; margin-right: 12px;">
+                    ' . $initials . '
+                </div>
+                <div style="min-width: 0;">
+                    <div class="font-weight-bold text-dark text-truncate" style="font-size: 0.85rem;" title="' . $name . '">' . $name . '</div>
+                    <div class="text-muted text-truncate" style="font-size: 0.75rem;" title="' . htmlspecialchars($row['email']) . '">' . htmlspecialchars($row['email']) . '</div>
+                </div>
+            </div>
+            
+            <div class="recipient-actions">
+                <!-- Tipo (Chamado x Manutenção) -->
+                <div class="recipient-badge-group bg-light rounded px-2 py-1 border d-flex align-items-center">
+                    <i class="fas fa-ticket-alt mini-icon-btn ' . $isActiveChamados . '" data-pref="recebe_chamados" title="Novos Chamados"></i>
+                    <div class="mx-1 text-muted" style="width: 1px; height: 12px; background: #e3e6f0;"></div>
+                    <i class="fas fa-tools mini-icon-btn ' . $isActiveManutencao . '" data-pref="recebe_manutencao" title="Manutenções"></i>
+                </div>
+
+                <!-- Prioridade -->
+                <div class="recipient-badge-group">
+                    <button type="button" class="mini-badge-btn bg-danger ' . $cAlta . '" data-pref="prioridade_alta" title="Alta">A</button>
+                    <button type="button" class="mini-badge-btn bg-warning ' . $cMedia . '" data-pref="prioridade_media" title="Média">M</button>
+                    <button type="button" class="mini-badge-btn bg-success ' . $cBaixa . '" data-pref="prioridade_baixa" title="Baixa" style="background-color: #1cc88a !important;">B</button>
+                </div>
+                
+                <!-- Categoria -->
+                <div class="recipient-badge-group">
+                    <button type="button" class="mini-badge-btn bg-info ' . $cInc . '" data-pref="tipo_incidente" title="Incidente">I</button>
+                    <button type="button" class="mini-badge-btn bg-secondary ' . $cMud . '" data-pref="tipo_mudanca" title="Mudança" style="background-color: #6610f2 !important;">M</button>
+                    <button type="button" class="mini-badge-btn bg-dark ' . $cReq . '" data-pref="tipo_requisicao" title="Requisição" style="background-color: #858796 !important;">R</button>
+                </div>
+                
+                <i class="fas fa-times-circle text-muted mini-icon-btn remove-recipient" title="Remover Recebedor" style="font-size: 1.1rem; margin-left: 5px;"></i>
+            </div>
+        </div>';
+    }
+} else {
+    echo '<div class="p-3 text-center text-muted small">Nenhum destinatário ativo configurado.</div>';
+}
+?>

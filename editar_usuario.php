@@ -293,12 +293,19 @@ if ($id > 0) {
                                     </div>
                                 </div>
 
-                                <!-- Row 9: Submit Button -->
+                                <!-- Row 9: Buttons -->
                                 <div class="form-row mt-5 mb-4">
-                                    <div class="col-xl-4 offset-xl-4">
+                                    <div class="col-xl-4 offset-xl-2">
                                         <button class="btn btn-primary btn-block text-white shadow-sm" type="submit"
                                             style="background: #2c404a; border-radius: 10px; height: 50px; font-weight: 600;">
                                             <i class="fas fa-save mr-2"></i>Salvar Alterações
+                                        </button>
+                                    </div>
+                                    <div class="col-xl-4">
+                                        <button class="btn btn-outline-secondary btn-block shadow-sm" type="button"
+                                            style="border-radius: 10px; height: 50px; font-weight: 600; border: 2px solid #2c404a; color: #2c404a;"
+                                            data-toggle="modal" data-target="#modalAlterarSenha">
+                                            <i class="fas fa-lock mr-2"></i>Alterar senha...
                                         </button>
                                     </div>
                                 </div>
@@ -308,7 +315,43 @@ if ($id > 0) {
                 </div>
             </div>
         </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <div class="modal-header" style="background: #2c404a; color: white; border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title" id="modalAlterarSenhaLabel"><i class="fas fa-key mr-2"></i>Alterar Senha</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formAlterarSenha">
+                        <input type="hidden" name="id_usuario_senha" value="<?php echo $user['id_usuarios']; ?>">
+                        <div class="form-group">
+                            <label for="senha_atual">Senha Atual</label>
+                            <input type="password" class="form-control" id="senha_atual" name="senha_atual" required style="border-radius: 8px;">
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="nova_senha">Nova Senha</label>
+                            <input type="password" class="form-control" id="nova_senha" name="nova_senha" required style="border-radius: 8px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmar_senha">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required style="border-radius: 8px;">
+                        </div>
+                        <div id="password-error" class="alert alert-danger d-none mt-3" style="border-radius: 8px;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="border-top: none;">
+                    <button type="button" class="btn btn-light" data-dismiss="modal" style="border-radius: 8px; font-weight: 600;">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarSenha" style="background: #2c404a; border: none; border-radius: 8px; font-weight: 600; padding: 10px 25px;">
+                        <i class="fas fa-check mr-2"></i>Atualizar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -400,6 +443,59 @@ if ($id > 0) {
                 e.preventDefault();
                 alert('Por favor, insira um CPF válido.');
             }
+        });
+
+        // AJAX Password Change
+        $(document).ready(function() {
+            $('#btnSalvarSenha').on('click', function() {
+                const form = $('#formAlterarSenha');
+                const passwordError = $('#password-error');
+                const btn = $(this);
+                
+                const novaSenha = $('#nova_senha').val();
+                const confirmarSenha = $('#confirmar_senha').val();
+
+                if (novaSenha !== confirmarSenha) {
+                    passwordError.text('As novas senhas não coincidem.').removeClass('d-none');
+                    return;
+                }
+
+                if (novaSenha.length < 4) {
+                    passwordError.text('A nova senha deve ter pelo menos 4 caracteres.').removeClass('d-none');
+                    return;
+                }
+
+                passwordError.addClass('d-none');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Processando...');
+
+                $.ajax({
+                    url: 'ajax_alterar_senha.php',
+                    type: 'POST',
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            $('#modalAlterarSenha').modal('hide');
+                            form[0].reset();
+                        } else {
+                            passwordError.text(response.message).removeClass('d-none');
+                        }
+                    },
+                    error: function() {
+                        passwordError.text('Ocorreu um erro ao processar a solicitação.').removeClass('d-none');
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false).html('<i class="fas fa-check mr-2"></i>Atualizar Senha');
+                    }
+                });
+            });
+
+            // Reset modal on close
+            $('#modalAlterarSenha').on('hidden.bs.modal', function () {
+                $('#formAlterarSenha')[0].reset();
+                $('#password-error').addClass('d-none');
+            });
         });
     </script>
 </body>

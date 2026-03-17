@@ -12,6 +12,52 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
     exit();
 }
 
+// === PROCESSAMENTO SMTP: Salva as credenciais do servidor de e-mail ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['smtp_config'])) {
+    // Garantir tabela
+    $conn->query("CREATE TABLE IF NOT EXISTS configuracoes_smtp (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        smtp_host VARCHAR(255) NOT NULL DEFAULT 'smtp.gmail.com',
+        smtp_user VARCHAR(255) NOT NULL DEFAULT '',
+        smtp_pass VARCHAR(255) NOT NULL DEFAULT '',
+        smtp_port INT NOT NULL DEFAULT 587,
+        smtp_from_name VARCHAR(255) NOT NULL DEFAULT 'ASSET MGT - ALERTA',
+        smtp_secure ENUM('tls','ssl') NOT NULL DEFAULT 'tls',
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )");
+
+    $host      = $conn->real_escape_string(trim($_POST['smtp_host'] ?? ''));
+    $user      = $conn->real_escape_string(trim($_POST['smtp_user'] ?? ''));
+    $pass_raw  = trim($_POST['smtp_pass'] ?? '');
+    $port      = (int)($_POST['smtp_port'] ?? 587);
+    $from_name = $conn->real_escape_string(trim($_POST['smtp_from_name'] ?? 'ASSET MGT - ALERTA'));
+    $secure    = in_array($_POST['smtp_secure'] ?? 'tls', ['tls','ssl']) ? $_POST['smtp_secure'] : 'tls';
+
+    $pass_sql = '';
+    if ($pass_raw !== '') {
+        $pass_safe = $conn->real_escape_string($pass_raw);
+        $pass_sql  = ", smtp_pass = '$pass_safe'";
+    }
+
+    $check = $conn->query("SELECT id FROM configuracoes_smtp LIMIT 1");
+    if ($check && $check->num_rows > 0) {
+        $r = $check->fetch_assoc();
+        $sql = "UPDATE configuracoes_smtp SET smtp_host='$host', smtp_user='$user' $pass_sql, smtp_port=$port, smtp_from_name='$from_name', smtp_secure='$secure' WHERE id=" . $r['id'];
+    } else {
+        $pass_safe = $conn->real_escape_string($pass_raw);
+        $sql = "INSERT INTO configuracoes_smtp (smtp_host,smtp_user,smtp_pass,smtp_port,smtp_from_name,smtp_secure) VALUES ('$host','$user','$pass_safe',$port,'$from_name','$secure')";
+    }
+    $success = $conn->query($sql);
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? 'smtp_success' : 'error'));
+    }
+    exit();
+}
+
 // === PROCESSAMENTO DE SLA: Salva ou atualiza os tempos de resposta por categoria ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     $success = true;
@@ -244,6 +290,38 @@ if ($result_cat_doacao) {
     while ($row_cd = mysqli_fetch_assoc($result_cat_doacao)) {
         $cat_doacao[$row_cd['categoria']] = $row_cd['elegivel_doacao'];
     }
+}
+
+// Fetch SMTP settings
+$smtp_config = [
+    'smtp_host'      => 'smtp.gmail.com',
+    'smtp_user'      => '',
+    'smtp_pass'      => '',
+    'smtp_port'      => 587,
+    'smtp_from_name' => 'ASSET MGT - ALERTA',
+    'smtp_secure'    => 'tls',
+];
+// Garantir tabela e buscar configurações
+$conn->query("CREATE TABLE IF NOT EXISTS configuracoes_smtp (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    smtp_host VARCHAR(255) NOT NULL DEFAULT 'smtp.gmail.com',
+    smtp_user VARCHAR(255) NOT NULL DEFAULT '',
+    smtp_pass VARCHAR(255) NOT NULL DEFAULT '',
+    smtp_port INT NOT NULL DEFAULT 587,
+    smtp_from_name VARCHAR(255) NOT NULL DEFAULT 'ASSET MGT - ALERTA',
+    smtp_secure ENUM('tls','ssl') NOT NULL DEFAULT 'tls',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)");
+$res_smtp = $conn->query("SELECT * FROM configuracoes_smtp LIMIT 1");
+if ($res_smtp && $res_smtp->num_rows > 0) {
+    $smtp_config = $res_smtp->fetch_assoc();
+} else {
+    // Se ainda não existe registro, pré-popular com os valores do arquivo legado
+    require_once 'config_notificacoes.php';
+    $smtp_config['smtp_host']      = defined('SMTP_HOST') ? SMTP_HOST : 'smtp.gmail.com';
+    $smtp_config['smtp_user']      = defined('SMTP_USER') ? SMTP_USER : '';
+    $smtp_config['smtp_port']      = defined('SMTP_PORT') ? SMTP_PORT : 587;
+    $smtp_config['smtp_from_name'] = defined('SMTP_FROM_NAME') ? SMTP_FROM_NAME : 'ASSET MGT - ALERTA';
 }
 
 /**
@@ -668,7 +746,139 @@ function getHoursAndMinutes($total_minutes)
                     <div id="autoSaveStatus"><i class="fas fa-check-circle mr-2"></i> <span
                             id="autoSaveMessage">Alteração salva!</span></div>
 
+                    <!-- ══════════════════════════════════════════ -->
+                    <!-- CONFIGURAÇÃO DE E-MAIL (SMTP)             -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <div class="card shadow mb-4" id="cardSmtp">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="text-primary m-0 font-weight-bold">
+                                <i class="fas fa-server mr-2"></i>Configuração de E-mail (SMTP)
+                            </h6>
+                            <span class="badge badge-pill badge-light text-muted small" id="smtpUpdatedAt"
+                                  title="Última atualização">
+                                <?php if (!empty($smtp_config['updated_at'])): ?>
+                                    Atualizado em: <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
+                                <?php else: ?>
+                                    Configuração padrão
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-3">
+                                Configure o servidor de e-mail utilizado para envio de alertas e notificações do sistema.
+                            </p>
+
+                            <!-- Modo Leitura -->
+                            <div id="smtpReadMode">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4e73df,#224abe);display:flex;align-items:center;justify-content:center;">
+                                            <i class="fas fa-envelope-open-text text-white" style="font-size:1.4rem;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="font-weight-bold text-dark" style="font-size:1rem;">
+                                            <?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>
+                                        </div>
+                                        <div class="text-muted small">
+                                            <i class="fas fa-at mr-1"></i><?php echo htmlspecialchars($smtp_config['smtp_user'] ?: 'Não configurado'); ?>
+                                        </div>
+                                        <div class="text-muted small">
+                                            <i class="fas fa-network-wired mr-1"></i>
+                                            <?php echo htmlspecialchars($smtp_config['smtp_host']); ?>
+                                            : <?php echo (int)$smtp_config['smtp_port']; ?>
+                                            &nbsp;<span class="badge badge-<?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'warning' : 'success'; ?> badge-pill" style="font-size:0.65rem;">
+                                                <?php echo strtoupper($smtp_config['smtp_secure'] ?? 'TLS'); ?>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto d-flex" style="gap:8px;">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnSmtpTest"
+                                                style="border-radius:20px;font-size:0.8rem;">
+                                            <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="btnSmtpEdit"
+                                                style="border-radius:20px;font-size:0.8rem;">
+                                            <i class="fas fa-pen mr-1"></i>Editar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modo Edição (oculto por padrão) -->
+                            <div id="smtpEditMode" style="display:none;">
+                                <form id="formSmtpConfig" autocomplete="off">
+                                    <input type="hidden" name="smtp_config" value="1">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">Nome do Remetente</label>
+                                            <input type="text" class="form-control" name="smtp_from_name" id="smtp_from_name"
+                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>"
+                                                   placeholder="Ex: ASSET MGT - ALERTA">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">E-mail Remetente (usuário SMTP)</label>
+                                            <input type="email" class="form-control" name="smtp_user" id="smtp_user"
+                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_user']); ?>"
+                                                   placeholder="remetente@dominio.com">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">Senha / App Password</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="smtp_pass" id="smtp_pass"
+                                                       placeholder="Deixe em branco para manter a atual">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" id="btnTogglePass"
+                                                            tabindex="-1">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">Para Gmail, use uma <a href="https://myaccount.google.com/apppasswords" target="_blank">Senha de App</a>.</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">Servidor SMTP (Host)</label>
+                                            <input type="text" class="form-control" name="smtp_host" id="smtp_host"
+                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_host']); ?>"
+                                                   placeholder="smtp.gmail.com">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">Porta</label>
+                                            <input type="number" class="form-control" name="smtp_port" id="smtp_port"
+                                                   value="<?php echo (int)$smtp_config['smtp_port']; ?>"
+                                                   placeholder="587">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="small font-weight-bold text-gray-700">Criptografia</label>
+                                            <select class="form-control" name="smtp_secure" id="smtp_secure">
+                                                <option value="tls" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : ''; ?>>TLS (porta 587)</option>
+                                                <option value="ssl" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'selected' : ''; ?>>SSL (porta 465)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex" style="gap:8px; margin-top:4px;">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnSmtpCancel"
+                                                style="border-radius:20px;font-size:0.8rem;">
+                                            <i class="fas fa-times mr-1"></i>Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-success" id="btnSmtpSave"
+                                                style="border-radius:20px;font-size:0.8rem;">
+                                            <i class="fas fa-save mr-1"></i>Salvar Configurações
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary ml-auto" id="btnSmtpTestEdit"
+                                                style="border-radius:20px;font-size:0.8rem;">
+                                            <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Resultado do teste -->
+                                <div id="smtpTestResult" class="mt-3" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- CANAIS DE NOTIFICAÇÃO (DESIGN NOVO) -->
+
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="text-primary m-0 font-weight-bold">Canais de Notificação e Alerta</h6>
@@ -1470,6 +1680,98 @@ function getHoursAndMinutes($total_minutes)
             $('#formAlertasConfig .badge-checkbox, #formAlertasConfig .channel-toggle').on('change', function () {
                 $('#formAlertasConfig').submit();
             });
+
+            // ══════════════════════════════════════════════════
+            // BLOCO SMTP – lógica de botões
+            // ══════════════════════════════════════════════════
+            function smtpShowEdit() {
+                $('#smtpReadMode').slideUp(200, function () {
+                    $('#smtpEditMode').slideDown(200);
+                });
+                $('#smtpTestResult').hide().html('');
+            }
+
+            function smtpShowRead() {
+                $('#smtpEditMode').slideUp(200, function () {
+                    $('#smtpReadMode').slideDown(200);
+                });
+                $('#smtpTestResult').hide().html('');
+            }
+
+            function smtpShowResult(success, msg) {
+                const cls = success ? 'alert-success' : 'alert-danger';
+                const ico = success ? 'fa-check-circle' : 'fa-exclamation-triangle';
+                $('#smtpTestResult')
+                    .html('<div class="alert ' + cls + ' py-2 small mb-0"><i class="fas ' + ico + ' mr-2"></i>' + msg + '</div>')
+                    .show();
+            }
+
+            function smtpDoTest() {
+                const $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Testando...');
+                $('#smtpTestResult').hide();
+
+                $.ajax({
+                    url: 'ajax_smtp.php',
+                    type: 'POST',
+                    data: { action: 'test' },
+                    dataType: 'json',
+                    success: function (r) {
+                        smtpShowResult(r.success, r.message);
+                    },
+                    error: function () {
+                        smtpShowResult(false, 'Erro de comunicação com o servidor.');
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i>Testar Conexão');
+                    }
+                });
+            }
+
+            // Botões Editar / Cancelar
+            $('#btnSmtpEdit').on('click', smtpShowEdit);
+            $('#btnSmtpCancel').on('click', smtpShowRead);
+
+            // Mostrar / ocultar senha
+            $('#btnTogglePass').on('click', function () {
+                const $inp = $('#smtp_pass');
+                const isPass = $inp.attr('type') === 'password';
+                $inp.attr('type', isPass ? 'text' : 'password');
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+
+            // Botões Testar (modo leitura e modo edição)
+            $('#btnSmtpTest, #btnSmtpTestEdit').on('click', smtpDoTest);
+
+            // Salvar via AJAX
+            $('#btnSmtpSave').on('click', function () {
+                const $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Salvando...');
+
+                $.ajax({
+                    url: 'ajax_smtp.php',
+                    type: 'POST',
+                    data: { action: 'save', ...$('#formSmtpConfig').serializeArray().reduce((o, f) => ({ ...o, [f.name]: f.value }), {}) },
+                    dataType: 'json',
+                    success: function (r) {
+                        if (r.success) {
+                            showAutoSaved('Configurações SMTP salvas!');
+                            smtpShowRead();
+                            // Atualiza o display de leitura com novos valores sem recarregar
+                            location.reload();
+                        } else {
+                            smtpShowResult(false, r.message || 'Erro ao salvar.');
+                        }
+                    },
+                    error: function () {
+                        smtpShowResult(false, 'Erro de comunicação com o servidor.');
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Salvar Configurações');
+                    }
+                });
+            });
+            // ══ FIM BLOCO SMTP ════════════════════════════════
 
         });
     </script>

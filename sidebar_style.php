@@ -18,28 +18,106 @@
         --topbar-bg: #fff;
     }
 
-    .sidebar {
+    nav.sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 15rem !important;
         background: linear-gradient(180deg, var(--sidebar-bg-start) 0%, var(--sidebar-bg-end) 100%) !important;
         box-shadow: 10px 0 30px rgba(88, 109, 133, 0.3) !important;
         border-right: 0px solid rgba(255, 255, 255, 0.05);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         z-index: 1050;
         min-height: 100vh !important;
+        overflow: visible !important; /* Allow hover effects to cross sidebar boundary */
+        padding-bottom: 0 !important;
+        padding-top: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
 
+    ul.sidebar {
+        position: relative !important;
+        width: 100% !important;
+        flex: 1 1 auto !important;
+        max-height: calc(100vh - 6rem - 5rem) !important; /* viewport - brand header - toggle button */
+        overflow-y: auto !important;
+        overflow-x: visible !important;
+        margin-top: 0 !important;
+        margin-bottom: 5rem !important; /* Space for fixed toggle button */
+        background: transparent !important;
+        box-shadow: none !important;
+        z-index: 1;
+    }
+
+    ul.sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ul.sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    /* Fixed toggle container at bottom */
+    .sidebar .text-center.d-md-inline {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 15rem;
+        background: linear-gradient(90deg, var(--sidebar-bg-end) 0%, var(--sidebar-bg-end) 100%);
+        padding: 1rem 0;
+        z-index: 1051;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: block !important; /* Ensure it shows up if it was d-none */
+    }
+
+    .sidebar.toggled .text-center.d-md-inline {
+        width: 6.5rem;
+    }
+
+    /* Sidebar Toggle Styling */
+    #sidebarToggle {
+        width: 2.5rem;
+        height: 2.5rem;
+        text-align: center;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        transition: all 0.3s !important;
+        position: relative;
+    }
+
+
+    /* Scrollbar now handled by ul.sidebar */
+
     .sidebar-brand {
-        padding: 1.0rem 1rem 0.2rem 1rem !important;
-        margin-bottom: 0.0rem;
+        position: sticky !important;
+        top: 0;
+        display: flex !important;
+        text-decoration: none !important;
+        padding: 1.5rem 1rem !important;
+        margin-bottom: 1rem !important;
+        background: var(--sidebar-bg-start) !important;
+        z-index: 1052;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .sidebar-brand-icon {
+        font-size: 1.8rem !important;
+        color: #fff !important;
     }
 
     .sidebar-brand-text {
-        font-weight: 800;
-        letter-spacing: 2.5px;
-        font-size: 1.25rem;
-        background: linear-gradient(135deg, #fff 0%, #ffffff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-weight: 800 !important;
+        letter-spacing: 2px !important;
+        font-size: 1.1rem !important;
+        color: #fff !important;
         text-transform: uppercase;
+        margin-left: 10px;
     }
 
     .sidebar-heading {
@@ -55,6 +133,11 @@
     .nav-item {
         position: relative;
         margin: 0.15rem 0.8rem !important;
+        z-index: 1;
+    }
+
+    .nav-item:hover {
+        z-index: 1060 !important;
     }
 
     .nav-link {
@@ -67,7 +150,7 @@
         display: flex !important;
         align-items: center !important;
         border: 1px solid transparent !important;
-        overflow: hidden;
+        overflow: visible !important; /* Allow shadow to leak into the strip */
         white-space: nowrap !important;
     }
 
@@ -86,6 +169,8 @@
         transform: translateX(6px);
         backdrop-filter: blur(8px);
         border-color: rgba(255, 255, 255, 0.1) !important;
+        position: relative;
+        z-index: 1060 !important;
     }
 
     .nav-link:hover i {
@@ -100,6 +185,7 @@
         box-shadow: 0 10px 25px var(--sidebar-accent-glow) !important;
         font-weight: 600 !important;
         border-color: rgba(255, 255, 255, 0.1) !important;
+        z-index: 10;
     }
 
     .nav-link.active i {
@@ -182,10 +268,27 @@
 
     /* Sidebar Toggle Styling */
     #sidebarToggle {
+        width: 2.5rem;
+        height: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        cursor: pointer;
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.05) !important;
         transition: all 0.3s !important;
-        margin-top: 1.5rem;
+        position: relative;
+    }
+
+    #sidebarToggle::after {
+        font-weight: 900;
+        content: "\f104";
+        font-family: 'Font Awesome 5 Free';
+        margin-right: 0.1rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .sidebar.toggled #sidebarToggle::after {
+        content: "\f105";
     }
 
     #sidebarToggle:hover {
@@ -193,8 +296,14 @@
         transform: scale(1.1);
     }
 
+    #sidebarToggle:hover::after {
+        color: #fff;
+    }
+
+
+
     /* Toggled State Adjustments */
-    .sidebar.toggled {
+    nav.sidebar.toggled {
         width: 6.5rem !important;
     }
 
@@ -231,6 +340,12 @@
         flex-direction: column;
         width: 100%;
         flex: 1;
+        margin-left: 15rem; /* Sidebar width */
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar.toggled+#content-wrapper {
+        margin-left: 6.5rem;
     }
 
     #content {

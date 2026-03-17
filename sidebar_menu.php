@@ -111,3 +111,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button>
 </div>
 <?php include_once 'idle_timeout_modal.php'; ?>
+
+<script>
+(function () {
+    const ul = document.getElementById('accordionSidebar');
+    if (!ul) return;
+
+    document.querySelectorAll('#accordionSidebar .nav-link').forEach(function (link) {
+        link.addEventListener('mouseenter', function () {
+            ul.style.overflowY = 'visible';
+            ul.style.overflowX = 'visible';
+        });
+        link.addEventListener('mouseleave', function () {
+            ul.style.overflowY = 'auto';
+            ul.style.overflowX = 'visible';
+        });
+    });
+})();
+</script>

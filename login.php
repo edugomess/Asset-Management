@@ -229,7 +229,7 @@
                                             </div>
                                             <hr>
                                             <div class="text-center">
-                                                <a class="small" href="forgot-password.html"
+                                                <a class="small" href="esqueceu_senha.php"
                                                     style="color: #2c404a; font-weight: 600; text-decoration: none;">Esqueceu
                                                     a senha?</a>
                                             </div>

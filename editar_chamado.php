@@ -134,8 +134,8 @@ if ($result->num_rows == 0) {
 }
 $chamado = $result->fetch_assoc();
 
-// Buscar lista de usuários para Responsável
-$sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
+// Buscar lista de usuários para Responsável (Apenas Admin e Suporte)
+$sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios WHERE nivelUsuario IN ('Admin', 'Suporte') ORDER BY nome";
 $result_users = $conn->query($sql_users);
 
 $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
@@ -181,25 +181,25 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                             <form method="post">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label>Título</label>
+                                        <label class="text-gray-600 small font-weight-bold">Título</label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['titulo']); ?>" readonly>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label>Categoria</label>
+                                        <label class="text-gray-600 small font-weight-bold">Categoria</label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['categoria']); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label>Solicitante</label>
+                                        <label class="text-gray-600 small font-weight-bold">Solicitante</label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome']); ?>"
                                             readonly>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label>Data Abertura</label>
+                                        <label class="text-gray-600 small font-weight-bold">Data Abertura</label>
                                         <input type="text" class="form-control"
                                             value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>"
                                             readonly>
@@ -207,7 +207,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
-                                        <label>Prioridade</label>
+                                        <label class="text-gray-600 small font-weight-bold">Prioridade</label>
                                         <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="Baixa" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>>Baixa</option>
                                             <option value="Média" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>>Média</option>
@@ -216,7 +216,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Descrição</label>
+                                    <label class="text-gray-600 small font-weight-bold">Descrição</label>
                                     <textarea id="chamado-descricao" class="form-control" rows="5"
                                         readonly><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
                                 </div>
@@ -246,7 +246,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
 
                                 <?php if (!empty($chamado['anexo'])): ?>
                                     <div class="form-group">
-                                        <label><i class="fas fa-paperclip"></i> Anexo</label>
+                                        <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> Anexo</label>
                                         <div
                                             style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 15px; background: #f8f9fc; display: flex; align-items: center; gap: 12px;">
                                             <?php
@@ -288,7 +288,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 endif; ?>
 
                                 <div class="form-group">
-                                    <label><strong>Notas de Resolução</strong> <small class="text-muted">(Registre aqui
+                                    <label class="text-gray-600 small font-weight-bold"><strong>Notas de Resolução</strong> <small class="text-muted">(Registre aqui
                                             as ações realizadas para resolver o chamado)</small></label>
                                     <?php
                                     $notas_display = [];
@@ -368,7 +368,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 </div>
                                 <div class="form-row align-items-end">
                                     <div class="form-group col-md-4">
-                                        <label for="status">Status Atual</label>
+                                        <label class="text-gray-600 small font-weight-bold" for="status">Status Atual</label>
                                         <select class="form-control" name="status" id="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="Aberto" <?php if ($chamado['status'] == 'Aberto')
                                                 echo 'selected'; ?>>Aberto</option>
@@ -383,7 +383,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                         </select>
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label for="responsavel">Atribuir Responsável</label>
+                                        <label class="text-gray-600 small font-weight-bold" for="responsavel">Atribuir Responsável</label>
                                         <select class="form-control" name="responsavel_id" id="responsavel" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                             <option value="">-- Selecione --</option>
                                             <?php

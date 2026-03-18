@@ -97,6 +97,8 @@
         position: sticky !important;
         top: 0;
         display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
         text-decoration: none !important;
         padding: 1.5rem 1rem !important;
         margin-bottom: 1rem !important;

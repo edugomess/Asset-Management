@@ -49,6 +49,18 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     style="margin: 5px 23px;">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
                             id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <!-- Busca Global -->
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                        </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
@@ -169,6 +181,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

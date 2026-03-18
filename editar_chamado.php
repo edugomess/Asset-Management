@@ -327,7 +327,19 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                         <?php if (!empty($nota_item['editado_em'])): ?>
                                                             <span class="badge badge-warning ml-1"
                                                                 style="font-size: 85%; font-weight: 600; font-style: italic;">
-                                                                <i class="fas fa-pencil-alt"></i> Editado em
+                                                                <!-- Busca Global -->
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                        </form>
+                        <ul class="navbar-nav flex-nowrap ml-auto"></i> Editado em
                                                                 <?php echo htmlspecialchars($nota_item['editado_em']); ?>
                                                             </span>
                                                             <?php
@@ -476,6 +488,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
             }
         });
     </script>
+        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

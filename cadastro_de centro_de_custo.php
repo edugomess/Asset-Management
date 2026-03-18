@@ -74,92 +74,19 @@ include 'auth.php'; // Proteção de sessão
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-primary icon-circle"><i
-                                                        class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i
-                                                        class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i
-                                                        class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your
-                                                    account.</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
-                                            Alerts</a>
+                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
+                                            class="border rounded-circle img-profile"
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
+                                            class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
+                                            class="dropdown-item" href="configuracoes.php"><i
+                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
-                                                        help me with a problem I've been having.</span></div>
-                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                                <div class="status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>I have the photos that you ordered last
-                                                        month!</span></div>
-                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                                <div class="bg-warning status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Last month's report looks great, I am
-                                                        very happy with the progress so far, keep up the good
-                                                        work!</span></div>
-                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar5.jpeg?h=35dc45edbcda6b3fc752dab2b0f082ea">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is
-                                                        because someone told me that people say this to all dogs, even
-                                                        if they aren't good...</span></div>
-                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
-                                            Alerts</a>
-                                    </div>
-                                </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="alertsDropdown"></div>
                             </li>
                         </ul>
                     </div>
@@ -169,32 +96,26 @@ include 'auth.php'; // Proteção de sessão
                 </div><!-- Start: Multi-row Form -->
                 <form action="inserir_centro_de_custo.php" method="post" enctype="multipart/form-data">
 
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row">
-
-                    </div><!-- End: 2-column form row -->
                     <!-- Start: 3-column form row -->
                     <div class="form-row">
                         <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="nomeSetor"
-                                    type="text" placeholder="Nome do Setor"></div>
+                            <div class="form-group"><label>Nome do Setor</label><input class="form-control" name="nomeSetor"
+                                    type="text" placeholder="Ex: Tecnologia da Informação"></div>
                         </div>
                         <div class="col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="codigo" type="tel"
-                                    placeholder="Código"></div>
+                            <div class="form-group"><label>Código</label><input class="form-control" name="codigo" type="tel"
+                                    placeholder="Ex: 102030"></div>
                         </div>
-                        <div class="col-xl-2">
-                            <div class="input-group mb-4">
-                                <div class="input-group-prepend"></div><input class="form-control" name="ramal"
-                                    type="text" placeholder="Ramal" style="border-radius: 5.6px;margin-top: 24px;">
+                        <div class="col-xl-1">
+                            <div class="form-group"><label>Ramal</label><input class="form-control" name="ramal"
+                                    type="text" placeholder="Ex: 2201">
                             </div>
                         </div>
-                        <div class="col-sm-3 col-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="unidade"
+                        <div class="col-sm-3 col-xl-2">
+                            <div class="form-group"><label>Unidade</label><select class="form-control" name="unidade"
                                     required="">
-                                    <optgroup label="Unidade">
-                                        <<option value="FLMA" selected="">
-                                            </option>
+                                    <optgroup label="Selecione a Unidade">
+                                        <?php
                                             // LISTAGEM DINÂMICA: Carrega as unidades disponíveis para o seletor
                                             include 'conexao.php';
 
@@ -222,31 +143,30 @@ include 'auth.php'; // Proteção de sessão
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
                         <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="emailGestor"
-                                    type="text" placeholder="E-mail do Gestor"></div>
+                            <div class="form-group"><label>E-mail do Gestor</label><input class="form-control" name="emailGestor"
+                                    type="text" placeholder="Ex: gestor@empresa.com.br"></div>
                         </div>
-                        <div class="col-sm-3 col-xl-1">
-
+                        <div class="col-sm-3 col-xl-4 offset-xl-2">
+                            <div class="form-group"><label>Gestor Responsável</label><input class="form-control" name="gestor" type="text"
+                                    placeholder="Ex: João da Silva"></div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="form-group"><label></label><input class="form-control" name="gestor" type="text"
-                                    placeholder="Gestor"></div>
+                    </div><!-- End: 2-column form row -->
+                    <div class="form-row">
+                        <div class="col-sm-4 col-xl-5 offset-xl-1">
+                            <div class="form-group">
+                                <label>Imagem do Setor/Unidade</label>
+                                <input class="form-control-file" name="imagem" type="file" accept="image/*">
+                            </div>
                         </div>
-                        <div class="col-sm-4 col-xl-2" style="margin-top: 23px;">
-                            <!-- Start: Date Range Picker -->
-                            <div class="custom-control custom-switch" style="margin-top: 30px;">
+                        <div class="col-sm-4 col-xl-2 offset-xl-3 d-flex align-items-end" style="margin-bottom: 15px;">
+                            <div class="custom-control custom-switch">
                                 <input type="hidden" name="status" value="Inativo">
                                 <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
                                     value="Ativo" checked>
                                 <label class="custom-control-label" for="statusSwitch">Ativo</label>
                             </div>
                         </div>
-                    </div><!-- End: 4-column form row -->
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row" style="height: 80px;">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex"
-                                name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
-                    </div><!-- End: 3-column form row -->
+                    </div><!-- End: Form-row with Image and Status -->
                     <!-- Start: 4-column form row -->
                     <div class="form-row">
                         <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control"

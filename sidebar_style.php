@@ -100,8 +100,9 @@
         justify-content: center !important;
         align-items: center !important;
         text-decoration: none !important;
-        padding: 1.5rem 1rem !important;
-        margin-bottom: 1rem !important;
+        padding: 0 !important; /* Removemos padding para controlar via height */
+        height: 6rem !important; /* Altura fixa para garantir centralização vertical */
+        margin-bottom: 0.5rem !important;
         background: var(--sidebar-bg-start) !important;
         z-index: 1052;
         transition: all 0.3s ease;
@@ -119,7 +120,8 @@
         font-size: 1.1rem !important;
         color: #fff !important;
         text-transform: uppercase;
-        margin-left: 10px;
+        margin-left: 0 !important; /* Removido para não quebrar o justify-content: center */
+        line-height: 1 !important; /* Garante alinhamento vertical com o ícone */
     }
 
     .sidebar-heading {

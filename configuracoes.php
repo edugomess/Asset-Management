@@ -793,12 +793,11 @@ function getHoursAndMinutes($total_minutes)
                                         </div>
                                     </div>
                                     <div class="col-auto d-flex" style="gap:8px;">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnSmtpTest"
-                                                style="border-radius:20px;font-size:0.8rem;">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnSmtpTest">
                                             <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
                                         </button>
                                         <button type="button" class="btn btn-sm btn-primary" id="btnSmtpEdit"
-                                                style="border-radius:20px;font-size:0.8rem;">
+                                                style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
                                             <i class="fas fa-pen mr-1"></i>Editar
                                         </button>
                                     </div>
@@ -857,16 +856,14 @@ function getHoursAndMinutes($total_minutes)
                                         </div>
                                     </div>
                                     <div class="d-flex" style="gap:8px; margin-top:4px;">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnSmtpCancel"
-                                                style="border-radius:20px;font-size:0.8rem;">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnSmtpCancel">
                                             <i class="fas fa-times mr-1"></i>Cancelar
                                         </button>
                                         <button type="button" class="btn btn-sm btn-success" id="btnSmtpSave"
-                                                style="border-radius:20px;font-size:0.8rem;">
+                                                style="background: rgb(44,64,74); border-color: rgb(44,64,74); color: #fff;">
                                             <i class="fas fa-save mr-1"></i>Salvar Configurações
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary ml-auto" id="btnSmtpTestEdit"
-                                                style="border-radius:20px;font-size:0.8rem;">
+                                        <button type="button" class="btn btn-sm btn-outline-primary ml-auto" id="btnSmtpTestEdit">
                                             <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
                                         </button>
                                     </div>

@@ -93,7 +93,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Nome</label>
+                                            <label class="text-gray-600 small font-weight-bold">Nome</label>
                                             <input class="form-control" name="nome" type="text"
                                                 value="<?php echo htmlspecialchars($user['nome']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -101,7 +101,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Sobrenome</label>
+                                            <label class="text-gray-600 small font-weight-bold">Sobrenome</label>
                                             <input class="form-control" name="sobrenome" type="text"
                                                 value="<?php echo htmlspecialchars($user['sobrenome']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -113,7 +113,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Usuário AD</label>
+                                            <label class="text-gray-600 small font-weight-bold">Usuário AD</label>
                                             <input class="form-control" name="usuarioAD" type="text"
                                                 value="<?php echo htmlspecialchars($user['usuarioAD']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -121,7 +121,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Função</label>
+                                            <label class="text-gray-600 small font-weight-bold">Função</label>
                                             <input class="form-control" name="funcao" type="text"
                                                 value="<?php echo htmlspecialchars($user['funcao']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -133,7 +133,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Data de Nascimento</label>
+                                            <label class="text-gray-600 small font-weight-bold">Data de Nascimento</label>
                                             <input class="form-control" name="dataNascimento" type="date"
                                                 value="<?php echo $user['dataNascimento']; ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -141,7 +141,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Email</label>
+                                            <label class="text-gray-600 small font-weight-bold">Email</label>
                                             <input class="form-control" name="email" type="email"
                                                 value="<?php echo htmlspecialchars($user['email']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -153,7 +153,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-danger">CPF (Somente Números)</label>
+                                            <label class="text-gray-600 small font-weight-bold text-danger">CPF (Somente Números)</label>
                                             <input class="form-control" name="cpf" id="cpf" type="text"
                                                 value="<?php echo htmlspecialchars($user['cpf'] ?? ''); ?>" required=""
                                                 maxlength="14" oninput="maskCPF(this)"
@@ -164,7 +164,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
                                             <select class="form-control" name="centroDeCusto" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="Nenhum" <?php echo ($user['centroDeCusto'] == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
                                                 <?php
@@ -189,7 +189,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Matrícula</label>
+                                            <label class="text-gray-600 small font-weight-bold">Matrícula</label>
                                             <input class="form-control" name="matricula" type="text"
                                                 value="<?php echo htmlspecialchars($user['matricula']); ?>" readonly
                                                 required="">
@@ -197,7 +197,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Telefone</label>
+                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
                                             <input class="form-control" name="telefone" type="text"
                                                 value="<?php echo htmlspecialchars($user['telefone']); ?>"
                                                 inputmode="tel" required=""
@@ -210,7 +210,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Tipo de Contrato</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Contrato</label>
                                             <select class="form-control" name="tipoContrato" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="CLT" <?php echo (($user['tipoContrato'] ?? '') == 'CLT') ? 'selected' : ''; ?>>CLT</option>
                                                 <option value="PJ" <?php echo (($user['tipoContrato'] ?? '') == 'PJ') ? 'selected' : ''; ?>>PJ</option>
@@ -224,7 +224,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Tipo de Usuário</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Usuário</label>
                                             <select class="form-control" name="nivelUsuario" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="1" <?php echo (($user['nivelUsuario'] ?? '') == 'Admin') ? 'selected' : ''; ?>>Administrador</option>
                                                 <option value="2" <?php echo (($user['nivelUsuario'] ?? '') == 'Suporte') ? 'selected' : ''; ?>>Suporte</option>
@@ -247,7 +247,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Unidade</label>
+                                            <label class="text-gray-600 small font-weight-bold">Unidade</label>
                                             <select class="form-control" name="unidade" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <?php
                                                 $sql_un = "SELECT unidade FROM unidade ORDER BY unidade ASC";
@@ -265,7 +265,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Status</label>
+                                            <label class="text-gray-600 small font-weight-bold">Status</label>
                                             <select class="form-control" name="status" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <option value="Ativo" <?php echo ($user['status'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
                                                 <option value="Inativo" <?php echo ($user['status'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
@@ -281,12 +281,12 @@ if ($id > 0) {
                                 <div class="form-row mt-4">
                                     <div class="col-xl-10 offset-xl-1 d-flex align-items-center">
                                         <div class="mr-4">
-                                            <label>Foto Atual</label><br>
+                                            <label class="text-gray-600 small font-weight-bold">Foto Atual</label><br>
                                             <img src="<?php echo !empty($user['foto_perfil']) ? htmlspecialchars($user['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
                                                 class="img-thumbnail" style="max-width: 100px;">
                                         </div>
                                         <div class="flex-grow-1">
-                                            <label>Alterar Foto de Perfil</label>
+                                            <label class="text-gray-600 small font-weight-bold">Alterar Foto de Perfil</label>
                                             <input type="file" class="form-control-file" name="foto_perfil"
                                                 accept="image/*">
                                         </div>

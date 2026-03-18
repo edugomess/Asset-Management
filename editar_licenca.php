@@ -87,105 +87,117 @@ if ($id > 0) {
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Editar Licença</h3>
+                    <h3 class="text-dark mb-4">Editar Licença</h3>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="update_licenca.php" method="post">
+                                <input type="hidden" name="id_licenca" value="<?php echo $row['id_licenca']; ?>">
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Software / Aplicação</label>
+                                            <input class="form-control" name="software" type="text"
+                                                value="<?php echo htmlspecialchars($row['software']); ?>" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
+                                            <input class="form-control" name="fabricante" type="text"
+                                                value="<?php echo htmlspecialchars($row['fabricante']); ?>" required="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Licença</label>
+                                            <select class="form-control" name="tipo">
+                                                <option value="Assinatura" <?php echo $row['tipo'] == 'Assinatura' ? 'selected' : ''; ?>>Assinatura</option>
+                                                <option value="Vitalícia" <?php echo $row['tipo'] == 'Vitalícia' ? 'selected' : ''; ?>>Vitalícia</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Chave de Licença</label>
+                                            <input class="form-control" name="chave" type="text"
+                                                value="<?php echo htmlspecialchars($row['chave']); ?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-4 col-xl-2 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Seats</label>
+                                            <input class="form-control" name="quantidade_total" type="number"
+                                                value="<?php echo $row['quantidade_total']; ?>" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-2">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Valor (Unit)</label>
+                                            <input class="form-control" name="valor_unitario" type="number" step="0.01"
+                                                value="<?php echo $row['valor_unitario']; ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <select class="form-control" name="id_centro_custo">
+                                                <option value="">Nenhum</option>
+                                                <?php
+                                                mysqli_data_seek($result_cc, 0);
+                                                while ($row_cc = mysqli_fetch_assoc($result_cc)) {
+                                                    $selected = ($row_cc['id_centro_de_custo'] == $row['id_centro_custo']) ? 'selected' : '';
+                                                    echo "<option value='" . $row_cc['id_centro_de_custo'] . "' $selected>" . htmlspecialchars($row_cc['nomeSetor']) . "</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Data Aquisição</label>
+                                            <input class="form-control" name="data_aquisicao" type="date"
+                                                value="<?php echo $row['data_aquisicao']; ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Data Expiração</label>
+                                            <input class="form-control" name="data_expiracao" type="date"
+                                                value="<?php echo $row['data_expiracao']; ?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Status</label>
+                                            <select class="form-control" name="status">
+                                                <option value="Ativa" <?php echo $row['status'] == 'Ativa' ? 'selected' : ''; ?>>Ativa</option>
+                                                <option value="Expirada" <?php echo $row['status'] == 'Expirada' ? 'selected' : ''; ?>>Expirada</option>
+                                                <option value="Cancelada" <?php echo $row['status'] == 'Cancelada' ? 'selected' : ''; ?>>Cancelada</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-xl-4 offset-xl-4">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 15px;border-width: 0px;height: 50px;">
+                                            <i class="fas fa-save mr-2"></i>Atualizar Licença
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <form action="update_licenca.php" method="post">
-                    <input type="hidden" name="id_licenca" value="<?php echo $row['id_licenca']; ?>">
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Software / Aplicação</label>
-                                <input class="form-control" name="software" type="text"
-                                    value="<?php echo htmlspecialchars($row['software']); ?>" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Fabricante</label>
-                                <input class="form-control" name="fabricante" type="text"
-                                    value="<?php echo htmlspecialchars($row['fabricante']); ?>" required="">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Tipo de Licença</label>
-                                <select class="form-control" name="tipo">
-                                    <option value="Assinatura" <?php echo $row['tipo'] == 'Assinatura' ? 'selected' : ''; ?>>Assinatura</option>
-                                    <option value="Vitalícia" <?php echo $row['tipo'] == 'Vitalícia' ? 'selected' : ''; ?>>Vitalícia</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Chave de Licença</label>
-                                <input class="form-control" name="chave" type="text"
-                                    value="<?php echo htmlspecialchars($row['chave']); ?>">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group">
-                                <label>Quantidade Seats</label>
-                                <input class="form-control" name="quantidade_total" type="number"
-                                    value="<?php echo $row['quantidade_total']; ?>" min="1">
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-xl-2">
-                            <div class="form-group">
-                                <label>Valor Unitário</label>
-                                <input class="form-control" name="valor_unitario" type="number" step="0.01"
-                                    value="<?php echo $row['valor_unitario']; ?>">
-                            </div>
-                        </div>
-                        <div class="col-xl-2">
-                            <label>Centro de Custo</label>
-                            <select class="form-control" name="id_centro_custo">
-                                <option value="">Nenhum</option>
-                                <?php
-                                mysqli_data_seek($result_cc, 0);
-                                while ($row_cc = mysqli_fetch_assoc($result_cc)) {
-                                    $selected = ($row_cc['id_centro_de_custo'] == $row['id_centro_custo']) ? 'selected' : '';
-                                    echo "<option value='" . $row_cc['id_centro_de_custo'] . "' $selected>" . htmlspecialchars($row_cc['nomeSetor']) . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col-xl-2">
-                            <label>Data de Aquisição</label>
-                            <input class="form-control" name="data_aquisicao" type="date"
-                                value="<?php echo $row['data_aquisicao']; ?>">
-                        </div>
-                        <div class="col-xl-2">
-                            <label>Data de Expiração</label>
-                            <input class="form-control" name="data_expiracao" type="date"
-                                value="<?php echo $row['data_expiracao']; ?>">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select class="form-control" name="status">
-                                    <option value="Ativa" <?php echo $row['status'] == 'Ativa' ? 'selected' : ''; ?>>Ativa
-                                    </option>
-                                    <option value="Expirada" <?php echo $row['status'] == 'Expirada' ? 'selected' : ''; ?>>Expirada</option>
-                                    <option value="Cancelada" <?php echo $row['status'] == 'Cancelada' ? 'selected' : ''; ?>>Cancelada</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-4 offset-xl-4">
-                            <button class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar
-                                Licença</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

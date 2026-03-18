@@ -98,20 +98,20 @@ include 'auth.php'; // Proteção de sessão
                             <form action="inserir_centro_de_custo.php" method="post" enctype="multipart/form-data">
                                 <div class="form-row">
                                     <div class="col-sm-3 col-xl-4 offset-xl-1">
-                                        <div class="form-group"><label>Nome do Setor</label><input class="form-control"
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">Nome do Setor</label><input class="form-control"
                                                 name="nomeSetor" type="text"
                                                 placeholder="Ex: Tecnologia da Informação"></div>
                                     </div>
                                     <div class="col-xl-2 offset-xl-1">
-                                        <div class="form-group"><label>Código</label><input class="form-control"
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">Código</label><input class="form-control"
                                                 name="codigo" type="tel" placeholder="Ex: 102030"></div>
                                     </div>
                                     <div class="col-xl-2">
-                                        <div class="form-group"><label>Ramal</label><input class="form-control"
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">Ramal</label><input class="form-control"
                                                 name="ramal" type="text" placeholder="Ex: 2201"></div>
                                     </div>
                                     <div class="col-sm-3 col-xl-2">
-                                        <div class="form-group"><label>Unidade</label>
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">Unidade</label>
                                             <select class="form-control" name="unidade" required="">
                                                 <optgroup label="Selecione a Unidade">
                                                     <?php
@@ -133,12 +133,12 @@ include 'auth.php'; // Proteção de sessão
                                 </div>
                                 <div class="form-row">
                                     <div class="col-sm-3 col-xl-4 offset-xl-1">
-                                        <div class="form-group"><label>E-mail do Gestor</label><input
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">E-mail do Gestor</label><input
                                                 class="form-control" name="emailGestor" type="text"
                                                 placeholder="Ex: gestor@empresa.com.br"></div>
                                     </div>
                                     <div class="col-sm-3 col-xl-4 offset-xl-1">
-                                        <div class="form-group"><label>Gestor Responsável</label><input
+                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold">Gestor Responsável</label><input
                                                 class="form-control" name="gestor" type="text"
                                                 placeholder="Ex: João da Silva"></div>
                                     </div>
@@ -146,7 +146,7 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-4 col-xl-5 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Imagem do Setor/Unidade</label>
+                                            <label class="text-gray-600 small font-weight-bold">Imagem do Setor/Unidade</label>
                                             <input class="form-control-file" name="imagem" type="file" accept="image/*">
                                         </div>
                                     </div>

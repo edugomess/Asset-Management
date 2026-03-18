@@ -100,14 +100,14 @@ include 'auth.php'; // Proteção de sessão
                                     <div class="form-row">
                                         <div class="col-sm-6 col-xl-4 offset-xl-1">
                                             <div class="form-group">
-                                                <label>Nome da Empresa / Razão Social</label>
+                                                <label class="text-gray-600 small font-weight-bold">Nome da Empresa / Razão Social</label>
                                                 <input class="form-control" name="nomeEmpresa" type="text"
                                                     placeholder="Ex: Dell Technologies" required="">
                                             </div>
                                         </div>
                                         <div class="col-sm-4 col-xl-3 offset-xl-1">
                                             <div class="form-group">
-                                                <label>CNPJ</label>
+                                                <label class="text-gray-600 small font-weight-bold">CNPJ</label>
                                                 <input class="form-control" name="cnpj" type="text"
                                                     placeholder="00.000.000/0000-00" required="">
                                             </div>
@@ -116,14 +116,14 @@ include 'auth.php'; // Proteção de sessão
                                     <div class="form-row">
                                         <div class="col-sm-4 offset-xl-1">
                                             <div class="form-group">
-                                                <label>E-mail de Contato</label>
+                                                <label class="text-gray-600 small font-weight-bold">E-mail de Contato</label>
                                                 <input class="form-control" name="email" type="email"
                                                     placeholder="contato@empresa.com" required="">
                                             </div>
                                         </div>
                                         <div class="col-xl-3 offset-xl-1">
                                             <div class="form-group">
-                                                <label>Telefone / WhatsApp</label>
+                                                <label class="text-gray-600 small font-weight-bold">Telefone / WhatsApp</label>
                                                 <input class="form-control" name="telefone" type="tel"
                                                     placeholder="(99) 99999-9999" required="">
                                             </div>
@@ -132,14 +132,14 @@ include 'auth.php'; // Proteção de sessão
                                     <div class="form-row">
                                         <div class="col-sm-4 offset-xl-1">
                                             <div class="form-group">
-                                                <label>Serviço Prestado</label>
+                                                <label class="text-gray-600 small font-weight-bold">Serviço Prestado</label>
                                                 <input class="form-control" name="servico" type="text"
                                                     placeholder="Ex: Manutenção de Hardware" required="">
                                             </div>
                                         </div>
                                         <div class="col-sm-3 col-xl-3 offset-xl-1">
                                             <div class="form-group">
-                                                <label>Site / URL</label>
+                                                <label class="text-gray-600 small font-weight-bold">Site / URL</label>
                                                 <input class="form-control" name="site" type="url"
                                                     placeholder="https://www.empresa.com">
                                             </div>

@@ -84,14 +84,14 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-12 col-xl-6 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Assunto / Título do Chamado</label>
+                                            <label class="text-gray-600 small font-weight-bold">Assunto / Título do Chamado</label>
                                             <input class="form-control" name="titulo" type="text"
                                                 placeholder="Ex: Problema com impressora no RH" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4">
                                         <div class="form-group">
-                                            <label>Tipo de Atendimento</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Atendimento</label>
                                             <select class="form-control" name="categoria" required="">
                                                 <option value="Incidente">Incidente (Falha/Erro)</option>
                                                 <option value="Mudança">Mudança (Solicitação de Alteração)</option>
@@ -104,7 +104,7 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Solicitante</label>
+                                            <label class="text-gray-600 small font-weight-bold">Solicitante</label>
                                             <select class="form-control" name="usuario_id" required="">
                                                 <optgroup label="Selecione o Solicitante">
                                                     <?php
@@ -114,7 +114,8 @@ include 'auth.php'; // Proteção de sessão
                                                     $result = $conn->query($sql);
                                                     if ($result->num_rows > 0) {
                                                         while ($row = $result->fetch_assoc()) {
-                                                            echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
+                                                            $selected = ($row['id_usuarios'] == $_SESSION['id_usuarios']) ? 'selected' : '';
+                                                            echo '<option value="' . $row['id_usuarios'] . '" ' . $selected . '>' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
                                                         }
                                                     } else {
                                                         echo '<option value="">Nenhum usuário encontrado</option>';
@@ -126,7 +127,7 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-sm-6 col-xl-4">
                                         <div class="form-group">
-                                            <label>Prioridade</label>
+                                            <label class="text-gray-600 small font-weight-bold">Prioridade</label>
                                             <select class="form-control" name="prioridade" required="">
                                                 <optgroup label="Selecione a Prioridade">
                                                     <option value="Baixa">Baixa</option>
@@ -138,7 +139,7 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-sm-6 col-xl-2">
                                         <div class="form-group">
-                                            <label><i class="fas fa-paperclip"></i> Anexar Arquivo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> Anexar Arquivo</label>
                                             <input type="file" name="anexo" class="form-control-file"
                                                 accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx"
                                                 style="font-size: 0.8rem;">
@@ -147,7 +148,7 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
                                 <div class="col-sm-3 col-xl-10 offset-xl-1">
-                                    <label>Descrição Detalhada</label>
+                                    <label class="text-gray-600 small font-weight-bold">Descrição Detalhada</label>
                                     <textarea class="form-control" name="descricao"
                                         placeholder="Descreva o problema ou solicitação com o máximo de detalhes possível..."
                                         style="height: 120px; margin-bottom: 0px;" required=""></textarea>

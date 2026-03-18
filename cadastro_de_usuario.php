@@ -108,14 +108,14 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Nome</label>
+                                            <label class="text-gray-600 small font-weight-bold">Nome</label>
                                             <input class="form-control" name="nome" type="text" placeholder="Ex: João"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Sobrenome</label>
+                                            <label class="text-gray-600 small font-weight-bold">Sobrenome</label>
                                             <input class="form-control" name="sobrenome" type="text" placeholder="Ex: Silva"
                                                 required="">
                                         </div>
@@ -126,14 +126,14 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Usuário AD</label>
+                                            <label class="text-gray-600 small font-weight-bold">Usuário AD</label>
                                             <input class="form-control" name="usuarioAD" type="text"
                                                 placeholder="Ex: joao.silva" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Função</label>
+                                            <label class="text-gray-600 small font-weight-bold">Função</label>
                                             <input class="form-control" name="funcao" type="text"
                                                 placeholder="Ex: Analista de TI" required="">
                                         </div>
@@ -144,13 +144,13 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Data de Nascimento</label>
+                                            <label class="text-gray-600 small font-weight-bold">Data de Nascimento</label>
                                             <input class="form-control" name="dataNascimento" type="date" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Email</label>
+                                            <label class="text-gray-600 small font-weight-bold">Email</label>
                                             <input class="form-control" name="email" type="email"
                                                 placeholder="email@exemplo.com" required="">
                                         </div>
@@ -161,7 +161,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-danger">CPF (Somente Números)</label>
+                                            <label class="text-gray-600 small font-weight-bold text-danger">CPF (Somente Números)</label>
                                             <input class="form-control" name="cpf" id="cpf" type="text"
                                                 placeholder="000.000.000-00" required="" maxlength="14"
                                                 oninput="maskCPF(this)">
@@ -172,7 +172,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
                                             <select class="form-control" name="centroDeCusto">
                                                 <option value="Nenhum">Nenhum</option>
                                                 <?php
@@ -195,14 +195,14 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Matrícula (Automático)</label>
+                                            <label class="text-gray-600 small font-weight-bold">Matrícula (Automático)</label>
                                             <input class="form-control" name="matricula" type="text"
                                                 value="<?php echo $next_id; ?>" readonly required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Telefone</label>
+                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
                                             <input class="form-control" name="telefone" type="text" inputmode="tel"
                                                 placeholder="(99) 99999-9999" required="">
                                         </div>
@@ -213,7 +213,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Tipo de Contrato</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Contrato</label>
                                             <select class="form-control" name="tipoContrato" required="">
                                                 <option value="CLT">CLT</option>
                                                 <option value="PJ">PJ</option>
@@ -223,7 +223,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Tipo de Usuário</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Usuário</label>
                                             <select class="form-control" name="nivelUsuario" required="">
                                                 <option value="1">Administrador</option>
                                                 <option value="2">Suporte</option>
@@ -237,7 +237,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Unidade</label>
+                                            <label class="text-gray-600 small font-weight-bold">Unidade</label>
                                             <select class="form-control" name="unidade" required="">
                                                 <?php
                                                 include 'conexao.php';
@@ -266,14 +266,14 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Senha</label>
+                                            <label class="text-gray-600 small font-weight-bold">Senha</label>
                                             <input class="form-control" name="senha" id="Senha" type="password"
                                                 placeholder="********" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Confirmação de Senha</label>
+                                            <label class="text-gray-600 small font-weight-bold">Confirmação de Senha</label>
                                             <input class="form-control" name="confirmarSenha" type="password"
                                                 placeholder="********" required="" oninput="passwordvalidation(this)">
                                         </div>
@@ -284,7 +284,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-xl-6 offset-xl-3 mt-3">
                                         <div class="form-group">
-                                            <label>Foto de Perfil (Opcional)</label>
+                                            <label class="text-gray-600 small font-weight-bold">Foto de Perfil (Opcional)</label>
                                             <input type="file" class="form-control-file" name="foto_perfil" id="foto_perfil"
                                                 accept="image/*">
                                         </div>

@@ -179,82 +179,85 @@ $id = intval($id);
                     </div>
                 </nav>
                 <div id="content-1">
-                    <div class="container-fluid">
-                        <h3 class="text-dark mb-1">Editar Fornecedor</h3>
-                    </div><!-- Start: Multi-row Form -->
-                    <form action="update_fornecedor.php" method="post">
-                        <?php
-                        $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
-                        $result = mysqli_query($conn, $sql);
-                        while ($array = mysqli_fetch_array($result)) {
-                            echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
-
-                            $nomeEmpresa = $array['nomeEmpresa'];
-                            $cnpj = $array['cnpj'];
-                            $email = $array['email'];
-                            $telefone = $array['telefone'];
-                            $servico = $array['servico'];
-                            $site = $array['site'];
-                            $status = $array['status'];
-                            ?>
-                            <!-- Start: 2-column form row -->
-                            <div class="form-row">
-                                <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                    <div class="form-group"><label></label><input class="form-control" name="nomeEmpresa"
-                                            type="text" type="text" value="<?php echo $nomeEmpresa ?>"></div>
-                                </div>
-                                <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                    <div class="form-group"><label></label><input class="form-control" name="cnpj"
-                                            type="text" type="text" value="<?php echo $cnpj ?>"></div>
-                                </div>
-                            </div><!-- End: 2-column form row -->
-                            <!-- Start: 3-column form row -->
-                            <div class="form-row">
-                                <div class="col-sm-4 offset-xl-1">
-                                    <div class="form-group"><label></label><input class="form-control" name="email"
-                                            type="email" type="text" value="<?php echo $email ?>"></div>
-                                </div>
-                                <div class="col-xl-3 offset-xl-1">
-                                    <div class="form-group"><label></label><input class="form-control" name="telefone"
-                                            type="tel" type="text" value="<?php echo $telefone ?>"></div>
-                                </div>
-                                <div class="col-sm-2 offset-xl-0">
-                                    <div class="form-group"><label></label></div>
-                                </div>
-                            </div><!-- End: 3-column form row -->
-                            <!-- Start: 4-column form row -->
-                            <div class="form-row">
-                                <div div class="col-sm-4 offset-xl-1">
-                                    <div class="form-group"><label></label><input class="form-control" name="servico"
-                                            type="text" type="text" value="<?php echo $servico ?>"></div>
-                                </div>
-                                <div class="col-sm-3 col-xl-1">
-                                    <div class="form-group"></div>
-                                </div>
-                                <div class="col-sm-3 col-xl-3">
-                                    <div class="form-group"><label></label><input class="form-control" name="site"
-                                            type="text" type="text" value="<?php echo $site ?>"></div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="custom-control custom-switch" style="margin-top: 30px;">
-                                        <input type="hidden" name="status" value="Inativo">
-                                        <input type="checkbox" class="custom-control-input" id="statusSwitchEdit"
-                                            name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
-                                        <label class="custom-control-label" for="statusSwitchEdit">Ativo</label>
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-4">Editar Fornecedor</h3>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="update_fornecedor.php" method="post">
+                                <?php
+                                $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
+                                $result = mysqli_query($conn, $sql);
+                                if ($array = mysqli_fetch_array($result)) {
+                                    echo "<input type='hidden' name='id_fornecedor' value='" . $array['id_fornecedor'] . "'>";
+                                    $nomeEmpresa = $array['nomeEmpresa'];
+                                    $cnpj = $array['cnpj'];
+                                    $email = $array['email'];
+                                    $telefone = $array['telefone'];
+                                    $servico = $array['servico'];
+                                    $site = $array['site'];
+                                    $status = $array['status'];
+                                }
+                                ?>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Nome da Empresa</label>
+                                            <input class="form-control" name="nomeEmpresa" type="text" value="<?php echo $nomeEmpresa ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">CNPJ</label>
+                                            <input class="form-control" name="cnpj" type="text" value="<?php echo $cnpj ?>">
+                                        </div>
                                     </div>
                                 </div>
-                            </div><!-- End: 4-column form row -->
-                            <!-- Start: 6-column form row -->
-                            <div class="form-row">
-                                <div class="col-xl-4 offset-xl-4"><button
-                                        class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                        type="submit"
-                                        style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">E-mail</label>
+                                            <input class="form-control" name="email" type="email" value="<?php echo $email ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
+                                            <input class="form-control" name="telefone" type="tel" value="<?php echo $telefone ?>">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div><!-- End: 6-column form row -->
-                        </form><!-- End: Multi-row Form -->
-                    </div>
-                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Serviço</label>
+                                            <input class="form-control" name="servico" type="text" value="<?php echo $servico ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Site</label>
+                                            <input class="form-control" name="site" type="text" value="<?php echo $site ?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-xl-9 offset-xl-1">
+                                        <div class="custom-control custom-switch mt-2">
+                                            <input type="hidden" name="status" value="Inativo">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitchEdit" name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="statusSwitchEdit">Ativo</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row mt-4">
+                                    <div class="col-xl-4 offset-xl-4">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;padding: 15px;border-width: 0px;height: 50px;">
+                                            <i class="fas fa-save mr-2"></i>Atualizar Fornecedor
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
             <?php } ?>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

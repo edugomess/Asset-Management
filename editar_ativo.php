@@ -299,7 +299,7 @@ if ($id <= 0) {
                                 </div>
 
                                 <div class="form-row">
-                                    <div class="col-sm-12 col-xl-9 offset-xl-1">
+                                    <div class="col-sm-12 col-xl-4 offset-xl-1">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
                                             <select class="form-control" name="centroDeCusto">

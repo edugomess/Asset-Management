@@ -101,7 +101,7 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-12 col-xl-2 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Categoria</label>
+                                            <label class="text-gray-600 small font-weight-bold">Categoria</label>
                                             <select class="form-control" name="categoria" required="">
                                                 <optgroup label="Categoria">
 
@@ -127,7 +127,7 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-sm-6 col-xl-6 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Fabricante</label>
+                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
                                             <input class="form-control" name="fabricante" type="text" placeholder="Ex: Dell"
                                                 required="">
                                         </div>
@@ -138,28 +138,28 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Modelo</label>
+                                            <label class="text-gray-600 small font-weight-bold">Modelo</label>
                                             <input class="form-control" name="modelo" type="text"
                                                 placeholder="Ex: Latitude 3420" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Tag / Service Tag</label>
+                                            <label class="text-gray-600 small font-weight-bold">Tag / Service Tag</label>
                                             <input class="form-control" name="tag" type="text" placeholder="Ex: ABC123D"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Host Name</label>
+                                            <label class="text-gray-600 small font-weight-bold">Host Name</label>
                                             <input class="form-control" name="hostName" type="text" placeholder="Ex: NOTE-001"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Valor do Ativo (R$)</label>
+                                            <label class="text-gray-600 small font-weight-bold">Valor do Ativo (R$)</label>
                                             <input class="form-control" name="valor" type="number" step="0.01"
                                                 placeholder="Ex: 999.99" required="">
                                         </div>
@@ -170,7 +170,7 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-4 col-xl-2 offset-xl-1">
                                         <div class="form-group">
-                                            <label>MAC Address</label>
+                                            <label class="text-gray-600 small font-weight-bold">MAC Address</label>
                                             <input class="form-control" name="macAdress" type="text"
                                                 placeholder="Ex: 00:00:00:00:00:00" required="">
                                         </div>
@@ -185,7 +185,7 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-xl-3 offset-xl-3">
                                         <div class="form-group">
-                                            <label>Data de Cadastro</label>
+                                            <label class="text-gray-600 small font-weight-bold">Data de Cadastro</label>
                                             <input class="form-control" name="dataAtivacao" type="date"
                                                 value="<?php echo date('Y-m-d'); ?>" readonly>
                                         </div>
@@ -196,14 +196,14 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row mt-4">
                                     <div class="col-sm-4 col-xl-5 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Imagem do Ativo</label>
+                                            <label class="text-gray-600 small font-weight-bold">Imagem do Ativo</label>
                                             <input class="form-control-file d-xl-flex" name="imagem" type="file"
                                                 style="height: 30px;" accept="image/*">
                                         </div>
                                     </div>
-                                    <div class="col-sm-12 col-xl-4 offset-xl-0">
+                                    <div class="col-sm-12 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label>Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
                                             <?php
                                             // CENTROS DE CUSTO: Busca dinâmica
                                             include_once 'conexao.php';
@@ -226,7 +226,7 @@ include 'auth.php'; // Proteção de sessão
                                 <!-- Start: 4-column form row -->
                                 <div class="form-row">
                                     <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 150px;">
-                                        <label>Descrição e Observações</label>
+                                        <label class="text-gray-600 small font-weight-bold">Descrição e Observações</label>
                                         <textarea class="form-control" name="descricao"
                                             placeholder="Detalhes adicionais do equipamento..."
                                             style="height: 100px; margin-bottom: 0px;"></textarea>

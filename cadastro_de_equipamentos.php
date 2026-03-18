@@ -93,151 +93,155 @@ include 'auth.php'; // Proteção de sessão
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Ativo</h3>
-                </div><!-- Start: Multi-row Form -->
-                <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
 
-                    <!-- Start: 1-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-12 col-xl-2 offset-xl-1">
-                            <div class="form-group">
-                                <label>Categoria</label>
-                                <select class="form-control" name="categoria" required="">
-                                    <optgroup label="Categoria">
+                                <!-- Start: 1-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-12 col-xl-2 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Categoria</label>
+                                            <select class="form-control" name="categoria" required="">
+                                                <optgroup label="Categoria">
 
-                                        <?php
-                                        // BANCO DE DADOS: Busca as categorias disponíveis para o seletor
-                                        include 'conexao.php';
+                                                    <?php
+                                                    // BANCO DE DADOS: Busca as categorias disponíveis para o seletor
+                                                    include 'conexao.php';
 
-                                        $sql = "SELECT categoria FROM categoria";
-                                        $result = $conn->query($sql);
+                                                    $sql = "SELECT categoria FROM categoria";
+                                                    $result = $conn->query($sql);
 
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
-                                            }
-                                        } else {
-                                            echo '<option value="">Nenhuma categoria encontrada</option>';
-                                        }
-                                        ?>
+                                                    if ($result->num_rows > 0) {
+                                                        while ($row = $result->fetch_assoc()) {
+                                                            echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
+                                                        }
+                                                    } else {
+                                                        echo '<option value="">Nenhuma categoria encontrada</option>';
+                                                    }
+                                                    ?>
 
-                                    </optgroup>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-6 offset-xl-1">
-                            <div class="form-group">
-                                <label>Fabricante</label>
-                                <input class="form-control" name="fabricante" type="text" placeholder="Ex: Dell"
-                                    required="">
-                            </div>
-                        </div>
-                    </div><!-- End: 1-column form row -->
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-6 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Fabricante</label>
+                                            <input class="form-control" name="fabricante" type="text" placeholder="Ex: Dell"
+                                                required="">
+                                        </div>
+                                    </div>
+                                </div><!-- End: 1-column form row -->
 
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Modelo</label>
-                                <input class="form-control" name="modelo" type="text" placeholder="Ex: Latitude 3420"
-                                    required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Tag / Service Tag</label>
-                                <input class="form-control" name="tag" type="text" placeholder="Ex: ABC123D"
-                                    required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Host Name</label>
-                                <input class="form-control" name="hostName" type="text" placeholder="Ex: NOTE-001"
-                                    required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Valor do Ativo (R$)</label>
-                                <input class="form-control" name="valor" type="number" step="0.01"
-                                    placeholder="Ex: 999.99" required="">
-                            </div>
-                        </div>
-                    </div><!-- End: 2-column form row -->
+                                <!-- Start: 2-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Modelo</label>
+                                            <input class="form-control" name="modelo" type="text"
+                                                placeholder="Ex: Latitude 3420" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Tag / Service Tag</label>
+                                            <input class="form-control" name="tag" type="text" placeholder="Ex: ABC123D"
+                                                required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Host Name</label>
+                                            <input class="form-control" name="hostName" type="text" placeholder="Ex: NOTE-001"
+                                                required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Valor do Ativo (R$)</label>
+                                            <input class="form-control" name="valor" type="number" step="0.01"
+                                                placeholder="Ex: 999.99" required="">
+                                        </div>
+                                    </div>
+                                </div><!-- End: 2-column form row -->
 
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group">
-                                <label>MAC Address</label>
-                                <input class="form-control" name="macAdress" type="text"
-                                    placeholder="Ex: 00:00:00:00:00:00" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-xl-1">
-                            <div class="custom-control custom-switch" style="margin-top: 30px;">
-                                <input type="hidden" name="status" value="Inativo">
-                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
-                                    value="Ativo" checked>
-                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 offset-xl-3">
-                            <div class="form-group">
-                                <label>Data de Cadastro</label>
-                                <input class="form-control" name="dataAtivacao" type="date"
-                                    value="<?php echo date('Y-m-d'); ?>" readonly>
-                            </div>
-                        </div>
-                    </div><!-- End: 3-column form row -->
+                                <!-- Start: 3-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-4 col-xl-2 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>MAC Address</label>
+                                            <input class="form-control" name="macAdress" type="text"
+                                                placeholder="Ex: 00:00:00:00:00:00" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-1">
+                                        <div class="custom-control custom-switch" style="margin-top: 30px;">
+                                            <input type="hidden" name="status" value="Inativo">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitch"
+                                                name="status" value="Ativo" checked>
+                                            <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 offset-xl-3">
+                                        <div class="form-group">
+                                            <label>Data de Cadastro</label>
+                                            <input class="form-control" name="dataAtivacao" type="date"
+                                                value="<?php echo date('Y-m-d'); ?>" readonly>
+                                        </div>
+                                    </div>
+                                </div><!-- End: 3-column form row -->
 
-                    <!-- Row 5: Imagem e Centro de Custo -->
-                    <div class="form-row mt-4">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1">
-                            <div class="form-group">
-                                <label>Imagem do Ativo</label>
-                                <input class="form-control-file d-xl-flex" name="imagem" type="file" style="height: 30px;"
-                                    accept="image/*">
-                            </div>
-                        </div>
-                        <div class="col-sm-12 col-xl-4 offset-xl-0">
-                            <div class="form-group">
-                                <label>Centro de Custo</label>
-                                <?php
-                                // CENTROS DE CUSTO: Busca dinâmica
-                                include_once 'conexao.php';
-                                ?>
-                                <select class="form-control" name="centroDeCusto">
-                                    <option value="Nenhum">Nenhum</option>
-                                    <?php
-                                    $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
-                                    $res_cc = $conn->query($sql_cc);
-                                    if ($res_cc && $res_cc->num_rows > 0) {
-                                        while ($row_cc = $res_cc->fetch_assoc()) {
-                                            echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div><!-- End: Row 5 -->
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 150px;">
-                            <label>Descrição e Observações</label>
-                            <textarea class="form-control" name="descricao"
-                                placeholder="Detalhes adicionais do equipamento..."
-                                style="height: 100px; margin-bottom: 0px;"></textarea>
-                        </div>
-                        <div class="col-xl-4 offset-xl-4"><button
-                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
-                        </div>
+                                <!-- Row 5: Imagem e Centro de Custo -->
+                                <div class="form-row mt-4">
+                                    <div class="col-sm-4 col-xl-5 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Imagem do Ativo</label>
+                                            <input class="form-control-file d-xl-flex" name="imagem" type="file"
+                                                style="height: 30px;" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-xl-4 offset-xl-0">
+                                        <div class="form-group">
+                                            <label>Centro de Custo</label>
+                                            <?php
+                                            // CENTROS DE CUSTO: Busca dinâmica
+                                            include_once 'conexao.php';
+                                            ?>
+                                            <select class="form-control" name="centroDeCusto">
+                                                <option value="Nenhum">Nenhum</option>
+                                                <?php
+                                                $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                                                $res_cc = $conn->query($sql_cc);
+                                                if ($res_cc && $res_cc->num_rows > 0) {
+                                                    while ($row_cc = $res_cc->fetch_assoc()) {
+                                                        echo '<option value="' . $row_cc['nomeSetor'] . '" ' . $selected . '>' . $row_cc['nomeSetor'] . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div><!-- End: Row 5 -->
+                                <!-- Start: 4-column form row -->
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 150px;">
+                                        <label>Descrição e Observações</label>
+                                        <textarea class="form-control" name="descricao"
+                                            placeholder="Detalhes adicionais do equipamento..."
+                                            style="height: 100px; margin-bottom: 0px;"></textarea>
+                                    </div>
+                                    <div class="col-xl-4 offset-xl-4"><button
+                                            class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
+                                    </div>
 
-                    </div><!-- End: 4-column form row -->
-                </form><!-- End: Multi-row Form -->
+                                </div><!-- End: 4-column form row -->
+                            </form><!-- End: Multi-row Form -->
+                        </div>
+                    </div>
+                </div><!-- End: Multi-row Form -->
             </div>
 
         </div>

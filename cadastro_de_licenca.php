@@ -71,86 +71,94 @@ $result_cc = mysqli_query($conn, $sql_cc);
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Licença</h3>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="inserir_licenca.php" method="post">
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Software /
+                                                Aplicação</label>
+                                            <input class="form-control" name="software" type="text"
+                                                placeholder="Ex: Microsoft Office 365" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
+                                            <input class="form-control" name="fabricante" type="text"
+                                                placeholder="Ex: Microsoft" required="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Tipo de Licença</label>
+                                            <select class="form-control" name="tipo">
+                                                <option value="Assinatura">Assinatura</option>
+                                                <option value="Vitalícia">Vitalícia</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Chave de Licença</label>
+                                            <input class="form-control" name="chave" type="text"
+                                                placeholder="XXXXX-XXXXX-XXXXX-XXXXX">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-4 col-xl-2 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Quantidade Seats</label>
+                                            <input class="form-control" name="quantidade_total" type="number" value="1"
+                                                min="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-2">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Valor Unitário</label>
+                                            <input class="form-control" name="valor_unitario" type="number" step="0.01"
+                                                placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                        <select class="form-control" name="id_centro_custo">
+                                            <option value="">Nenhum</option>
+                                            <?php
+                                            // Reset the pointer if needed, but it should be fresh
+                                            mysqli_data_seek($result_cc, 0);
+                                            while ($row_cc = mysqli_fetch_assoc($result_cc)) {
+                                                echo "<option value='" . $row_cc['id_centro_de_custo'] . "'>" . htmlspecialchars($row_cc['nomeSetor']) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <label class="text-gray-600 small font-weight-bold">Data de Aquisição</label>
+                                        <input class="form-control" name="data_aquisicao" type="date"
+                                            value="<?php echo date('Y-m-d'); ?>">
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <label class="text-gray-600 small font-weight-bold">Data de Expiração</label>
+                                        <input class="form-control" name="data_expiracao" type="date">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-xl-4 offset-xl-4">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar
+                                            Licença</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <form action="inserir_licenca.php" method="post">
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Software / Aplicação</label>
-                                <input class="form-control" name="software" type="text"
-                                    placeholder="Ex: Microsoft Office 365" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Fabricante</label>
-                                <input class="form-control" name="fabricante" type="text" placeholder="Ex: Microsoft"
-                                    required="">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Tipo de Licença</label>
-                                <select class="form-control" name="tipo">
-                                    <option value="Assinatura">Assinatura</option>
-                                    <option value="Vitalícia">Vitalícia</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Chave de Licença</label>
-                                <input class="form-control" name="chave" type="text"
-                                    placeholder="XXXXX-XXXXX-XXXXX-XXXXX">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-2 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Quantidade Seats</label>
-                                <input class="form-control" name="quantidade_total" type="number" value="1" min="1">
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-xl-2">
-                            <div class="form-group">
-                                <label class="text-gray-600 small font-weight-bold">Valor Unitário</label>
-                                <input class="form-control" name="valor_unitario" type="number" step="0.01"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="col-xl-2">
-                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
-                            <select class="form-control" name="id_centro_custo">
-                                <option value="">Nenhum</option>
-                                <?php
-                                while ($row_cc = mysqli_fetch_assoc($result_cc)) {
-                                    echo "<option value='" . $row_cc['id_centro_de_custo'] . "'>" . htmlspecialchars($row_cc['nomeSetor']) . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col-xl-2">
-                            <label class="text-gray-600 small font-weight-bold">Data de Aquisição</label>
-                            <input class="form-control" name="data_aquisicao" type="date"
-                                value="<?php echo date('Y-m-d'); ?>">
-                        </div>
-                        <div class="col-xl-2">
-                            <label class="text-gray-600 small font-weight-bold">Data de Expiração</label>
-                            <input class="form-control" name="data_expiracao" type="date">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-xl-4 offset-xl-4">
-                            <button class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar
-                                Licença</button>
-                        </div>
-                    </div>
-                </form>
             </div>
 
         </div>

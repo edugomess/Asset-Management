@@ -76,111 +76,117 @@ include 'auth.php'; // Proteção de sessão
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Novo Chamado</h3>
-                </div>
-                <form action="inserir_chamado.php" method="post" id="form-novo-chamado" enctype="multipart/form-data">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="inserir_chamado.php" method="post" id="form-novo-chamado"
+                                enctype="multipart/form-data">
 
-                    <div class="form-row">
-                        <div class="col-sm-12 col-xl-6 offset-xl-1">
-                            <div class="form-group">
-                                <label>Assunto / Título do Chamado</label>
-                                <input class="form-control" name="titulo" type="text"
-                                    placeholder="Ex: Problema com impressora no RH" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4">
-                            <div class="form-group">
-                                <label>Tipo de Atendimento</label>
-                                <select class="form-control" name="categoria" required="">
-                                    <option value="Incidente">Incidente (Falha/Erro)</option>
-                                    <option value="Mudança">Mudança (Solicitação de Alteração)</option>
-                                    <option value="Requisição">Requisição (Pedido Novo)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                                <div class="form-row">
+                                    <div class="col-sm-12 col-xl-6 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Assunto / Título do Chamado</label>
+                                            <input class="form-control" name="titulo" type="text"
+                                                placeholder="Ex: Problema com impressora no RH" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4">
+                                        <div class="form-group">
+                                            <label>Tipo de Atendimento</label>
+                                            <select class="form-control" name="categoria" required="">
+                                                <option value="Incidente">Incidente (Falha/Erro)</option>
+                                                <option value="Mudança">Mudança (Solicitação de Alteração)</option>
+                                                <option value="Requisição">Requisição (Pedido Novo)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Solicitante</label>
-                                <select class="form-control" name="usuario_id" required="">
-                                    <optgroup label="Selecione o Solicitante">
-                                        <?php
-                                        // SOLICITANTES: Lista todos os usuários cadastrados para seleção no chamado
-                                        include_once 'conexao.php';
-                                        $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
-                                        $result = $conn->query($sql);
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
-                                            }
-                                        } else {
-                                            echo '<option value="">Nenhum usuário encontrado</option>';
-                                        }
-                                        ?>
-                                    </optgroup>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4">
-                            <div class="form-group">
-                                <label>Prioridade</label>
-                                <select class="form-control" name="prioridade" required="">
-                                    <optgroup label="Selecione a Prioridade">
-                                        <option value="Baixa">Baixa</option>
-                                        <option value="Média" selected>Média</option>
-                                        <option value="Alta">Alta</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-2">
-                            <div class="form-group">
-                                <label><i class="fas fa-paperclip"></i> Anexar Arquivo</label>
-                                <input type="file" name="anexo" class="form-control-file"
-                                    accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx" style="font-size: 0.8rem;">
-                                <small class="text-muted">Evidências (Máx. 5MB)</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-3 col-xl-10 offset-xl-1">
-                        <label>Descrição Detalhada</label>
-                        <textarea class="form-control" name="descricao"
-                            placeholder="Descreva o problema ou solicitação com o máximo de detalhes possível..."
-                            style="height: 120px; margin-bottom: 0px;" required=""></textarea>
-                    </div>
-                    <div class="col-xl-4 offset-xl-4"><button
-                            class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit"
-                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir
-                            Chamado</button></div>
-            </div>
-            </form>
-
-            <!-- Success Modal -->
-            <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            Chamado criado com sucesso!<br>
-                            <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Solicitante</label>
+                                            <select class="form-control" name="usuario_id" required="">
+                                                <optgroup label="Selecione o Solicitante">
+                                                    <?php
+                                                    // SOLICITANTES: Lista todos os usuários cadastrados para seleção no chamado
+                                                    include_once 'conexao.php';
+                                                    $sql = "SELECT id_usuarios, nome, sobrenome FROM usuarios ORDER BY nome";
+                                                    $result = $conn->query($sql);
+                                                    if ($result->num_rows > 0) {
+                                                        while ($row = $result->fetch_assoc()) {
+                                                            echo '<option value="' . $row['id_usuarios'] . '">' . htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']) . '</option>';
+                                                        }
+                                                    } else {
+                                                        echo '<option value="">Nenhum usuário encontrado</option>';
+                                                    }
+                                                    ?>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4">
+                                        <div class="form-group">
+                                            <label>Prioridade</label>
+                                            <select class="form-control" name="prioridade" required="">
+                                                <optgroup label="Selecione a Prioridade">
+                                                    <option value="Baixa">Baixa</option>
+                                                    <option value="Média" selected>Média</option>
+                                                    <option value="Alta">Alta</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-2">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-paperclip"></i> Anexar Arquivo</label>
+                                            <input type="file" name="anexo" class="form-control-file"
+                                                accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx"
+                                                style="font-size: 0.8rem;">
+                                            <small class="text-muted">Evidências (Máx. 5MB)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xl-10 offset-xl-1">
+                                    <label>Descrição Detalhada</label>
+                                    <textarea class="form-control" name="descricao"
+                                        placeholder="Descreva o problema ou solicitação com o máximo de detalhes possível..."
+                                        style="height: 120px; margin-bottom: 0px;" required=""></textarea>
+                                </div>
+                                <div class="col-xl-4 offset-xl-4"><button
+                                        class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                        type="submit"
+                                        style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Abrir
+                                        Chamado</button></div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- End of #content -->
 
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+                <!-- Success Modal -->
+                <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="successModalLabel">Sucesso!</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Chamado criado com sucesso!<br>
+                                <strong>Número do Chamado: <span id="modal-chamado-id"></span></strong>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="btn-redirect-chamados">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of #content -->
+
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
@@ -188,30 +194,34 @@ include 'auth.php'; // Proteção de sessão
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
         // ENVIO VIA AJAX: Processa o formulário sem recarregar a página
-        fetch('inserir_chamado.php', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('modal-chamado-id').textContent = '#' + data.id;
-                    $('#successModal').modal('show');
+        document.getElementById('form-novo-chamado').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
 
-                    document.getElementById('btn-redirect-chamados').onclick = function () {
-                        window.location.href = 'chamados.php';
-                    };
-                } else {
-                    alert('Erro ao criar chamado: ' + data.message);
+            fetch('inserir_chamado.php', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Ocorreu um erro na requisição.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('modal-chamado-id').textContent = '#' + data.id;
+                        $('#successModal').modal('show');
+
+                        document.getElementById('btn-redirect-chamados').onclick = function () {
+                            window.location.href = 'chamados.php';
+                        };
+                    } else {
+                        alert('Erro ao criar chamado: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocorreu um erro na requisição.');
+                });
         });
     </script>
     <script src="/assets/js/global_search.js"></script>

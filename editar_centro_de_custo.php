@@ -201,98 +201,118 @@ if ($id > 0) {
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Editar Centro de Custo</h3>
-                </div><!-- Start: Multi-row Form -->
-                <form action="update_centro_de_custo.php" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="id_centro_de_custo" value="<?php echo $id; ?>">
+                    <h3 class="text-dark mb-4">Editar Centro de Custo</h3>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="update_centro_de_custo.php" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id_centro_de_custo" value="<?php echo $id; ?>">
 
-                    <!-- Start: 2-column form row -->
-                    <div class="form-row">
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Nome do Setor</label>
+                                            <input class="form-control" name="nomeSetor" type="text"
+                                                placeholder="Ex: Tecnologia da Informação"
+                                                value="<?php echo htmlspecialchars($nomeSetor); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-2 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Código</label>
+                                            <input class="form-control" name="codigo" type="tel" placeholder="Ex: 102030"
+                                                value="<?php echo htmlspecialchars($codigo); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Ramal</label>
+                                            <input class="form-control" name="ramal" type="text" placeholder="Ex: 2201"
+                                                value="<?php echo htmlspecialchars($ramal); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-2">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Unidade</label>
+                                            <select class="form-control" name="unidade" required="">
+                                                <optgroup label="Selecione a Unidade">
+                                                    <?php
+                                                    $sql_un = "SELECT unidade FROM unidade";
+                                                    $res_un = $conn->query($sql_un);
+                                                    if ($res_un && $res_un->num_rows > 0) {
+                                                        while ($row_u = $res_un->fetch_assoc()) {
+                                                            $selected = ($row_u['unidade'] == $unidade) ? 'selected' : '';
+                                                            echo '<option value="' . $row_u['unidade'] . '" ' . $selected . '>' . $row_u['unidade'] . '</option>';
+                                                        }
+                                                    }
+                                                    ?>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    </div><!-- End: 2-column form row -->
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="nomeSetor"
-                                    type="text" placeholder="Nome do Setor"
-                                    value="<?php echo htmlspecialchars($nomeSetor); ?>"></div>
-                        </div>
-                        <div class="col-xl-2 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="codigo" type="tel"
-                                    placeholder="Código" value="<?php echo htmlspecialchars($codigo); ?>"></div>
-                        </div>
-                        <div class="col-xl-2">
-                            <div class="input-group mb-4">
-                                <div class="input-group-prepend"></div><input class="form-control" name="ramal"
-                                    type="text" placeholder="Ramal" style="border-radius: 5.6px;margin-top: 24px;"
-                                    value="<?php echo htmlspecialchars($ramal); ?>">
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xl-1">
-                            <div class="form-group"><label></label><select class="form-control" name="unidade"
-                                    required="">
-                                    <optgroup label="Unidade">
-                                        <option value=""></option>
-                                        <?php
-                                        // Utiliza a conexão já aberta no topo
-                                        $sql_un = "SELECT unidade FROM unidade";
-                                        $res_un = $conn->query($sql_un);
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">E-mail do Gestor</label>
+                                            <input class="form-control" name="emailGestor" type="text"
+                                                placeholder="Ex: gestor@empresa.com.br"
+                                                value="<?php echo htmlspecialchars($emailGestor); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Gestor
+                                                Responsável</label>
+                                            <input class="form-control" name="gestor" type="text"
+                                                placeholder="Ex: João da Silva"
+                                                value="<?php echo htmlspecialchars($gestor); ?>">
+                                        </div>
+                                    </div>
+                                </div>
 
-                                        if ($res_un && $res_un->num_rows > 0) {
-                                            while ($row_u = $res_un->fetch_assoc()) {
-                                                $selected = ($row_u['unidade'] == $unidade) ? 'selected' : '';
-                                                echo '<option value="' . $row_u['unidade'] . '" ' . $selected . '>' . $row_u['unidade'] . '</option>';
-                                            }
-                                        } else {
-                                            echo '<option value="">Nenhuma unidade encontrada</option>';
-                                        }
-                                        ?>
-                                    </optgroup>
-                                </select></div>
-                        </div>
-                    </div><!-- End: 3-column form row -->
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label></label><input class="form-control" name="emailGestor"
-                                    type="text" placeholder="E-mail do Gestor"
-                                    value="<?php echo htmlspecialchars($emailGestor); ?>"></div>
-                        </div>
-                        <div class="col-sm-3 col-xl-1">
+                                <div class="form-row">
+                                    <div class="col-sm-4 col-xl-5 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Imagem do
+                                                Setor/Unidade</label>
+                                            <input class="form-control-file" name="imagem" type="file" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-2 offset-xl-3 d-flex align-items-end"
+                                        style="margin-bottom: 25px;">
+                                        <div class="custom-control custom-switch">
+                                            <input type="hidden" name="status" value="Inativo">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitch"
+                                                name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                        </div>
+                                    </div>
+                                </div>
 
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-10 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold">Descrição</label>
+                                            <textarea class="form-control" name="descricao" placeholder="Descrição..."
+                                                style="height: 100px;"><?php echo htmlspecialchars($descricao); ?></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row mt-4">
+                                    <div class="col-xl-4 offset-xl-4">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 15px;border-width: 0px;height: 50px;">
+                                            <i class="fas fa-save mr-2"></i>Atualizar Centro de Custo
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="form-group"><label></label><input class="form-control" name="gestor" type="text"
-                                    placeholder="Gestor" value="<?php echo htmlspecialchars($gestor); ?>"></div>
-                        </div>
-                        <div class="col-sm-4 col-xl-2" style="margin-top: 23px;">
-                            <!-- Start: Date Range Picker -->
-                            <div class="custom-control custom-switch" style="margin-top: 30px;">
-                                <input type="hidden" name="status" value="Inativo">
-                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
-                                    value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
-                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
-                            </div>
-                        </div>
-                    </div><!-- End: 4-column form row -->
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row" style="height: 80px;">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1"><input class="form-control-file d-xl-flex"
-                                name="imagem" type="file" style="margin-top: 24px;height: 30px;" accept="image/*"></div>
-                    </div><!-- End: 3-column form row -->
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control"
-                                name="descricao" placeholder="Descrição..."
-                                style="height: 100px;margin-top: 10px; margin-bottom: 0px;"><?php echo htmlspecialchars($descricao); ?></textarea>
-                        </div>
-                        <div class="col-xl-4 offset-xl-4"><button
-                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Atualizar</button>
-                        </div>
-                    </div><!-- End: 6-column form row -->
-                </form><!-- End: Multi-row Form -->
+                    </div>
+                </div><!-- End: Multi-row Form -->
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>

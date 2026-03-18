@@ -93,92 +93,90 @@ include 'auth.php'; // Proteção de sessão
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Centro de Custo</h3>
-                </div><!-- Start: Multi-row Form -->
-                <form action="inserir_centro_de_custo.php" method="post" enctype="multipart/form-data">
-
-                    <!-- Start: 3-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label>Nome do Setor</label><input class="form-control" name="nomeSetor"
-                                    type="text" placeholder="Ex: Tecnologia da Informação"></div>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form action="inserir_centro_de_custo.php" method="post" enctype="multipart/form-data">
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group"><label>Nome do Setor</label><input class="form-control"
+                                                name="nomeSetor" type="text"
+                                                placeholder="Ex: Tecnologia da Informação"></div>
+                                    </div>
+                                    <div class="col-xl-2 offset-xl-1">
+                                        <div class="form-group"><label>Código</label><input class="form-control"
+                                                name="codigo" type="tel" placeholder="Ex: 102030"></div>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <div class="form-group"><label>Ramal</label><input class="form-control"
+                                                name="ramal" type="text" placeholder="Ex: 2201"></div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-2">
+                                        <div class="form-group"><label>Unidade</label>
+                                            <select class="form-control" name="unidade" required="">
+                                                <optgroup label="Selecione a Unidade">
+                                                    <?php
+                                                    include 'conexao.php';
+                                                    $sql_u = "SELECT unidade FROM unidade";
+                                                    $result_u = $conn->query($sql_u);
+                                                    if ($result_u && $result_u->num_rows > 0) {
+                                                        while ($row_u = $result_u->fetch_assoc()) {
+                                                            echo '<option value="' . $row_u['unidade'] . '">' . $row_u['unidade'] . '</option>';
+                                                        }
+                                                    } else {
+                                                        echo '<option value="">Nenhuma unidade encontrada</option>';
+                                                    }
+                                                    ?>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group"><label>E-mail do Gestor</label><input
+                                                class="form-control" name="emailGestor" type="text"
+                                                placeholder="Ex: gestor@empresa.com.br"></div>
+                                    </div>
+                                    <div class="col-sm-3 col-xl-4 offset-xl-1">
+                                        <div class="form-group"><label>Gestor Responsável</label><input
+                                                class="form-control" name="gestor" type="text"
+                                                placeholder="Ex: João da Silva"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-4 col-xl-5 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Imagem do Setor/Unidade</label>
+                                            <input class="form-control-file" name="imagem" type="file" accept="image/*">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-xl-2 offset-xl-3 d-flex align-items-end"
+                                        style="margin-bottom: 25px;">
+                                        <div class="custom-control custom-switch">
+                                            <input type="hidden" name="status" value="Inativo">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitch"
+                                                name="status" value="Ativo" checked>
+                                            <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-sm-3 col-xl-10 offset-xl-1">
+                                        <textarea class="form-control" name="descricao" placeholder="Descrição..."
+                                            style="height: 100px;margin-top: 10px; margin-bottom: 20px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-xl-4 offset-xl-4">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 30px;">Cadastrar</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="col-xl-2 offset-xl-1">
-                            <div class="form-group"><label>Código</label><input class="form-control" name="codigo" type="tel"
-                                    placeholder="Ex: 102030"></div>
-                        </div>
-                        <div class="col-xl-1">
-                            <div class="form-group"><label>Ramal</label><input class="form-control" name="ramal"
-                                    type="text" placeholder="Ex: 2201">
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xl-2">
-                            <div class="form-group"><label>Unidade</label><select class="form-control" name="unidade"
-                                    required="">
-                                    <optgroup label="Selecione a Unidade">
-                                        <?php
-                                            // LISTAGEM DINÂMICA: Carrega as unidades disponíveis para o seletor
-                                            include 'conexao.php';
-
-                                            if ($conn->connect_error) {
-                                            die("Conexão falhou: " . $conn->connect_error);
-                                            }
-
-                                            $sql = "SELECT unidade FROM unidade";
-                                            $result = $conn->query($sql);
-
-                                            if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                            echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '
-                                            </option>';
-                                            }
-                                            } else {
-                                            echo '<option value="">Nenhuma unidade encontrada</option>';
-                                            }
-                                            $conn->close();
-                                            ?>
-                                    </optgroup>
-                                </select></div>
-                        </div>
-                    </div><!-- End: 3-column form row -->
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-4 offset-xl-1">
-                            <div class="form-group"><label>E-mail do Gestor</label><input class="form-control" name="emailGestor"
-                                    type="text" placeholder="Ex: gestor@empresa.com.br"></div>
-                        </div>
-                        <div class="col-sm-3 col-xl-4 offset-xl-2">
-                            <div class="form-group"><label>Gestor Responsável</label><input class="form-control" name="gestor" type="text"
-                                    placeholder="Ex: João da Silva"></div>
-                        </div>
-                    </div><!-- End: 2-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-4 col-xl-5 offset-xl-1">
-                            <div class="form-group">
-                                <label>Imagem do Setor/Unidade</label>
-                                <input class="form-control-file" name="imagem" type="file" accept="image/*">
-                            </div>
-                        </div>
-                        <div class="col-sm-4 col-xl-2 offset-xl-3 d-flex align-items-end" style="margin-bottom: 15px;">
-                            <div class="custom-control custom-switch">
-                                <input type="hidden" name="status" value="Inativo">
-                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
-                                    value="Ativo" checked>
-                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
-                            </div>
-                        </div>
-                    </div><!-- End: Form-row with Image and Status -->
-                    <!-- Start: 4-column form row -->
-                    <div class="form-row">
-                        <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 200px;"><textarea class="form-control"
-                                name="descricao" placeholder="Descrição..."
-                                style="height: 100px;margin-top: 10px; margin-bottom: 0px;"></textarea></div>
-                        <div class="col-xl-4 offset-xl-4"><button
-                                class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
-                        </div>
-                    </div><!-- End: 4-column form row -->
-                </form><!-- End: Multi-row Form -->
+                    </div>
+                </div><!-- End: Multi-row Form -->
             </div>
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>

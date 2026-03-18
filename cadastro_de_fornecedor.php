@@ -94,82 +94,77 @@ include 'auth.php'; // Proteção de sessão
                 <div id="content-1">
                     <div class="container-fluid">
                         <h3 class="text-dark mb-1">Cadastro de Fornecedor</h3>
-                    </div><!-- Start: Multi-row Form -->
-                    <form action="inserir_fornecedor.php" method="post">
-
-
-                        <!-- Start: 2-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                <div class="form-group">
-                                    <label>Nome da Empresa / Razão Social</label>
-                                    <input class="form-control" name="nomeEmpresa" type="text"
-                                        placeholder="Ex: Dell Technologies" required="">
-                                </div>
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <form action="inserir_fornecedor.php" method="post">
+                                    <div class="form-row">
+                                        <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>Nome da Empresa / Razão Social</label>
+                                                <input class="form-control" name="nomeEmpresa" type="text"
+                                                    placeholder="Ex: Dell Technologies" required="">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xl-3 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>CNPJ</label>
+                                                <input class="form-control" name="cnpj" type="text"
+                                                    placeholder="00.000.000/0000-00" required="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-sm-4 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>E-mail de Contato</label>
+                                                <input class="form-control" name="email" type="email"
+                                                    placeholder="contato@empresa.com" required="">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>Telefone / WhatsApp</label>
+                                                <input class="form-control" name="telefone" type="tel"
+                                                    placeholder="(99) 99999-9999" required="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-sm-4 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>Serviço Prestado</label>
+                                                <input class="form-control" name="servico" type="text"
+                                                    placeholder="Ex: Manutenção de Hardware" required="">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xl-3 offset-xl-1">
+                                            <div class="form-group">
+                                                <label>Site / URL</label>
+                                                <input class="form-control" name="site" type="url"
+                                                    placeholder="https://www.empresa.com">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="custom-control custom-switch" style="margin-top: 32px;">
+                                                <input type="hidden" name="status" value="Inativo">
+                                                <input type="checkbox" class="custom-control-input" id="statusSwitch"
+                                                    name="status" value="Ativo" checked>
+                                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-xl-4 offset-xl-4">
+                                            <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                                type="submit"
+                                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                <div class="form-group">
-                                    <label>CNPJ</label>
-                                    <input class="form-control" name="cnpj" type="text" placeholder="00.000.000/0000-00"
-                                        required="">
-                                </div>
-                            </div>
-                        </div><!-- End: 2-column form row -->
-                        <!-- Start: 3-column form row -->
-                        <div class="form-row">
-                            <div class="col-sm-4 offset-xl-1">
-                                <div class="form-group">
-                                    <label>E-mail de Contato</label>
-                                    <input class="form-control" name="email" type="email"
-                                        placeholder="contato@empresa.com" required="">
-                                </div>
-                            </div>
-                            <div class="col-xl-3 offset-xl-1">
-                                <div class="form-group">
-                                    <label>Telefone / WhatsApp</label>
-                                    <input class="form-control" name="telefone" type="tel" placeholder="(99) 99999-9999"
-                                        required="">
-                                </div>
-                            </div>
-                            <div class="col-sm-2 offset-xl-0">
-                                <div class="form-group"><label></label></div>
-                            </div>
-                        </div><!-- End: 3-column form row -->
-                        <!-- Start: 4-column form row -->
-                        <div class="form-row">
-                            <div div class="col-sm-4 offset-xl-1">
-                                <div class="form-group">
-                                    <label>Serviço Prestado</label>
-                                    <input class="form-control" name="servico" type="text"
-                                        placeholder="Ex: Manutenção de Hardware" required="">
-                                </div>
-                            </div>
-                            <div class="col-sm-3 col-xl-1">
-                                <div class="form-group"></div>
-                            </div>
-                            <div class="col-sm-3 col-xl-3">
-                                <div class="form-group">
-                                    <label>Site / URL</label>
-                                    <input class="form-control" name="site" type="url"
-                                        placeholder="https://www.empresa.com">
-                                </div>
-                            </div>
-                            <div class="custom-control custom-switch" style="margin-top: 30px;">
-                                <input type="hidden" name="status" value="Inativo">
-                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
-                                    value="Ativo" checked>
-                                <label class="custom-control-label" for="statusSwitch">Ativo</label>
-                            </div>
-                        </div><!-- End: 4-column form row -->
-                        <!-- Start: 6-column form row -->
-                        <div class="form-row">
-                            <div class="col-xl-4 offset-xl-4"><button
-                                    class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                    type="submit"
-                                    style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
-                            </div>
-                        </div><!-- End: 6-column form row -->
-                    </form><!-- End: Multi-row Form -->
+                        </div>
+                    </div>
+                </div><!-- End: Multi-row Form -->
                 </div>
             </div>
 

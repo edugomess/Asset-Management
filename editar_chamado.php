@@ -479,3 +479,33 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
 </body>
 
 </html>
+if (textarea.readOnly) {
+// Modo Edição
+textarea.readOnly = false;
+textarea.style.background = '#fff';
+textarea.style.cursor = 'text';
+textarea.focus();
+btn.innerHTML = '<i class="fas fa-check"></i> Pronto';
+btn.classList.remove('btn-outline-warning');
+btn.classList.add('btn-success', 'text-white');
+} else {
+// Modo Visualização
+textarea.readOnly = true;
+textarea.style.background = '#eaecf4';
+textarea.style.cursor = 'default';
+btn.innerHTML = '<i class="fas fa-edit"></i> Editar';
+btn.classList.remove('btn-success', 'text-white');
+btn.classList.add('btn-outline-warning');
+}
+}
+
+document.addEventListener('keydown', function (e) {
+if (e.key === 'Escape') {
+var modal = document.getElementById('imageModal');
+if (modal) modal.style.display = 'none';
+}
+});
+</script>
+</body>
+
+</html>

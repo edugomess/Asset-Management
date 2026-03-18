@@ -100,205 +100,209 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-1">Cadastro de Usuário</h3>
-                </div><!-- Start: TR Form -->
-
-                <!-- Start: Multi-row Form -->
-                <!-- Start: Multi-row Form -->
-                <!-- Start: Multi-row Form -->
-                <form action="inserir_usuario.php" method="post" enctype="multipart/form-data">
-                    <!-- Row 1: Nome, Sobrenome -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Nome</label>
-                                <input class="form-control" name="nome" type="text" placeholder="Ex: João" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Sobrenome</label>
-                                <input class="form-control" name="sobrenome" type="text" placeholder="Ex: Silva"
-                                    required="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 2: Usuário AD, Função -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Usuário AD</label>
-                                <input class="form-control" name="usuarioAD" type="text" placeholder="Ex: joao.silva"
-                                    required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Função</label>
-                                <input class="form-control" name="funcao" type="text" placeholder="Ex: Analista de TI"
-                                    required="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Data Nasc, Email -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Data de Nascimento</label>
-                                <input class="form-control" name="dataNascimento" type="date" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input class="form-control" name="email" type="email" placeholder="email@exemplo.com"
-                                    required="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 4: CPF, Centro de Custo -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label class="text-danger">CPF (Somente Números)</label>
-                                <input class="form-control" name="cpf" id="cpf" type="text" placeholder="000.000.000-00"
-                                    required="" maxlength="14" oninput="maskCPF(this)">
-                                <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF Inválido
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <!-- Start: Multi-row Form -->
+                            <form action="inserir_usuario.php" method="post" enctype="multipart/form-data">
+                                <!-- Row 1: Nome, Sobrenome -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Nome</label>
+                                            <input class="form-control" name="nome" type="text" placeholder="Ex: João"
+                                                required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Sobrenome</label>
+                                            <input class="form-control" name="sobrenome" type="text" placeholder="Ex: Silva"
+                                                required="">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Centro de Custo</label>
-                                <select class="form-control" name="centroDeCusto">
-                                    <option value="Nenhum">Nenhum</option>
-                                    <?php
-                                    // CENTROS DE CUSTO: Permite vincular o usuário à sua unidade orçamentária
-                                    include_once 'conexao.php';
-                                    $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
-                                    $res_cc = $conn->query($sql_cc);
-                                    if ($res_cc && $res_cc->num_rows > 0) {
-                                        while ($row_cc = $res_cc->fetch_assoc()) {
-                                            echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
+
+                                <!-- Row 2: Usuário AD, Função -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Usuário AD</label>
+                                            <input class="form-control" name="usuarioAD" type="text"
+                                                placeholder="Ex: joao.silva" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Função</label>
+                                            <input class="form-control" name="funcao" type="text"
+                                                placeholder="Ex: Analista de TI" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Data Nasc, Email -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Data de Nascimento</label>
+                                            <input class="form-control" name="dataNascimento" type="date" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input class="form-control" name="email" type="email"
+                                                placeholder="email@exemplo.com" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 4: CPF, Centro de Custo -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label class="text-danger">CPF (Somente Números)</label>
+                                            <input class="form-control" name="cpf" id="cpf" type="text"
+                                                placeholder="000.000.000-00" required="" maxlength="14"
+                                                oninput="maskCPF(this)">
+                                            <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF
+                                                Inválido
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Centro de Custo</label>
+                                            <select class="form-control" name="centroDeCusto">
+                                                <option value="Nenhum">Nenhum</option>
+                                                <?php
+                                                // CENTROS DE CUSTO: Permite vincular o usuário à sua unidade orçamentária
+                                                include_once 'conexao.php';
+                                                $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
+                                                $res_cc = $conn->query($sql_cc);
+                                                if ($res_cc && $res_cc->num_rows > 0) {
+                                                    while ($row_cc = $res_cc->fetch_assoc()) {
+                                                        echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 5: Matrícula, Telefone -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Matrícula (Automático)</label>
+                                            <input class="form-control" name="matricula" type="text"
+                                                value="<?php echo $next_id; ?>" readonly required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Telefone</label>
+                                            <input class="form-control" name="telefone" type="text" inputmode="tel"
+                                                placeholder="(99) 99999-9999" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 6: Tipo de Contrato, Tipo de Usuário -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Tipo de Contrato</label>
+                                            <select class="form-control" name="tipoContrato" required="">
+                                                <option value="CLT">CLT</option>
+                                                <option value="PJ">PJ</option>
+                                                <option value="Cooperativa">Cooperativa</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Tipo de Usuário</label>
+                                            <select class="form-control" name="nivelUsuario" required="">
+                                                <option value="1">Administrador</option>
+                                                <option value="2">Suporte</option>
+                                                <option value="3" selected="">Usuário</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 7: Unidade, Status -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Unidade</label>
+                                            <select class="form-control" name="unidade" required="">
+                                                <?php
+                                                include 'conexao.php';
+                                                $sql_un = "SELECT unidade FROM unidade";
+                                                $res_un = $conn->query($sql_un);
+                                                if ($res_un->num_rows > 0) {
+                                                    while ($row = $res_un->fetch_assoc()) {
+                                                        echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="custom-control custom-switch" style="margin-top: 35px;">
+                                            <input type="hidden" name="status" value="Inativo">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitch"
+                                                name="status" value="Ativo" checked>
+                                            <label class="custom-control-label" for="statusSwitch">Usuário Ativo</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 8: Senha, Confirmação -->
+                                <div class="form-row">
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Senha</label>
+                                            <input class="form-control" name="senha" id="Senha" type="password"
+                                                placeholder="********" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-4 offset-xl-1">
+                                        <div class="form-group">
+                                            <label>Confirmação de Senha</label>
+                                            <input class="form-control" name="confirmarSenha" type="password"
+                                                placeholder="********" required="" oninput="passwordvalidation(this)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 9: Foto Perfil -->
+                                <div class="form-row">
+                                    <div class="col-xl-6 offset-xl-3 mt-3">
+                                        <div class="form-group">
+                                            <label>Foto de Perfil (Opcional)</label>
+                                            <input type="file" class="form-control-file" name="foto_perfil" id="foto_perfil"
+                                                accept="image/*">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Start: 6-column form row -->
+                                <div class="form-row" style="margin-top: 50px;">
+                                    <div class="col-lg-4 col-xl-4 offset-lg-4 offset-xl-4" style="border-radius: 15px;">
+                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            type="submit"
+                                            style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;">Cadastrar</button>
+                                    </div>
+                                </div><!-- End: 6-column form row -->
+                            </form><!-- End: Multi-row Form -->
                         </div>
                     </div>
-
-                    <!-- Row 5: Matrícula, Telefone -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Matrícula (Automático)</label>
-                                <input class="form-control" name="matricula" type="text" value="<?php echo $next_id; ?>"
-                                    readonly required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Telefone</label>
-                                <input class="form-control" name="telefone" type="text" inputmode="tel"
-                                    placeholder="(99) 99999-9999" required="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 6: Tipo de Contrato, Tipo de Usuário -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Tipo de Contrato</label>
-                                <select class="form-control" name="tipoContrato" required="">
-                                    <option value="CLT">CLT</option>
-                                    <option value="PJ">PJ</option>
-                                    <option value="Cooperativa">Cooperativa</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Tipo de Usuário</label>
-                                <select class="form-control" name="nivelUsuario" required="">
-                                    <option value="1">Administrador</option>
-                                    <option value="2">Suporte</option>
-                                    <option value="3" selected="">Usuário</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 7: Unidade, Status -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Unidade</label>
-                                <select class="form-control" name="unidade" required="">
-                                    <?php
-                                    include 'conexao.php';
-                                    $sql_un = "SELECT unidade FROM unidade";
-                                    $res_un = $conn->query($sql_un);
-                                    if ($res_un->num_rows > 0) {
-                                        while ($row = $res_un->fetch_assoc()) {
-                                            echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="custom-control custom-switch" style="margin-top: 35px;">
-                                <input type="hidden" name="status" value="Inativo">
-                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status"
-                                    value="Ativo" checked>
-                                <label class="custom-control-label" for="statusSwitch">Usuário Ativo</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 8: Senha, Confirmação -->
-                    <div class="form-row">
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Senha</label>
-                                <input class="form-control" name="senha" id="Senha" type="password"
-                                    placeholder="********" required="">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                            <div class="form-group">
-                                <label>Confirmação de Senha</label>
-                                <input class="form-control" name="confirmarSenha" type="password" placeholder="********"
-                                    required="" oninput="passwordvalidation(this)">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Row 9: Foto Perfil -->
-                    <div class="form-row">
-                        <div class="col-xl-6 offset-xl-3 mt-3">
-                            <div class="form-group">
-                                <label>Foto de Perfil (Opcional)</label>
-                                <input type="file" class="form-control-file" name="foto_perfil" id="foto_perfil"
-                                    accept="image/*">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Start: 6-column form row -->
-                    <div class="form-row" style="margin-top: 50px;">
-                        <div class="col-lg-4 col-xl-4 offset-lg-4 offset-xl-4" style="border-radius: 15px;">
-                            <button class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                type="submit"
-                                style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;">Cadastrar</button>
-                        </div>
-                    </div><!-- End: 6-column form row -->
-                </form><!-- End: Multi-row Form -->
+                </div><!-- End: Multi-row Form -->
 
             </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
         </div>

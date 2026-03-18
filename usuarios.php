@@ -175,6 +175,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th scope="col">E-Mail</th>
                                             <th scope="col">Centro de Custo</th>
                                             <th scope="col">Função</th>
+                                            <th scope="col">Nível</th>
                                             <th scope="col">Unidade</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Ações</th>
@@ -197,6 +198,17 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['funcao']); ?></td>
+                                                     <td>
+                                                         <?php
+                                                         $nivel_display = !empty($row['nivelUsuario']) && $row['nivelUsuario'] !== '-' ? $row['nivelUsuario'] : 'Usuário';
+                                                         $badge_color = '#6c757d'; // Default Usuário (Gray)
+                                                         if ($nivel_display === 'Admin') $badge_color = '#2c404a'; // Admin (Theme Dark)
+                                                         if ($nivel_display === 'Suporte') $badge_color = '#36b9cc'; // Suporte (Cyan)
+                                                         ?>
+                                                         <span class="badge" style="background-color: <?php echo $badge_color; ?>; color: white;">
+                                                             <?php echo htmlspecialchars($nivel_display); ?>
+                                                         </span>
+                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['unidade']); ?></td>
                                                     <td>
                                                         <span

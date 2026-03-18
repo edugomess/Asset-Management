@@ -109,6 +109,11 @@ $result_cc = mysqli_query($conn, $sql_cc);
             padding: 12px 15px;
             border: 1px solid #ddd;
             transition: all 0.3s;
+            height: auto;
+        }
+
+        select.modern-input {
+            height: 50px !important;
         }
 
         .modern-input:focus {
@@ -261,16 +266,16 @@ $result_cc = mysqli_query($conn, $sql_cc);
                             <!-- Contact Form -->
                             <div class="col-lg-7 p-5 bg-white">
                                 <h4 class="font-weight-bold mb-4">Envie uma Mensagem</h4>
-                                <form>
+                                <form id="supportForm" method="POST">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold">Seu Nome</label>
-                                            <input type="text" class="form-control modern-input"
-                                                placeholder="Ex: João Silva">
+                                            <label class="small font-weight-bold" for="nome">Seu Nome</label>
+                                            <input type="text" name="nome" id="nome" class="form-control modern-input"
+                                                placeholder="Ex: João Silva" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold">Empresa/Centro de Custo</label>
-                                            <select class="form-control modern-input" name="centro_custo" required>
+                                            <label class="small font-weight-bold" for="centro_custo">Empresa/Centro de Custo</label>
+                                            <select class="form-control modern-input" name="centro_custo" id="centro_custo" required>
                                                 <option value="">Selecione...</option>
                                                 <?php
                                                 if ($result_cc) {
@@ -283,14 +288,14 @@ $result_cc = mysqli_query($conn, $sql_cc);
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="small font-weight-bold">Seu E-mail Ativo</label>
-                                        <input type="email" class="form-control modern-input"
-                                            placeholder="Ex: joao@empresa.com.br">
+                                        <label class="small font-weight-bold" for="email">Seu E-mail Ativo</label>
+                                        <input type="email" name="email" id="email" class="form-control modern-input"
+                                            placeholder="Ex: joao@empresa.com.br" required>
                                     </div>
                                     <div class="mb-4">
-                                        <label class="small font-weight-bold">Descrição da Necessidade</label>
-                                        <textarea class="form-control modern-input" rows="4"
-                                            placeholder="Como podemos ajudar você?"></textarea>
+                                        <label class="small font-weight-bold" for="mensagem">Descrição da Necessidade</label>
+                                        <textarea name="mensagem" id="mensagem" class="form-control modern-input" rows="4"
+                                            placeholder="Como podemos ajudar você?" required></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-dark btn-block font-weight-bold py-3 shadow"
                                         style="border-radius: 12px; background: #2c404a;">
@@ -329,6 +334,38 @@ $result_cc = mysqli_query($conn, $sql_cc);
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#supportForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const btn = $(this).find('button[type="submit"]');
+                const btnText = btn.html();
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+
+                $.ajax({
+                    url: 'ajax_suporte.php',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Mensagem enviada com sucesso! Em breve entraremos em contato.');
+                            $('#supportForm')[0].reset();
+                        } else {
+                            alert('Erro ao enviar mensagem: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Erro inesperado ao processar sua solicitação. Tente novamente mais tarde.');
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false).html(btnText);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

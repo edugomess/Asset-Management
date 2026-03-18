@@ -417,22 +417,33 @@ $result = mysqli_query($conn, $sql);
                                 </table>
                             </div>
 
-                            <div class="d-flex justify-content-start mt-3">
-                                <ul class="pagination-custom">
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="text-secondary small">
                                     <?php
-                                    $current_filter = "&filtro_status=" . urlencode($filtro_status);
+                                    $fim = min($start_from + $results_per_page, $total_results);
+                                    $inicio = $total_results > 0 ? $start_from + 1 : 0;
+                                    echo "Mostrando $inicio a $fim de $total_results registros";
+                                    ?>
+                                </div>
+                                <ul class="pagination-custom mb-0">
+                                    <?php
+                                    $params = "filtro_status=" . urlencode($filtro_status);
+                                    if (!empty($search)) {
+                                        $params .= "&search=" . urlencode($search);
+                                    }
+
                                     if ((int) $current_page > 1) {
-                                        echo "<li><a href='?page=" . ((int) $current_page - 1) . $current_filter . "'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ((int) $current_page - 1) . "&" . $params . "'>« Anterior</a></li>";
                                     }
                                     for ($page = 1; $page <= $total_pages; $page++) {
                                         if ($page == $current_page) {
                                             echo "<li class='active'><span>$page</span></li>";
                                         } else {
-                                            echo "<li><a href='?page=$page$current_filter'>$page</a></li>";
+                                            echo "<li><a href='?page=$page&" . $params . "'>$page</a></li>";
                                         }
                                     }
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . $current_filter . "'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "&" . $params . "'>Próximo »</a></li>";
                                     }
                                     ?>
                                 </ul>

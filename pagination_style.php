@@ -41,10 +41,10 @@
     }
 
     .pagination-custom li.active span {
-        background: #2c404a;
-        color: #fff;
-        border-color: #2c404a;
-        box-shadow: 0 4px 15px rgba(44, 64, 74, 0.25);
+        background-color: #2c404a !important;
+        color: #ffffff !important;
+        border-color: #2c404a !important;
+        box-shadow: 0 4px 15px rgba(44, 64, 74, 0.45) !important;
     }
 
     .pagination-custom li.active span:hover {

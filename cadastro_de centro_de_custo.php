@@ -156,12 +156,6 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-sm-4 col-xl-5 offset-xl-1">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Imagem do Setor/Unidade</label>
-                                            <input class="form-control-file" name="imagem" type="file" accept="image/*">
-                                        </div>
-                                    </div>
                                     <div class="col-sm-4 col-xl-2 offset-xl-3 d-flex align-items-end"
                                         style="margin-bottom: 25px;">
                                         <div class="custom-control custom-switch">

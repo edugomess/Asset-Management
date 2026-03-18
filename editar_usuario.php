@@ -49,6 +49,18 @@ if ($id > 0) {
                     <div class="container-fluid">
                         <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1"
                             type="button"><i class="fas fa-bars"></i></button>
+                        <!-- Busca Global -->
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                        </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item no-arrow mx-1 d-flex align-items-center">
                             </li>
@@ -498,6 +510,7 @@ if ($id > 0) {
             });
         });
     </script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

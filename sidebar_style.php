@@ -357,14 +357,34 @@
     }
 
 
-    /* Efeito Hover Global para Cards */
+    /* Premium Global Shadow Override */
+    .shadow {
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Standardized Card Shadow & Aesthetics */
     .card {
+        border-radius: 12px !important;
+        border: none !important;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+
+    .card.shadow {
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.1) !important;
     }
 
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Top Bar Card Transformation */
+    .topbar {
+        border-radius: 12px !important;
+        border: none !important;
+        margin: 10px 23px 20px 23px !important;
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
     }
 
     /* Premium Filter Styling - Standardized UI */

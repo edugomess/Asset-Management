@@ -144,6 +144,8 @@ include
                                                     <option value="relatorio_ativos_manutencao.php">Em Manutenção</option>
                                                     <option value="relatorio_ativos_sem_cc.php">Sem Centro de Custo</option>
                                                     <option value="relatorio_ativos_por_usuario.php">Por Usuário</option>
+                                                    <option value="relatorio_ativos_unidade.php">Por Unidade</option>
+                                                    <option value="relatorio_ativos_historico.php">Trilha de Auditoria (Histórico)</option>
                                                     <option value="ativos_doados.php">Doações</option>
                                                 </optgroup>
                                             <?php else: ?>
@@ -169,6 +171,7 @@ include
                                                     <option value="relatorio_chamados_solicitante.php">Por Solicitante
                                                     </option>
                                                     <option value="relatorio_chamados_sla_vencido.php">SLA Vencido</option>
+                                                    <option value="relatorio_chamados_prioridade.php">Por Prioridade</option>
                                                     <option value="relatorio_chamados_sem_atribuicao.php">Sem Atribuição
                                                     </option>
                                                 <?php endif; ?>

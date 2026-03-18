@@ -379,18 +379,18 @@ function getHoursAndMinutes($total_minutes)
             background: #fff;
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid #e3e6f0;
+            border: none;
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.05);
+            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.1);
         }
 
         .notification-card:hover {
-            box-shadow: 0 0.5rem 1rem 0 rgba(58, 59, 69, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
         }
 
         .inactive-card {

@@ -68,6 +68,11 @@ class ReportGenerator extends FPDF
 
     function generate($sql)
     {
+        if (isset($_GET['format']) && $_GET['format'] == 'xlsx') {
+            $this->generateExcel($sql);
+            return;
+        }
+
         $this->AddPage();
         $this->SetFont('Arial', '', 8);
 
@@ -98,5 +103,55 @@ class ReportGenerator extends FPDF
         }
 
         $this->Output();
+    }
+
+    /**
+     * Gera um arquivo Excel (.xls) baseado em uma tabela HTML.
+     * Utiliza cabeçalhos HTTP para forçar o download.
+     */
+    function generateExcel($sql)
+    {
+        $result = $this->conn->query($sql);
+        $filename = str_replace(' ', '_', $this->reportTitle) . "_" . date('Y-m-d_H-i-s') . ".xls";
+
+        header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // UTF-8 BOM para Excel
+        echo "\xEF\xBB\xBF";
+
+        echo "<table border='1'>";
+        echo "<thead><tr>";
+        foreach ($this->columns as $col) {
+            echo "<th style='background-color: #2c404a; color: white;'>" . htmlspecialchars($col['header']) . "</th>";
+        }
+        echo "</tr></thead>";
+        echo "<tbody>";
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                foreach ($this->columns as $col) {
+                    $val = isset($row[$col['field']]) ? $row[$col['field']] : '';
+
+                    if (isset($col['format'])) {
+                        if ($col['format'] == 'money') {
+                            $val = 'R$ ' . number_format($val, 2, ',', '.');
+                        } elseif ($col['format'] == 'date') {
+                            $val = date('d/m/Y', strtotime($val));
+                        }
+                    }
+                    echo "<td>" . htmlspecialchars($val) . "</td>";
+                }
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='" . count($this->columns) . "'>Nenhum registro encontrado.</td></tr>";
+        }
+
+        echo "</tbody></table>";
+        exit;
     }
 }

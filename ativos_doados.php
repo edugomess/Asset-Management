@@ -158,10 +158,14 @@ include 'conexao.php';
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="text-dark">Ativos Doados</h3>
-                        <a class="btn btn-danger active text-white pulse animated btn-user" role="button"
-                            style="border-radius: 10px; height: 50px; padding: 13px 30px;"
-                            href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i> Gerar
-                            Relatório PDF</a>
+                        <div>
+                            <a class="btn btn-danger active text-white pulse animated btn-user mr-2" role="button"
+                                style="border-radius: 10px; height: 50px; padding: 13px 30px;"
+                                href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                            <a class="btn btn-success active text-white pulse animated btn-user" role="button"
+                                style="border-radius: 10px; height: 50px; padding: 13px 30px; background-color: #1cc88a; border-color: #1cc88a;"
+                                href="/gerar_relatorio_doacoes.php?format=xlsx" target="_blank"><i class="fas fa-file-excel"></i> XLSX</a>
+                        </div>
                     </div>
 
                     <div class="card shadow">

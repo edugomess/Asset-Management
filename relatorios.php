@@ -222,6 +222,11 @@ include
                                                 </optgroup>
                                             <?php endif; ?>
                                         </select>
+                                        <select id="reportFormat" class="form-control mr-3"
+                                            style="height: 50px; width: 150px;">
+                                            <option value="pdf">PDF</option>
+                                            <option value="xlsx">XLSX</option>
+                                        </select>
                                         <button class="btn btn-success active text-white pulse animated btn-user"
                                             type="button" onclick="generateReport()"
                                             style="background: rgb(44,64,74);border-radius: 10px;height: 50px; white-space: nowrap;">
@@ -259,8 +264,15 @@ include
          */
         function generateReport() {
             var url = document.getElementById('reportType').value;
+            var format = document.getElementById('reportFormat').value;
+
             if (url) {
-                window.open(url, '_blank');
+                // Adiciona o parâmetro de formato se não for PDF (padrão)
+                var finalUrl = url;
+                if (format === 'xlsx') {
+                    finalUrl += (url.includes('?') ? '&' : '?') + 'format=xlsx';
+                }
+                window.open(finalUrl, '_blank');
             } else {
                 alert('Por favor, selecione um tipo de relatório.');
             }

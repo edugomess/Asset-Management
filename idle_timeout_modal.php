@@ -17,7 +17,14 @@ if (file_exists('conexao.php')) {
         $dynamic_idle_timeout = (int) $timeout_min * 60;
     }
 }
-$warning_time = 30; // 30 segundos de aviso
+
+// TEST MODE: Se você quiser testar rápido, mude para true
+$test_mode = false; 
+if ($test_mode) {
+    $dynamic_idle_timeout = 30; // 30 segundos total para teste
+}
+
+$warning_time = 60; // 60 segundos de aviso (Padrão para Produção)
 $idle_limit = $dynamic_idle_timeout - $warning_time;
 if ($idle_limit < 0)
     $idle_limit = 0;
@@ -27,30 +34,53 @@ if ($idle_limit < 0)
 <div class="modal fade" id="idleTimeoutModal" tabindex="-1" role="dialog" aria-labelledby="idleTimeoutModalLabel"
     aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title" id="idleTimeoutModalLabel">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>Sessão Expirando
-                </h5>
-            </div>
-            <div class="modal-body text-center py-4">
-                <p class="mb-2">Você está inativo há algum tempo.</p>
-                <p class="h4 font-weight-bold ml-1">Sua sessão será encerrada em:</p>
-                <div class="display-4 font-weight-bold text-danger my-3" id="idleCountdown">
-                    <?php echo $warning_time; ?>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header border-0 pt-4 pb-0 justify-content-center">
+                <div style="width: 70px; height: 70px; background: rgba(246, 194, 62, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-hourglass-half text-warning fa-2x animate__animated animate__pulse animate__infinite"></i>
                 </div>
-                <p class="text-muted">Deseja continuar conectado?</p>
             </div>
-            <div class="modal-footer justify-content-center border-0 pb-4">
-                <button type="button" class="btn btn-primary px-4 py-2" id="stayConnectedBtn"
-                    style="background: rgb(44,64,74); border-radius: 10px;">
-                    <i class="fas fa-check mr-2"></i>Permanecer Conectado
+            <div class="modal-body text-center py-4 px-5">
+                <h4 class="font-weight-bold text-dark mb-3">Sessão Expirando</h4>
+                <p class="text-muted mb-4">Você está inativo. Por segurança, sua sessão será encerrada em breve.</p>
+                
+                <div class="position-relative d-inline-block mb-4">
+                    <svg width="100" height="100" viewbox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="8" />
+                        <circle id="idleProgressCircle" cx="50" cy="50" r="45" fill="none" stroke="#e74a3b" stroke-width="8" 
+                            stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition: stroke-dashoffset 1s linear;" />
+                    </svg>
+                    <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        <span class="h2 font-weight-bold text-danger mb-0" id="idleCountdown"><?php echo $warning_time; ?></span>
+                    </div>
+                </div>
+
+                <p class="text-secondary small mb-0">Deseja continuar seu trabalho?</p>
+            </div>
+            <div class="modal-footer border-0 pb-5 justify-content-center px-5">
+                <button type="button" class="btn btn-primary btn-block py-3 shadow-sm" id="stayConnectedBtn"
+                    style="background: linear-gradient(135deg, #2c404a 0%, #1a2930 100%); border: none; border-radius: 12px; font-weight: 600;">
+                    <i class="fas fa-check-circle mr-2"></i>SIM, CONTINUAR CONECTADO
                 </button>
-                <a href="logout.php?timeout=true" class="btn btn-link text-muted">Sair agora</a>
+                <a href="logout.php?timeout=true" class="btn btn-link text-muted mt-2 small text-decoration-none">Sair agora</a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    #idleTimeoutModal .modal-content {
+        background: #ffffff;
+    }
+    @keyframes pulse-red {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .text-danger.animate-pulse {
+        animation: pulse-red 1s infinite;
+    }
+</style>
 
 <script>
     (function () {
@@ -86,18 +116,32 @@ if ($idle_limit < 0)
         }
 
         function showWarning() {
-            // Verifica se jQuery e Bootstrap Modal estão carregados
             if (typeof $ !== 'undefined' && typeof $.fn.modal !== 'undefined') {
                 isWarningActive = true;
                 warningCounter = warningTime;
+                
                 const countdownEl = document.getElementById('idleCountdown');
+                const circleEl = document.getElementById('idleProgressCircle');
+                
                 if (countdownEl) countdownEl.innerText = warningCounter;
-
+                
                 $('#idleTimeoutModal').modal('show');
+
+                const totalLength = 283; // 2 * PI * r (r=45)
 
                 countdownInterval = setInterval(function () {
                     warningCounter--;
-                    if (countdownEl) countdownEl.innerText = warningCounter;
+                    if (countdownEl) {
+                        countdownEl.innerText = warningCounter;
+                        if (warningCounter <= 5) {
+                            countdownEl.classList.add('animate-pulse');
+                        }
+                    }
+
+                    if (circleEl) {
+                        const offset = totalLength - (warningCounter / warningTime) * totalLength;
+                        circleEl.style.strokeDashoffset = offset;
+                    }
 
                     if (warningCounter <= 0) {
                         clearInterval(countdownInterval);
@@ -105,7 +149,6 @@ if ($idle_limit < 0)
                     }
                 }, 1000);
             } else {
-                // Fallback caso o modal não possa ser exibido (ex: erro de carregamento de scripts)
                 if (idleCounter >= idleTime + warningTime) {
                     window.location.href = 'logout.php?timeout=true';
                 }

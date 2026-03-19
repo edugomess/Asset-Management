@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Detalhes do Equipamento</title>
+    <title><?php echo __('Detalhes do Equipamento'); ?></title>
     <?php
     include 'conexao.php';
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -74,13 +74,13 @@
         }
 
         if (!$doacao_habilitada) {
-            $status_doacao = "Doação Desativada";
+            $status_doacao = __('Doação Desativada');
             $cor_doacao = "text-secondary";
         } elseif (!$cat_elegivel) {
-            $status_doacao = "Categoria não elegível para doação";
+            $status_doacao = __('Categoria não elegível para doação');
             $cor_doacao = "text-warning";
         } elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
-            $status_doacao = "Elegível para Doação";
+            $status_doacao = __('Elegível para Doação');
             $cor_doacao = "text-success";
         } else {
             $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
@@ -88,18 +88,18 @@
             $meses_rest = $restante_meses % 12;
             $tempo_str = '';
             if ($anos_rest > 0)
-                $tempo_str .= $anos_rest . ' ano(s)';
+                $tempo_str .= $anos_rest . ' ' . __('ano(s)');
             if ($anos_rest > 0 && $meses_rest > 0)
                 $tempo_str .= ' e ';
             if ($meses_rest > 0)
-                $tempo_str .= $meses_rest . ' mês(es)';
+                $tempo_str .= $meses_rest . ' ' . __('mês(es)');
             if (empty($tempo_str))
-                $tempo_str = 'menos de 1 mês';
-            $status_doacao = "Bloqueado (Carência: " . $tempo_str . ")";
+                $tempo_str = __('menos de 1 mês');
+            $status_doacao = __('Bloqueado (Carência: ') . $tempo_str . ")";
             $cor_doacao = "text-danger";
         }
     } else {
-        echo "<script>alert('Ativo não encontrado!'); window.location.href='equipamentos.php';</script>";
+        echo "<script>alert('" . __('Ativo não encontrado!') . "'); window.location.href='equipamentos.php';</script>";
         exit;
     }
 
@@ -204,44 +204,9 @@
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Detalhes do Ativo</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Detalhes do Ativo'); ?></h3>
                     <div class="row mb-3">
                         <div class="col-lg-4">
                             <div class="card mb-3">
@@ -254,35 +219,35 @@
                                         <button class="btn btn-primary btn-sm btn-system mx-auto" type="button"
                                             style="background: rgb(44,64,74); padding: 8px 15px; font-size: 0.85rem;"
                                             onclick="document.getElementById('foto-input').click();">
-                                            <i class="fas fa-camera"></i> Alterar Foto
+                                            <i class="fas fa-camera"></i> <?php echo __('Alterar Foto'); ?>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="text-primary font-weight-bold m-0">Ações Rápidas</h6>
+                                    <h6 class="text-primary font-weight-bold m-0"><?php echo __('Ações Rápidas'); ?></h6>
                                 </div>
                                 <div class="card-body d-grid gap-3">
                                     <a href="editar_ativo.php?id=<?php echo $id; ?>"
                                         class="btn btn-warning-system btn-system btn-block text-white mb-3">
-                                        <i class="fas fa-edit"></i> Editar Ativo
+                                        <i class="fas fa-edit"></i> <?php echo __('Editar Ativo'); ?>
                                     </a>
                                     <?php if ($ativo['status'] == 'Ativo'): ?>
                                         <button class="btn btn-danger-system btn-system btn-block mb-3"
                                             onclick="toggleStatus(<?php echo $id; ?>, 'Inativo')">
-                                            <i class="fas fa-power-off"></i> Desativar
+                                            <i class="fas fa-power-off"></i> <?php echo __('Desativar'); ?>
                                         </button>
                                     <?php else: ?>
                                         <button class="btn btn-success-system btn-system btn-block mb-3"
                                             onclick="toggleStatus(<?php echo $id; ?>, 'Ativo')">
-                                            <i class="fas fa-power-off"></i> Ativar
+                                            <i class="fas fa-power-off"></i> <?php echo __('Ativar'); ?>
                                         </button>
                                     <?php endif; ?>
 
 
                                     <button class="btn btn-info-system btn-system btn-block" onclick="gerarPDF()">
-                                        <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
+                                        <i class="fas fa-file-pdf"></i> <?php echo __('Gerar Relatório PDF'); ?>
                                     </button>
                                 </div>
                             </div>
@@ -291,21 +256,21 @@
                             <div class="col">
                                 <div class="card shadow mb-3">
                                     <div class="card-header py-3">
-                                        <p class="text-primary m-0 font-weight-bold">Informações do Ativo</p>
+                                        <p class="text-primary m-0 font-weight-bold"><?php echo __('Informações do Ativo'); ?></p>
                                     </div>
                                     <div class="card-body">
                                         <form>
                                             <div class="form-row">
                                                 <div class="col">
                                                     <div class="form-group"><label
-                                                            for="modelo"><strong>Modelo</strong></label><input
+                                                            for="modelo"><strong><?php echo __('Modelo'); ?></strong></label><input
                                                             class="form-control" type="text"
                                                             value="<?php echo htmlspecialchars($ativo['modelo']); ?>"
                                                             readonly></div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-group"><label
-                                                            for="tag"><strong>Tag</strong></label><input
+                                                            for="tag"><strong><?php echo __('Tag'); ?></strong></label><input
                                                             class="form-control" type="text"
                                                             value="<?php echo htmlspecialchars($ativo['tag']); ?>"
                                                             readonly></div>
@@ -314,26 +279,25 @@
                                             <div class="form-row">
                                                 <div class="col">
                                                     <div class="form-group"><label
-                                                            for="fabricante"><strong>Fabricante</strong></label><input
+                                                            for="fabricante"><strong><?php echo __('Fabricante'); ?></strong></label><input
                                                             class="form-control" type="text"
                                                             value="<?php echo htmlspecialchars($ativo['fabricante']); ?>"
                                                             readonly></div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-group"><label
-                                                            for="categoria"><strong>Categoria</strong></label><input
+                                                            for="categoria"><strong><?php echo __('Categoria'); ?></strong></label><input
                                                             class="form-control" type="text"
                                                             value="<?php echo htmlspecialchars($ativo['categoria']); ?>"
                                                             readonly></div>
                                                 </div>
                                             </div>
                                             <div class="form-group"><label
-                                                    for="hostname"><strong>Hostname</strong></label><input
+                                                    for="hostname"><strong><?php echo __('Hostname'); ?></strong></label><input
                                                     class="form-control" type="text"
                                                     value="<?php echo htmlspecialchars($ativo['hostName']); ?>"
                                                     readonly></div>
-                                            <div class="form-group"><label for="mac"><strong>MAC
-                                                        Address</strong></label><input class="form-control" type="text"
+                                            <div class="form-group"><label for="mac"><strong><?php echo __('MAC Address'); ?></strong></label><input class="form-control" type="text"
                                                     value="<?php echo htmlspecialchars($ativo['macAdress']); ?>"
                                                     readonly></div>
                                         </form>
@@ -341,21 +305,19 @@
                                 </div>
                                 <div class="card shadow">
                                     <div class="card-header py-3">
-                                        <p class="text-primary m-0 font-weight-bold">Valores e Status</p>
+                                        <p class="text-primary m-0 font-weight-bold"><?php echo __('Valores e Status'); ?></p>
                                     </div>
                                     <div class="card-body">
                                         <form>
                                             <div class="form-row">
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Data de
-                                                                Cadastro</strong></label><input class="form-control"
+                                                    <div class="form-group"><label><strong><?php echo __('Data de Cadastro'); ?></strong></label><input class="form-control"
                                                             type="text"
                                                             value="<?php echo date('d/m/Y', strtotime($ativo['dataAtivacao'])); ?>"
                                                             readonly></div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Centro de
-                                                                Custo</strong></label><input class="form-control"
+                                                    <div class="form-group"><label><strong><?php echo __('Centro de Custo'); ?></strong></label><input class="form-control"
                                                             type="text"
                                                             value="<?php echo htmlspecialchars($ativo['centroDeCusto']); ?>"
                                                             readonly></div>
@@ -363,15 +325,13 @@
                                             </div>
                                             <div class="form-row">
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Valor
-                                                                Original</strong></label><input class="form-control"
+                                                    <div class="form-group"><label><strong><?php echo __('Valor Original'); ?></strong></label><input class="form-control"
                                                             type="text"
                                                             value="R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>"
                                                             readonly></div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Valor
-                                                                Atual</strong></label><input class="form-control"
+                                                    <div class="form-group"><label><strong><?php echo __('Valor Atual'); ?></strong></label><input class="form-control"
                                                             type="text"
                                                             value="R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>"
                                                             readonly></div>
@@ -379,22 +339,20 @@
                                             </div>
                                             <div class="form-row">
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Taxa de
-                                                                Depreciação</strong></label><input class="form-control"
+                                                    <div class="form-group"><label><strong><?php echo __('Taxa de Depreciação'); ?></strong></label><input class="form-control"
                                                             type="text"
                                                             value="<?php echo number_format($taxa_pct, 2, ',', '.'); ?>% a cada <?php echo intval($dep_config['periodo_anos']); ?> ano(s) e <?php echo intval($dep_config['periodo_meses']); ?> mês(es)"
                                                             readonly></div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="form-group"><label><strong>Depreciação
-                                                                Acumulada</strong></label><input
+                                                    <div class="form-group"><label><strong><?php echo __('Depreciação Acumulada'); ?></strong></label><input
                                                             class="form-control text-danger" type="text"
                                                             value="R$ <?php echo number_format($depreciacao_total, 2, ',', '.'); ?> (<?php echo number_format($percentual_depreciado, 1, ',', '.'); ?>%)"
                                                             readonly style="font-weight: bold;"></div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label><strong>Status de Doação</strong></label>
+                                                <label><strong><?php echo __('Status de Doação'); ?></strong></label>
                                                 <input class="form-control <?php echo $cor_doacao; ?>" type="text"
                                                     value="<?php echo $status_doacao; ?>" readonly
                                                     style="font-weight: bold;">
@@ -409,15 +367,15 @@
                 <?php if ($ativo['status'] == 'Manutencao' && !empty($ativo['manutencao_desc'])): ?>
                     <div class="card shadow mb-4 border-left-warning">
                         <div class="card-header py-3">
-                            <p class="text-warning m-0 font-weight-bold"><i class="fas fa-tools"></i> Detalhes da Manutenção
+                            <p class="text-warning m-0 font-weight-bold"><i class="fas fa-tools"></i> <?php echo __('Detalhes da Manutenção'); ?>
                             </p>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <p><strong>Data de Início:</strong>
+                                    <p><strong><?php echo __('Data de Início:'); ?></strong>
                                         <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
-                                    <p><strong>Observações:</strong></p>
+                                    <p><strong><?php echo __('Observações:'); ?></strong></p>
                                     <div class="p-3 bg-light border rounded">
                                         <?php echo nl2br(htmlspecialchars($ativo['manutencao_desc'])); ?>
                                     </div>
@@ -428,14 +386,14 @@
                 <?php endif; ?>
                 <div class="card shadow mb-5">
                     <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">Descrição</p>
+                        <p class="text-primary m-0 font-weight-bold"><?php echo __('Descrição'); ?></p>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <form>
                                     <div class="form-group">
-                                        <label for="signature"><strong>Detalhes Adicionais</strong></label>
+                                        <label for="signature"><strong><?php echo __('Detalhes Adicionais'); ?></strong></label>
                                         <textarea class="form-control" rows="4"
                                             readonly><?php echo htmlspecialchars($ativo['descricao']); ?></textarea>
                                     </div>
@@ -446,17 +404,17 @@
                 </div>
                 <div class="card shadow mb-5">
                     <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">Histórico do Ativo</p>
+                        <p class="text-primary m-0 font-weight-bold"><?php echo __('Histórico do Ativo'); ?></p>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Data/Hora</th>
-                                        <th>Ação</th>
-                                        <th>Responsável pela ação</th>
-                                        <th>Detalhes</th>
+                                        <th><?php echo __('Data/Hora'); ?></th>
+                                        <th><?php echo __('Ação'); ?></th>
+                                        <th><?php echo __('Responsável pela ação'); ?></th>
+                                        <th><?php echo __('Detalhes'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -466,7 +424,7 @@
 
                                     if (mysqli_num_rows($result_historico) > 0) {
                                         while ($row = mysqli_fetch_assoc($result_historico)) {
-                                            $usuario_nome = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Sistema';
+                                            $usuario_nome = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : __('Sistema');
                                             echo "<tr>";
                                             echo "<td>" . date('d/m/Y H:i', strtotime($row['data_evento'])) . "</td>";
                                             echo "<td>" . $row['acao'] . "</td>";
@@ -475,7 +433,7 @@
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='4' class='text-center'>Nenhum histórico encontrado.</td></tr>";
+                                        echo "<tr><td colspan='4' class='text-center'>" . __('Nenhum histórico encontrado.') . "</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -519,21 +477,21 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Foto atualizada com sucesso!');
+                            alert('<?php echo __('Foto atualizada com sucesso!'); ?>');
                             location.reload();
                         } else {
-                            alert('Erro ao atualizar foto: ' + data.message);
+                            alert('<?php echo __('Erro ao atualizar foto: '); ?>' + data.message);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Erro na requisição');
+                        alert('<?php echo __('Erro na requisição'); ?>');
                     });
             }
         }
 
         function toggleStatus(id, novoStatus) {
-            if (!confirm('Tem certeza que deseja alterar o status para ' + novoStatus + '?')) {
+            if (!confirm('<?php echo __('Tem certeza que deseja alterar o status para '); ?>' + novoStatus + '?')) {
                 return;
             }
 
@@ -552,12 +510,12 @@
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert('Erro: ' + (data.message || 'Erro desconhecido'));
+                        alert('Erro: ' + (data.message || '<?php echo __('Erro desconhecido'); ?>'));
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Erro na requisição');
+                    alert('<?php echo __('Erro na requisição'); ?>');
                 });
         }
     </script>

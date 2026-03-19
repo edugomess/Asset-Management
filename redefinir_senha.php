@@ -68,28 +68,28 @@ if (!empty($token)) {
         <div class="card p-4 shadow">
             <?php if ($valido): ?>
                 <div class="text-center mb-4">
-                    <h3 style="color: #2c404a; font-weight: 800; text-transform: uppercase;">Nova Senha</h3>
-                    <p class="text-muted small">Crie uma nova senha para sua conta.</p>
+                    <h3 style="color: #2c404a; font-weight: 800; text-transform: uppercase;"><?php echo __('Nova Senha'); ?></h3>
+                    <p class="text-muted small"><?php echo __('Crie uma nova senha para sua conta.'); ?></p>
                 </div>
                 <form action="processar_redefinicao_senha.php" method="post" id="formRedefinir">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                     <div class="form-group">
-                        <label for="nova_senha">Nova Senha</label>
+                        <label for="nova_senha"><?php echo __('Nova Senha'); ?></label>
                         <input type="password" name="nova_senha" id="nova_senha" class="form-control" required style="border-radius: 10px; height: 50px;">
                     </div>
                     <div class="form-group">
-                        <label for="confirmar_senha">Confirmar Nova Senha</label>
+                        <label for="confirmar_senha"><?php echo __('Confirmar Nova Senha'); ?></label>
                         <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" required style="border-radius: 10px; height: 50px;">
                     </div>
                     <div id="error-msg" class="alert alert-danger d-none mt-2" style="border-radius: 10px;"></div>
-                    <button type="submit" class="btn btn-primary btn-block mt-4 text-white">Salvar Nova Senha</button>
+                    <button type="submit" class="btn btn-primary btn-block mt-4 text-white"><?php echo __('Salvar Nova Senha'); ?></button>
                 </form>
             <?php else: ?>
                 <div class="text-center p-3">
                     <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <h4 class="text-danger">Link Inválido ou Expirado</h4>
-                    <p class="text-muted">Desculpe, este link de recuperação não é mais válido ou já expirou.</p>
-                    <a href="esqueceu_senha.php" class="btn btn-primary btn-block mt-3 text-white">Solicitar Novo Link</a>
+                    <h4 class="text-danger"><?php echo __('Link Inválido ou Expirado'); ?></h4>
+                    <p class="text-muted"><?php echo __('Desculpe, este link de recuperação não é mais válido ou já expirou.'); ?></p>
+                    <a href="esqueceu_senha.php" class="btn btn-primary btn-block mt-3 text-white"><?php echo __('Solicitar Novo Link'); ?></a>
                 </div>
             <?php endif; ?>
         </div>
@@ -103,10 +103,10 @@ if (!empty($token)) {
 
             if (s1 !== s2) {
                 e.preventDefault();
-                error.text('As senhas não coincidem.').removeClass('d-none');
+                error.text('<?php echo __('As senhas não coincidem.'); ?>').removeClass('d-none');
             } else if (s1.length < 4) {
                 e.preventDefault();
-                error.text('A senha deve ter pelo menos 4 caracteres.').removeClass('d-none');
+                error.text('<?php echo __('A senha deve ter pelo menos 4 caracteres.'); ?>').removeClass('d-none');
             }
         });
     </script>

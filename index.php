@@ -9,18 +9,18 @@ include_once 'conexao.php';  // Conexão com a base de dados
 
 // === Toda a sua lógica de SQL deve vir aqui, antes do HTML ===
 $meses = [
-    1 => 'Janeiro',
-    2 => 'Fevereiro',
-    3 => 'Março',
-    4 => 'Abril',
-    5 => 'Maio',
-    6 => 'Junho',
-    7 => 'Julho',
-    8 => 'Agosto',
-    9 => 'Setembro',
-    10 => 'Outubro',
-    11 => 'Novembro',
-    12 => 'Dezembro'
+    1 => __('Janeiro'),
+    2 => __('Fevereiro'),
+    3 => __('Março'),
+    4 => __('Abril'),
+    5 => __('Maio'),
+    6 => __('Junho'),
+    7 => __('Julho'),
+    8 => __('Agosto'),
+    9 => __('Setembro'),
+    10 => __('Outubro'),
+    11 => __('Novembro'),
+    12 => __('Dezembro')
 ];
 $ano_atual = date('Y');
 $count_aberto = 0;
@@ -35,7 +35,7 @@ $count_andamento = 0;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Brand</title>
+    <title><?php echo __('Dashboard'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -115,54 +115,10 @@ $closed_string = implode(",", $closed_data);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
-                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0">Dashboard</h3>
+                        <h3 class="text-dark mb-0"><?php echo __('Dashboard'); ?></h3>
                         <div class="d-flex align-items-center">
                             <?php
                             $where_closed = "";
@@ -176,14 +132,14 @@ $closed_string = implode(",", $closed_data);
                             <div class="bg-success text-white px-2 py-1 rounded shadow-sm d-flex align-items-center mr-2"
                                 style="font-size: 0.75rem; height: 31px;">
                                 <i class="fas fa-check-circle mr-1"></i>
-                                <span class="font-weight-bold">Total de chamados fechados:
+                                <span class="font-weight-bold"><?php echo __('Total de chamados fechados:'); ?>
                                     <?php echo $total_fechados; ?></span>
                             </div>
                             <a class="text-white px-2 py-1 rounded shadow-sm d-flex align-items-center text-decoration-none"
                                 role="button" href="relatorio_resumo_geral.php" target="_blank"
                                 style="background: #e74a3b; font-size: 0.75rem; height: 31px;">
                                 <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i>
-                                <span class="font-weight-bold">Gerar Relatório</span>
+                                <span class="font-weight-bold"><?php echo __('Gerar Relatório'); ?></span>
                             </a>
                         </div>
                     </div>
@@ -370,13 +326,13 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-primary font-weight-bold text-sm mb-1">
-                                                <span>Desktops</span>
+                                                <span><?php echo __('Desktops'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_pc; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_pc; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
@@ -392,13 +348,13 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-success font-weight-bold text-sm mb-1">
-                                                <span>Notebooks</span>
+                                                <span><?php echo __('Notebooks'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_note; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_note; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-laptop fa-lg text-gray-600"></i>
@@ -414,13 +370,13 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-info font-weight-bold text-sm mb-1">
-                                                <span>Monitores</span>
+                                                <span><?php echo __('Monitores'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_mon; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_mon; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
@@ -436,13 +392,13 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
-                                                <span>Impressoras</span>
+                                                <span><?php echo __('Impressoras'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_imp; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_imp; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-print fa-lg text-gray-600"></i></div>
@@ -463,7 +419,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_m365; ?></span>
                                                 <span class="text-muted small ml-1" style="font-size: 0.85rem;">(
-                                                    <?php echo $disp_m365; ?> Disponíveis)</span>
+                                                    <?php echo $disp_m365; ?> <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-cloud fa-lg text-gray-600"></i>
@@ -485,7 +441,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 <span><?php echo $total_adobe; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_adobe; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-palette fa-lg text-gray-600"></i>
@@ -507,7 +463,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 <span><?php echo $total_win; ?></span>
                                                 <span class="text-muted small ml-1"
                                                     style="font-size: 0.85rem;">(<?php echo $disp_win; ?>
-                                                    Disponíveis)</span>
+                                                    <?php echo __('Disponíveis'); ?>)</span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i class="fab fa-windows fa-lg text-gray-600"></i>
@@ -524,12 +480,12 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
-                                                <span>Alertas</span>
+                                                <span><?php echo __('Alertas'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $count_exp; ?></span>
                                                 <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">Expirando</span>
+                                                    style="font-size: 0.85rem;"><?php echo __('Expirando'); ?></span>
                                             </div>
                                         </div>
                                         <div class="col-auto"><i
@@ -544,20 +500,19 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center"
                                     style="background: rgb(248, 249, 252);">
-                                    <h6 class="text-primary font-weight-bold m-0">Chamados Finalizados (Mês)</h6>
+                                    <h6 class="text-primary font-weight-bold m-0"><?php echo __('Chamados Finalizados (Mês)'); ?></h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
                                             <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
-                                                href="chamados.php?filtro_status=finalizados">&nbsp;Ver
-                                                Finalizados</a>
+                                                href="chamados.php?filtro_status=finalizados">&nbsp;<?php echo __('Ver Finalizados'); ?></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-area"><canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Jan&quot;,&quot;Fev&quot;,&quot;Mar&quot;,&quot;Abr&quot;,&quot;Mai&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Ago&quot;,&quot;Set&quot;,&quot;Out&quot;,&quot;Nov&quot;,&quot;Dez&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Chamados&quot;,&quot;fill&quot;:true,&quot;data&quot;:[<?php echo $closed_string; ?>],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgb(26, 121, 158)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Jan'); ?>&quot;,&quot;<?php echo __('Fev'); ?>&quot;,&quot;<?php echo __('Mar'); ?>&quot;,&quot;<?php echo __('Abr'); ?>&quot;,&quot;<?php echo __('Mai'); ?>&quot;,&quot;<?php echo __('Jun'); ?>&quot;,&quot;<?php echo __('Jul'); ?>&quot;,&quot;<?php echo __('Ago'); ?>&quot;,&quot;<?php echo __('Set'); ?>&quot;,&quot;<?php echo __('Out'); ?>&quot;,&quot;<?php echo __('Nov'); ?>&quot;,&quot;<?php echo __('Dez'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;<?php echo __('Chamados'); ?>&quot;,&quot;fill&quot;:true,&quot;data&quot;:[<?php echo $closed_string; ?>],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgb(26, 121, 158)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -565,7 +520,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         <div class="col-lg-5 col-xl-4">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="text-primary font-weight-bold m-0">Status dos Chamados</h6>
+                                    <h6 class="text-primary font-weight-bold m-0"><?php echo __('Status dos Chamados'); ?></h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
@@ -578,16 +533,16 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 <div class="card-body">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Aberto&quot;,&quot;Em Andamento&quot;,&quot;Pendente&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
                                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.7rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
                                             <?php echo $total_ativos; ?>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
-                                                class="fas fa-circle text-primary"></i> Aberto</span><span
-                                            class="mr-2"><i class="fas fa-circle text-info"></i> Em And.</span><span
-                                            class="mr-2"><i class="fas fa-circle text-warning"></i> Pendente</span>
+                                                class="fas fa-circle text-primary"></i> <?php echo __('Aberto'); ?></span><span
+                                            class="mr-2"><i class="fas fa-circle text-info"></i> <?php echo __('Em And.'); ?></span><span
+                                            class="mr-2"><i class="fas fa-circle text-warning"></i> <?php echo __('Pendente'); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -599,7 +554,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="m-0 font-weight-bold text-primary">Ranking de SLA - Melhores Técnicos
+                                        <h6 class="m-0 font-weight-bold text-primary"><?php echo __('Ranking de SLA - Melhores Técnicos'); ?>
                                         </h6>
                                         <form method="GET" class="form-inline">
                                             <!-- Preservar filtro de recorrência ao filtrar SLA -->
@@ -627,7 +582,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 ?>
                                             </select>
                                             <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
+                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);"><?php echo __('Filtrar'); ?></button>
                                             <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
                                                 id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm"
                                                 style="font-size: 0.7rem; background: #e74a3b;">
@@ -640,10 +595,10 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                             <table class="table table-bordered" width="100%" cellspacing="0">
                                                 <thead>
                                                     <tr>
-                                                        <th>Responsável</th>
-                                                        <th>Chamados Resolvidos</th>
-                                                        <th>Dentro do Prazo </th>
-                                                        <th>% SLA Atingido</th>
+                                                        <th><?php echo __('Responsável'); ?></th>
+                                                        <th><?php echo __('Chamados Resolvidos'); ?></th>
+                                                        <th><?php echo __('Dentro do Prazo'); ?> </th>
+                                                        <th><?php echo __('% SLA Atingido'); ?></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -680,8 +635,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                     endforeach; ?>
                                                     <?php if (empty($ranking_data)): ?>
                                                         <tr>
-                                                            <td colspan="4" class="text-center">Nenhum chamado finalizado neste
-                                                                período.</td>
+                                                            <td colspan="4" class="text-center"><?php echo __('Nenhum chamado finalizado neste período.'); ?></td>
                                                         </tr>
                                                         <?php
                                                     endif; ?>
@@ -699,7 +653,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="col-lg-12 mb-4">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="text-primary font-weight-bold m-0">Ranking de Chamados por Recorrência
+                                        <h6 class="text-primary font-weight-bold m-0"><?php echo __('Ranking de Chamados por Recorrência'); ?>
                                         </h6>
                                         <form method="GET" class="form-inline">
                                             <!-- Preservar filtro de SLA al filtrar Recorrência -->
@@ -725,7 +679,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 ?>
                                             </select>
                                             <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);">Filtrar</button>
+                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);"><?php echo __('Filtrar'); ?></button>
                                             <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
                                                 id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm"
                                                 style="font-size: 0.7rem; background: #e74a3b;">
@@ -743,7 +697,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
                                                 ?>
                                                 <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
-                                                        class="float-right"><?php echo $rec['total']; ?> chamado(s)</span></h4>
+                                                        class="float-right"><?php echo $rec['total']; ?> <?php echo __('chamado(s)'); ?></span></h4>
                                                 <div class="progress mb-4">
                                                     <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
                                                         aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
@@ -754,7 +708,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 <?php
                                             }
                                         } else {
-                                            echo '<p class="text-center text-muted">Nenhum chamado registrado.</p>';
+                                            echo '<p class="text-center text-muted">' . __('Nenhum chamado registrado.') . '</p>';
                                         }
                                         ?>
                                     </div>

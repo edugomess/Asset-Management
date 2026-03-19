@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "<script>alert('E-mail inválido.'); window.history.back();</script>";
+        echo "<script>alert('" . __('E-mail inválido.') . "'); window.history.back();</script>";
         exit();
     }
 
@@ -34,14 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // 4. Enviar E-mail
         if (enviarEmailRecuperacao($email, $user['nome'], $token)) {
-             echo "<script>alert('Instruções de recuperação enviadas para o seu e-mail.'); window.location.href = 'login.php';</script>";
+             echo "<script>alert('" . __('Instruções de recuperação enviadas para o seu e-mail.') . "'); window.location.href = 'login.php';</script>";
         } else {
-             echo "<script>alert('Erro ao enviar e-mail. Por favor, contate o administrador.'); window.location.href = 'login.php';</script>";
+             echo "<script>alert('" . __('Erro ao enviar e-mail. Por favor, contate o administrador.') . "'); window.location.href = 'login.php';</script>";
         }
     } else {
         // Por segurança, informar que o e-mail foi enviado mesmo se não existir (evita enumeração de usuários)
         // Mas para uso interno/familiarizado, costuma-se avisar se não existe.
-        echo "<script>alert('Se este e-mail estiver cadastrado, você receberá as instruções em breve.'); window.location.href = 'login.php';</script>";
+        echo "<script>alert('" . __('Se este e-mail estiver cadastrado, você receberá as instruções em breve.') . "'); window.location.href = 'login.php';</script>";
     }
 
     $stmt->close();

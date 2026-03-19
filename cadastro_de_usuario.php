@@ -18,7 +18,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title><?php echo __('Cadastro de Usuário'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
 
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
@@ -62,50 +62,9 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content" style="margin: 0px;">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                            class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                                Manutenção</a>
-                                        <?php endif; ?>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="logout.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Cadastro de Usuário</h3>
+                    <h3 class="text-dark mb-1"><?php echo __('Cadastro de Usuário'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <!-- Start: Multi-row Form -->
@@ -114,15 +73,15 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Nome</label>
-                                            <input class="form-control" name="nome" type="text" placeholder="Ex: João"
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Nome'); ?></label>
+                                            <input class="form-control" name="nome" type="text" placeholder="<?php echo __('Ex: João'); ?>"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Sobrenome</label>
-                                            <input class="form-control" name="sobrenome" type="text" placeholder="Ex: Silva"
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Sobrenome'); ?></label>
+                                            <input class="form-control" name="sobrenome" type="text" placeholder="<?php echo __('Ex: Silva'); ?>"
                                                 required="">
                                         </div>
                                     </div>
@@ -132,16 +91,16 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Usuário AD</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Usuário AD'); ?></label>
                                             <input class="form-control" name="usuarioAD" type="text"
-                                                placeholder="Ex: joao.silva" required="">
+                                                placeholder="<?php echo __('Ex: joao.silva'); ?>" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Função</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Função'); ?></label>
                                             <input class="form-control" name="funcao" type="text"
-                                                placeholder="Ex: Analista de TI" required="">
+                                                placeholder="<?php echo __('Ex: Analista de TI'); ?>" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -150,15 +109,15 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data de Nascimento</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Nascimento'); ?></label>
                                             <input class="form-control" name="dataNascimento" type="date" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Email</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Email'); ?></label>
                                             <input class="form-control" name="email" type="email"
-                                                placeholder="email@exemplo.com" required="">
+                                                placeholder="<?php echo __('email@exemplo.com'); ?>" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -167,20 +126,19 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold text-danger">CPF (Somente Números)</label>
+                                            <label class="text-gray-600 small font-weight-bold text-danger"><?php echo __('CPF (Somente Números)'); ?></label>
                                             <input class="form-control" name="cpf" id="cpf" type="text"
-                                                placeholder="000.000.000-00" required="" maxlength="14"
+                                                placeholder="<?php echo __('000.000.000-00'); ?>" required="" maxlength="14"
                                                 oninput="maskCPF(this)">
-                                            <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF
-                                                Inválido
+                                            <div id="cpf-error" class="text-danger small mt-1" style="display:none;"><?php echo __('CPF Inválido'); ?>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto">
-                                                <option value="Nenhum">Nenhum</option>
+                                                <option value="Nenhum"><?php echo __('Nenhum'); ?></option>
                                                 <?php
                                                 // CENTROS DE CUSTO: Permite vincular o usuário à sua unidade orçamentária
                                                 include_once 'conexao.php';
@@ -188,7 +146,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                                 $res_cc = $conn->query($sql_cc);
                                                 if ($res_cc && $res_cc->num_rows > 0) {
                                                     while ($row_cc = $res_cc->fetch_assoc()) {
-                                                        echo '<option value="' . $row_cc['nomeSetor'] . '">' . $row_cc['nomeSetor'] . '</option>';
+                                                        echo '<option value="' . $row_cc['nomeSetor'] . '">' . __($row_cc['nomeSetor']) . '</option>';
                                                     }
                                                 }
                                                 ?>
@@ -201,16 +159,16 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Matrícula (Automático)</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Matrícula (Automático)'); ?></label>
                                             <input class="form-control" name="matricula" type="text"
                                                 value="<?php echo $next_id; ?>" readonly required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Telefone'); ?></label>
                                             <input class="form-control" name="telefone" type="text" inputmode="tel"
-                                                placeholder="(99) 99999-9999" required="">
+                                                placeholder="<?php echo __('(99) 99999-9999'); ?>" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -219,21 +177,21 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tipo de Contrato</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Contrato'); ?></label>
                                             <select class="form-control" name="tipoContrato" required="">
-                                                <option value="CLT">CLT</option>
-                                                <option value="PJ">PJ</option>
-                                                <option value="Cooperativa">Cooperativa</option>
+                                                <option value="CLT"><?php echo __('CLT'); ?></option>
+                                                <option value="PJ"><?php echo __('PJ'); ?></option>
+                                                <option value="Cooperativa"><?php echo __('Cooperativa'); ?></option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tipo de Usuário</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Usuário'); ?></label>
                                             <select class="form-control" name="nivelUsuario" required="">
-                                                <option value="1">Administrador</option>
-                                                <option value="2">Suporte</option>
-                                                <option value="3" selected="">Usuário</option>
+                                                <option value="1"><?php echo __('Administrador'); ?></option>
+                                                <option value="2"><?php echo __('Suporte'); ?></option>
+                                                <option value="3" selected=""><?php echo __('Usuário'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -243,7 +201,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Unidade</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Unidade'); ?></label>
                                             <select class="form-control" name="unidade" required="">
                                                 <?php
                                                 include 'conexao.php';
@@ -251,7 +209,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                                 $res_un = $conn->query($sql_un);
                                                 if ($res_un->num_rows > 0) {
                                                     while ($row = $res_un->fetch_assoc()) {
-                                                        echo '<option value="' . $row['unidade'] . '">' . $row['unidade'] . '</option>';
+                                                        echo '<option value="' . $row['unidade'] . '">' . __($row['unidade']) . '</option>';
                                                     }
                                                 }
                                                 ?>
@@ -263,7 +221,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                             <input type="hidden" name="status" value="Inativo">
                                             <input type="checkbox" class="custom-control-input" id="statusSwitch"
                                                 name="status" value="Ativo" checked>
-                                            <label class="custom-control-label" for="statusSwitch">Usuário Ativo</label>
+                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Usuário Ativo'); ?></label>
                                         </div>
                                     </div>
                                 </div>
@@ -272,14 +230,14 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Senha</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Senha'); ?></label>
                                             <input class="form-control" name="senha" id="Senha" type="password"
                                                 placeholder="********" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Confirmação de Senha</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Confirmação de Senha'); ?></label>
                                             <input class="form-control" name="confirmarSenha" type="password"
                                                 placeholder="********" required="" oninput="passwordvalidation(this)">
                                         </div>
@@ -290,7 +248,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                 <div class="form-row">
                                     <div class="col-xl-6 offset-xl-3 mt-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Foto de Perfil (Opcional)</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Foto de Perfil (Opcional)'); ?></label>
                                             <input type="file" class="form-control-file" name="foto_perfil" id="foto_perfil"
                                                 accept="image/*">
                                         </div>
@@ -302,7 +260,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                                     <div class="col-lg-4 col-xl-4 offset-lg-4 offset-xl-4" style="border-radius: 15px;">
                                         <button class="btn btn-success btn-block active text-white pulse animated btn-user"
                                             type="submit"
-                                            style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;">Cadastrar</button>
+                                            style="background: rgb(44,64,74); border-radius: 10px;  border-width: 0px; height: 50px;"><?php echo __('Cadastrar'); ?></button>
                                     </div>
                                 </div><!-- End: 6-column form row -->
                             </form><!-- End: Multi-row Form -->
@@ -334,7 +292,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
         <script>
             function passwordvalidation(input) {
                 if (input.value != document.getElementById('Senha').value) {
-                    input.setCustomValidity('Senha diferente da anterior');
+                    input.setCustomValidity('<?php echo __('Senha diferente da anterior'); ?>');
                 } else {
                     input.setCustomValidity('');
                 }
@@ -409,7 +367,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                 const inputEl = document.getElementById('cpf');
                 if (hasError) {
                     errorEl.style.display = 'block';
-                    inputEl.setCustomValidity('CPF Inválido');
+                    inputEl.setCustomValidity('<?php echo __('CPF Inválido'); ?>');
                 } else {
                     errorEl.style.display = 'none';
                     inputEl.setCustomValidity('');
@@ -420,7 +378,7 @@ $next_id = $res_id->fetch_assoc()['AUTO_INCREMENT'];
                 const cpf = document.getElementById('cpf').value;
                 if (!validateCPF(cpf)) {
                     e.preventDefault();
-                    alert('Por favor, insira um CPF válido.');
+                    alert('<?php echo __('Por favor, insira um CPF válido.'); ?>');
                 }
             });
         </script>

@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $confirmar_senha = $_POST['confirmar_senha'];
 
     if ($nova_senha !== $confirmar_senha) {
-        echo "<script>alert('As senhas não coincidem.'); window.history.back();</script>";
+        echo "<script>alert('" . __('As senhas não coincidem.') . "'); window.history.back();</script>";
         exit();
     }
 
     if (strlen($nova_senha) < 4) {
-        echo "<script>alert('A senha deve ter pelo menos 4 caracteres.'); window.history.back();</script>";
+        echo "<script>alert('" . __('A senha deve ter pelo menos 4 caracteres.') . "'); window.history.back();</script>";
         exit();
     }
 
@@ -38,12 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $updateStmt->bind_param("si", $senha_hash, $user_id);
         
         if ($updateStmt->execute()) {
-             echo "<script>alert('Senha redefinida com sucesso! Você já pode fazer login.'); window.location.href = 'login.php';</script>";
+             echo "<script>alert('" . __('Senha redefinida com sucesso! Você já pode fazer login.') . "'); window.location.href = 'login.php';</script>";
         } else {
-             echo "<script>alert('Erro ao atualizar a senha. Tente novamente mais tarde.'); window.location.href = 'login.php';</script>";
+             echo "<script>alert('" . __('Erro ao atualizar a senha. Tente novamente mais tarde.') . "'); window.location.href = 'login.php';</script>";
         }
     } else {
-        echo "<script>alert('O link de recuperação é inválido ou expirou.'); window.location.href = 'esqueceu_senha.php';</script>";
+        echo "<script>alert('" . __('O link de recuperação é inválido ou expirou.') . "'); window.location.href = 'esqueceu_senha.php';</script>";
     }
 
     $stmt->close();

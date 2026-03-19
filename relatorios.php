@@ -8,7 +8,7 @@ include 'conexao.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Table - Brand</title>
+    <title><?php echo __('Relatórios'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -52,54 +52,9 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4">Relatórios</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Relatórios'); ?></h3>
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 font-weight-bold"></p>
@@ -109,104 +64,97 @@ include 'conexao.php';
                                 <div class="col-md-8">
                                     <form id="reportForm" class="d-flex align-items-center">
                                         <select id="reportType" class="form-control mr-3" style="height: 50px;">
-                                            <option value="">Selecione um relatório...</option>
+                                            <option value=""><?php echo __('Selecione um relatório...'); ?></option>
 
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                <optgroup label="Ativos">
-                                                    <option value="relatorio_ativo.php">Geral de Ativos</option>
-                                                    <option value="relatorio_ativos_status.php">Por Status</option>
-                                                    <option value="relatorio_ativos_cc.php">Por Centro de Custo</option>
-                                                    <option value="relatorio_financeiro.php">Resumo Financeiro</option>
-                                                    <option value="relatorio_ativos_fabricante.php">Por Fabricante</option>
-                                                    <option value="relatorio_ativos_modelo.php">Por Modelo</option>
-                                                    <option value="relatorio_ativos_categoria.php">Por Categoria</option>
-                                                    <option value="relatorio_ativos_antigos.php">Ativos Antigos (> 3 anos)
+                                                <optgroup label="<?php echo __('Ativos'); ?>">
+                                                    <option value="relatorio_ativo.php"><?php echo __('Geral de Ativos'); ?></option>
+                                                    <option value="relatorio_ativos_status.php"><?php echo __('Por Status'); ?></option>
+                                                    <option value="relatorio_ativos_cc.php"><?php echo __('Por Centro de Custo'); ?></option>
+                                                    <option value="relatorio_financeiro.php"><?php echo __('Resumo Financeiro'); ?></option>
+                                                    <option value="relatorio_ativos_fabricante.php"><?php echo __('Por Fabricante'); ?></option>
+                                                    <option value="relatorio_ativos_modelo.php"><?php echo __('Por Modelo'); ?></option>
+                                                    <option value="relatorio_ativos_categoria.php"><?php echo __('Por Categoria'); ?></option>
+                                                    <option value="relatorio_ativos_antigos.php"><?php echo __('Ativos Antigos (> 3 anos)'); ?>
                                                     </option>
-                                                    <option value="relatorio_ativos_recentes.php">Ativos Recentes (< 1
-                                                            ano)</option>
-                                                    <option value="relatorio_ativos_valor_alto.php">Alto Valor (> R$ 5k)
+                                                    <option value="relatorio_ativos_recentes.php"><?php echo __('Ativos Recentes (< 1 ano)'); ?></option>
+                                                    <option value="relatorio_ativos_valor_alto.php"><?php echo __('Alto Valor (> R$ 5k)'); ?>
                                                     </option>
-                                                    <option value="relatorio_ativos_valor_baixo.php">Baixo Valor (< R$
-                                                            1k)</option>
-                                                    <option value="relatorio_ativos_disponiveis.php">Disponíveis</option>
-                                                    <option value="relatorio_ativos_em_uso.php">Em Uso</option>
-                                                    <option value="relatorio_ativos_manutencao.php">Em Manutenção</option>
-                                                    <option value="relatorio_ativos_sem_cc.php">Sem Centro de Custo</option>
-                                                    <option value="relatorio_ativos_por_usuario.php">Por Usuário</option>
-                                                    <option value="relatorio_ativos_unidade.php">Por Unidade</option>
-                                                    <option value="relatorio_ativos_historico.php">Trilha de Auditoria (Histórico)</option>
-                                                    <option value="ativos_doados.php">Doações</option>
+                                                    <option value="relatorio_ativos_valor_baixo.php"><?php echo __('Baixo Valor (< R$ 1k)'); ?></option>
+                                                    <option value="relatorio_ativos_disponiveis.php"><?php echo __('Disponíveis'); ?></option>
+                                                    <option value="relatorio_ativos_em_uso.php"><?php echo __('Em Uso'); ?></option>
+                                                    <option value="relatorio_ativos_manutencao.php"><?php echo __('Em Manutenção'); ?></option>
+                                                    <option value="relatorio_ativos_sem_cc.php"><?php echo __('Sem Centro de Custo'); ?></option>
+                                                    <option value="relatorio_ativos_por_usuario.php"><?php echo __('Por Usuário'); ?></option>
+                                                    <option value="relatorio_ativos_unidade.php"><?php echo __('Por Unidade'); ?></option>
+                                                    <option value="relatorio_ativos_historico.php"><?php echo __('Trilha de Auditoria (Histórico)'); ?></option>
+                                                    <option value="ativos_doados.php"><?php echo __('Doações'); ?></option>
                                                 </optgroup>
                                             <?php else: ?>
-                                                <optgroup label="Meus Ativos">
-                                                    <option value="relatorio_ativos_por_usuario.php">Meus Ativos Atribuídos
+                                                <optgroup label="<?php echo __('Meus Ativos'); ?>">
+                                                    <option value="relatorio_ativos_por_usuario.php"><?php echo __('Meus Ativos Atribuídos'); ?>
                                                     </option>
                                                 </optgroup>
                                             <?php endif; ?>
 
-                                            <optgroup label="Chamados">
+                                            <optgroup label="<?php echo __('Chamados'); ?>">
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                    <option value="relatorio_chamados_mensal.php">Resumo Mensal</option>
+                                                    <option value="relatorio_chamados_mensal.php"><?php echo __('Resumo Mensal'); ?></option>
                                                 <?php endif; ?>
-                                                <option value="relatorio_chamados_abertos.php">Meus Chamados Abertos
+                                                <option value="relatorio_chamados_abertos.php"><?php echo __('Meus Chamados Abertos'); ?>
                                                 </option>
-                                                <option value="relatorio_chamados_fechados.php">Meus Chamados Fechados
+                                                <option value="relatorio_chamados_fechados.php"><?php echo __('Meus Chamados Fechados'); ?>
                                                 </option>
-                                                <option value="relatorio_chamados_recentes.php">Meus Chamados Recentes
-                                                    (30 dias)</option>
+                                                <option value="relatorio_chamados_recentes.php"><?php echo __('Meus Chamados Recentes (30 dias)'); ?></option>
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                    <option value="relatorio_chamados_categoria.php">Por Categoria</option>
-                                                    <option value="relatorio_chamados_tecnico.php">Por Técnico</option>
-                                                    <option value="relatorio_chamados_solicitante.php">Por Solicitante
+                                                    <option value="relatorio_chamados_categoria.php"><?php echo __('Por Categoria'); ?></option>
+                                                    <option value="relatorio_chamados_tecnico.php"><?php echo __('Por Técnico'); ?></option>
+                                                    <option value="relatorio_chamados_solicitante.php"><?php echo __('Por Solicitante'); ?>
                                                     </option>
-                                                    <option value="relatorio_chamados_sla_vencido.php">SLA Vencido</option>
-                                                    <option value="relatorio_chamados_prioridade.php">Por Prioridade</option>
-                                                    <option value="relatorio_chamados_sem_atribuicao.php">Sem Atribuição
+                                                    <option value="relatorio_chamados_sla_vencido.php"><?php echo __('SLA Vencido'); ?></option>
+                                                    <option value="relatorio_chamados_prioridade.php"><?php echo __('Por Prioridade'); ?></option>
+                                                    <option value="relatorio_chamados_sem_atribuicao.php"><?php echo __('Sem Atribuição'); ?>
                                                     </option>
                                                 <?php endif; ?>
                                             </optgroup>
 
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                <optgroup label="Usuários">
-                                                    <option value="relatorio_usuario.php">Lista Geral</option>
-                                                    <option value="relatorio_usuarios_cc.php">Por Centro de Custo</option>
-                                                    <option value="relatorio_usuarios_inativos.php">Inativos</option>
-                                                    <option value="relatorio_usuarios_sem_ativos.php">Sem Ativos</option>
-                                                    <option value="relatorio_usuarios_com_ativos.php">Com Ativos</option>
-                                                    <option value="relatorio_usuarios_funcao.php">Por Função</option>
-                                                    <option value="relatorio_usuarios_vips.php">VIPs</option>
+                                                <optgroup label="<?php echo __('Usuários'); ?>">
+                                                    <option value="relatorio_usuario.php"><?php echo __('Lista Geral'); ?></option>
+                                                    <option value="relatorio_usuarios_cc.php"><?php echo __('Por Centro de Custo'); ?></option>
+                                                    <option value="relatorio_usuarios_inativos.php"><?php echo __('Inativos'); ?></option>
+                                                    <option value="relatorio_usuarios_sem_ativos.php"><?php echo __('Sem Ativos'); ?></option>
+                                                    <option value="relatorio_usuarios_com_ativos.php"><?php echo __('Com Ativos'); ?></option>
+                                                    <option value="relatorio_usuarios_funcao.php"><?php echo __('Por Função'); ?></option>
+                                                    <option value="relatorio_usuarios_vips.php"><?php echo __('VIPs'); ?></option>
                                                 </optgroup>
 
-                                                <optgroup label="Licenças">
-                                                    <option value="relatorio_licencas_geral.php">Geral de Licenças</option>
-                                                    <option value="relatorio_licencas_expiradas.php">Expiradas / Próximas ao
-                                                        Vencimento</option>
-                                                    <option value="relatorio_licencas_cc.php">Por Centro de Custo</option>
-                                                    <option value="relatorio_licencas_em_uso.php">Uso de Seats (Ocupação)
+                                                <optgroup label="<?php echo __('Licenças'); ?>">
+                                                    <option value="relatorio_licencas_geral.php"><?php echo __('Geral de Licenças'); ?></option>
+                                                    <option value="relatorio_licencas_expiradas.php"><?php echo __('Expiradas / Próximas ao Vencimento'); ?></option>
+                                                    <option value="relatorio_licencas_cc.php"><?php echo __('Por Centro de Custo'); ?></option>
+                                                    <option value="relatorio_licencas_em_uso.php"><?php echo __('Uso de Seats (Ocupação)'); ?>
                                                     </option>
-                                                    <option value="relatorio_atribuicoes_geral.php">Relatório Geral de
-                                                        Atribuições</option>
+                                                    <option value="relatorio_atribuicoes_geral.php"><?php echo __('Relatório Geral de Atribuições'); ?></option>
                                                 </optgroup>
 
-                                                <optgroup label="Manutenção">
-                                                    <option value="relatorio_manutencao_atual.php">Manutenções Ativas
+                                                <optgroup label="<?php echo __('Manutenção'); ?>">
+                                                    <option value="relatorio_manutencao_atual.php"><?php echo __('Manutenções Ativas'); ?>
                                                     </option>
-                                                    <option value="relatorio_manutencao_historico.php">Histórico de
-                                                        Manutenções</option>
-                                                    <option value="relatorio_manutencao_estatistico.php">Resumo Estatístico
+                                                    <option value="relatorio_manutencao_historico.php"><?php echo __('Histórico de Manutenções'); ?></option>
+                                                    <option value="relatorio_manutencao_estatistico.php"><?php echo __('Resumo Estatístico'); ?>
                                                     </option>
                                                 </optgroup>
 
-                                                <optgroup label="Outros">
-                                                    <option value="relatorio_centro_de_custo.php">Centros de Custo (Lista)
+                                                <optgroup label="<?php echo __('Outros'); ?>">
+                                                    <option value="relatorio_centro_de_custo.php"><?php echo __('Centros de Custo (Lista)'); ?>
                                                     </option>
-                                                    <option value="relatorio_cc_detalhado.php">Centros de Custo (Detalhado)
+                                                    <option value="relatorio_cc_detalhado.php"><?php echo __('Centros de Custo (Detalhado)'); ?>
                                                     </option>
-                                                    <option value="relatorio_fornecedores_lista.php">Fornecedores (Lista)
+                                                    <option value="relatorio_fornecedores_lista.php"><?php echo __('Fornecedores (Lista)'); ?>
                                                     </option>
-                                                    <option value="relatorio_fornecedores_servico.php">Fornecedores
-                                                        (Serviços)</option>
-                                                    <option value="relatorio_resumo_geral.php">Resumo Geral do Sistema
+                                                    <option value="relatorio_fornecedores_servico.php"><?php echo __('Fornecedores (Serviços)'); ?></option>
+                                                    <option value="relatorio_resumo_geral.php"><?php echo __('Resumo Geral do Sistema'); ?>
                                                     </option>
                                                 </optgroup>
                                             <?php endif; ?>
@@ -219,7 +167,7 @@ include 'conexao.php';
                                         <button class="btn btn-success active text-white pulse animated btn-user"
                                             type="button" onclick="generateReport()"
                                             style="background: rgb(44,64,74);border-radius: 10px;height: 50px; white-space: nowrap;">
-                                            Gerar Relatório
+                                            <?php echo __('Gerar Relatório'); ?>
                                         </button>
                                     </form>
                                 </div>
@@ -264,7 +212,7 @@ include 'conexao.php';
                 }
                 window.open(finalUrl, '_blank');
             } else {
-                alert('Por favor, selecione um tipo de relatório.');
+                alert('<?php echo __('Por favor, selecione um tipo de relatório.'); ?>');
             }
         }
 
@@ -315,7 +263,7 @@ include 'conexao.php';
                                 });
                                 resultBox.show();
                             } else {
-                                resultBox.append('<a class="dropdown-item text-center small text-gray-500" href="#">Nenhum resultado encontrado</a>');
+                                resultBox.append('<a class="dropdown-item text-center small text-gray-500" href="#"><?php echo __('Nenhum resultado encontrado'); ?></a>');
                                 resultBox.show();
                             }
                         },

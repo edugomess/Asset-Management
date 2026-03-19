@@ -39,15 +39,16 @@ if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
 $sql = "INSERT INTO centro_de_custo (nomeSetor, codigo, ramal, unidade, emailGestor, gestor, status, descricao, imagem)
     VALUES ('$nomeSetor', '$codigo', '$ramal', '$unidade', '$emailGestor', '$gestor', '$status', '$descricao', '$imagem')";
 
-$inserir = mysqli_query($conn, $sql);
-
-if ($inserir) {
-    echo "<script>
-            alert('Centro de Custo cadastrado com sucesso!');
-            window.location.href = 'centro_de_custo.php';
-          </script>";
-    exit();
-} else {
-    echo "Erro ao inserir dados: " . mysqli_error($conn);
-}
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>
+                alert('" . __('Centro de Custo cadastrado com sucesso!') . "');
+                window.location.href = 'centros_de_custo.php';
+              </script>";
+        exit();
+    } else {
+        echo "<script>
+                alert('" . __('Erro ao cadastrar Centro de Custo: ') . "' + " . json_encode(mysqli_error($conn)) . ");
+                window.history.back();
+              </script>";
+    }
 ?>

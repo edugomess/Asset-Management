@@ -7,12 +7,12 @@ include 'auth.php';
 include 'conexao.php';
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo strtolower($_SESSION['idioma'] ?? 'pt-BR'); ?>">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Documentação - Asset Mgt</title>
+    <title><?php echo __('Documentação'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -101,73 +101,27 @@ include 'conexao.php';
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                        Manutenção</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <div class="doc-header text-center">
-                        <h2 class="font-weight-bold">Centro de Conhecimento</h2>
-                        <p>Guia completo para utilização e gestão de ativos no sistema.</p>
+                        <h2 class="font-weight-bold"><?php echo __('Centro de Conhecimento'); ?></h2>
+                        <p><?php echo __('Guia completo para utilização e gestão de ativos no sistema.'); ?></p>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-8 mb-4">
                             <div class="faq-section">
-                                <h4 class="font-weight-bold mb-4">Perguntas Frequentes (FAQ)</h4>
+                                <h4 class="font-weight-bold mb-4"><?php echo __('Perguntas Frequentes (FAQ)'); ?></h4>
                                 <div class="accordion" id="faqAccordion">
                                     <div class="card">
                                         <div class="card-header" id="headingOne" data-toggle="collapse"
                                             data-target="#collapseOne">
                                             <h6 class="mb-0 font-weight-bold text-dark"><i
-                                                    class="fas fa-question-circle mr-2"></i> Como cadastrar um novo
-                                                equipamento?</h6>
+                                                    class="fas fa-question-circle mr-2"></i> <?php echo __('Como cadastrar um novo equipamento?'); ?></h6>
                                         </div>
                                         <div id="collapseOne" class="collapse show" data-parent="#faqAccordion">
                                             <div class="card-body text-muted">
-                                                Navegue até o menu "Inventário de Ativos" no lado esquerdo e clique no
-                                                botão "Novo Equipamento". Preencha os campos obrigatórios como Tag,
-                                                Modelo e Centro de Custo para finalizar o registro.
+                                                <?php echo __('Navegue até o menu "Inventário de Ativos" no lado esquerdo e clique no botão "Novo Equipamento". Preencha os campos obrigatórios como Tag, Modelo e Centro de Custo para finalizar o registro.'); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -175,15 +129,11 @@ include 'conexao.php';
                                         <div class="card-header collapsed" id="headingTwo" data-toggle="collapse"
                                             data-target="#collapseTwo">
                                             <h6 class="mb-0 font-weight-bold text-dark"><i
-                                                    class="fas fa-question-circle mr-2"></i> Como enviar um ativo para
-                                                manutenção?</h6>
+                                                    class="fas fa-question-circle mr-2"></i> <?php echo __('Como enviar um ativo para manutenção?'); ?></h6>
                                         </div>
                                         <div id="collapseTwo" class="collapse" data-parent="#faqAccordion">
                                             <div class="card-body text-muted">
-                                                No Inventário de Ativos, localize o equipamento desejado e clique no
-                                                ícone de ferramentas (Manutenção). Informe o motivo do problema e
-                                                confirme. O ativo passará a ser listado apenas na seção "Ativos em
-                                                Manutenção".
+                                                <?php echo __('No Inventário de Ativos, localize o equipamento desejado e clique no ícone de ferramentas (Manutenção). Informe o motivo do problema e confirme. O ativo passará a ser listado apenas na seção "Ativos em Manutenção".'); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -191,14 +141,11 @@ include 'conexao.php';
                                         <div class="card-header collapsed" id="headingThree" data-toggle="collapse"
                                             data-target="#collapseThree">
                                             <h6 class="mb-0 font-weight-bold text-dark"><i
-                                                    class="fas fa-question-circle mr-2"></i> Como gerar um relatório em
-                                                PDF?</h6>
+                                                    class="fas fa-question-circle mr-2"></i> <?php echo __('Como gerar um relatório em PDF?'); ?></h6>
                                         </div>
                                         <div id="collapseThree" class="collapse" data-parent="#faqAccordion">
                                             <div class="card-body text-muted">
-                                                Acesse o menu "Relatórios Internos". Lá você encontrará diversas
-                                                categorias. Basta selecionar o tipo de dado desejado (Ativos, Chamados
-                                                ou Financeiro) e clicar para gerar o documento oficial.
+                                                <?php echo __('Acesse o menu "Relatórios Internos". Lá você encontrará diversas categorias. Basta selecionar o tipo de dado desejado (Ativos, Chamados ou Financeiro) e clicar para gerar o documento oficial.'); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -208,27 +155,25 @@ include 'conexao.php';
 
                         <div class="col-lg-4 mb-4">
                             <div class="faq-section">
-                                <h4 class="font-weight-bold mb-4">Downloads</h4>
+                                <h4 class="font-weight-bold mb-4"><?php echo __('Downloads'); ?></h4>
                                 <div class="manual-card mb-3">
                                     <div class="text-center">
                                         <i class="fas fa-file-pdf manual-icon"></i>
-                                        <h6>Manual do Usuário Final</h6>
-                                        <p class="small text-muted">Guia completo para solicitações de chamados e
-                                            consultas (PDF).</p>
+                                        <h6><?php echo __('Manual do Usuário Final'); ?></h6>
+                                        <p class="small text-muted"><?php echo __('Guia completo para solicitações de chamados e consultas (PDF).'); ?></p>
                                         <a href="gerar_manual_usuario.php" target="_blank"
                                             class="btn btn-sm btn-dark btn-block btn-download-manual"
-                                            style="background: #2c404a;">DOWNLOAD MANUAL <i
+                                            style="background: #2c404a;"><?php echo __('DOWNLOAD MANUAL'); ?> <i
                                                 class="fas fa-download ml-1"></i></a>
                                     </div>
                                 </div>
                                 <div class="manual-card">
                                     <div class="text-center">
                                         <i class="fas fa-file-pdf manual-icon"></i>
-                                        <h6>Guia de Admin</h6>
-                                        <p class="small text-muted">Procedimentos técnicos para gestão de inventário e
-                                            licenças (PDF).</p>
+                                        <h6><?php echo __('Guia de Admin'); ?></h6>
+                                        <p class="small text-muted"><?php echo __('Procedimentos técnicos para gestão de inventário e licenças (PDF).'); ?></p>
                                         <a href="gerar_guia_admin.php" target="_blank"
-                                            class="btn btn-sm btn-dark btn-block btn-download-manual">DOWNLOAD GUIA <i
+                                            class="btn btn-sm btn-dark btn-block btn-download-manual"><?php echo __('DOWNLOAD GUIA'); ?> <i
                                                 class="fas fa-terminal ml-1"></i></a>
                                     </div>
                                 </div>

@@ -22,7 +22,7 @@ if ($id <= 0) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Editar Ativo</title>
+    <title><?php echo __('Editar Ativo'); ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=d6a29779d310462e7fcdde7b9a80e0db">
@@ -65,44 +65,9 @@ if ($id <= 0) {
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Editar Ativo</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Editar Ativo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_ativo.php" method="post" enctype="multipart/form-data">
@@ -128,7 +93,7 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-sm-12 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Categoria</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
                                             <select class="form-control" name="categoria" required="">
                                                 <option value="<?php echo $categoria ?>"><?php echo $categoria ?></option>
                                                 <?php
@@ -147,9 +112,9 @@ if ($id <= 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Fabricante'); ?></label>
                                             <input class="form-control" name="fabricante" type="text"
-                                                placeholder="Fabricante" value="<?php echo $fabricante ?>">
+                                                placeholder="<?php echo __('Fabricante'); ?>" value="<?php echo $fabricante ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -157,16 +122,15 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Modelo</label>
-                                            <input class="form-control" name="modelo" type="text" placeholder="Modelo"
-                                                value="<?php echo $modelo ?>">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Modelo'); ?></label>
+                                                value="<?php echo $modelo ?>" placeholder="<?php echo __('Modelo'); ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tag (Patrimônio)</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tag (Patrimônio)'); ?></label>
                                             <input class="form-control" name="tag" type="text" placeholder="Tag"
-                                                value="<?php echo $tag ?>" disabled title="A Tag/Patrimônio não pode ser alterada.">
+                                                value="<?php echo $tag ?>" disabled title="<?php echo __('A Tag/Patrimônio não pode ser alterada.'); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -174,14 +138,14 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Host Name</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Host Name'); ?></label>
                                             <input class="form-control" name="hostName" type="text"
-                                                placeholder="Host Name" value="<?php echo $hostName ?>">
+                                                placeholder="<?php echo __('Host Name'); ?>" value="<?php echo $hostName ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Valor R$</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Valor R$'); ?></label>
                                             <input class="form-control" name="valor" type="number" step="0.01"
                                                 placeholder="0.00" value="<?php echo $valor ?>">
                                         </div>
@@ -191,16 +155,16 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">MAC Adress</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('MAC Adress'); ?></label>
                                             <div class="input-group">
                                                 <input class="form-control" name="macAdress" type="text"
-                                                    placeholder="MAC Adress" value="<?php echo $macAdress ?>">
+                                                    placeholder="<?php echo __('MAC Adress'); ?>" value="<?php echo $macAdress ?>">
                                                 <div class="input-group-append bg-white border-0 ml-2 d-flex align-items-center">
                                                     <div class="custom-control custom-switch">
                                                         <input type="hidden" name="status" value="Inativo">
                                                         <input type="checkbox" class="custom-control-input" id="statusSwitch"
                                                             name="status" value="Ativo" <?php echo ($status == 'Ativo') ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                                        <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -208,7 +172,7 @@ if ($id <= 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data de Cadastro</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Cadastro'); ?></label>
                                             <input class="form-control" name="dataAtivacao" type="date"
                                                 value="<?php echo $dataAtivacao ?>" readonly>
                                         </div>
@@ -218,9 +182,9 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-sm-12 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto">
-                                                <option value="" <?php echo ($centroDeCusto == '' || $centroDeCusto == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
+                                                <option value="" <?php echo ($centroDeCusto == '' || $centroDeCusto == 'Nenhum') ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
                                                 <?php
                                                 $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                                 $res_cc = $conn->query($sql_cc);
@@ -239,7 +203,7 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-xl-9 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Upload de Imagem</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Upload de Imagem'); ?></label>
                                             <input class="form-control-file" name="imagem" type="file" accept="image/*">
                                         </div>
                                     </div>
@@ -248,8 +212,8 @@ if ($id <= 0) {
                                 <div class="form-row">
                                     <div class="col-xl-9 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Descrição / Observações</label>
-                                            <textarea class="form-control" name="descricao" placeholder="Descrição..."
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Descrição / Observações'); ?></label>
+                                            <textarea class="form-control" name="descricao" placeholder="<?php echo __('Descrição...'); ?>"
                                                 style="height: 100px;"><?php echo $descricao; ?></textarea>
                                         </div>
                                     </div>
@@ -259,11 +223,11 @@ if ($id <= 0) {
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
                                         <a class="btn btn-secondary btn-user" href="equipamentos.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            Voltar
+                                            <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-primary btn-user" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            Salvar Alterações
+                                            <?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>

@@ -11,16 +11,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
     style="background: transparent !important; box-shadow: none !important;">
     <hr class="sidebar-divider my-0">
     <!-- Principal -->
-    <div class="sidebar-heading">Menu Principal</div>
+    <div class="sidebar-heading"><?php echo __('Menu Principal'); ?></div>
     <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php">
-            <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+            <i class="fas fa-chart-pie"></i><span><?php echo __('Dashboard'); ?></span>
         </a>
     </li>
     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo ($current_page == 'inicio.php') ? 'active' : ''; ?>" href="inicio.php">
-                <i class="fas fa-tachometer-alt"></i><span>Console Operacional</span>
+                <i class="fas fa-tachometer-alt"></i><span><?php echo __('Console Operacional'); ?></span>
             </a>
         </li>
     <?php endif; ?>
@@ -29,41 +29,41 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <hr class="sidebar-divider">
 
         <!-- Gestão -->
-        <div class="sidebar-heading">Gestão de Ativos</div>
+        <div class="sidebar-heading"><?php echo __('Gestão de Ativos'); ?></div>
         <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'equipamento') !== false || strpos($current_page, 'ativo') !== false) && !isset($_GET['status']) ? 'active' : ''; ?>"
                 href="equipamentos.php">
-                <i class="fas fa-laptop-medical"></i><span>Inventário de Ativos</span>
+                <i class="fas fa-laptop-medical"></i><span><?php echo __('Inventário de Ativos'); ?></span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?php echo isset($_GET['status']) && $_GET['status'] == 'Manutencao' ? 'active' : ''; ?>"
                 href="equipamentos.php?status=Manutencao">
-                <i class="fas fa-tools"></i><span>Ativos em Manutenção</span>
+                <i class="fas fa-tools"></i><span><?php echo __('Ativos em Manutenção'); ?></span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'licenca') !== false) ? 'active' : ''; ?>"
                 href="licencas.php">
-                <i class="fas fa-file-contract"></i><span>Licenças & Software</span>
+                <i class="fas fa-file-contract"></i><span><?php echo __('Licenças & Software'); ?></span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'centro_de_custo') !== false) ? 'active' : ''; ?>"
                 href="centro_de_custo.php">
-                <i class="fas fa-wallet"></i><span>Centros de Custo</span>
+                <i class="fas fa-wallet"></i><span><?php echo __('Centros de Custo'); ?></span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'fornecedor') !== false) ? 'active' : ''; ?>"
                 href="fornecedores.php">
-                <i class="fas fa-handshake"></i><span>Fornecedores</span>
+                <i class="fas fa-handshake"></i><span><?php echo __('Fornecedores'); ?></span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'usuario') !== false) ? 'active' : ''; ?>"
                 href="usuarios.php">
-                <i class="fas fa-user-shield"></i><span>Controle de Usuários</span>
+                <i class="fas fa-user-shield"></i><span><?php echo __('Controle de Usuários'); ?></span>
             </a>
         </li>
     <?php endif; ?>
@@ -71,39 +71,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <hr class="sidebar-divider">
 
     <!-- Operacional -->
-    <div class="sidebar-heading">Operacional</div>
+    <div class="sidebar-heading"><?php echo __('Operacional'); ?></div>
     <li class="nav-item">
         <a class="nav-link <?php echo (strpos($current_page, 'chamado') !== false) ? 'active' : ''; ?>"
             href="chamados.php">
-            <i class="fas fa-ticket-alt"></i><span>Central de Chamados</span>
+            <i class="fas fa-ticket-alt"></i><span><?php echo __('Central de Chamados'); ?></span>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link <?php echo (strpos($current_page, 'relatorio') !== false) ? 'active' : ''; ?>"
             href="relatorios.php">
-            <i class="fas fa-file-invoice"></i><span>Relatórios Internos</span>
+            <i class="fas fa-file-invoice"></i><span><?php echo __('Relatórios Internos'); ?></span>
         </a>
     </li>
 
     <hr class="sidebar-divider">
 
     <!-- Outros -->
-    <div class="sidebar-heading">Inteligência & Ajuda</div>
+    <div class="sidebar-heading"><?php echo __('Inteligência & Ajuda'); ?></div>
     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo ($current_page == 'insights.php') ? 'active' : ''; ?>" href="insights.php">
-                <i class="fas fa-lightbulb"></i><span>Previsão & Prevenção</span>
+                <i class="fas fa-lightbulb"></i><span><?php echo __('Previsão & Prevenção'); ?></span>
             </a>
         </li>
     <?php endif; ?>
     <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'agent.php') ? 'active' : ''; ?>" href="agent.php">
-            <i class="fas fa-brain"></i><span>Assistente IA</span>
+            <i class="fas fa-brain"></i><span><?php echo __('Assistente IA'); ?></span>
         </a>
     </li>
     <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'suporte.php') ? 'active' : ''; ?>" href="suporte.php">
-            <i class="fas fa-headset"></i><span>Suporte Técnico</span>
+            <i class="fas fa-headset"></i><span><?php echo __('Suporte Técnico'); ?></span>
         </a>
     </li>
 </ul>

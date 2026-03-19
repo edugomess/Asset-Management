@@ -38,13 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $update = mysqli_query($conn, $query);
 
     if ($update) {
-        echo "<script>
-                alert('Fornecedor atualizado com sucesso!');
-                window.location.href = 'fornecedores.php';
-              </script>";
+        header("Location: fornecedores.php?msg=" . urlencode('Atualizado com sucesso!'));
         exit();
     } else {
-        echo "Erro ao atualizar dados: " . mysqli_error($conn);
+        header("Location: fornecedores.php?msg=" . urlencode('Erro ao atualizar: ') . mysqli_error($conn));
+        exit();
     }
 }
 ?>

@@ -79,7 +79,7 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Chamados - Asset Mgt</title>
+    <title><?php echo __('Chamados'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -137,54 +137,9 @@ $result = mysqli_query($conn, $sql);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4">Chamados</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Chamados'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -193,21 +148,21 @@ $result = mysqli_query($conn, $sql);
                                             class="btn btn-success btn-block active text-white pulse animated btn-user"
                                             role="button"
                                             style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 0px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;"
-                                            href="/cadastro_de_chamados.php">Novo Chamado</a></div>
+                                            href="/cadastro_de_chamados.php"><?php echo __('Novo Chamado'); ?></a></div>
                                 </div>
                                 <div class="col-md-6 col-xl-5">
                                     <form method="GET" class="form-inline" style="margin-top: 0px;">
-                                        <label for="filtro_status" class="mr-2 font-weight-bold">Filtrar por:</label>
+                                        <label for="filtro_status" class="mr-2 font-weight-bold"><?php echo __('Filtrar por:'); ?></label>
                                         <select name="filtro_status" id="filtro_status" class="form-control mr-2"
                                             onchange="this.form.submit()">
-                                            <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>>Abertos</option>
-                                            <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>>Em Andamento</option>
-                                            <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>>Pendentes</option>
-                                            <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>>Finalizados</option>
-                                            <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>>Todos</option>
+                                            <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>><?php echo __('Abertos'); ?></option>
+                                            <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
+                                            <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>><?php echo __('Pendentes'); ?></option>
+                                            <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>><?php echo __('Finalizados'); ?></option>
+                                            <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>><?php echo __('Todos'); ?></option>
                                         </select>
                                         <input type="search" name="search" class="form-control form-control-sm"
-                                            placeholder="Buscar..."
+                                            placeholder="<?php echo __('Buscar...'); ?>"
                                             value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                     </form>
                                 </div>
@@ -217,15 +172,15 @@ $result = mysqli_query($conn, $sql);
                                 <table class="table table-hover my-0" id="chamadosTable">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Título</th>
-                                            <th>Categoria</th>
-                                            <th>Prioridade</th>
-                                            <th>Data Abertura</th>
-                                            <th>Solicitante</th>
-                                            <th>Responsável</th>
-                                            <th>Status</th>
-                                            <th>SLA STATUS</th>
+                                            <th><?php echo __('ID'); ?></th>
+                                            <th><?php echo __('Título'); ?></th>
+                                            <th><?php echo __('Categoria'); ?></th>
+                                            <th><?php echo __('Prioridade'); ?></th>
+                                            <th><?php echo __('Data Abertura'); ?></th>
+                                            <th><?php echo __('Solicitante'); ?></th>
+                                            <th><?php echo __('Responsável'); ?></th>
+                                            <th><?php echo __('Status'); ?></th>
+                                            <th><?php echo __('SLA STATUS'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -291,19 +246,19 @@ $result = mysqli_query($conn, $sql);
 
                                                 if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento' || $row['status'] == 'Pendente') {
                                                     if ($row['status'] == 'Pendente') {
-                                                        $sla_status_text = 'Pendente';
+                                                        $sla_status_text = __('Pendente');
                                                         $progress_bar_class = 'bg-secondary';
                                                         $animation_class = '';
                                                     } else {
                                                         $animation_class = 'progress-bar-striped progress-bar-animated';
                                                         if ($minutos_decorridos >= $sla_total_minutos) {
-                                                            $sla_status_text = 'Vencido';
+                                                            $sla_status_text = __('Vencido');
                                                             $progress_bar_class = 'bg-danger';
                                                         } elseif ($minutos_decorridos >= ($sla_total_minutos * 0.8)) { // > 80%
-                                                            $sla_status_text = 'Atenção';
+                                                            $sla_status_text = __('Atenção');
                                                             $progress_bar_class = 'bg-warning';
                                                         } else {
-                                                            $sla_status_text = 'No Prazo';
+                                                            $sla_status_text = __('No Prazo');
                                                             $progress_bar_class = 'bg-success';
                                                         }
                                                     }
@@ -329,9 +284,9 @@ $result = mysqli_query($conn, $sql);
                     </div>
                 </div>';
                                                 } elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
-                                                    $sla_status_html = '<span class="badge badge-success">Concluído</span>';
+                                                    $sla_status_html = '<span class="badge badge-success">' . __('Concluído') . '</span>';
                                                 } elseif ($row['status'] == 'Cancelado') {
-                                                    $sla_status_html = '<span class="badge badge-danger">Cancelado</span>';
+                                                    $sla_status_html = '<span class="badge badge-danger">' . __('Cancelado') . '</span>';
                                                 } else {
                                                     $sla_status_html = '<span class="badge badge-secondary">-</span>';
                                                 }
@@ -359,8 +314,8 @@ $result = mysqli_query($conn, $sql);
                                                         break;
                                                 }
 
-                                                $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : 'Não identificado';
-                                                $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : 'Não Atribuído';
+                                                $solicitante = $row['nome'] ? $row['nome'] . ' ' . $row['sobrenome'] : __('Não identificado');
+                                                $responsavel = $row['resp_nome'] ? $row['resp_nome'] . ' ' . $row['resp_sobrenome'] : __('Não Atribuído');
                                                 $responsavel_class = $row['resp_nome'] ? 'badge-dark' : 'badge-secondary';
 
                                                 $prioridade_class = 'badge-secondary';
@@ -379,17 +334,17 @@ $result = mysqli_query($conn, $sql);
                                                 echo "<tr onclick=\"window.location='editar_chamado.php?id=" . $row['id'] . "'\" style='cursor: pointer;'>
                 <td>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
-                <td>" . htmlspecialchars($row['categoria']) . "</td>
-                <td><span class='badge " . $prioridade_class . "'>" . htmlspecialchars($prioridade) . "</span></td>
+                <td>" . __($row['categoria']) . "</td>
+                <td><span class='badge " . $prioridade_class . "'>" . __($prioridade) . "</span></td>
                 <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
                 <td>" . htmlspecialchars($solicitante) . "</td>
                 <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
-                <td><span class='badge " . $status_class . "'>" . htmlspecialchars($row['status']) . "</span></td>
+                <td><span class='badge " . $status_class . "'>" . __($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
             </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='10' class='text-center'>Nenhum chamado encontrado.</td></tr>";
+                                            echo "<tr><td colspan='10' class='text-center'>" . __('Nenhum chamado encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -408,9 +363,9 @@ $result = mysqli_query($conn, $sql);
 
                                     // Botão Anterior
                                     if ($pg_atual > 1) {
-                                        echo "<li><a href='?page=" . ($pg_atual - 1) . "&" . $p_params . "'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ($pg_atual - 1) . "&" . $p_params . "'>« " . __('Anterior') . "</a></li>";
                                     } else {
-                                        echo "<li class='disabled'><span>« Anterior</span></li>";
+                                        echo "<li class='disabled'><span>« " . __('Anterior') . "</span></li>";
                                     }
 
                                     // Janela de páginas (exibir até 6 páginas como no exemplo)
@@ -431,9 +386,9 @@ $result = mysqli_query($conn, $sql);
 
                                     // Botão Próximo
                                     if ($pg_atual < $total_p) {
-                                        echo "<li><a href='?page=" . ($pg_atual + 1) . "&" . $p_params . "'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($pg_atual + 1) . "&" . $p_params . "'>" . __('Próxima') . " »</a></li>";
                                     } else {
-                                        echo "<li class='disabled'><span>Próximo »</span></li>";
+                                        echo "<li class='disabled'><span>" . __('Próxima') . " »</span></li>";
                                     }
                                     ?>
                                 </ul>

@@ -119,7 +119,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Inventário de Ativos - Gestão</title>
+    <title><?php echo __('Inventário de Ativos'); ?> - Asset Mgt</title>
     <!-- Favicon e Bibliotecas de CSS Externas -->
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
@@ -159,54 +159,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <!-- Barra Superior (Topbar) -->
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <!-- Menu do Perfil do Usuário -->
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
 
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <!-- Seção de Resumo: Cards Informativos -->
@@ -233,7 +186,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-primary font-weight-bold text-xs mb-1">
-                                                <span>Total de Ativos</span>
+                                                <span><?php echo __('Total de Ativos'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_ativos; ?></span>
@@ -250,7 +203,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-success font-weight-bold text-xs mb-1">
-                                                <span>Disponíveis</span>
+                                                <span><?php echo __('Disponíveis'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_disp; ?></span>
@@ -267,8 +220,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Em
-                                                    Uso</span></div>
+                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span><?php echo __('Em Uso'); ?></span></div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_uso; ?></span>
                                             </div>
@@ -286,7 +238,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"
                                                 style="color: #ff8c00 !important;">
-                                                <span>Manutenção</span>
+                                                <span><?php echo __('Manutenção'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
                                                 <span><?php echo $total_manut; ?></span>
@@ -302,7 +254,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <h3 class="text-dark mb-4">
                         <?php
                         // Define o título da página com base no filtro de status
-                        echo (isset($_GET['status']) && $_GET['status'] === 'Manutencao') ? 'Ativos em Manutenção' : 'Ativos';
+                        echo (isset($_GET['status']) && ($_GET['status'] === 'Manutencao' || $_GET['status'] === 'Manutenção')) ? __('Ativos em Manutenção') : __('Ativos');
                         ?>
                     </h3>
 
@@ -318,7 +270,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                                 role="button"
                                                 style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
-                                                href="/cadastro_de_equipamentos.php">Cadastrar Novo</a>
+                                                href="/cadastro_de_equipamentos.php"><?php echo __('Cadastrar Novo'); ?></a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -329,9 +281,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <div class="form-group mr-2">
                                                 <input type="search" name="search"
                                                     class="form-control form-control-sm premium-filter"
-                                                    placeholder="Buscar..." onsearch="this.form.submit()"
+                                                    placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                                                    aria-label="Buscar Ativos">
+                                                    aria-label="<?php echo __('Buscar Ativos'); ?>">
                                             </div>
                                         </form>
                                     </div>
@@ -394,21 +346,21 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <table class="table my-0" id="assetsDataTable">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Modelo</th>
-                                            <th scope="col">Fabricante</th>
-                                            <th scope="col">Categoria</th>
-                                            <th scope="col">Tag</th>
-                                            <th scope="col">HostName</th>
-                                            <th scope="col">Valor Atual</th>
-                                            <th scope="col">MAC</th>
-                                            <th scope="col">CC</th>
+                                            <th scope="col"><?php echo __('Modelo'); ?></th>
+                                            <th scope="col"><?php echo __('Fabricante'); ?></th>
+                                            <th scope="col"><?php echo __('Categoria'); ?></th>
+                                            <th scope="col"><?php echo __('Tag'); ?></th>
+                                            <th scope="col"><?php echo __('HostName'); ?></th>
+                                            <th scope="col"><?php echo __('Valor Atual'); ?></th>
+                                            <th scope="col"><?php echo __('MAC'); ?></th>
+                                            <th scope="col"><?php echo __('CC'); ?></th>
                                             <?php if ($status_filter !== 'Manutencao'): ?>
-                                                <th scope="col">Usuário</th>
+                                                <th scope="col"><?php echo __('Usuário'); ?></th>
                                             <?php else: ?>
-                                                <th scope="col">Motivo Manut.</th>
+                                                <th scope="col"><?php echo __('Motivo Manut.'); ?></th>
                                             <?php endif; ?>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Ações</th>
+                                            <th scope="col"><?php echo __('Status'); ?></th>
+                                            <th scope="col"><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -469,7 +421,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
                                                         </span>
                                                         <br>
-                                                        <small class="text-muted">(Original: R$
+                                                        <small class="text-muted">(<?php echo __('Original:'); ?> R$
                                                             <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
@@ -477,13 +429,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                                                     <?php if ($status_filter !== 'Manutencao'): ?>
                                                         <td>
-                                                            <?php echo ($assigned_to && !empty($row['user_nome'])) ? htmlspecialchars($row['user_nome']) : "Disponível"; ?>
+                                                            <?php echo ($assigned_to && !empty($row['user_nome'])) ? htmlspecialchars($row['user_nome']) : __('Disponível'); ?>
                                                         </td>
                                                     <?php else: ?>
                                                         <td>
                                                             <?php
                                                             // Mostra o motivo da manutenção com tooltip para o texto completo
-                                                            $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : 'Sem observações';
+                                                            $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : __('Sem observações');
                                                             $motivo_resumo = (mb_strlen($motivo_completo) > 30) ? mb_substr($motivo_completo, 0, 27) . "..." : $motivo_completo;
                                                             ?>
                                                             <span data-toggle="tooltip"
@@ -497,7 +449,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>
                                                         <span
                                                             class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-maintenance-system' : 'badge-danger'); ?>">
-                                                            <?php echo htmlspecialchars(ucfirst($row['status'])); ?>
+                                                            <?php echo __(ucfirst($row['status'])); ?>
                                                         </span>
                                                     </td>
                                                     <td>
@@ -506,29 +458,29 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php if (!$row['em_manutencao']): ?>
                                                                 <?php if ($assigned_to): ?>
                                                                     <button class='btn btn-dark btn-tamanho-fixo mr-2'
-                                                                        title="Desatribuir"
-                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row['id_asset']; ?>)'>Liberar
+                                                                        title="<?php echo __('Liberar'); ?>"
+                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row["id_asset"]; ?>)'><?php echo __('Liberar'); ?>
                                                                         <i class='fas fa-user-minus'></i></button>
                                                                 <?php else: ?>
-                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2' title="Atribuir"
-                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row['id_asset']; ?>)'>Atribuir
+                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2' title="<?php echo __('Atribuir'); ?>"
+                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row["id_asset"]; ?>)'><?php echo __('Atribuir'); ?>
                                                                         <i class='fas fa-user-plus'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
                                                             <a class='btn btn-warning btn-edit mr-2'
-                                                                href='editar_ativo.php?id=<?php echo $row['id_asset']; ?>'
-                                                                title="Editar" onclick="event.stopPropagation();"><i
+                                                                href='editar_ativo.php?id=<?php echo $row["id_asset"]; ?>'
+                                                                title="<?php echo __('Editar'); ?>" onclick="event.stopPropagation();"><i
                                                                     class='fas fa-edit'></i></a>
 
                                                             <?php if ($row['em_manutencao']): ?>
-                                                                <button class="btn btn-success btn-edit" title="Liberar Manutenção"
-                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row['id_asset']; ?>)"><i
+                                                                <button class="btn btn-success btn-edit" title="<?php echo __('Liberar Manutenção'); ?>"
+                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row["id_asset"]; ?>)"><i
                                                                         class="fas fa-check-circle"></i></button>
                                                             <?php else: ?>
                                                                 <button class="btn btn-maintenance-system btn-edit"
-                                                                    title="Enviar para Manutenção"
-                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row['id_asset']; ?>)"><i
+                                                                    title="<?php echo __('Enviar para Manutenção'); ?>"
+                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row["id_asset"]; ?>)"><i
                                                                         class="fas fa-tools"></i></button>
                                                             <?php endif; ?>
                                                         </div>
@@ -537,7 +489,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='11'>Nenhum ativo encontrado para os filtros aplicados.</td></tr>";
+                                            echo "<tr><td colspan='11'>" . __('Nenhum ativo encontrado para os filtros aplicados.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -551,7 +503,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     $params = ($search ? "&search=$search" : "") . ($status_filter ? "&status=$status_filter" : "");
                                     // Botão Anterior
                                     if ($current_page > 1) {
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "$params'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "$params'>« " . __('Anterior') . "</a></li>";
                                     }
                                     // Loop das Páginas
                                     for ($p = 1; $p <= $total_pages; $p++) {
@@ -563,7 +515,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     }
                                     // Botão Próximo
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "$params'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "$params'>" . __('Próxima') . " »</a></li>";
                                     }
                                     ?>
                                 </ul>
@@ -581,7 +533,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="assignModalLabel">Atribuir Ativo</h5>
+                    <h5 class="modal-title" id="assignModalLabel"><?php echo __('Atribuir Ativo'); ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -590,10 +542,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="modal-body">
                         <input type="hidden" id="assign_asset_id" name="id_asset">
                         <div class="form-group">
-                            <label for="select_user_assign">Selecionar Usuário</label>
+                            <label for="select_user_assign"><?php echo __('Selecionar Usuário'); ?></label>
                             <select class="form-control" id="select_user_assign" name="id_usuario" required
                                 aria-label="Selecionar usuário para atribuição">
-                                <option value="">Selecione...</option>
+                                <option value=""><?php echo __('Selecione...'); ?></option>
                                 <?php
                                 // Busca apenas usuários ativos para atribuição
                                 $users_res = mysqli_query($conn, "SELECT id_usuarios, nome FROM usuarios WHERE status = 'Ativo' ORDER BY nome");
@@ -605,8 +557,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Atribuir</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
+                        <button type="submit" class="btn btn-primary"><?php echo __('Atribuir'); ?></button>
                     </div>
                 </form>
             </div>
@@ -619,7 +571,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="maintenanceModalLabel">Enviar para Manutenção</h5>
+                    <h5 class="modal-title" id="maintenanceModalLabel"><?php echo __('Enviar para Manutenção'); ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -628,14 +580,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="modal-body">
                         <input type="hidden" id="maintenance_asset_id" name="id_asset">
                         <div class="form-group">
-                            <label for="maintenance_obs">Observações / Motivo</label>
+                            <label for="maintenance_obs"><?php echo __('Observações / Motivo'); ?></label>
                             <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="3" required
                                 aria-label="Observações sobre a manutenção"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-maintenance-system">Confirmar Manutenção</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
+                        <button type="submit" class="btn btn-maintenance-system"><?php echo __('Confirmar Manutenção'); ?></button>
                     </div>
                 </form>
             </div>
@@ -682,12 +634,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         // Libera um ativo (remove a atribuição atual)
         function unassignUser(id) {
             Swal.fire({
-                title: 'Confirmar Liberação?',
-                text: "O ativo voltará a ficar disponível.",
+                title: '<?php echo __('Confirmar Liberação?'); ?>',
+                text: "<?php echo __('O ativo voltará a ficar disponível.'); ?>",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Sim, liberar',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: '<?php echo __('Sim, liberar'); ?>',
+                cancelButtonText: '<?php echo __('Cancelar'); ?>'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function (res) {
@@ -722,12 +674,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         // Finaliza o status de manutenção do ativo
         function releaseFromMaintenance(id) {
             Swal.fire({
-                title: 'Finalizar Manutenção?',
-                text: "O ativo voltará a ficar disponível e o registro de manutenção será encerrado.",
+                title: '<?php echo __('Finalizar Manutenção?'); ?>',
+                text: "<?php echo __('O ativo voltará a ficar disponível e o registro de manutenção será encerrado.'); ?>",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Sim, finalizar',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: '<?php echo __('Sim, finalizar'); ?>',
+                cancelButtonText: '<?php echo __('Cancelar'); ?>'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post('ajax_ativos.php', {

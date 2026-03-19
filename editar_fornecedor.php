@@ -16,7 +16,7 @@ $id = intval($id);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Blank Page - Brand</title>
+    <title><?php echo __('Editar Fornecedor'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -59,44 +59,9 @@ $id = intval($id);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Editar Fornecedor</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Editar Fornecedor'); ?></h3>
                     <?php
                     $sql = "SELECT * FROM fornecedor WHERE id_fornecedor = '$id'";
                     $result = mysqli_query($conn, $sql);
@@ -116,13 +81,13 @@ $id = intval($id);
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Nome da Empresa</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Nome da Empresa'); ?></label>
                                             <input class="form-control" name="nomeEmpresa" type="text" value="<?php echo $nomeEmpresa ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">CNPJ</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('CNPJ'); ?></label>
                                             <input class="form-control" name="cnpj" type="text" value="<?php echo $cnpj ?>">
                                         </div>
                                     </div>
@@ -130,13 +95,13 @@ $id = intval($id);
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">E-mail</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('E-mail'); ?></label>
                                             <input class="form-control" name="email" type="email" value="<?php echo $email ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Telefone'); ?></label>
                                             <input class="form-control" name="telefone" type="tel" value="<?php echo $telefone ?>">
                                         </div>
                                     </div>
@@ -144,13 +109,13 @@ $id = intval($id);
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Serviço</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Serviço'); ?></label>
                                             <input class="form-control" name="servico" type="text" value="<?php echo $servico ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Site</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Site'); ?></label>
                                             <input class="form-control" name="site" type="text" value="<?php echo $site ?>">
                                         </div>
                                     </div>
@@ -159,11 +124,11 @@ $id = intval($id);
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
                                         <a class="btn btn-secondary btn-user" href="fornecedores.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            Voltar
+                                            <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-primary btn-user" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            Salvar Alterações
+                                            <?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -171,7 +136,7 @@ $id = intval($id);
                         </div>
                     </div>
                     <?php } else { ?>
-                    <div class="alert alert-danger">Fornecedor não encontrado.</div>
+                    <div class="alert alert-danger"><?php echo __('Fornecedor não encontrado.'); ?></div>
                     <?php } ?>
                 </div>
         </div>

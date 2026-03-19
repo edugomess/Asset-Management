@@ -119,50 +119,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
-                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4">Gestão de Licenças de Software</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Gestão de Licenças'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -171,7 +130,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             class="btn btn-success btn-block active text-white pulse animated btn-user"
                                             role="button"
                                             style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 0px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;"
-                                            href="/cadastro_de_licenca.php">Nova Licença</a></div>
+                                            href="/cadastro_de_licenca.php"><?php echo __('Nova Licença'); ?></a></div>
                                 </div>
                                 <div class="col-md-6 col-xl-9">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
@@ -179,7 +138,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <div class="form-group mr-2">
                                                 <input type="search" name="search"
                                                     class="form-control form-control-sm premium-filter"
-                                                    aria-controls="dataTable" placeholder="Buscar software..."
+                                                    aria-controls="dataTable" placeholder="<?php echo __('Buscar software...'); ?>"
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                             </div>
                                         </form>
@@ -190,14 +149,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Software</th>
-                                            <th>Fabricante</th>
-                                            <th>Tipo</th>
-                                            <th>Chave / ID</th>
-                                            <th>Uso (Total/Em Uso)</th>
-                                            <th>Expiração</th>
-                                            <th>Status</th>
-                                            <th>Ações</th>
+                                            <th><?php echo __('Software'); ?></th>
+                                            <th><?php echo __('Fabricante'); ?></th>
+                                            <th><?php echo __('Tipo'); ?></th>
+                                            <th><?php echo __('Chave / ID'); ?></th>
+                                            <th><?php echo __('Uso (Total/Em Uso)'); ?></th>
+                                            <th><?php echo __('Expiração'); ?></th>
+                                            <th><?php echo __('Status'); ?></th>
+                                            <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -266,7 +225,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo $row['data_expiracao'] ? date('d/m/Y', strtotime($row['data_expiracao'])) : 'N/A'; ?>
                                                     </td>
                                                     <td><span
-                                                            class="badge <?php echo $status_badge; ?>"><?php echo $row['status']; ?></span>
+                                                            class="badge <?php echo $status_badge; ?>"><?php echo __($row['status']); ?></span>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
@@ -274,12 +233,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php if ($row['quantidade_uso'] >= $row['quantidade_total']): ?>
                                                                 <button class="btn btn-dark-system btn-system btn-tamanho-fixo mr-2"
                                                                     onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')">
-                                                                    Desatribuir <i class="fas fa-user-minus"></i>
+                                                                    <?php echo __('Desatribuir'); ?> <i class="fas fa-user-minus"></i>
                                                                 </button>
                                                             <?php else: ?>
                                                                 <button class="btn btn-info-system btn-system btn-tamanho-fixo mr-2"
                                                                     onclick="openAssignModal(<?php echo $row['id_licenca']; ?>)">
-                                                                    Atribuir <i class="fas fa-address-card"></i>
+                                                                    <?php echo __('Atribuir'); ?> <i class="fas fa-address-card"></i>
                                                                 </button>
                                                             <?php endif; ?>
 
@@ -292,7 +251,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <!-- Botão de Detalhes -->
                                                             <button class="btn btn-secondary-system btn-system btn-edit mr-2"
                                                                 onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')"
-                                                                title="Detalhes de Atribuição">
+                                                                title="<?php echo __('Detalhes de Atribuição'); ?>">
                                                                 <i class="fas fa-info-circle"></i>
                                                             </button>
                                                         </div>
@@ -301,7 +260,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='8' class='text-center'>Nenhuma licença encontrada.</td></tr>";
+                                            echo "<tr><td colspan='8' class='text-center'>" . __('Nenhuma licença encontrada.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -311,7 +270,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <ul class="pagination-custom">
                                     <?php
                                     if ($current_page > 1) {
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "&search=$search'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "&search=$search'>" . __('« Anterior') . "</a></li>";
                                     }
                                     for ($i = 1; $i <= $total_pages; $i++) {
                                         if ($i == $current_page) {
@@ -321,7 +280,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         }
                                     }
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "&search=$search'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "&search=$search'>" . __('Próximo »') . "</a></li>";
                                     }
                                     ?>
                                 </ul>
@@ -336,17 +295,17 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Atribuir Licença ao Usuário</h5>
+                            <h5 class="modal-title"><?php echo __('Atribuir Licença ao Usuário'); ?></h5>
                             <button type="button" class="close" onclick="closeAssignModal()">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <p class="text-muted small">Pesquise o usuário para vincular esta licença.</p>
-                            <input type="text" id="userSearch" class="form-control" placeholder="Pesquisar usuário..."
+                            <p class="text-muted small"><?php echo __('Pesquise o usuário para vincular esta licença.'); ?></p>
+                            <input type="text" id="userSearch" class="form-control" placeholder="<?php echo __('Pesquisar usuário...'); ?>"
                                 oninput="searchUsers()">
                             <ul id="userList" class="list-group mt-2" style="max-height: 200px; overflow-y: auto;"></ul>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Fechar</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()"><?php echo __('Fechar'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -357,7 +316,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Atribuições: <span id="detailsSoftwareName"></span></h5>
+                            <h5 class="modal-title"><?php echo __('Detalhes de Atribuição'); ?>: <span id="detailsSoftwareName"></span></h5>
                             <button type="button" class="close" onclick="closeDetailsModal()">&times;</button>
                         </div>
                         <div class="modal-body">
@@ -365,10 +324,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <table class="table table-sm table-hover">
                                     <thead class="bg-light">
                                         <tr>
-                                            <th>Usuário</th>
-                                            <th>Email</th>
-                                            <th>Data de Atribuição</th>
-                                            <th class="text-right">Ação</th>
+                                            <th><?php echo __('Usuário'); ?></th>
+                                            <th><?php echo __('Email'); ?></th>
+                                            <th><?php echo __('Data de Atribuição'); ?></th>
+                                            <th class="text-right"><?php echo __('Ação'); ?></th>
                                         </tr>
                                     </thead>
                                     <ul id="assignmentList" class="list-unstyled mb-0">
@@ -380,16 +339,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </table>
                             </div>
                             <div id="noAssignmentsMsg" class="text-center p-3 d-none">
-                                <p class="text-muted">Nenhuma atribuição encontrada para esta licença.</p>
+                                <p class="text-muted"><?php echo __('Nenhuma atribuição encontrada para esta licença.'); ?></p>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger-system btn-system"
                                 onclick="window.open('relatorio_atribuicoes_geral.php', '_blank')">
-                                <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
+                                <i class="fas fa-file-pdf"></i> <?php echo __('Gerar Relatório PDF'); ?>
                             </button>
                             <button type="button" class="btn btn-secondary"
-                                onclick="closeDetailsModal()">Fechar</button>
+                                onclick="closeDetailsModal()"><?php echo __('Fechar'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -439,7 +398,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             userList.innerHTML = '';
 
                             if (users.length === 0) {
-                                userList.innerHTML = '<li class="list-group-item">Nenhum usuário encontrado</li>';
+                                userList.innerHTML = '<li class="list-group-item"><?php echo __('Nenhum usuário encontrado'); ?></li>';
                             } else {
                                 users.forEach(user => {
                                     const li = document.createElement('li');
@@ -455,7 +414,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 }
 
                 function assignLicense(userId, userName) {
-                    if (confirm(`Deseja atribuir esta licença para ${userName}?`)) {
+                    if (confirm(`<?php echo __('Deseja atribuir esta licença para'); ?> ${userName}?`)) {
                         fetch('assign_license.php', {
                             method: 'POST',
                             headers: {
@@ -469,10 +428,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert('Licença atribuída com sucesso!');
+                                    alert('<?php echo __('Licença atribuída com sucesso!'); ?>');
                                     location.reload();
                                 } else {
-                                    alert('Erro: ' + data.message);
+                                    alert('<?php echo __('Erro:'); ?> ' + data.message);
                                 }
                             })
                             .catch(error => console.error('Erro ao atribuir:', error));
@@ -483,7 +442,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     document.getElementById('detailsSoftwareName').innerText = softwareName;
                     const tbody = document.getElementById('assignmentTableBody');
                     const msg = document.getElementById('noAssignmentsMsg');
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center">Carregando...</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center"><?php echo __('Carregando...'); ?></td></tr>';
                     msg.classList.add('d-none');
 
                     document.getElementById('detailsModal').style.display = 'block';
@@ -514,7 +473,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         })
                         .catch(error => {
                             console.error('Erro ao buscar detalhes:', error);
-                            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erro ao carregar dados.</td></tr>';
+                            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger"><?php echo __('Erro ao carregar dados.'); ?></td></tr>';
                         });
                 }
 
@@ -523,7 +482,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 }
 
                 function removeAssignment(id) {
-                    if (confirm('Deseja remover esta atribuição?')) {
+                    if (confirm('<?php echo __('Deseja remover esta atribuição?'); ?>')) {
                         fetch('remove_license_assignment.php', {
                             method: 'POST',
                             headers: {
@@ -536,13 +495,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert('Atribuição removida com sucesso!');
+                                    alert('<?php echo __('Atribuição removida com sucesso!'); ?>');
                                     // Recarrega a lista do modal sem fechar
                                     const currentId = currentLicenseId;
                                     const currentName = document.getElementById('detailsSoftwareName').innerText;
                                     openDetailsModal(currentId, currentName);
                                 } else {
-                                    alert('Erro: ' + data.message);
+                                    alert('<?php echo __('Erro:'); ?> ' + data.message);
                                 }
                             })
                             .catch(error => console.error('Erro ao remover:', error));
@@ -556,7 +515,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 }
 
                 function zerarAtribuicoes() {
-                    if (confirm('ATENÇÃO: Isso irá remover TODOS os usuários vinculados a esta licença. Deseja continuar?')) {
+                    if (confirm('<?php echo __('Atenção_Remover_Todos'); ?>')) {
                         fetch('clear_license_assignments.php', {
                             method: 'POST',
                             headers: {
@@ -569,10 +528,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert('Todas as atribuições foram removidas!');
+                                    alert('<?php echo __('Todas as atribuições foram removidas!'); ?>');
                                     location.reload(); // Recarrega para atualizar os contadores na tabela principal
                                 } else {
-                                    alert('Erro: ' + data.message);
+                                    alert('<?php echo __('Erro:'); ?> ' + data.message);
                                 }
                             })
                             .catch(error => console.error('Erro ao zerar:', error));

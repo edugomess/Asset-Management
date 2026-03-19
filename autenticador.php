@@ -32,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: index.php");
             exit();
         } else {
-            echo "<script>alert('Senha incorreta. Tente novamente.');
+            echo "<script>alert('" . __('Senha incorreta. Tente novamente.') . "');
              window.location.href = 'login.php';</script>";
         }
     } else {
-        echo "<script>alert('Email não encontrado.');
+        echo "<script>alert('" . __('Email não encontrado.') . "');
         window.location.href = 'login.php';</script>";
     }
 

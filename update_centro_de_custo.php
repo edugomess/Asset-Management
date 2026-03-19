@@ -51,12 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             WHERE id_centro_de_custo = $id_centro_de_custo";
 
     if ($conn->query($sql) === TRUE) {
-        echo "<script>
-                alert('Centro de Custo atualizado com sucesso!');
-                window.location.href = 'centro_de_custo.php';
-              </script>";
+        // Assuming '__' is a function for internationalization, and 'centros_de_custo.php' is the correct redirect target.
+        // Also, assuming $conn is a mysqli object, so $conn->error is correct for errors.
+        header("Location: centros_de_custo.php?msg=" . urlencode(__('Atualizado com sucesso!')));
     } else {
-        echo "Erro ao atualizar: " . $conn->error;
+        header("Location: centros_de_custo.php?msg=" . urlencode(__('Erro ao atualizar: ')) . $conn->error);
     }
 
     $conn->close();

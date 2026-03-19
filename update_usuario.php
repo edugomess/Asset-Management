@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (mysqli_num_rows($result_check) > 0) {
         echo "<script>
-                alert('Erro: O nome de usuário AD já está em uso. Escolha outro.');
+                alert('<?php echo __('Erro: O nome de usuário AD já está em uso. Escolha outro.'); ?>');
                 window.history.back();
               </script>";
         exit();
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             // Se não enviou foto, não faz nada (ou apenas confirma sucesso para não dar erro no JS)
             echo "<script>
-                    alert('Nenhuma alteração realizada (somente a foto pode ser alterada).');
+                    alert('<?php echo __('Nenhuma alteração realizada (somente a foto pode ser alterada).'); ?>');
                     window.location.href = 'profile.php';
                   </script>";
             exit();
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_query($conn, $query_update)) {
         $redirect = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'profile.php' : 'usuarios.php';
         echo "<script>
-                alert('Atualizado com sucesso!');
+                alert('<?php echo __('Atualizado com sucesso!'); ?>');
                 window.location.href = '$redirect';
               </script>";
     } else {

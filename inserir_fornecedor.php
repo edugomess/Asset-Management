@@ -17,16 +17,17 @@ $status = $_POST['status'];
 $sql = "INSERT INTO fornecedor (nomeEmpresa, cnpj, email, telefone, servico, site, status)
     VALUES ('$nomeEmpresa', '$cnpj', '$email', '$telefone', '$servico', '$site', '$status')";
 
-$inserir = mysqli_query($conn, $sql);
-
-if ($inserir) {
-    echo "<script>
-            alert('Fornecedor cadastrado com sucesso!');
-            window.location.href = 'fornecedores.php';
-          </script>";
-    exit();
-} else {
-    echo "Erro ao inserir dados: " . mysqli_error($conn);
-}
+if (mysqli_query($conn, $sql)) {
+        echo "<script>
+                alert('" . __('Fornecedor cadastrado com sucesso!') . "');
+                window.location.href = 'fornecedores.php';
+              </script>";
+        exit();
+    } else {
+        echo "<script>
+                alert('" . __('Erro ao cadastrar fornecedor: ') . "' + " . json_encode(mysqli_error($conn)) . ");
+                window.history.back();
+              </script>";
+    }
 
 ?>

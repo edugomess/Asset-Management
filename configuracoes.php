@@ -26,17 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['smtp_config'])) {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )");
 
-    $host      = $conn->real_escape_string(trim($_POST['smtp_host'] ?? ''));
-    $user      = $conn->real_escape_string(trim($_POST['smtp_user'] ?? ''));
-    $pass_raw  = trim($_POST['smtp_pass'] ?? '');
-    $port      = (int)($_POST['smtp_port'] ?? 587);
+    $host = $conn->real_escape_string(trim($_POST['smtp_host'] ?? ''));
+    $user = $conn->real_escape_string(trim($_POST['smtp_user'] ?? ''));
+    $pass_raw = trim($_POST['smtp_pass'] ?? '');
+    $port = (int) ($_POST['smtp_port'] ?? 587);
     $from_name = $conn->real_escape_string(trim($_POST['smtp_from_name'] ?? 'ASSET MGT - ALERTA'));
-    $secure    = in_array($_POST['smtp_secure'] ?? 'tls', ['tls','ssl']) ? $_POST['smtp_secure'] : 'tls';
+    $secure = in_array($_POST['smtp_secure'] ?? 'tls', ['tls', 'ssl']) ? $_POST['smtp_secure'] : 'tls';
 
     $pass_sql = '';
     if ($pass_raw !== '') {
         $pass_safe = $conn->real_escape_string($pass_raw);
-        $pass_sql  = ", smtp_pass = '$pass_safe'";
+        $pass_sql = ", smtp_pass = '$pass_safe'";
     }
 
     $check = $conn->query("SELECT id FROM configuracoes_smtp LIMIT 1");
@@ -143,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ia_config'])) {
             ia_chamados_ativo = $ia_chamados, 
             ia_preve_ativo = $ia_preve 
             WHERE id = 1";
-    
+
     $success = mysqli_query($conn, $sql);
 
     $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
@@ -174,6 +174,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['session_config'])) {
         echo json_encode(['success' => $success]);
     } else {
         header("Location: configuracoes.php?msg=" . ($success ? "session_success" : "error"));
+    }
+    exit();
+}
+
+// === PROCESSAMENTO DE IDIOMA: Define o idioma padrão do sistema ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['idioma_config'])) {
+    $idioma = $_POST['idioma'] ?? 'pt-BR';
+    $idioma = mysqli_real_escape_string($conn, $idioma);
+
+    $sql = "UPDATE configuracoes_alertas SET idioma = '$idioma' WHERE id = 1";
+    $success = mysqli_query($conn, $sql);
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $_SESSION['idioma'] = $idioma;
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "idioma_success" : "error"));
     }
     exit();
 }
@@ -294,12 +316,12 @@ if ($result_cat_doacao) {
 
 // Fetch SMTP settings
 $smtp_config = [
-    'smtp_host'      => 'smtp.gmail.com',
-    'smtp_user'      => '',
-    'smtp_pass'      => '',
-    'smtp_port'      => 587,
+    'smtp_host' => 'smtp.gmail.com',
+    'smtp_user' => '',
+    'smtp_pass' => '',
+    'smtp_port' => 587,
     'smtp_from_name' => 'ASSET MGT - ALERTA',
-    'smtp_secure'    => 'tls',
+    'smtp_secure' => 'tls',
 ];
 // Garantir tabela e buscar configurações
 $conn->query("CREATE TABLE IF NOT EXISTS configuracoes_smtp (
@@ -318,9 +340,9 @@ if ($res_smtp && $res_smtp->num_rows > 0) {
 } else {
     // Se ainda não existe registro, pré-popular com os valores do arquivo legado
     require_once 'config_notificacoes.php';
-    $smtp_config['smtp_host']      = defined('SMTP_HOST') ? SMTP_HOST : 'smtp.gmail.com';
-    $smtp_config['smtp_user']      = defined('SMTP_USER') ? SMTP_USER : '';
-    $smtp_config['smtp_port']      = defined('SMTP_PORT') ? SMTP_PORT : 587;
+    $smtp_config['smtp_host'] = defined('SMTP_HOST') ? SMTP_HOST : 'smtp.gmail.com';
+    $smtp_config['smtp_user'] = defined('SMTP_USER') ? SMTP_USER : '';
+    $smtp_config['smtp_port'] = defined('SMTP_PORT') ? SMTP_PORT : 587;
     $smtp_config['smtp_from_name'] = defined('SMTP_FROM_NAME') ? SMTP_FROM_NAME : 'ASSET MGT - ALERTA';
 }
 
@@ -343,7 +365,7 @@ function getHoursAndMinutes($total_minutes)
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Configurações - Asset MGT</title>
+    <title><?php echo __('Configurações'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -693,57 +715,12 @@ function getHoursAndMinutes($total_minutes)
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
-                            </li>
-                            <div class="d-none d-sm-block topbar-divider"></div>
-                            <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                            class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="logout.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Configurações do Sistema</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Configurações do Sistema'); ?></h3>
 
                     <div id="autoSaveStatus"><i class="fas fa-check-circle mr-2"></i> <span
-                            id="autoSaveMessage">Alteração salva!</span></div>
+                            id="autoSaveMessage"><?php echo __('Alteração salva!'); ?></span></div>
 
                     <!-- ══════════════════════════════════════════ -->
                     <!-- CONFIGURAÇÃO DE E-MAIL (SMTP)             -->
@@ -751,28 +728,30 @@ function getHoursAndMinutes($total_minutes)
                     <div class="card shadow mb-4" id="cardSmtp">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="text-primary m-0 font-weight-bold">
-                                <i class="fas fa-server mr-2"></i>Configuração de E-mail (SMTP)
+                                <i class="fas fa-server mr-2"></i><?php echo __('Configuração de E-mail (SMTP)'); ?>
                             </h6>
                             <span class="badge badge-pill badge-light text-muted small" id="smtpUpdatedAt"
-                                  title="Última atualização">
+                                title="Última atualização">
                                 <?php if (!empty($smtp_config['updated_at'])): ?>
-                                    Atualizado em: <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
+                                    <?php echo __('Atualizado em:'); ?> <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
                                 <?php else: ?>
-                                    Configuração padrão
+                                    <?php echo __('Configuração padrão'); ?>
                                 <?php endif; ?>
                             </span>
                         </div>
                         <div class="card-body">
                             <p class="text-muted small mb-3">
-                                Configure o servidor de e-mail utilizado para envio de alertas e notificações do sistema.
+                                <?php echo __('Configure o servidor de e-mail utilizado para envio de alertas e notificações do sistema.'); ?>
                             </p>
 
                             <!-- Modo Leitura -->
                             <div id="smtpReadMode">
                                 <div class="row align-items-center">
                                     <div class="col-auto">
-                                        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4e73df,#224abe);display:flex;align-items:center;justify-content:center;">
-                                            <i class="fas fa-envelope-open-text text-white" style="font-size:1.4rem;"></i>
+                                        <div
+                                            style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4e73df,#224abe);display:flex;align-items:center;justify-content:center;">
+                                            <i class="fas fa-envelope-open-text text-white"
+                                                style="font-size:1.4rem;"></i>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -780,24 +759,27 @@ function getHoursAndMinutes($total_minutes)
                                             <?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>
                                         </div>
                                         <div class="text-muted small">
-                                            <i class="fas fa-at mr-1"></i><?php echo htmlspecialchars($smtp_config['smtp_user'] ?: 'Não configurado'); ?>
+                                            <i
+                                                class="fas fa-at mr-1"></i><?php echo htmlspecialchars($smtp_config['smtp_user'] ?: __('Não configurado')); ?>
                                         </div>
                                         <div class="text-muted small">
                                             <i class="fas fa-network-wired mr-1"></i>
                                             <?php echo htmlspecialchars($smtp_config['smtp_host']); ?>
-                                            : <?php echo (int)$smtp_config['smtp_port']; ?>
-                                            &nbsp;<span class="badge badge-<?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'warning' : 'success'; ?> badge-pill" style="font-size:0.65rem;">
+                                            : <?php echo (int) $smtp_config['smtp_port']; ?>
+                                            &nbsp;<span
+                                                class="badge badge-<?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'warning' : 'success'; ?> badge-pill"
+                                                style="font-size:0.65rem;">
                                                 <?php echo strtoupper($smtp_config['smtp_secure'] ?? 'TLS'); ?>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-auto d-flex" style="gap:8px;">
                                         <button type="button" class="btn btn-sm btn-outline-primary" id="btnSmtpTest">
-                                            <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
+                                            <i class="fas fa-paper-plane mr-1"></i><?php echo __('Testar Conexão'); ?>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-primary" id="btnSmtpEdit"
-                                                style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
-                                            <i class="fas fa-pen mr-1"></i>Editar
+                                            style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
+                                            <i class="fas fa-pen mr-1"></i><?php echo __('Editar'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -809,61 +791,65 @@ function getHoursAndMinutes($total_minutes)
                                     <input type="hidden" name="smtp_config" value="1">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">Nome do Remetente</label>
-                                            <input type="text" class="form-control" name="smtp_from_name" id="smtp_from_name"
-                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>"
-                                                   placeholder="Ex: ASSET MGT - ALERTA">
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Nome do Remetente'); ?></label>
+                                            <input type="text" class="form-control" name="smtp_from_name"
+                                                id="smtp_from_name"
+                                                value="<?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>"
+                                                placeholder="<?php echo __('Ex: ASSET MGT - ALERTA'); ?>">
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">E-mail Remetente (usuário SMTP)</label>
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('E-mail Remetente (usuário SMTP)'); ?></label>
                                             <input type="email" class="form-control" name="smtp_user" id="smtp_user"
-                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_user']); ?>"
-                                                   placeholder="remetente@dominio.com">
+                                                value="<?php echo htmlspecialchars($smtp_config['smtp_user']); ?>"
+                                                placeholder="remetente@dominio.com">
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">Senha / App Password</label>
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Senha / App Password'); ?></label>
                                             <div class="input-group">
-                                                <input type="password" class="form-control" name="smtp_pass" id="smtp_pass"
-                                                       placeholder="Deixe em branco para manter a atual">
+                                                <input type="password" class="form-control" name="smtp_pass"
+                                                    id="smtp_pass" placeholder="<?php echo __('Deixe em branco para manter a atual'); ?>">
                                                 <div class="input-group-append">
-                                                    <button class="btn btn-outline-secondary" type="button" id="btnTogglePass"
-                                                            tabindex="-1">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                        id="btnTogglePass" tabindex="-1">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                 </div>
                                             </div>
-                                            <small class="text-muted">Para Gmail, use uma <a href="https://myaccount.google.com/apppasswords" target="_blank">Senha de App</a>.</small>
+                                            <small class="text-muted"><?php echo __('Para Gmail, use uma'); ?> <a
+                                                    href="https://myaccount.google.com/apppasswords"
+                                                    target="_blank"><?php echo __('Senha de App'); ?></a>.</small>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">Servidor SMTP (Host)</label>
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Servidor SMTP (Host)'); ?></label>
                                             <input type="text" class="form-control" name="smtp_host" id="smtp_host"
-                                                   value="<?php echo htmlspecialchars($smtp_config['smtp_host']); ?>"
-                                                   placeholder="smtp.gmail.com">
+                                                value="<?php echo htmlspecialchars($smtp_config['smtp_host']); ?>"
+                                                placeholder="smtp.gmail.com">
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">Porta</label>
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Porta'); ?></label>
                                             <input type="number" class="form-control" name="smtp_port" id="smtp_port"
-                                                   value="<?php echo (int)$smtp_config['smtp_port']; ?>"
-                                                   placeholder="587">
+                                                value="<?php echo (int) $smtp_config['smtp_port']; ?>" placeholder="587">
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <label class="small font-weight-bold text-gray-700">Criptografia</label>
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Criptografia'); ?></label>
                                             <select class="form-control" name="smtp_secure" id="smtp_secure">
-                                                <option value="tls" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : ''; ?>>TLS (porta 587)</option>
-                                                <option value="ssl" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'selected' : ''; ?>>SSL (porta 465)</option>
+                                                <option value="tls" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : ''; ?>><?php echo __('TLS (porta 587)'); ?></option>
+                                                <option value="ssl" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'selected' : ''; ?>><?php echo __('SSL (porta 465)'); ?></option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="d-flex" style="gap:8px; margin-top:4px;">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnSmtpCancel">
-                                            <i class="fas fa-times mr-1"></i>Cancelar
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            id="btnSmtpCancel">
+                                            <i class="fas fa-times mr-1"></i><?php echo __('Cancelar'); ?>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-success" id="btnSmtpSave"
-                                                style="background: rgb(44,64,74); border-color: rgb(44,64,74); color: #fff;">
-                                            <i class="fas fa-save mr-1"></i>Salvar Configurações
+                                            style="background: rgb(44,64,74); border-color: rgb(44,64,74); color: #fff;">
+                                            <i class="fas fa-save mr-1"></i><?php echo __('Salvar Configurações'); ?>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary ml-auto" id="btnSmtpTestEdit">
-                                            <i class="fas fa-paper-plane mr-1"></i>Testar Conexão
+                                        <button type="button" class="btn btn-sm btn-outline-primary ml-auto"
+                                            id="btnSmtpTestEdit">
+                                            <i class="fas fa-paper-plane mr-1"></i><?php echo __('Testar Conexão'); ?>
                                         </button>
                                     </div>
                                 </form>
@@ -877,14 +863,12 @@ function getHoursAndMinutes($total_minutes)
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="text-primary m-0 font-weight-bold">Canais de Notificação e Alerta</h6>
+                            <h6 class="text-primary m-0 font-weight-bold"><?php echo __('Canais de Notificação e Alerta'); ?></h6>
                         </div>
                         <div class="card-body">
                             <form id="formAlertasConfig" autocomplete="off">
                                 <input type="hidden" name="config_alertas" value="1">
-                                <p class="text-muted small mb-4 mt-2">Filtre os alertas ativando ou inativando os canais
-                                    de
-                                    envio separadamente.</p>
+                                <p class="text-muted small mb-4 mt-2"><?php echo __('Filtre os alertas ativando ou inativando os canais de envio separadamente.'); ?></p>
 
                                 <div class="row">
                                     <!-- Canal WhatsApp -->
@@ -893,7 +877,7 @@ function getHoursAndMinutes($total_minutes)
                                             <div class="card-header-custom bg-whatsapp">
                                                 <div class="d-flex align-items-center">
                                                     <i class="fab fa-whatsapp mr-2"></i>
-                                                    <span class="font-weight-bold">Canal: WhatsApp</span>
+                                                    <span class="font-weight-bold"><?php echo __('Canal: WhatsApp'); ?></span>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input channel-toggle"
@@ -908,7 +892,7 @@ function getHoursAndMinutes($total_minutes)
                                                 <div class="mb-3">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        O QUE NOTIFICAR? (GLOBAL)</div>
+                                                        <?php echo __('O QUE NOTIFICAR? (GLOBAL)'); ?></div>
                                                     <input type="checkbox" id="wa_chamados"
                                                         name="whatsapp_recebe_chamados" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['whatsapp_recebe_chamados'] ?? 0) == 1) ? 'checked' : ''; ?>>
@@ -925,47 +909,47 @@ function getHoursAndMinutes($total_minutes)
                                                 <div class="mb-3 wa-priority-group">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        PRIORIDADES PERMITIDAS (GLOBAL)</div>
+                                                        <?php echo __('PRIORIDADES PERMITIDAS (GLOBAL)'); ?></div>
                                                     <input type="checkbox" id="wa_prio_alta"
                                                         name="whatsapp_prioridade_alta" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['whatsapp_prioridade_alta'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_prio_alta"
-                                                        class="badge-label badge-alta">Alta</label>
+                                                        class="badge-label badge-alta"><?php echo __('Alta'); ?></label>
 
                                                     <input type="checkbox" id="wa_prio_media"
                                                         name="whatsapp_prioridade_media" value="1"
                                                         class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_media'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_prio_media"
-                                                        class="badge-label badge-media">Média</label>
+                                                        class="badge-label badge-media"><?php echo __('Média'); ?></label>
 
                                                     <input type="checkbox" id="wa_prio_baixa"
                                                         name="whatsapp_prioridade_baixa" value="1"
                                                         class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_baixa'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_prio_baixa"
-                                                        class="badge-label badge-baixa">Baixa</label>
+                                                        class="badge-label badge-baixa"><?php echo __('Baixa'); ?></label>
                                                 </div>
 
                                                 <div class="wa-category-group">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        CATEGORIAS PERMITIDAS (GLOBAL)</div>
+                                                        <?php echo __('CATEGORIAS PERMITIDAS (GLOBAL)'); ?></div>
                                                     <input type="checkbox" id="wa_tipo_incidente"
                                                         name="whatsapp_tipo_incidente" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['cat_incidente'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_tipo_incidente"
-                                                        class="badge-label badge-incidente">Incidente</label>
+                                                        class="badge-label badge-incidente"><?php echo __('Incidente'); ?></label>
 
                                                     <input type="checkbox" id="wa_tipo_mudanca"
                                                         name="whatsapp_tipo_mudanca" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['cat_mudanca'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_tipo_mudanca"
-                                                        class="badge-label badge-mudanca">Mudança</label>
+                                                        class="badge-label badge-mudanca"><?php echo __('Mudança'); ?></label>
 
                                                     <input type="checkbox" id="wa_tipo_requisicao"
                                                         name="whatsapp_tipo_requisicao" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['cat_requisicao'] ?? 1) == 1) ? 'checked' : ''; ?>>
                                                     <label for="wa_tipo_requisicao"
-                                                        class="badge-label badge-requisicao">Requisição</label>
+                                                        class="badge-label badge-requisicao"><?php echo __('Requisição'); ?></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -977,7 +961,7 @@ function getHoursAndMinutes($total_minutes)
                                             <div class="card-header-custom bg-email">
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-envelope mr-2"></i>
-                                                    <span class="font-weight-bold">Canal: E-mail</span>
+                                                    <span class="font-weight-bold"><?php echo __('Canal: E-mail'); ?></span>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input channel-toggle"
@@ -992,7 +976,7 @@ function getHoursAndMinutes($total_minutes)
                                                 <div class="position-relative mb-3">
                                                     <input type="text" id="emailRecipientSearch"
                                                         class="form-control form-control-sm"
-                                                        placeholder="Pesquisar destinatário por nome ou e-mail..."
+                                                        placeholder="<?php echo __('Pesquisar destinatário por nome ou e-mail...'); ?>"
                                                         style="border-radius: 20px; padding-left: 15px;">
                                                     <i class="fas fa-search position-absolute text-muted"
                                                         style="right: 15px; top: 10px; font-size: 0.8rem;"></i>
@@ -1003,12 +987,11 @@ function getHoursAndMinutes($total_minutes)
                                                 </div>
 
                                                 <div class="small font-weight-bold text-primary mb-2 text-uppercase">
-                                                    DESTINATÁRIOS ATIVOS</div>
+                                                    <?php echo __('DESTINATÁRIOS ATIVOS'); ?></div>
                                                 <div class="recipient-list" id="activeEmailRecipients">
                                                     <!-- Loading or empty state -->
-                                                    <div class="p-3 text-center text-muted small"><i
-                                                            class="fas fa-spinner fa-spin mr-1"></i> Carregando
-                                                        destinatários...</div>
+                                                        <div class="p-3 text-center text-muted small"><i
+                                                                class="fas fa-spinner fa-spin mr-1"></i> <?php echo __('Carregando destinatários...'); ?></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1018,7 +1001,7 @@ function getHoursAndMinutes($total_minutes)
                                 <div class="text-right mt-3">
                                     <button type="submit" id="btnSalvarAlertas" class="btn btn-primary"
                                         style="background: rgb(44,64,74);">
-                                        <i class="fas fa-save mr-2"></i> Salvar Configurações
+                                        <i class="fas fa-save mr-2"></i> <?php echo __('Salvar Configurações'); ?>
                                     </button>
                                 </div>
                             </form>
@@ -1027,13 +1010,12 @@ function getHoursAndMinutes($total_minutes)
 
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Configuração de SLA (Service Level Agreement)
+                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Configuração de SLA (Service Level Agreement)'); ?>
                             </p>
                         </div>
                         <div class="card-body">
                             <form id="formSLA" method="POST" action="configuracoes.php">
-                                <p class="mb-4">Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria
-                                    de chamado.</p>
+                                <p class="mb-4"><?php echo __('Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria de chamado.'); ?></p>
 
                                 <?php
                                 $categories = ['Incidente', 'Mudança', 'Requisição'];
@@ -1043,14 +1025,14 @@ function getHoursAndMinutes($total_minutes)
                                     <div class="form-group row align-items-center mb-4 sla-row"
                                         data-category="<?php echo $cat; ?>">
                                         <label for="sla_<?php echo $cat; ?>"
-                                            class="col-sm-2 col-form-label font-weight-bold"><?php echo $cat; ?></label>
+                                            class="col-sm-2 col-form-label font-weight-bold"><?php echo __($cat); ?></label>
                                         <div class="col-sm-3">
                                             <div class="input-group input-group-sm">
                                                 <input type="number" class="form-control sla-hours"
                                                     name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>"
                                                     required min="0" placeholder="0">
                                                 <div class="input-group-append">
-                                                    <span class="input-group-text">Horas</span>
+                                                    <span class="input-group-text"><?php echo __('Horas'); ?></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1061,7 +1043,7 @@ function getHoursAndMinutes($total_minutes)
                                                     value="<?php echo $time['m']; ?>" required min="0" max="59"
                                                     placeholder="0">
                                                 <div class="input-group-append">
-                                                    <span class="input-group-text">Minutos</span>
+                                                    <span class="input-group-text"><?php echo __('Minutos'); ?></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1069,7 +1051,7 @@ function getHoursAndMinutes($total_minutes)
                                             style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
                                             <div class="text-center" style="flex: 1;">
                                                 <span class="badge badge-danger mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Alta</span>
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;"><?php echo __('Alta'); ?></span>
                                                 <div
                                                     style="height: 6px; background: #dc3545; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
                                                 </div>
@@ -1078,7 +1060,7 @@ function getHoursAndMinutes($total_minutes)
                                             </div>
                                             <div class="text-center mx-1" style="flex: 1;">
                                                 <span class="badge badge-warning mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">Média</span>
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;"><?php echo __('Média'); ?></span>
                                                 <div
                                                     style="height: 6px; background: #f6c23e; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
                                                 </div>
@@ -1087,7 +1069,7 @@ function getHoursAndMinutes($total_minutes)
                                             </div>
                                             <div class="text-center" style="flex: 1;">
                                                 <span class="badge badge-success mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;">Baixa</span>
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;"><?php echo __('Baixa'); ?></span>
                                                 <div
                                                     style="height: 6px; background: #1cc88a; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
                                                 </div>
@@ -1102,7 +1084,7 @@ function getHoursAndMinutes($total_minutes)
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-12 text-right">
                                         <button type="submit" class="btn btn-primary btn-save-ajax"
-                                            style="background: rgb(44,64,74);">Salvar Alterações</button>
+                                            style="background: rgb(44,64,74);"><?php echo __('Salvar Alterações'); ?></button>
                                     </div>
                                 </div>
                             </form>
@@ -1112,18 +1094,16 @@ function getHoursAndMinutes($total_minutes)
                     <!-- Seção de Depreciação e Doação -->
                     <div class="card shadow mt-4">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Configuração de Depreciação e Doação de Ativos
+                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Configuração de Depreciação e Doação de Ativos'); ?>
                             </p>
                         </div>
                         <div class="card-body">
                             <form id="formDepreciacao" method="POST" action="configuracoes.php">
-                                <p class="mb-4">Defina a taxa de depreciação dos ativos e as regras de elegibilidade
-                                    para doação.</p>
+                                <p class="mb-4"><?php echo __('Defina a taxa de depreciação dos ativos e as regras de elegibilidade para doação.'); ?></p>
 
                                 <!-- Taxa de Depreciação -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Taxa de Depreciação
-                                        (%)</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Taxa de Depreciação (%)'); ?></label>
                                     <div class="col-sm-3">
                                         <div class="input-group">
                                             <input type="number" class="form-control" name="depreciacao[taxa]"
@@ -1138,15 +1118,14 @@ function getHoursAndMinutes($total_minutes)
 
                                 <!-- Período de Depreciação -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Período de
-                                        Depreciação</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Período de Depreciação'); ?></label>
                                     <div class="col-sm-2">
                                         <div class="input-group">
                                             <input type="number" class="form-control" name="depreciacao[periodo_anos]"
                                                 value="<?php echo $dep_config['periodo_anos']; ?>" required min="0"
                                                 placeholder="0">
                                             <div class="input-group-append">
-                                                <span class="input-group-text">Anos</span>
+                                                <span class="input-group-text"><?php echo __('Anos'); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1156,7 +1135,7 @@ function getHoursAndMinutes($total_minutes)
                                                 value="<?php echo $dep_config['periodo_meses']; ?>" required min="0"
                                                 max="11" placeholder="0">
                                             <div class="input-group-append">
-                                                <span class="input-group-text">Meses</span>
+                                                <span class="input-group-text"><?php echo __('Meses'); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1166,14 +1145,13 @@ function getHoursAndMinutes($total_minutes)
 
                                 <!-- Elegível para Doação (Global) -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Elegível para
-                                        Doação?</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Doação?'); ?></label>
                                     <div class="col-sm-4">
                                         <div class="custom-control custom-switch" style="margin-top: 7px;">
                                             <input type="checkbox" class="custom-control-input" id="elegivelDoacao"
                                                 name="depreciacao[elegivel_doacao]" value="1" <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
                                             <label class="custom-control-label" for="elegivelDoacao">
-                                                <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'Sim, ativos podem ser doados' : 'Não, doação desativada'; ?>
+                                                <?php echo ($dep_config['elegivel_doacao'] == 1) ? __('Sim, ativos podem ser doados') : __('Não, doação desativada'); ?>
                                             </label>
                                         </div>
                                     </div>
@@ -1182,8 +1160,7 @@ function getHoursAndMinutes($total_minutes)
                                 <!-- Elegibilidade por Categoria -->
                                 <div id="categoriasDoacaoSection">
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label font-weight-bold">Elegibilidade por
-                                            Categoria</label>
+                                        <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegibilidade por Categoria'); ?></label>
                                         <div class="col-sm-9">
                                             <div class="row">
                                                 <?php foreach ($cat_doacao as $cat_nome => $cat_eleg): ?>
@@ -1206,8 +1183,7 @@ function getHoursAndMinutes($total_minutes)
 
                                 <!-- Tempo mínimo para Doação -->
                                 <div class="form-group row" id="tempoDoacaoRow">
-                                    <label class="col-sm-3 col-form-label font-weight-bold">Tempo mínimo para
-                                        Doação</label>
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Tempo mínimo para Doação'); ?></label>
                                     <div class="col-sm-2">
                                         <div class="input-group">
                                             <input type="number" class="form-control"
@@ -1215,7 +1191,7 @@ function getHoursAndMinutes($total_minutes)
                                                 value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0"
                                                 placeholder="0">
                                             <div class="input-group-append">
-                                                <span class="input-group-text">Anos</span>
+                                                <span class="input-group-text"><?php echo __('Anos'); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1226,7 +1202,7 @@ function getHoursAndMinutes($total_minutes)
                                                 value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0"
                                                 max="11" placeholder="0">
                                             <div class="input-group-append">
-                                                <span class="input-group-text">Meses</span>
+                                                <span class="input-group-text"><?php echo __('Meses'); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1235,8 +1211,7 @@ function getHoursAndMinutes($total_minutes)
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-12 text-right">
                                         <button type="submit" class="btn btn-primary btn-save-ajax"
-                                            style="background: rgb(44,64,74);">Salvar Configurações de
-                                            Depreciação</button>
+                                            style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Depreciação'); ?></button>
                                     </div>
                                 </div>
                             </form>
@@ -1246,56 +1221,78 @@ function getHoursAndMinutes($total_minutes)
                     <!-- SESSÃO E SEGURANÇA -->
                     <div class="card shadow mt-4 mb-4">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold">Sessão e Segurança</p>
+                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Sessão e Segurança'); ?></p>
                         </div>
                         <div class="card-body">
                             <form id="formSessao" method="POST">
                                 <input type="hidden" name="session_config" value="1">
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold">Tempo Geral
-                                            (Padrão)</label>
+                                        <label class="form-label font-weight-bold"><?php echo __('Tempo Geral (Padrão)'); ?></label>
                                         <div class="input-group">
                                             <input type="number" class="form-control" name="idle_timeout"
                                                 value="<?php echo $alert_config['idle_timeout_minutos'] ?? 10; ?>"
                                                 min="1">
                                             <div class="input-group-append">
-                                                <span class="input-group-text">minutos</span>
+                                                <span class="input-group-text"><?php echo __('minutos'); ?></span>
                                             </div>
                                         </div>
-                                        <small class="text-muted">Logout para usuários
-                                            comuns.</small>
+                                        <small class="text-muted"><?php echo __('Logout para usuários comuns.'); ?></small>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold text-primary">Tempo
-                                            para Administradores</label>
+                                        <label class="form-label font-weight-bold text-primary"><?php echo __('Tempo para Administradores'); ?></label>
                                         <div class="input-group border-left-primary">
                                             <input type="number" class="form-control" name="idle_timeout_admin"
                                                 value="<?php echo $alert_config['idle_timeout_admin'] ?? 10; ?>"
                                                 min="1">
                                             <div class="input-group-append">
-                                                <span class="input-group-text bg-primary text-white">minutos</span>
+                                                <span class="input-group-text bg-primary text-white"><?php echo __('minutos'); ?></span>
                                             </div>
                                         </div>
-                                        <small class="text-muted">Logout para nível Admin.</small>
+                                        <small class="text-muted"><?php echo __('Logout para nível Admin.'); ?></small>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold text-info">Tempo
-                                            para Suporte</label>
+                                        <label class="form-label font-weight-bold text-info"><?php echo __('Tempo para Suporte'); ?></label>
                                         <div class="input-group border-left-info">
                                             <input type="number" class="form-control" name="idle_timeout_suporte"
                                                 value="<?php echo $alert_config['idle_timeout_suporte'] ?? 10; ?>"
                                                 min="1">
                                             <div class="input-group-append">
-                                                <span class="input-group-text bg-info text-white">minutos</span>
+                                                <span class="input-group-text bg-info text-white"><?php echo __('minutos'); ?></span>
                                             </div>
                                         </div>
-                                        <small class="text-muted">Logout para nível Suporte.</small>
+                                        <small class="text-muted"><?php echo __('Logout para nível Suporte.'); ?></small>
                                     </div>
                                 </div>
                                 <div class="text-right mt-3">
                                     <button type="submit" class="btn btn-primary btn-save-ajax"
-                                        style="background: rgb(44,64,74);">Salvar Configurações de Sessão</button>
+                                        style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Sessão'); ?></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- IDIOMA DO SISTEMA -->
+                    <div class="card shadow mt-4">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 font-weight-bold"><i class="fas fa-language mr-2"></i><?php echo __('Idioma do Sistema'); ?></p>
+                        </div>
+                        <div class="card-body">
+                            <form id="formIdioma" method="POST">
+                                <input type="hidden" name="idioma_config" value="1">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="form-label font-weight-bold"><?php echo __('Selecione o idioma padrão:'); ?></label>
+                                        <select class="form-control" name="idioma">
+                                            <option value="pt-BR" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'pt-BR' ? 'selected' : ''; ?>>Português (Brasil)</option>
+                                            <option value="en-US" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'en-US' ? 'selected' : ''; ?>>English (United States)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 text-right mt-3 mt-md-0">
+                                        <button type="submit" class="btn btn-primary btn-save-ajax" style="background: rgb(44,64,74);">
+                                            <i class="fas fa-save mr-2"></i><?php echo __('Salvar Idioma'); ?>
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -1305,13 +1302,13 @@ function getHoursAndMinutes($total_minutes)
                     <div class="card shadow mt-4 mb-4">
                         <div class="card-header py-3">
                             <h6 class="text-primary m-0 font-weight-bold">
-                                <i class="fas fa-robot mr-2"></i> Inteligência Artificial (IA)
+                                <i class="fas fa-robot mr-2"></i> <?php echo __('Inteligência Artificial (IA)'); ?>
                             </h6>
                         </div>
                         <div class="card-body">
                             <form id="formIA" method="POST">
                                 <input type="hidden" name="ia_config" value="1">
-                                <p class="text-muted small mb-4 mt-2">Configure onde o Agente de IA deve atuar no sistema, ativando ou desativando cada módulo de forma independente.</p>
+                                <p class="text-muted small mb-4 mt-2"><?php echo __('Configure onde o Agente de IA deve atuar no sistema, ativando ou desativando cada módulo de forma independente.'); ?></p>
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <div class="card border-0 bg-light h-100">
@@ -1321,12 +1318,12 @@ function getHoursAndMinutes($total_minutes)
                                                         <i class="fas fa-comments text-primary mr-2 fa-lg"></i>
                                                         <span class="font-weight-bold">Chat Agent</span>
                                                     </div>
-                                                    <p class="small text-muted mb-3">Permite que usuários conversem com o Agente de IA pelo chat do sistema.</p>
+                                                    <p class="small text-muted mb-3"><?php echo __('Permite que usuários conversem com o Agente de IA pelo chat do sistema.'); ?></p>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input" id="iaChatAtivo"
                                                         name="ia_chat_ativo" value="1" <?php echo (($alert_config['ia_chat_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaChatAtivo">Ativar no Chat</label>
+                                                    <label class="custom-control-label" for="iaChatAtivo"><?php echo __('Ativar no Chat'); ?></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1339,12 +1336,12 @@ function getHoursAndMinutes($total_minutes)
                                                         <i class="fas fa-ticket-alt text-info mr-2 fa-lg"></i>
                                                         <span class="font-weight-bold">Assistente de Chamados</span>
                                                     </div>
-                                                    <p class="small text-muted mb-3">Exibe sugestões de ação automáticas ao abrir um chamado técnico.</p>
+                                                    <p class="small text-muted mb-3"><?php echo __('Exibe sugestões de ação automáticas ao abrir um chamado técnico.'); ?></p>
                                                 </div>
                                                 <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="iaChamadosAtivo"
-                                                        name="ia_chamados_ativo" value="1" <?php echo (($alert_config['ia_chamados_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaChamadosAtivo">Ativar nos Chamados</label>
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        id="iaChamadosAtivo" name="ia_chamados_ativo" value="1" <?php echo (($alert_config['ia_chamados_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="iaChamadosAtivo"><?php echo __('Ativar nos Chamados'); ?></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1357,21 +1354,21 @@ function getHoursAndMinutes($total_minutes)
                                                         <i class="fas fa-shield-alt text-success mr-2 fa-lg"></i>
                                                         <span class="font-weight-bold">Previsão e Prevenção</span>
                                                     </div>
-                                                    <p class="small text-muted mb-3">Gera consultoria estratégica automática com base nos dados de infraestrutura.</p>
+                                                    <p class="small text-muted mb-3"><?php echo __('Gera consultoria estratégica automática com base nos dados de infraestrutura.'); ?></p>
                                                 </div>
                                                 <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="iaPreveAtivo"
-                                                        name="ia_preve_ativo" value="1" <?php echo (($alert_config['ia_preve_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaPreveAtivo">Ativar Prevenções</label>
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        id="iaPreveAtivo" name="ia_preve_ativo" value="1" <?php echo (($alert_config['ia_preve_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label" for="iaPreveAtivo"><?php echo __('Ativar Prevenções'); ?></label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="text-right mt-3">
-                                    <button type="submit" class="btn btn-primary"
-                                        style="background: rgb(44,64,74);" id="btnSalvarIA">
-                                        <i class="fas fa-save mr-2"></i> Salvar Configuração de IA
+                                    <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);"
+                                        id="btnSalvarIA">
+                                        <i class="fas fa-save mr-2"></i> <?php echo __('Salvar Configuração de IA'); ?>
                                     </button>
                                 </div>
                             </form>
@@ -1410,7 +1407,7 @@ function getHoursAndMinutes($total_minutes)
             var $msg = $('#autoSaveMessage');
             if ($status.length) {
                 if (message) $msg.text(message);
-                else $msg.text('Alteração salva!');
+                else $msg.text("<?php echo __('Alteração salva!'); ?>");
 
                 $status.stop(true, true).fadeIn(200).delay(2500).fadeOut(400);
             }
@@ -1427,11 +1424,11 @@ function getHoursAndMinutes($total_minutes)
                 if ($switch.is(':checked')) {
                     $catSection.slideDown(200);
                     $doacaoRow.slideDown(200);
-                    $label.text('Sim, ativos podem ser doados');
+                    $label.text("<?php echo __('Sim, ativos podem ser doados'); ?>");
                 } else {
                     $catSection.slideUp(200);
                     $doacaoRow.slideUp(200);
-                    $label.text('Não, doação desativada');
+                    $label.text("<?php echo __('Não, doação desativada'); ?>");
                 }
             }
 
@@ -1475,7 +1472,7 @@ function getHoursAndMinutes($total_minutes)
 
             // Toggle Label Updates (Real-time feedback)
             $('#iaAgenteAtivoBottom').on('change', function () {
-                $(this).next('label').text(this.checked ? 'Ativo' : 'Inativo');
+                $(this).next('label').text(this.checked ? "<?php echo __('Ativo'); ?>" : "<?php echo __('Inativo'); ?>");
             });
 
             // Visual feedback for notification cards
@@ -1493,7 +1490,7 @@ function getHoursAndMinutes($total_minutes)
 
             // Generic AJAX save handler for all forms
             function handleAjaxSave($form, $btn, originalHtml, successMsg) {
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Salvando...');
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> ' + "<?php echo __('Salvando...'); ?>");
 
                 $.ajax({
                     url: 'configuracoes.php',
@@ -1504,11 +1501,11 @@ function getHoursAndMinutes($total_minutes)
                         if (resp && resp.success) {
                             showAutoSaved(successMsg);
                         } else {
-                            alert('Erro ao salvar: ' + (resp.message || 'Erro desconhecido'));
+                            alert("<?php echo __('Erro ao salvar:'); ?> " + (resp.message || "<?php echo __('Erro desconhecido'); ?>"));
                         }
                     },
                     error: function () {
-                        alert('Erro na comunicação com o servidor.');
+                        alert("<?php echo __('Erro na comunicação com o servidor.'); ?>");
                     },
                     complete: function () {
                         $btn.prop('disabled', false).html(originalHtml);
@@ -1521,29 +1518,34 @@ function getHoursAndMinutes($total_minutes)
                 e.preventDefault();
                 var $form = $(this);
                 var $btn = $('#btnSalvarAlertas');
-                var originalHtml = '<i class="fas fa-save mr-2"></i> Salvar Configurações';
-                handleAjaxSave($form, $btn, originalHtml, 'Canais de alerta salvos!');
+                var originalHtml = '<i class="fas fa-save mr-2"></i> ' + "<?php echo __('Salvar Configurações'); ?>";
+                handleAjaxSave($form, $btn, originalHtml, "<?php echo __('Canais de alerta salvos!'); ?>");
             });
 
             $('#formSLA').on('submit', function (e) {
                 e.preventDefault();
-                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'SLA atualizado com sucesso!');
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('SLA atualizado com sucesso!'); ?>");
             });
 
             $('#formDepreciacao').on('submit', function (e) {
                 e.preventDefault();
-                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'Depreciação salva com sucesso!');
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('Depreciação salva com sucesso!'); ?>");
             });
 
             $('#formSessao').on('submit', function (e) {
                 e.preventDefault();
-                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), 'Sessão e Segurança salvas!');
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('Sessão e Segurança salvas!'); ?>");
             });
 
             $('#formIA').on('submit', function (e) {
                 e.preventDefault();
                 var $btn = $('#btnSalvarIA');
-                handleAjaxSave($(this), $btn, '<i class="fas fa-save mr-2"></i> Salvar Configuração de IA', 'IA configurada com sucesso!');
+                handleAjaxSave($(this), $btn, '<i class="fas fa-save mr-2"></i> ' + "<?php echo __('Salvar Configuração de IA'); ?>", "<?php echo __('IA configurada com sucesso!'); ?>");
+            });
+
+            $('#formIdioma').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('Idioma atualizado!'); ?>");
             });
 
             // --- INÍCIO: Lógica de Destinatários de E-mail --- //
@@ -1600,7 +1602,7 @@ function getHoursAndMinutes($total_minutes)
                             loadActiveRecipients(); // Recarrega a lista
                             showAutoSaved();
                         } else {
-                            alert(resp.message || 'Erro ao adicionar destinatário.');
+                            alert(resp.message || "<?php echo __('Erro ao adicionar destinatário.'); ?>");
                         }
                     }
                 });
@@ -1649,7 +1651,7 @@ function getHoursAndMinutes($total_minutes)
 
             // Remover destinatário
             $(document).on('click', '.remove-recipient', function () {
-                if (!confirm('Deseja remover este destinatário da lista de E-mail globais?')) return;
+                if (!confirm("<?php echo __('Deseja remover este destinatário da lista de E-mail globais?'); ?>")) return;
 
                 const uid = $(this).closest('.recipient-item').data('uid');
 
@@ -1704,7 +1706,7 @@ function getHoursAndMinutes($total_minutes)
 
             function smtpDoTest() {
                 const $btn = $(this);
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Testando...');
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>' + "<?php echo __('Testando...'); ?>");
                 $('#smtpTestResult').hide();
 
                 $.ajax({
@@ -1716,14 +1718,15 @@ function getHoursAndMinutes($total_minutes)
                         smtpShowResult(r.success, r.message);
                     },
                     error: function () {
-                        smtpShowResult(false, 'Erro de comunicação com o servidor.');
+                        smtpShowResult(false, "<?php echo __('Erro de comunicação com o servidor.'); ?>");
                     },
                     complete: function () {
-                        $btn.prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i>Testar Conexão');
+                        $btn.prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i>' + "<?php echo __('Testar Conexão'); ?>");
                     }
                 });
             }
 
+            // Botões Editar / Cancelar
             // Botões Editar / Cancelar
             $('#btnSmtpEdit').on('click', smtpShowEdit);
             $('#btnSmtpCancel').on('click', smtpShowRead);
@@ -1742,7 +1745,7 @@ function getHoursAndMinutes($total_minutes)
             // Salvar via AJAX
             $('#btnSmtpSave').on('click', function () {
                 const $btn = $(this);
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Salvando...');
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>' + "<?php echo __('Salvando...'); ?>");
 
                 $.ajax({
                     url: 'ajax_smtp.php',
@@ -1751,30 +1754,26 @@ function getHoursAndMinutes($total_minutes)
                     dataType: 'json',
                     success: function (r) {
                         if (r.success) {
-                            showAutoSaved('Configurações SMTP salvas!');
+                            showAutoSaved("<?php echo __('Configurações SMTP salvas!'); ?>");
                             smtpShowRead();
                             // Atualiza o display de leitura com novos valores sem recarregar
                             location.reload();
                         } else {
-                            smtpShowResult(false, r.message || 'Erro ao salvar.');
+                            smtpShowResult(false, r.message || "<?php echo __('Erro ao salvar.'); ?>");
                         }
                     },
                     error: function () {
-                        smtpShowResult(false, 'Erro de comunicação com o servidor.');
+                        smtpShowResult(false, "<?php echo __('Erro de comunicação com o servidor.'); ?>");
                     },
                     complete: function () {
-                        $btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i>Salvar Configurações');
+                        $btn.prop('disabled', false).html('<i class="fas fa-save mr-1"></i>' + "<?php echo __('Salvar Configurações'); ?>");
                     }
                 });
             });
             // ══ FIM BLOCO SMTP ════════════════════════════════
 
-        </div>
-
-    </div>
-    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-</div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+        });
+    </script>
+</body>
 
 </html>

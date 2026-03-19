@@ -10,14 +10,14 @@ if ($id > 0) {
     $row = mysqli_fetch_assoc($result);
 
     if (!$row) {
-        die("Licença não encontrada.");
+        die(__('Licença não encontrada.'));
     }
 
     // Fetch Cost Centers
     $sql_cc = "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
     $result_cc = mysqli_query($conn, $sql_cc);
 } else {
-    die("ID inválido.");
+    die(__('ID inválido.'));
 }
 ?>
 <!DOCTYPE html>
@@ -26,7 +26,7 @@ if ($id > 0) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Editar Licença - Asset Mgt</title>
+    <title><?php echo __('Editar Licença'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -51,44 +51,9 @@ if ($id > 0) {
         </nav>
         <div class="d-flex flex-column" id="content-wrapper" style="min-height: 100vh;">
             <div id="content" style="flex: 1 0 auto;">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Editar Licença</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Editar Licença'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_licenca.php" method="post">
@@ -96,14 +61,14 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Software / Aplicação</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Software / Aplicação'); ?></label>
                                             <input class="form-control" name="software" type="text"
                                                 value="<?php echo htmlspecialchars($row['software']); ?>" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Fabricante'); ?></label>
                                             <input class="form-control" name="fabricante" type="text"
                                                 value="<?php echo htmlspecialchars($row['fabricante']); ?>" required="">
                                         </div>
@@ -112,16 +77,16 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tipo de Licença</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Licença'); ?></label>
                                             <select class="form-control" name="tipo">
-                                                <option value="Assinatura" <?php echo $row['tipo'] == 'Assinatura' ? 'selected' : ''; ?>>Assinatura</option>
-                                                <option value="Vitalícia" <?php echo $row['tipo'] == 'Vitalícia' ? 'selected' : ''; ?>>Vitalícia</option>
+                                                <option value="Assinatura" <?php echo $row['tipo'] == 'Assinatura' ? 'selected' : ''; ?>><?php echo __('Assinatura'); ?></option>
+                                                <option value="Vitalícia" <?php echo $row['tipo'] == 'Vitalícia' ? 'selected' : ''; ?>><?php echo __('Vitalícia'); ?></option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Chave de Licença</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Chave de Licença'); ?></label>
                                             <input class="form-control" name="chave" type="text"
                                                 value="<?php echo htmlspecialchars($row['chave']); ?>">
                                         </div>
@@ -130,23 +95,23 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-4 col-xl-2 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Seats</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Seats'); ?></label>
                                             <input class="form-control" name="quantidade_total" type="number"
                                                 value="<?php echo $row['quantidade_total']; ?>" min="1">
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-xl-2">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Valor (Unit)</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Valor (Unit)'); ?></label>
                                             <input class="form-control" name="valor_unitario" type="number" step="0.01"
                                                 value="<?php echo $row['valor_unitario']; ?>">
                                         </div>
                                     </div>
                                     <div class="col-xl-5">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="id_centro_custo">
-                                                <option value="">Nenhum</option>
+                                                <option value=""><?php echo __('Nenhum'); ?></option>
                                                 <?php
                                                 mysqli_data_seek($result_cc, 0);
                                                 while ($row_cc = mysqli_fetch_assoc($result_cc)) {
@@ -161,14 +126,14 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data Aquisição</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data Aquisição'); ?></label>
                                             <input class="form-control" name="data_aquisicao" type="date"
                                                 value="<?php echo $row['data_aquisicao']; ?>">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data Expiração</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data Expiração'); ?></label>
                                             <input class="form-control" name="data_expiracao" type="date"
                                                 value="<?php echo $row['data_expiracao']; ?>">
                                         </div>
@@ -177,11 +142,11 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Status</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Status'); ?></label>
                                             <select class="form-control" name="status">
-                                                <option value="Ativa" <?php echo $row['status'] == 'Ativa' ? 'selected' : ''; ?>>Ativa</option>
-                                                <option value="Expirada" <?php echo $row['status'] == 'Expirada' ? 'selected' : ''; ?>>Expirada</option>
-                                                <option value="Cancelada" <?php echo $row['status'] == 'Cancelada' ? 'selected' : ''; ?>>Cancelada</option>
+                                                <option value="Ativa" <?php echo $row['status'] == 'Ativa' ? 'selected' : ''; ?>><?php echo __('Ativa'); ?></option>
+                                                <option value="Expirada" <?php echo $row['status'] == 'Expirada' ? 'selected' : ''; ?>><?php echo __('Expirada'); ?></option>
+                                                <option value="Cancelada" <?php echo $row['status'] == 'Cancelada' ? 'selected' : ''; ?>><?php echo __('Cancelada'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -190,11 +155,11 @@ if ($id > 0) {
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
                                         <a class="btn btn-secondary btn-user" href="licencas.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            Voltar
+                                            <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-primary btn-user" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            Salvar Alterações
+                                            <?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>

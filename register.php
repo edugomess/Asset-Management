@@ -1,4 +1,4 @@
-
+<?php include 'conexao.php'; ?>
 <!DOCTYPE html>
 <html>
 
@@ -40,12 +40,12 @@
                     <div class="col-lg-7 col-xl-12 offset-xl-0">
                         <div class="p-5">
                             <div class="text-center">
-                                <h4 class="text-dark mb-4">Cadastro de Usuário</h4>
+                                <h4 class="text-dark mb-4"><?php echo __('Cadastro de Usuário'); ?></h4>
                             </div>
                             <form class="user">
                                 <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="First Name" name="first_name"></div>
-                                    <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="Last Name" name="last_name"></div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="<?php echo __('Nome'); ?>" name="first_name"></div>
+                                    <div class="col-sm-6"><input class="form-control form-control-user" type="text" id="exampleFirstName" placeholder="<?php echo __('Sobrenome'); ?>" name="last_name"></div>
                                 </div>
                                 <div class="form-group"><input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address" name="email"></div>
                                 <div class="form-group row">
@@ -62,7 +62,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0"><input class="form-control form-control-user" type="password" id="examplePasswordInput" placeholder="Password" name="password"></div>
                                     <div class="col-sm-6"><input class="form-control form-control-user" type="password" id="exampleRepeatPasswordInput" placeholder="Repeat Password" name="password_repeat"></div>
-                                </div><button class="btn btn-primary btn-block text-white btn-user" type="submit" style="background: rgb(44,64,74);">Cadastrar</button>
+                                </div><button class="btn btn-primary btn-block text-white btn-user" type="submit" style="background: rgb(44,64,74);"><?php echo __('Cadastrar'); ?></button>
                                 <hr>
                             </form>
                         </div>

@@ -20,7 +20,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Fornecedores - Gestão</title>
+    <title><?php echo __('Fornecedores'); ?> - Asset Mgt</title>
     <!-- Favicon e Estilos Base -->
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
@@ -69,52 +69,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <!-- Barra Superior (Topbar) -->
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Campo de Busca Global -->
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
-                                        style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <!-- Menu do Usuário -->
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4">Fornecedores</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Fornecedores'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -124,7 +81,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                         role="button"
                                         style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;"
-                                        href="/cadastro_de_fornecedor.php">Cadastrar Novo</a>
+                                        href="/cadastro_de_fornecedor.php"><?php echo __('Cadastrar Novo'); ?></a>
                                 </div>
                                 <!-- Filtro de Busca na Tabela -->
                                 <div class="col-md-6 col-xl-9">
@@ -133,7 +90,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <div class="form-group mr-2">
                                                 <input type="search" name="search"
                                                     class="form-control form-control-sm premium-filter"
-                                                    aria-controls="dataTable" placeholder="Buscar..."
+                                                    aria-controls="dataTable" placeholder="<?php echo __('Buscar...'); ?>"
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                                             </div>
                                         </form>
@@ -146,12 +103,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Fornecedor</th>
-                                            <th>E-Mail</th>
-                                            <th>Telefone</th>
-                                            <th>Serviço</th>
-                                            <th>CNPJ</th>
-                                            <th>Ações</th>
+                                            <th><?php echo __('Fornecedor'); ?></th>
+                                            <th><?php echo __('E-Mail'); ?></th>
+                                            <th><?php echo __('Telefone'); ?></th>
+                                            <th><?php echo __('Serviço'); ?></th>
+                                            <th><?php echo __('CNPJ'); ?></th>
+                                            <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -196,24 +153,24 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>" . htmlspecialchars($row['servico']) . "</td>
                                                     <td>" . htmlspecialchars($row['cnpj']) . "</td>
                                                     <td>
-                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='Editar'><i class='fas fa-edit'></i></a>
-                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='Excluir'><i class='fas fa-trash'></i></a>
+                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "'><i class='fas fa-edit'></i></a>
+                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "'><i class='fas fa-trash'></i></a>
                                                     </td>
                                                 </tr>";
                                             }
                                         } else {
-                                            echo "<tr><td colspan='6'>Nenhum fornecedor encontrado.</td></tr>";
+                                            echo "<tr><td colspan='6'>" . __('Nenhum fornecedor encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Fornecedor</th>
-                                            <th>E-Mail</th>
-                                            <th>Telefone</th>
-                                            <th>Serviço</th>
-                                            <th>CNPJ</th>
-                                            <th>Ações</th>
+                                            <th><?php echo __('Fornecedor'); ?></th>
+                                            <th><?php echo __('E-Mail'); ?></th>
+                                            <th><?php echo __('Telefone'); ?></th>
+                                            <th><?php echo __('Serviço'); ?></th>
+                                            <th><?php echo __('CNPJ'); ?></th>
+                                            <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -226,7 +183,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
                                     // Botão Anterior
                                     if ($current_page > 1) {
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>" . __('« Anterior') . "</a></li>";
                                     }
                                     // Números das Páginas
                                     for ($page = 1; $page <= $total_pages; $page++) {
@@ -238,7 +195,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     }
                                     // Botão Próximo
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo »') . "</a></li>";
                                     }
                                     // Fecha a conexão com o banco
                                     mysqli_close($conn);

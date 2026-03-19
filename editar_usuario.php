@@ -24,7 +24,7 @@ if ($id > 0) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Editar Usuário - Asset Mgt</title>
+    <title><?php echo __('Editar Usuário'); ?> - Asset Mgt</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -45,45 +45,9 @@ if ($id > 0) {
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid">
-                        <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1"
-                            type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Editar Usuário</h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Editar Usuário'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_usuario.php" method="post" enctype="multipart/form-data"
@@ -94,7 +58,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Nome</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Nome'); ?></label>
                                             <input class="form-control" name="nome" type="text"
                                                 value="<?php echo htmlspecialchars($user['nome']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -102,7 +66,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Sobrenome</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Sobrenome'); ?></label>
                                             <input class="form-control" name="sobrenome" type="text"
                                                 value="<?php echo htmlspecialchars($user['sobrenome']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -114,7 +78,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Usuário AD</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Usuário AD'); ?></label>
                                             <input class="form-control" name="usuarioAD" type="text"
                                                 value="<?php echo htmlspecialchars($user['usuarioAD']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -122,7 +86,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Função</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Função'); ?></label>
                                             <input class="form-control" name="funcao" type="text"
                                                 value="<?php echo htmlspecialchars($user['funcao']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -134,7 +98,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data de Nascimento</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Nascimento'); ?></label>
                                             <input class="form-control" name="dataNascimento" type="date"
                                                 value="<?php echo $user['dataNascimento']; ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -142,7 +106,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Email</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Email'); ?></label>
                                             <input class="form-control" name="email" type="email"
                                                 value="<?php echo htmlspecialchars($user['email']); ?>" required=""
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
@@ -154,20 +118,19 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold text-danger">CPF (Somente Números)</label>
+                                            <label class="text-gray-600 small font-weight-bold text-danger"><?php echo __('CPF (Somente Números)'); ?></label>
                                             <input class="form-control" name="cpf" id="cpf" type="text"
                                                 value="<?php echo htmlspecialchars($user['cpf'] ?? ''); ?>" required=""
                                                 maxlength="14" oninput="maskCPF(this)"
                                                 <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'readonly' : ''; ?>>
-                                            <div id="cpf-error" class="text-danger small mt-1" style="display:none;">CPF
-                                                Inválido</div>
+                                            <div id="cpf-error" class="text-danger small mt-1" style="display:none;"><?php echo __('CPF Inválido'); ?></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
-                                                <option value="Nenhum" <?php echo ($user['centroDeCusto'] == 'Nenhum') ? 'selected' : ''; ?>>Nenhum</option>
+                                                <option value="Nenhum" <?php echo ($user['centroDeCusto'] == 'Nenhum') ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
                                                 <?php
                                                 $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                                 $res_cc = $conn->query($sql_cc);
@@ -190,7 +153,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Matrícula</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Matrícula'); ?></label>
                                             <input class="form-control" name="matricula" type="text"
                                                 value="<?php echo htmlspecialchars($user['matricula']); ?>" readonly
                                                 required="">
@@ -198,7 +161,7 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Telefone</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Telefone'); ?></label>
                                             <input class="form-control" name="telefone" type="text"
                                                 value="<?php echo htmlspecialchars($user['telefone']); ?>"
                                                 inputmode="tel" required=""
@@ -211,12 +174,12 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tipo de Contrato</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Contrato'); ?></label>
                                             <select class="form-control" name="tipoContrato" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
-                                                <option value="CLT" <?php echo (($user['tipoContrato'] ?? '') == 'CLT') ? 'selected' : ''; ?>>CLT</option>
-                                                <option value="PJ" <?php echo (($user['tipoContrato'] ?? '') == 'PJ') ? 'selected' : ''; ?>>PJ</option>
+                                                <option value="CLT" <?php echo (($user['tipoContrato'] ?? '') == 'CLT') ? 'selected' : ''; ?>><?php echo __('CLT'); ?></option>
+                                                <option value="PJ" <?php echo (($user['tipoContrato'] ?? '') == 'PJ') ? 'selected' : ''; ?>><?php echo __('PJ'); ?></option>
                                                 <option value="Cooperativa" <?php echo (($user['tipoContrato'] ?? '') == 'Cooperativa') ? 'selected' : ''; ?>>
-                                                    Cooperativa</option>
+                                                    <?php echo __('Cooperativa'); ?></option>
                                             </select>
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
                                                 <input type="hidden" name="tipoContrato" value="<?php echo htmlspecialchars($user['tipoContrato'] ?? ''); ?>">
@@ -225,11 +188,11 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tipo de Usuário</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Usuário'); ?></label>
                                             <select class="form-control" name="nivelUsuario" required="" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
-                                                <option value="1" <?php echo (($user['nivelUsuario'] ?? '') == 'Admin') ? 'selected' : ''; ?>>Administrador</option>
-                                                <option value="2" <?php echo (($user['nivelUsuario'] ?? '') == 'Suporte') ? 'selected' : ''; ?>>Suporte</option>
-                                                <option value="3" <?php echo (($user['nivelUsuario'] ?? '') == 'Usuário' || trim($user['nivelUsuario'] ?? '') == '') ? 'selected' : ''; ?>>Usuário</option>
+                                                <option value="1" <?php echo (($user['nivelUsuario'] ?? '') == 'Admin') ? 'selected' : ''; ?>><?php echo __('Administrador'); ?></option>
+                                                <option value="2" <?php echo (($user['nivelUsuario'] ?? '') == 'Suporte') ? 'selected' : ''; ?>><?php echo __('Suporte'); ?></option>
+                                                <option value="3" <?php echo (($user['nivelUsuario'] ?? '') == 'Usuário' || trim($user['nivelUsuario'] ?? '') == '') ? 'selected' : ''; ?>><?php echo __('Usuário'); ?></option>
                                             </select>
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
                                                 <?php
@@ -248,7 +211,7 @@ if ($id > 0) {
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Unidade</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Unidade'); ?></label>
                                             <select class="form-control" name="unidade" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
                                                 <?php
                                                 $sql_un = "SELECT unidade FROM unidade ORDER BY unidade ASC";
@@ -266,10 +229,10 @@ if ($id > 0) {
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Status</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Status'); ?></label>
                                             <select class="form-control" name="status" <?php echo ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'disabled' : ''; ?>>
-                                                <option value="Ativo" <?php echo ($user['status'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
-                                                <option value="Inativo" <?php echo ($user['status'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
+                                                <option value="Ativo" <?php echo ($user['status'] == 'Ativo') ? 'selected' : ''; ?>><?php echo __('Ativo'); ?></option>
+                                                <option value="Inativo" <?php echo ($user['status'] == 'Inativo') ? 'selected' : ''; ?>><?php echo __('Inativo'); ?></option>
                                             </select>
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte'): ?>
                                                 <input type="hidden" name="status" value="<?php echo htmlspecialchars($user['status']); ?>">
@@ -282,12 +245,12 @@ if ($id > 0) {
                                 <div class="form-row mt-4">
                                     <div class="col-xl-10 offset-xl-1 d-flex align-items-center">
                                         <div class="mr-4">
-                                            <label class="text-gray-600 small font-weight-bold">Foto Atual</label><br>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Foto Atual'); ?></label><br>
                                             <img src="<?php echo !empty($user['foto_perfil']) ? htmlspecialchars($user['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
                                                 class="img-thumbnail" style="max-width: 100px;">
                                         </div>
                                         <div class="flex-grow-1">
-                                            <label class="text-gray-600 small font-weight-bold">Alterar Foto de Perfil</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Alterar Foto de Perfil'); ?></label>
                                             <input type="file" class="form-control-file" name="foto_perfil"
                                                 accept="image/*">
                                         </div>
@@ -300,15 +263,15 @@ if ($id > 0) {
                                         <button class="btn btn-outline-secondary btn-user" type="button"
                                             style="border-radius: 10px; padding: 10px 30px; font-weight: 600; border: 2px solid #2c404a; color: #2c404a; background: transparent;"
                                             data-toggle="modal" data-target="#modalAlterarSenha">
-                                            <i class="fas fa-lock mr-2"></i>Alterar senha...
+                                            <i class="fas fa-lock mr-2"></i><?php echo __('Alterar senha...'); ?>
                                         </button>
                                         <a class="btn btn-secondary btn-user" href="usuarios.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            Voltar
+                                            <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-primary btn-user" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            Salvar Alterações
+                                            <?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -326,7 +289,7 @@ if ($id > 0) {
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
                 <div class="modal-header" style="background: #2c404a; color: white; border-radius: 15px 15px 0 0;">
-                    <h5 class="modal-title" id="modalAlterarSenhaLabel"><i class="fas fa-key mr-2"></i>Alterar Senha</h5>
+                    <h5 class="modal-title" id="modalAlterarSenhaLabel"><i class="fas fa-key mr-2"></i><?php echo __('Alterar Senha'); ?></h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -335,25 +298,25 @@ if ($id > 0) {
                     <form id="formAlterarSenha">
                         <input type="hidden" name="id_usuario_senha" value="<?php echo $user['id_usuarios']; ?>">
                         <div class="form-group">
-                            <label for="senha_atual">Senha Atual</label>
+                            <label for="senha_atual"><?php echo __('Senha Atual'); ?></label>
                             <input type="password" class="form-control" id="senha_atual" name="senha_atual" required style="border-radius: 8px;">
                         </div>
                         <hr>
                         <div class="form-group">
-                            <label for="nova_senha">Nova Senha</label>
+                            <label for="nova_senha"><?php echo __('Nova Senha'); ?></label>
                             <input type="password" class="form-control" id="nova_senha" name="nova_senha" required style="border-radius: 8px;">
                         </div>
                         <div class="form-group">
-                            <label for="confirmar_senha">Confirmar Nova Senha</label>
+                            <label for="confirmar_senha"><?php echo __('Confirmar Nova Senha'); ?></label>
                             <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required style="border-radius: 8px;">
                         </div>
                         <div id="password-error" class="alert alert-danger d-none mt-3" style="border-radius: 8px;"></div>
                     </form>
                 </div>
                 <div class="modal-footer" style="border-top: none;">
-                    <button type="button" class="btn btn-light" data-dismiss="modal" style="border-radius: 8px; font-weight: 600;">Cancelar</button>
+                    <button type="button" class="btn btn-light" data-dismiss="modal" style="border-radius: 8px; font-weight: 600;"><?php echo __('Cancelar'); ?></button>
                     <button type="button" class="btn btn-primary" id="btnSalvarSenha" style="background: #2c404a; border: none; border-radius: 8px; font-weight: 600; padding: 10px 25px;">
-                        <i class="fas fa-check mr-2"></i>Atualizar Senha
+                        <i class="fas fa-check mr-2"></i><?php echo __('Atualizar Senha'); ?>
                     </button>
                 </div>
             </div>
@@ -434,7 +397,7 @@ if ($id > 0) {
             const inputEl = document.getElementById('cpf');
             if (hasError) {
                 errorEl.style.display = 'block';
-                inputEl.setCustomValidity('CPF Inválido');
+                inputEl.setCustomValidity('<?php echo __('CPF Inválido'); ?>');
             } else {
                 errorEl.style.display = 'none';
                 inputEl.setCustomValidity('');
@@ -446,7 +409,7 @@ if ($id > 0) {
             const cpfValue = cpfEl.value;
             if (!validateCPF(cpfValue)) {
                 e.preventDefault();
-                alert('Por favor, insira um CPF válido.');
+                alert('<?php echo __('Por favor, insira um CPF válido.'); ?>');
             }
         });
 
@@ -461,17 +424,17 @@ if ($id > 0) {
                 const confirmarSenha = $('#confirmar_senha').val();
 
                 if (novaSenha !== confirmarSenha) {
-                    passwordError.text('As novas senhas não coincidem.').removeClass('d-none');
+                    passwordError.text('<?php echo __('As novas senhas não coincidem.'); ?>').removeClass('d-none');
                     return;
                 }
 
                 if (novaSenha.length < 4) {
-                    passwordError.text('A nova senha deve ter pelo menos 4 caracteres.').removeClass('d-none');
+                    passwordError.text('<?php echo __('A nova senha deve ter pelo menos 4 caracteres.'); ?>').removeClass('d-none');
                     return;
                 }
 
                 passwordError.addClass('d-none');
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Processando...');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Processando...'); ?>');
 
                 $.ajax({
                     url: 'ajax_alterar_senha.php',
@@ -488,7 +451,7 @@ if ($id > 0) {
                         }
                     },
                     error: function() {
-                        passwordError.text('Ocorreu um erro ao processar a solicitação.').removeClass('d-none');
+                        passwordError.text('<?php echo __('Ocorreu um erro ao processar a solicitação.'); ?>').removeClass('d-none');
                     },
                     complete: function() {
                         btn.prop('disabled', false).html('<i class="fas fa-check mr-2"></i>Atualizar Senha');

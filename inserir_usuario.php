@@ -69,12 +69,15 @@ $stmt->bind_param("ssssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $d
 
 if ($stmt->execute()) {
     echo "<script>
-            alert('Usuário cadastrado com sucesso!');
+            alert('" . __('Usuário cadastrado com sucesso!') . "');
             window.location.href = 'usuarios.php';
           </script>";
     exit();
 } else {
-    echo "Erro ao inserir dados: " . $stmt->error;
+    echo "<script>
+            alert('" . __('Erro ao inserir dados: ') . "' + " . json_encode($stmt->error) . ");
+            window.history.back();
+          </script>";
 }
 
 $stmt->close();

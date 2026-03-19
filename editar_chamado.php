@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
 
     // Validação: Impedir alteração de status (se não for Aberto) sem responsável
     if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
-        $msg = '<div class="alert alert-danger"><strong>Erro:</strong> Para alterar o status (sair de "Aberto"), é obrigatório atribuir um <strong>Responsável</strong> ao chamado.</div>';
+        $msg = '<div class="alert alert-danger"><strong>' . __('Erro:') . '</strong> ' . __('Para alterar o status (sair de "Aberto"), é obrigatório atribuir um') . ' <strong>' . __('Responsável') . '</strong> ' . __('ao chamado.') . '</div>';
     } else {
         // Buscar status atual para lógica de congelamento
         $sql_query_atual = "SELECT status, data_ultimo_congelamento FROM chamados WHERE id = $id_chamado";
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
-            $msg = '<div class="alert alert-success">Chamado atualizado com sucesso! <a href="chamados.php">Voltar para lista</a></div>';
+            $msg = '<div class="alert alert-success">' . __('Chamado atualizado com sucesso!') . ' <a href="chamados.php">' . __('Voltar para lista') . '</a></div>';
             // Atualizar objeto $chamado para refletir mudanças se necessário (ou redirecionar)
             $chamado['status'] = $novo_status;
         } else {
@@ -130,7 +130,7 @@ $sql = "SELECT c.*,
 $result = $conn->query($sql);
 
 if ($result->num_rows == 0) {
-    die("Chamado não encontrado.");
+    die(__('Chamado não encontrado.'));
 }
 $chamado = $result->fetch_assoc();
 
@@ -157,7 +157,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Editar Chamado #<?php echo $chamado['id']; ?></title>
+    <title><?php echo __('Editar Chamado'); ?> #<?php echo $chamado['id']; ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
     <link rel="stylesheet" href="/assets/css/Montserrat.css">
@@ -196,73 +196,38 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <!-- Menu do Usuário Logado -->
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Detalhes do Chamado #<?php echo $chamado['id']; ?></h3>
+                    <h3 class="text-dark mb-4"><?php echo __('Detalhes do Chamado #'); ?><?php echo $chamado['id']; ?></h3>
                     <div class="text-center"><?php echo $msg; ?></div>
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Informações</h6>
+                            <h6 class="m-0 font-weight-bold text-primary"><?php echo __('Informações'); ?></h6>
                         </div>
                         <div class="card-body">
                             <form method="post">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold">Título</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Título'); ?></label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['titulo']); ?>" readonly>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold">Categoria</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['categoria']); ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold">Solicitante</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Solicitante'); ?></label>
                                         <input type="text" class="form-control"
                                             value="<?php echo htmlspecialchars($chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome']); ?>"
                                             readonly>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold">Data Abertura</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Data Abertura'); ?></label>
                                         <input type="text" class="form-control"
                                             value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>"
                                             readonly>
@@ -270,16 +235,16 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
-                                        <label class="text-gray-600 small font-weight-bold">Prioridade</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Prioridade'); ?></label>
                                         <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
-                                            <option value="Baixa" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>>Baixa</option>
-                                            <option value="Média" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>>Média</option>
-                                            <option value="Alta" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Alta' ? 'selected' : ''; ?>>Alta</option>
+                                            <option value="Baixa" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>><?php echo __('Baixa'); ?></option>
+                                            <option value="Média" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>><?php echo __('Média'); ?></option>
+                                            <option value="Alta" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Alta' ? 'selected' : ''; ?>><?php echo __('Alta'); ?></option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="text-gray-600 small font-weight-bold">Descrição</label>
+                                    <label class="text-gray-600 small font-weight-bold"><?php echo __('Descrição'); ?></label>
                                     <textarea id="chamado-descricao" class="form-control" rows="5"
                                         readonly><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
                                 </div>
@@ -295,10 +260,10 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                     </div>
                                                     <div>
                                                         <div class="small text-info font-weight-bold text-uppercase">
-                                                            Sugestão de Ação (IA)</div>
+                                                            <?php echo __('Sugestão de Ação (IA)'); ?></div>
                                                         <div id="ai-suggestion-text" class="text-dark small">
                                                             <span class="spinner-border spinner-border-sm text-info"
-                                                                role="status"></span> Analisando chamado...
+                                                                role="status"></span> <?php echo __('Analisando chamado...'); ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -309,7 +274,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
 
                                 <?php if (!empty($chamado['anexo'])): ?>
                                     <div class="form-group">
-                                        <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> Anexo</label>
+                                        <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> <?php echo __('Anexo'); ?></label>
                                         <div
                                             style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 15px; background: #f8f9fc; display: flex; align-items: center; gap: 12px;">
                                             <?php
@@ -323,8 +288,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                     onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)'"
                                                     onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
                                                     title="Clique para expandir">
-                                                <small class="text-muted"><i class="fas fa-search-plus"></i> Clique para
-                                                    expandir</small>
+                                                <small class="text-muted"><i class="fas fa-search-plus"></i> <?php echo __('Clique para expandir'); ?></small>
 
                                                 <!-- Image Lightbox Modal -->
                                                 <div id="imageModal" onclick="if(event.target===this)this.style.display='none'"
@@ -341,7 +305,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                     class="btn btn-outline-primary btn-sm">
                                                     <i
                                                         class="fas fa-<?php echo ($ext === 'pdf') ? 'file-pdf' : 'file-word'; ?>"></i>
-                                                    Baixar Anexo (<?php echo strtoupper($ext); ?>)
+                                                    <?php echo __('Baixar Anexo'); ?> (<?php echo strtoupper($ext); ?>)
                                                 </a>
                                                 <?php
                                             endif; ?>
@@ -351,8 +315,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 endif; ?>
 
                                 <div class="form-group">
-                                    <label class="text-gray-600 small font-weight-bold"><strong>Notas de Resolução</strong> <small class="text-muted">(Registre aqui
-                                            as ações realizadas para resolver o chamado)</small></label>
+                                    <label class="text-gray-600 small font-weight-bold"><strong><?php echo __('Notas de Resolução'); ?></strong> <small class="text-muted">(<?php echo __('Registre aqui as ações realizadas para resolver o chamado'); ?>)</small></label>
                                     <?php
                                     $notas_display = [];
                                     $raw = $chamado['nota_resolucao'] ?? '';
@@ -390,7 +353,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                         <?php if (!empty($nota_item['editado_em'])): ?>
                                                             <span class="badge badge-warning ml-1"
                                                                 style="font-size: 85%; font-weight: 600; font-style: italic;">
-                                                                <i class="fas fa-pencil-alt"></i> Editado em
+                                                                <i class="fas fa-pencil-alt"></i> <?php echo __('Editado em'); ?>
                                                                 <?php echo htmlspecialchars($nota_item['editado_em']); ?>
                                                             </span>
                                                             <?php
@@ -399,7 +362,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                                     <?php if (isset($_SESSION['nome_usuario']) && ($nota_item['usuario'] ?? '') === $_SESSION['nome_usuario']): ?>
                                                         <button type="button" class="btn btn-outline-warning btn-sm"
                                                             onclick="toggleEditNota(this, <?php echo $idx; ?>)" title="Editar nota">
-                                                            <i class="fas fa-edit"></i> Editar
+                                                            <i class="fas fa-edit"></i> <?php echo __('Editar'); ?>
                                                         </button>
                                                     <?php endif; ?>
                                                 </div>
@@ -415,29 +378,29 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                     <div class="mt-2"
                                         style="border: 2px dashed #b7c2d0; border-radius: 8px; padding: 12px; background: #fff;">
                                         <label class="mb-1"><i class="fas fa-plus-circle text-primary"></i>
-                                            <strong>Adicionar Nova Nota</strong></label>
+                                            <strong><?php echo __('Adicionar Nova Nota'); ?></strong></label>
                                         <textarea class="form-control mb-2" name="nova_nota" rows="3"
-                                            placeholder="Descreva as ações tomadas, a solução aplicada ou observações relevantes..."></textarea>
+                                            placeholder="<?php echo __('Descreva as ações tomadas, a solução aplicada ou observações relevantes...'); ?>"></textarea>
                                         <div class="text-right">
                                             <button type="submit" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-comment"></i> Comentar
+                                                <i class="fas fa-comment"></i> <?php echo __('Comentar'); ?>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="alert alert-info">
-                                    <strong>Alterar Status</strong>
+                                    <strong><?php echo __('Alterar Status'); ?></strong>
                                 </div>
                                 <div class="form-row mt-4 mb-4">
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
                                         <a class="btn btn-secondary btn-user" href="chamados.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            Voltar
+                                            <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-primary btn-user" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            Salvar Alterações
+                                            <?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -470,7 +433,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                     textContainer.innerHTML = reply;
                 })
                 .catch(error => {
-                    document.getElementById('ai-suggestion-text').innerHTML = '⚠️ Não foi possível obter sugestão da IA.';
+                    document.getElementById('ai-suggestion-text').innerHTML = '⚠️ <?php echo __('Não foi possível obter sugestão da IA.'); ?>';
                 });
         });
 
@@ -484,7 +447,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                 textarea.style.background = '#fff';
                 textarea.style.cursor = 'text';
                 textarea.focus();
-                btn.innerHTML = '<i class="fas fa-check"></i> Pronto';
+                btn.innerHTML = '<i class="fas fa-check"></i> <?php echo __('Pronto'); ?>';
                 btn.classList.remove('btn-outline-warning');
                 btn.classList.add('btn-success', 'text-white');
             } else {
@@ -492,7 +455,7 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                 textarea.readOnly = true;
                 textarea.style.background = '#eaecf4';
                 textarea.style.cursor = 'default';
-                btn.innerHTML = '<i class="fas fa-edit"></i> Editar';
+                btn.innerHTML = '<i class="fas fa-edit"></i> <?php echo __('Editar'); ?>';
                 btn.classList.remove('btn-success', 'text-white');
                 btn.classList.add('btn-outline-warning');
             }

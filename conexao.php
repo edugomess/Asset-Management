@@ -18,4 +18,7 @@ if ($conn->connect_error) {
 
 // COMPATIBILIDADE: Garante que caracteres especiais e acentuação (UTF-8) funcionem corretamente
 $conn->set_charset("utf8mb4");
+
+// CARREGA SISTEMA DE IDIOMA
+require_once __DIR__ . '/language.php';
 ?>

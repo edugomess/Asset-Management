@@ -12,7 +12,7 @@ include 'auth.php'; // Proteção de sessão
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Cadastro de Equipamentos</title>
+    <title><?php echo __('Cadastro de Equipamentos'); ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=d6a29779d310462e7fcdde7b9a80e0db">
@@ -55,50 +55,9 @@ include 'auth.php'; // Proteção de sessão
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <!-- Busca Global -->
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
-                                            class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                                Manutenção</a>
-                                        <?php endif; ?>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="logout.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1">Cadastro de Ativo</h3>
+                    <h3 class="text-dark mb-1"><?php echo __('Cadastro de Ativo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
@@ -107,9 +66,9 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-12 col-xl-2 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Categoria</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
                                             <select class="form-control" name="categoria" required="">
-                                                <optgroup label="Categoria">
+                                                <optgroup label="<?php echo __('Categoria'); ?>">
 
                                                     <?php
                                                     // BANCO DE DADOS: Busca as categorias disponíveis para o seletor
@@ -120,10 +79,10 @@ include 'auth.php'; // Proteção de sessão
 
                                                     if ($result->num_rows > 0) {
                                                         while ($row = $result->fetch_assoc()) {
-                                                            echo '<option value="' . $row['categoria'] . '">' . $row['categoria'] . '</option>';
+                                                            echo '<option value="' . $row['categoria'] . '">' . __($row['categoria']) . '</option>';
                                                         }
                                                     } else {
-                                                        echo '<option value="">Nenhuma categoria encontrada</option>';
+                                                        echo '<option value="">' . __('Nenhuma categoria encontrada') . '</option>';
                                                     }
                                                     ?>
 
@@ -133,8 +92,8 @@ include 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-sm-6 col-xl-6 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Fabricante</label>
-                                            <input class="form-control" name="fabricante" type="text" placeholder="Ex: Dell"
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Fabricante'); ?></label>
+                                            <input class="form-control" name="fabricante" type="text" placeholder="<?php echo __('Ex: Dell'); ?>"
                                                 required="">
                                         </div>
                                     </div>
@@ -144,30 +103,30 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Modelo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Modelo'); ?></label>
                                             <input class="form-control" name="modelo" type="text"
-                                                placeholder="Ex: Latitude 3420" required="">
+                                                placeholder="<?php echo __('Ex: Latitude 3420'); ?>" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Tag / Service Tag</label>
-                                            <input class="form-control" name="tag" type="text" placeholder="Ex: ABC123D"
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tag / Service Tag'); ?></label>
+                                            <input class="form-control" name="tag" type="text" placeholder="<?php echo __('Ex: ABC123D'); ?>"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Host Name</label>
-                                            <input class="form-control" name="hostName" type="text" placeholder="Ex: NOTE-001"
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Host Name'); ?></label>
+                                            <input class="form-control" name="hostName" type="text" placeholder="<?php echo __('Ex: NOTE-001'); ?>"
                                                 required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Valor do Ativo (R$)</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Valor do Ativo (R$)'); ?></label>
                                             <input class="form-control" name="valor" type="number" step="0.01"
-                                                placeholder="Ex: 999.99" required="">
+                                                placeholder="<?php echo __('Ex: 999.99'); ?>" required="">
                                         </div>
                                     </div>
                                 </div><!-- End: 2-column form row -->
@@ -176,9 +135,9 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row">
                                     <div class="col-sm-4 col-xl-2 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">MAC Address</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('MAC Address'); ?></label>
                                             <input class="form-control" name="macAdress" type="text"
-                                                placeholder="Ex: 00:00:00:00:00:00" required="">
+                                                placeholder="<?php echo __('Ex: 00:00:00:00:00:00'); ?>" required="">
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-xl-1">
@@ -186,12 +145,12 @@ include 'auth.php'; // Proteção de sessão
                                             <input type="hidden" name="status" value="Inativo">
                                             <input type="checkbox" class="custom-control-input" id="statusSwitch"
                                                 name="status" value="Ativo" checked>
-                                            <label class="custom-control-label" for="statusSwitch">Ativo</label>
+                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
                                         </div>
                                     </div>
                                     <div class="col-xl-3 offset-xl-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Data de Cadastro</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Cadastro'); ?></label>
                                             <input class="form-control" name="dataAtivacao" type="date"
                                                 value="<?php echo date('Y-m-d'); ?>" readonly>
                                         </div>
@@ -202,26 +161,26 @@ include 'auth.php'; // Proteção de sessão
                                 <div class="form-row mt-4">
                                     <div class="col-sm-4 col-xl-5 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Imagem do Ativo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Imagem do Ativo'); ?></label>
                                             <input class="form-control-file d-xl-flex" name="imagem" type="file"
                                                 style="height: 30px;" accept="image/*">
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-xl-4 offset-xl-1">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold">Centro de Custo</label>
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Centro de Custo'); ?></label>
                                             <?php
                                             // CENTROS DE CUSTO: Busca dinâmica
                                             include_once 'conexao.php';
                                             ?>
                                             <select class="form-control" name="centroDeCusto">
-                                                <option value="Nenhum">Nenhum</option>
+                                                <option value="Nenhum"><?php echo __('Nenhum'); ?></option>
                                                 <?php
                                                 $sql_cc = "SELECT nomeSetor FROM centro_de_custo ORDER BY nomeSetor ASC";
                                                 $res_cc = $conn->query($sql_cc);
                                                 if ($res_cc && $res_cc->num_rows > 0) {
                                                     while ($row_cc = $res_cc->fetch_assoc()) {
-                                                        echo '<option value="' . $row_cc['nomeSetor'] . '" ' . $selected . '>' . $row_cc['nomeSetor'] . '</option>';
+                                                        echo '<option value="' . $row_cc['nomeSetor'] . '" ' . $selected . '>' . __($row_cc['nomeSetor']) . '</option>';
                                                     }
                                                 }
                                                 ?>
@@ -232,15 +191,15 @@ include 'auth.php'; // Proteção de sessão
                                 <!-- Start: 4-column form row -->
                                 <div class="form-row">
                                     <div class="col-sm-3 col-xl-9 offset-xl-1" style="height: 150px;">
-                                        <label class="text-gray-600 small font-weight-bold">Descrição e Observações</label>
+                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Descrição e Observações'); ?></label>
                                         <textarea class="form-control" name="descricao"
-                                            placeholder="Detalhes adicionais do equipamento..."
+                                            placeholder="<?php echo __('Detalhes adicionais do equipamento...'); ?>"
                                             style="height: 100px; margin-bottom: 0px;"></textarea>
                                     </div>
                                     <div class="col-xl-4 offset-xl-4"><button
                                             class="btn btn-success btn-block active text-white pulse animated btn-user"
                                             type="submit"
-                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;">Cadastrar</button>
+                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 50px;"><?php echo __('Cadastrar'); ?></button>
                                     </div>
 
                                 </div><!-- End: 4-column form row -->

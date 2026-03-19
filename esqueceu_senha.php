@@ -1,3 +1,4 @@
+<?php include 'conexao.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -53,17 +54,17 @@
     <div class="container d-flex justify-content-center">
         <div class="card p-4 shadow pulse animated">
             <div class="text-center mb-4">
-                <h3 class="brand-title">Recuperar Senha</h3>
-                <p class="text-muted small">Insira seu e-mail para receber um link de redefinição.</p>
+                <h3 class="brand-title"><?php echo __('Recuperar Senha'); ?></h3>
+                <p class="text-muted small"><?php echo __('Insira seu e-mail para receber um link de redefinição.'); ?></p>
             </div>
             <form action="processar_esqueceu_senha.php" method="post">
                 <div class="form-group">
-                    <label for="email">E-mail cadastrado</label>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="exemplo@email.com" required style="border-radius: 10px; height: 50px;">
+                    <label for="email"><?php echo __('E-mail cadastrado'); ?></label>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="<?php echo __('exemplo@email.com'); ?>" required style="border-radius: 10px; height: 50px;">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block mt-4 text-white">Enviar Link de Recuperação</button>
+                <button type="submit" class="btn btn-primary btn-block mt-4 text-white"><?php echo __('Enviar Link de Recuperação'); ?></button>
                 <div class="text-center mt-3">
-                    <a href="login.php" class="small text-muted" style="text-decoration: none; font-weight: 600;">Voltar ao Login</a>
+                    <a href="login.php" class="small text-muted" style="text-decoration: none; font-weight: 600;"><?php echo __('Voltar ao Login'); ?></a>
                 </div>
             </form>
         </div>

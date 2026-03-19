@@ -126,13 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$id_asset', $usuario_id, '$acao', '$detalhes')";
         mysqli_query($conn, $sql_historico);
 
-        echo "<script>
-                alert('Ativo atualizado com sucesso!');
-                window.location.href = 'equipamentos.php';
-              </script>";
+        echo "<script>alert('" . __('Atualizado com sucesso!') . "'); window.location.href = 'detalhes_do_equipamento.php?id=$id_asset';</script>";
         exit();
     } else {
-        echo "Erro ao atualizar dados: " . mysqli_error($conn);
+        echo "<script>alert('" . __('Erro ao atualizar: ') . "' + " . json_encode(mysqli_error($conn)) . "); window.history.back();</script>";
     }
 }
 ?>

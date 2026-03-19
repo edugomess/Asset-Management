@@ -16,7 +16,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Suporte e Atendimento - Asset MGT</title>
+    <title><?php echo __('Suporte e Atendimento'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -142,56 +142,12 @@ $result_cc = mysqli_query($conn, $sql_cc);
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
-                    style="margin: 5px 23px;">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
-                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
-                        <form
-                            class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button"
-                                        style="background: rgb(44,64,74); border: none;">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
-                        <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                    href="#">
-                                    <span
-                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                    <img class="border rounded-circle img-profile"
-                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
-                                </a>
-                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                    <a class="dropdown-item" href="profile.php"><i
-                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                    <a class="dropdown-item" href="configuracoes.php"><i
-                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                            Manutenção</a>
-                                    <?php endif; ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="logout.php" class="dropdown-item"><i
-                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                </div>
-                            </li>
-                        </ul>
-                </nav>
+                <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <!-- Hero Section -->
                     <div class="hero-section text-center">
-                        <h2 class="font-weight-bold" style="font-size: 2.5rem;">Como podemos ajudar você hoje?</h2>
-                        <p class="lead opacity-75">Sua central de suporte e inteligência para gestão de ativos.</p>
+                        <h2 class="font-weight-bold" style="font-size: 2.5rem;"><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
+                        <p class="lead opacity-75"><?php echo __('Sua central de suporte e inteligência para gestão de ativos.'); ?></p>
                     </div>
 
                     <!-- Quick Action Cards -->
@@ -199,28 +155,25 @@ $result_cc = mysqli_query($conn, $sql_cc);
                         <div class="col-md-4 mb-4" onclick="window.location.href='agent.php'">
                             <div class="support-card">
                                 <i class="fas fa-robot"></i>
-                                <h5>Assistente IA</h5>
-                                <p class="text-muted small">Tire dúvidas rápidas sobre o sistema e procedimentos com
-                                    nossa inteligência artificial.</p>
-                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Acessar IA</span>
+                                <h5><?php echo __('Assistente IA'); ?></h5>
+                                <p class="text-muted small"><?php echo __('Tire dúvidas rápidas sobre o sistema e procedimentos com nossa inteligência artificial.'); ?></p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill"><?php echo __('Acessar IA'); ?></span>
                             </div>
                         </div>
                         <div class="col-md-4 mb-4" onclick="window.location.href='chamados.php'">
                             <div class="support-card">
                                 <i class="fas fa-ticket-alt"></i>
-                                <h5>Central de Chamados</h5>
-                                <p class="text-muted small">Abra novas solicitações técnicas ou acompanhe o status dos
-                                    seus pedidos pendentes.</p>
-                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Ver Chamados</span>
+                                <h5><?php echo __('Central de Chamados'); ?></h5>
+                                <p class="text-muted small"><?php echo __('Abra novas solicitações técnicas ou acompanhe o status dos seus pedidos pendentes.'); ?></p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill"><?php echo __('Ver Chamados'); ?></span>
                             </div>
                         </div>
                         <div class="col-md-4 mb-4" onclick="window.location.href='documentacao.php'">
                             <div class="support-card">
                                 <i class="fas fa-book"></i>
-                                <h5>Documentação</h5>
-                                <p class="text-muted small">Acesse manuais de usuário, FAQs e guias de boas práticas
-                                    para gestão do seu inventário.</p>
-                                <span class="btn btn-sm btn-outline-dark border-radius-pill">Ver Manuais</span>
+                                <h5><?php echo __('Documentação'); ?></h5>
+                                <p class="text-muted small"><?php echo __('Acesse manuais de usuário, FAQs e guias de boas práticas para gestão do seu inventário.'); ?></p>
+                                <span class="btn btn-sm btn-outline-dark border-radius-pill"><?php echo __('Ver Manuais'); ?></span>
                             </div>
                         </div>
                     </div>
@@ -230,14 +183,13 @@ $result_cc = mysqli_query($conn, $sql_cc);
                         <div class="row no-gutters">
                             <!-- Contact Info -->
                             <div class="col-lg-5 p-5 bg-light">
-                                <h4 class="font-weight-bold mb-4">Canais de Atendimento</h4>
-                                <p class="text-muted mb-5">Se preferir, utilize nossos canais diretos para um
-                                    atendimento mais urgente.</p>
+                                <h4 class="font-weight-bold mb-4"><?php echo __('Canais de Atendimento'); ?></h4>
+                                <p class="text-muted mb-5"><?php echo __('Se preferir, utilize nossos canais diretos para um atendimento mais urgente.'); ?></p>
 
                                 <div class="info-item">
                                     <i class="fab fa-whatsapp"></i>
                                     <div>
-                                        <div class="font-weight-bold">WhatsApp Suporte</div>
+                                        <div class="font-weight-bold"><?php echo __('WhatsApp Suporte'); ?></div>
                                         <div class="text-muted">(11) 96843-55543</div>
                                     </div>
                                 </div>
@@ -245,7 +197,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                                 <div class="info-item">
                                     <i class="far fa-envelope"></i>
                                     <div>
-                                        <div class="font-weight-bold">E-mail Corporativo</div>
+                                        <div class="font-weight-bold"><?php echo __('E-mail Corporativo'); ?></div>
                                         <div class="text-muted">suporte@degb.com.br</div>
                                     </div>
                                 </div>
@@ -253,31 +205,31 @@ $result_cc = mysqli_query($conn, $sql_cc);
                                 <div class="info-item">
                                     <i class="far fa-clock"></i>
                                     <div>
-                                        <div class="font-weight-bold">Horário de Atendimento</div>
-                                        <div class="text-muted">Segunda a Sexta: 08:00 às 18:00</div>
+                                        <div class="font-weight-bold"><?php echo __('Horário de Atendimento'); ?></div>
+                                        <div class="text-muted"><?php echo __('Segunda a Sexta: 08:00 às 18:00'); ?></div>
                                     </div>
                                 </div>
 
                                 <div class="mt-5 p-4 contact-info-box text-center">
-                                    <p class="small text-muted mb-0">Localização Física</p>
+                                    <p class="small text-muted mb-0"><?php echo __('Localização Física'); ?></p>
                                     <div class="font-weight-bold">Alphaville, Barueri - SP, Brasil</div>
                                 </div>
                             </div>
 
                             <!-- Contact Form -->
                             <div class="col-lg-7 p-5 bg-white">
-                                <h4 class="font-weight-bold mb-4">Envie uma Mensagem</h4>
+                                <h4 class="font-weight-bold mb-4"><?php echo __('Envie uma Mensagem'); ?></h4>
                                 <form id="supportForm" method="POST">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold" for="nome">Seu Nome</label>
+                                            <label class="small font-weight-bold" for="nome"><?php echo __('Seu Nome'); ?></label>
                                             <input type="text" name="nome" id="nome" class="form-control modern-input"
-                                                placeholder="Ex: João Silva" required>
+                                                placeholder="<?php echo __('Ex: João Silva'); ?>" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold" for="centro_custo">Empresa/Centro de Custo</label>
+                                            <label class="small font-weight-bold" for="centro_custo"><?php echo __('Empresa/Centro de Custo'); ?></label>
                                             <select class="form-control modern-input" name="centro_custo" id="centro_custo" required>
-                                                <option value="">Selecione...</option>
+                                                <option value=""><?php echo __('Selecione...'); ?></option>
                                                 <?php
                                                 if ($result_cc) {
                                                     while ($row_cc = mysqli_fetch_assoc($result_cc)) {
@@ -289,18 +241,18 @@ $result_cc = mysqli_query($conn, $sql_cc);
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="small font-weight-bold" for="email">Seu E-mail Ativo</label>
+                                        <label class="small font-weight-bold" for="email"><?php echo __('Seu E-mail Ativo'); ?></label>
                                         <input type="email" name="email" id="email" class="form-control modern-input"
-                                            placeholder="Ex: joao@empresa.com.br" required>
+                                            placeholder="<?php echo __('Ex: joao@empresa.com.br'); ?>" required>
                                     </div>
                                     <div class="mb-4">
-                                        <label class="small font-weight-bold" for="mensagem">Descrição da Necessidade</label>
+                                        <label class="small font-weight-bold" for="mensagem"><?php echo __('Descrição da Necessidade'); ?></label>
                                         <textarea name="mensagem" id="mensagem" class="form-control modern-input" rows="4"
-                                            placeholder="Como podemos ajudar você?" required></textarea>
+                                            placeholder="<?php echo __('Como podemos ajudar você?'); ?>" required></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-dark btn-block font-weight-bold py-3 shadow"
                                         style="border-radius: 12px; background: #2c404a;">
-                                        ENVIAR MENSAGEM <i class="fas fa-paper-plane ml-2"></i>
+                                        <?php echo __('ENVIAR MENSAGEM'); ?> <i class="fas fa-paper-plane ml-2"></i>
                                     </button>
                                 </form>
                             </div>
@@ -343,7 +295,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                 
                 const btn = $(this).find('button[type="submit"]');
                 const btnText = btn.html();
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> <?php echo __('Enviando...'); ?>');
 
                 $.ajax({
                     url: 'ajax_suporte.php',
@@ -352,14 +304,14 @@ $result_cc = mysqli_query($conn, $sql_cc);
                     dataType: 'json',
                     success: function(response) {
                         if (response.success) {
-                            alert('Mensagem enviada com sucesso! Em breve entraremos em contato.');
+                            alert('<?php echo __('Mensagem enviada com sucesso! Em breve entraremos em contato.'); ?>');
                             $('#supportForm')[0].reset();
                         } else {
-                            alert('Erro ao enviar mensagem: ' + response.message);
+                            alert('<?php echo __('Erro ao enviar mensagem: '); ?>' + response.message);
                         }
                     },
                     error: function() {
-                        alert('Erro inesperado ao processar sua solicitação. Tente novamente mais tarde.');
+                        alert('<?php echo __('Erro inesperado ao processar sua solicitação. Tente novamente mais tarde.'); ?>');
                     },
                     complete: function() {
                         btn.prop('disabled', false).html(btnText);

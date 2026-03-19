@@ -52,14 +52,17 @@ if ($inserir) {
     $detalhes = 'Ativo criado no sistema.';
 
     $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, '$acao', '$detalhes')";
-    mysqli_query($conn, $sql_historico);
+    mysqli_query($conn, $sql_historico); // Execute the history insert
 
     echo "<script>
-            alert('Ativo cadastrado com sucesso!');
+            alert('" . __('Equipamento cadastrado com sucesso!') . "');
             window.location.href = 'equipamentos.php';
           </script>";
     exit();
 } else {
-    echo "Erro ao inserir dados: " . mysqli_error($conn);
+    echo "<script>
+            alert('" . __('Erro ao cadastrar equipamento: ') . "' + " . json_encode(mysqli_error($conn)) . ");
+            window.history.back();
+          </script>";
 }
 ?>

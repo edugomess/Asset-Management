@@ -53,7 +53,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
                 <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
@@ -73,107 +74,47 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <div class="input-group-append"><button class="btn btn-primary py-0" type="button"
                                         style="background: rgb(44,64,74);"><i class="fas fa-search"></i></button></div>
                             </div>
-                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in"
-                                style="width: 100%; display: none;"></div>
-                        </form>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated                        </form>
+
+                        <!-- Menu do Usuário -->
                         <ul class="navbar-nav flex-nowrap ml-auto">
-
-
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar4.jpeg?h=fefb30b61c8459a66bd338b7d790c3d5">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
-                                                        help me with a problem I've been having.</span></div>
-                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar2.jpeg?h=5d142be9441885f0935b84cf739d4112">
-                                                <div class="status-indicator"></div>
-                                            </div>
-                                            <?php
-                                            // 3. LÓGICA DE CONGELAMENTO: Desconta tempo em que o chamado ficou 'Pendente'
-                                            // Esta lógica é um exemplo e deve ser aplicada onde o cálculo de tempo decorrido é feito.
-                                            // $minutos_decorridos = ($intervalo->days * 24 * 60) + ($intervalo->h * 60) + $intervalo->i;
-                                            
-                                            // $tempo_congelado = intval($row['tempo_congelado_minutos'] ?? 0);
-                                            // $minutos_decorridos -= $tempo_congelado;
-                                            
-                                            // if ($row['status'] === 'Pendente' && !empty($row['data_ultimo_congelamento'])) {
-                                            //     $data_congelamento = new DateTime($row['data_ultimo_congelamento']);
-                                            //     $intervalo_congelamento = $data_congelamento->diff($agora);
-                                            //     $minutos_congelamento_atual = ($intervalo_congelamento->days * 24 * 60) + ($intervalo_congelamento->h * 60) + $intervalo_congelamento->i;
-                                            //     $minutos_decorridos -= $minutos_congelamento_atual;
-                                            // }
-                                            
-                                            // $minutos_decorridos = max(0, $minutos_decorridos);
-                                            ?>
-                                            <div class="font-weight-bold">
-                                                <div class="text-truncate"><span>I have the photos that you ordered last
-                                                        month!</span></div>
-                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image mr-3"><img class="rounded-circle"
-                                                    src="/assets/img/avatars/avatar3.jpeg?h=c5166867f10a4e454b5b2ae8d63268b3">
-                                                <ul class="navbar-nav flex-nowrap ml-auto">
-                                                    <li class="nav-item dropdown no-arrow">
-                                                        <a class="dropdown-toggle nav-link" aria-expanded="false"
-                                                            data-toggle="dropdown" href="#">
-                                                            <span
-                                                                class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                                            <img class="border rounded-circle img-profile"
-                                                                src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>">
-                                                        </a>
-                                                        <div
-                                                            class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                                            <a class="dropdown-item" href="profile.php"><i
-                                                                    class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                                            <a class="dropdown-item" href="configuracoes.php"><i
-                                                                    class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                                            <a class="dropdown-item"
-                                                                href="equipamentos.php?status=Manutencao"><i
-                                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos
-                                                                em Manutenção</a>
-                                                            <div class="dropdown-divider"></div>
-                                                            <a href="logout.php" class="dropdown-item"><i
-                                                                    class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
+                                    href="#">
+                                    <span
+                                        class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile"
+                                        src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i
+                                            class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i
+                                            class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
+                                    <?php endif; ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="logout.php" class="dropdown-item"><i
+                                            class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>          </div>
                 </nav>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4">Centro de Custo</h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-6 col-xl-3 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
-                                    </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
+                                    <a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                         role="button"
-                                        style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;"
+                                        style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;display: flex;align-items: center;justify-content: center;"
                                         href="/cadastro_de%20centro_de_custo.php">Cadastrar Novo</a>
-                                </div>
-                                <div class="col-md-6 col-xl-9">
-                                    <div class="text-md-right dataTables_filter" id="dataTable_filter">
-                                        <form method="GET" action="" class="form-inline justify-content-end">
-                                            <div class="form-group mr-2">
-                                                <input type="search" name="search"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    aria-controls="dataTable" placeholder="Buscar..."
-                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-                                            </div>
-                                        </form>
-                                    </div>
                                 </div>
                             </div>
 

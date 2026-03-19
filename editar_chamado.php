@@ -160,15 +160,78 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
     <title>Editar Chamado #<?php echo $chamado['id']; ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
-    <link rel="stylesheet" href="/assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="/assets/css/Nunito.css">
+    <link rel="stylesheet" href="/assets/css/Raleway.css">
+    <link rel="stylesheet" href="/assets/css/Roboto.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
+    <link rel="stylesheet" href="/assets/css/Animated-numbers-section.css">
+    <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css">
+    <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css">
+    <link rel="stylesheet" href="/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="/assets/css/Map-Clean.css">
+    <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css">
+    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css">
+    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css">
+    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css">
+    <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css">
+    <link rel="stylesheet" href="/assets/css/TR-Form.css">
+    <?php include 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
     <div id="wrapper">
-        <!-- Sidebar and Navbar would go here, omitting for brevity in this specific file but keeping structure similar to template -->
-
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
+            <div class="container-fluid d-flex flex-column p-0">
+                <?php include 'sidebar_brand.php'; ?>
+                <?php include 'sidebar_menu.php'; ?>
+            </div>
+        </nav>
         <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content" style="padding: 20px;">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top"
+                    style="margin: 5px 23px;">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3"
+                            id="sidebarToggleTop-1" type="button"><i class="fas fa-bars"></i></button>
+                        <!-- Busca Global -->
+                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="text" placeholder="Pesquisar..." id="globalSearchInput" autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary py-0" type="button" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
+                        </form>
+                        <ul class="navbar-nav flex-nowrap ml-auto">
+                            <!-- Menu do Usuário Logado -->
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
+                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
+                                    <?php endif; ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">Detalhes do Chamado #<?php echo $chamado['id']; ?></h3>
                     <div class="text-center"><?php echo $msg; ?></div>
@@ -366,51 +429,17 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                 <div class="alert alert-info">
                                     <strong>Alterar Status</strong>
                                 </div>
-                                <div class="form-row align-items-end">
-                                    <div class="form-group col-md-4">
-                                        <label class="text-gray-600 small font-weight-bold" for="status">Status Atual</label>
-                                        <select class="form-control" name="status" id="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
-                                            <option value="Aberto" <?php if ($chamado['status'] == 'Aberto')
-                                                echo 'selected'; ?>>Aberto</option>
-                                            <option value="Em Andamento" <?php if ($chamado['status'] == 'Em Andamento')
-                                                echo 'selected'; ?>>Em Andamento</option>
-                                            <option value="Pendente" <?php if ($chamado['status'] == 'Pendente')
-                                                echo 'selected'; ?>>Pendente</option>
-                                            <option value="Resolvido" <?php if ($chamado['status'] == 'Resolvido')
-                                                echo 'selected'; ?>>Resolvido</option>
-                                            <option value="Cancelado" <?php if ($chamado['status'] == 'Cancelado')
-                                                echo 'selected'; ?>>Cancelado</option>
-                                        </select>
+                                <div class="form-row mt-4 mb-4">
+                                    <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
+                                        <a class="btn btn-secondary btn-user" href="chamados.php" 
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
+                                            Voltar
+                                        </a>
+                                        <button class="btn btn-primary btn-user" type="submit" 
+                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                            Salvar Alterações
+                                        </button>
                                     </div>
-                                    <div class="form-group col-md-4">
-                                        <label class="text-gray-600 small font-weight-bold" for="responsavel">Atribuir Responsável</label>
-                                        <select class="form-control" name="responsavel_id" id="responsavel" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
-                                            <option value="">-- Selecione --</option>
-                                            <?php
-                                            if ($result_users->num_rows > 0) {
-                                                while ($user = $result_users->fetch_assoc()) {
-                                                    $selected = ($chamado['responsavel_id'] == $user['id_usuarios']) ? 'selected' : '';
-                                                    echo '<option value="' . $user['id_usuarios'] . '" ' . $selected . '>' . htmlspecialchars($user['nome'] . ' ' . $user['sobrenome']) . '</option>';
-                                                }
-                                                // Reset pointer if needed, but not needed here as we query once
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-2">
-                                        <button type="submit" class="btn btn-primary btn-block">Salvar</button>
-                                    </div>
-                                    <?php if (!empty($msg)): ?>
-                                        <div class="form-group col-md-2">
-                                            <a href="chamados.php" class="btn btn-success btn-block">Voltar para lista</a>
-                                        </div>
-                                        <?php
-                                    else: ?>
-                                        <div class="form-group col-md-2">
-                                            <a href="chamados.php" class="btn btn-secondary btn-block">Voltar</a>
-                                        </div>
-                                        <?php
-                                    endif; ?>
                                 </div>
                             </form>
                         </div>

@@ -31,20 +31,8 @@ include 'auth.php'; // Proteção de sessão
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                            height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icon-tabler-layout-distribute-horizontal"
-                            style="width: 30px;height: 30px;">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="4" y1="4" x2="20" y2="4"></line>
-                            <line x1="4" y1="20" x2="20" y2="20"></line>
-                            <rect x="6" y="9" width="12" height="6" rx="2"></rect>
-                        </svg></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
-                </a>
+            <div class="container-fluid d-flex flex-column p-0">
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
@@ -72,13 +60,19 @@ include 'auth.php'; // Proteção de sessão
                                         aria-expanded="false" data-toggle="dropdown" href="#"><span
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                            class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                            class="dropdown-item" href="configuracoes.php"><i
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                        <a class="dropdown-item" href="profile.php"><i
+                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                        <a class="dropdown-item" href="configuracoes.php"><i
                                                 class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
+                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                                Manutenção</a>
+                                        <?php endif; ?>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="logout.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -197,7 +191,6 @@ include 'auth.php'; // Proteção de sessão
                     </div>
                 </div>
             </div>
-            <!-- End of #content -->
 
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
@@ -238,8 +231,6 @@ include 'auth.php'; // Proteção de sessão
         });
     </script>
     <script src="/assets/js/global_search.js"></script>
-
-        <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

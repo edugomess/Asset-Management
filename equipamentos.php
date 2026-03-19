@@ -149,7 +149,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 <body id="page-top">
     <div id="wrapper">
         <!-- Barra Lateral (Sidebar) -->
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
                 <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
@@ -193,11 +194,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
                                     <a class="dropdown-item" href="configuracoes.php"><i
                                             class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                    <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                            class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                        Manutenção</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
+                                                class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
+                                            Manutenção</a>
+                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="logout.php"><i
+                                    <a href="logout.php" class="dropdown-item"><i
                                             class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
@@ -639,8 +642,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </div>
     </div>
 
-    </div>
-    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
     <!-- Bibliotecas JavaScript (jQuery, Bootstrap, Easing) -->

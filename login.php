@@ -243,30 +243,7 @@
             </div>
         </div>
     </div><!-- End: main-content -->
-    <footer class="footer-premium">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6 col-md-3 item">
-                    <h3>Serviços</h3>
-                    <ul>
-                        <li><a href="#">Gestão de ativos de T.I</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-6 col-md-3 item">
-                    <h3>Suporte</h3>
-                    <ul>
-                        <li><a href="#"><i class="fas fa-phone mr-2"></i>(11) 99999-9999</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-6 item text">
-                    <h3>Sobre a plataforma</h3>
-                    <p>Referência em gestão tecnológica e controle de ativos. Garantimos precisão e segurança
-                        para o seu inventário.</p>
-                </div>
-            </div>
-            <p class="copyright">DEGB©2024 - Todos os direitos reservados</p>
-        </div>
-    </footer>
+    </div><!-- End: main-content -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>

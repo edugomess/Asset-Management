@@ -684,11 +684,10 @@ function getHoursAndMinutes($total_minutes)
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-text mx-3"><span>Asset Mgt</span></div>
-                </a>
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
@@ -722,7 +721,7 @@ function getHoursAndMinutes($total_minutes)
                                         aria-expanded="false" data-toggle="dropdown" href="#"><span
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
                                         <a class="dropdown-item" href="profile.php"><i
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
@@ -732,7 +731,7 @@ function getHoursAndMinutes($total_minutes)
                                                 class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
                                             Manutenção</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="login.php"><i
+                                        <a class="dropdown-item" href="logout.php"><i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                     </div>
                                 </div>
@@ -1770,11 +1769,12 @@ function getHoursAndMinutes($total_minutes)
             });
             // ══ FIM BLOCO SMTP ════════════════════════════════
 
-        });
-    </script>
-    </div>
+        </div>
 
-</body>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
 </html>

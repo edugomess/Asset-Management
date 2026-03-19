@@ -44,10 +44,8 @@ if ($id > 0) {
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-boxes"></i></div>
-                    <div class="sidebar-brand-text mx-3"><span>ASSET MGT</span></div>
-                </a>
+                <?php include 'sidebar_brand.php'; ?>
+
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
@@ -70,32 +68,23 @@ if ($id > 0) {
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small">
-                                            <?php echo htmlspecialchars($_SESSION['nome_usuario']); ?>
-                                        </span><img class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
-                                            class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
-                                            class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="login.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
+                            <!-- Menu do Usuário Logado -->
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
+                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
+                                    <?php endif; ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
-                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
-                                <div class="theme-switch-wrapper" title="Alternar Modo Noturno">
-                                    <label class="theme-switch" for="darkModeToggle">
-                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                                        <span class="slider round"></span>
-                                    </label>
-                                    <i id="themeIcon" class="fas fa-sun text-warning ml-2"></i>
-                                </div>
-                            </li>
+                        </ul>
                     </div>
                 </nav>
                 <div class="container-fluid">
@@ -197,12 +186,15 @@ if ($id > 0) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-row mt-4">
-                                    <div class="col-xl-4 offset-xl-4">
-                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                            type="submit"
-                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 15px;border-width: 0px;height: 50px;">
-                                            <i class="fas fa-save mr-2"></i>Atualizar Licença
+                                <div class="form-row mt-4 mb-4">
+                                    <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
+                                        <a class="btn btn-secondary btn-user" href="licencas.php" 
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
+                                            Voltar
+                                        </a>
+                                        <button class="btn btn-primary btn-user" type="submit" 
+                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                            Salvar Alterações
                                         </button>
                                     </div>
                                 </div>

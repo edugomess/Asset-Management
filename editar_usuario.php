@@ -36,7 +36,8 @@ if ($id > 0) {
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
                 <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
@@ -62,32 +63,20 @@ if ($id > 0) {
                             <div id="globalSearchResults" class="dropdown-menu shadow animated--grow-in" style="width: 100%; display: none;"></div>
                         </form>
                         <ul class="navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item no-arrow mx-1 d-flex align-items-center">
-                            </li>
-                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <!-- Menu do Usuário Logado -->
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow">
-                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown"
-                                        href="#">
-                                        <span
-                                            class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
-                                        <img class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
-                                    </a>
-                                    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                                        <a class="dropdown-item" href="profile.php"><i
-                                                class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
-                                        <a class="dropdown-item" href="configuracoes.php"><i
-                                                class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
-                                        <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                            <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i
-                                                    class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em
-                                                Manutenção</a>
-                                        <?php endif; ?>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="login.php"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
-                                    </div>
+                                <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
+                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span>
+                                    <img class="border rounded-circle img-profile" src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>">
+                                </a>
+                                <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
+                                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a>
+                                    <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>Configuraçoes</a>
+                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                        <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Ativos em Manutenção</a>
+                                    <?php endif; ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Sair</a>
                                 </div>
                             </li>
                         </ul>
@@ -307,17 +296,19 @@ if ($id > 0) {
 
                                 <!-- Row 9: Buttons -->
                                 <div class="form-row mt-5 mb-4">
-                                    <div class="col-xl-4 offset-xl-2">
-                                        <button class="btn btn-primary btn-block text-white shadow-sm" type="submit"
-                                            style="background: #2c404a; border-radius: 10px; height: 50px; font-weight: 600;">
-                                            <i class="fas fa-save mr-2"></i>Salvar Alterações
-                                        </button>
-                                    </div>
-                                    <div class="col-xl-4">
-                                        <button class="btn btn-outline-secondary btn-block shadow-sm" type="button"
-                                            style="border-radius: 10px; height: 50px; font-weight: 600; border: 2px solid #2c404a; color: #2c404a;"
+                                    <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
+                                        <button class="btn btn-outline-secondary btn-user" type="button"
+                                            style="border-radius: 10px; padding: 10px 30px; font-weight: 600; border: 2px solid #2c404a; color: #2c404a; background: transparent;"
                                             data-toggle="modal" data-target="#modalAlterarSenha">
                                             <i class="fas fa-lock mr-2"></i>Alterar senha...
+                                        </button>
+                                        <a class="btn btn-secondary btn-user" href="usuarios.php" 
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
+                                            Voltar
+                                        </a>
+                                        <button class="btn btn-primary btn-user" type="submit" 
+                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                            Salvar Alterações
                                         </button>
                                     </div>
                                 </div>
@@ -326,8 +317,11 @@ if ($id > 0) {
                     </div>
                 </div>
             </div>
+                </div>
         </div>
-        <!-- Modal Alterar Senha -->
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <!-- Modal Alterar Senha -->
     <div class="modal fade" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
@@ -371,7 +365,6 @@ if ($id > 0) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js"></script>
     <script src="/assets/js/theme.js"></script>
-    <script src="/assets/js/global_search.js"></script>
 
     <script>
         function maskCPF(i) {

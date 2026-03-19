@@ -49,11 +49,10 @@ $result_lic = mysqli_query($conn, $sql_lic);
 
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion p-0">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
+            style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-                    <div class="sidebar-brand-text mx-3"><span>Asset Mgt</span></div>
-                </a>
+                <?php include 'sidebar_brand.php'; ?>
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
@@ -84,7 +83,7 @@ $result_lic = mysqli_query($conn, $sql_lic);
                                         aria-expanded="false" data-toggle="dropdown" href="#"><span
                                             class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo htmlspecialchars($_SESSION['nome_usuario']); ?></span><img
                                             class="border rounded-circle img-profile"
-                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"></a>
+                                            src="<?php echo !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in"><a
                                             class="dropdown-item" href="profile.php"><i
                                                 class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Perfil</a><a
@@ -110,7 +109,7 @@ $result_lic = mysqli_query($conn, $sql_lic);
                         <div class="col-lg-4">
                             <div class="card mb-3">
                                 <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
-                                        src="<?php echo !empty($user_data['foto_perfil']) ? htmlspecialchars($user_data['foto_perfil']) : '/assets/img/avatars/Captura%20de%20Tela%202021-08-04%20às%2012.25.13.png?h=fcfb924f0ac1ab5f595f029bf526e62d'; ?>"
+                                        src="<?php echo !empty($user_data['foto_perfil']) ? htmlspecialchars($user_data['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg'; ?>"
                                         width="160" height="160">
                                     <div class="mb-3">
                                         <a href="editar_usuario.php?id=<?php echo $id_usuario; ?>"
@@ -249,6 +248,7 @@ $result_lic = mysqli_query($conn, $sql_lic);
 
                 </div>
             </div>
+
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

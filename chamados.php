@@ -61,8 +61,9 @@ $result_count = mysqli_query($conn, $sql_count);
 $row_count = mysqli_fetch_assoc($result_count);
 $total_results = $row_count['total'];
 $total_pages = ceil($total_results / $results_per_page);
-$current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$start_from = ($current_page - 1) * $results_per_page;
+$pg_atual = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+if ($pg_atual < 1) $pg_atual = 1;
+$start_from = ($pg_atual - 1) * $results_per_page;
 
 $sql = "SELECT c.*, u.nome, u.sobrenome, r.nome AS resp_nome, r.sobrenome AS resp_sobrenome 
         FROM chamados c 
@@ -74,49 +75,7 @@ $sql = "SELECT c.*, u.nome, u.sobrenome, r.nome AS resp_nome, r.sobrenome AS res
 $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
-<html>
-<style>
-    .btn-tamanho-fixo {
-        width: 130px;
-    }
-
-    .btn-edit {
-        width: 50px;
-        /* Metade da largura */
-    }
-
-    .btn-medium {
-        width: 100px;
-        /* Metade da largura */
-    }
-
-    .badge-success {
-        background-color: #28a745 !important;
-        /* Verde para ativo */
-        color: #fff !important;
-        /* Texto branco */
-    }
-
-    .badge-danger {
-        background-color: #dc3545 !important;
-        /* Vermelho para inativo */
-        color: #fff !important;
-        /* Texto branco */
-    }
-
-    .badge-warning {
-        background-color: #ffc107 !important;
-        color: #212529 !important;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(44, 64, 74, 0.05);
-        transition: background-color 0.2s;
-    }
-</style>
-
-</style>
-
+<html lang="pt-br">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -131,10 +90,42 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <?php include 'sidebar_style.php'; ?>
-    <?php include 'pagination_style.php'; ?>
-</head>
+    <?php include_once 'sidebar_style.php'; ?>
+    <?php include_once 'pagination_style.php'; ?>
+    <style>
+        .btn-tamanho-fixo {
+            width: 130px;
+        }
 
+        .btn-edit {
+            width: 50px;
+        }
+
+        .btn-medium {
+            width: 100px;
+        }
+
+        .badge-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        .badge-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+
+        .badge-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(44, 64, 74, 0.05);
+            transition: background-color 0.2s;
+        }
+    </style>
+</head>
 <body id="page-top">
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -198,7 +189,7 @@ $result = mysqli_query($conn, $sql);
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 col-xl-3 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><a
+                                    <div class=""><a
                                             class="btn btn-success btn-block active text-white pulse animated btn-user"
                                             role="button"
                                             style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 0px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;"
@@ -405,33 +396,44 @@ $result = mysqli_query($conn, $sql);
                                 </table>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div class="text-secondary small">
+                            <div class="d-flex justify-content-start mt-4 mb-4">
+                                <ul class="pagination-custom">
                                     <?php
-                                    $fim = min($start_from + $results_per_page, $total_results);
-                                    $inicio = $total_results > 0 ? $start_from + 1 : 0;
-                                    echo "Mostrando $inicio a $fim de $total_results registros";
-                                    ?>
-                                </div>
-                                <ul class="pagination-custom mb-0">
-                                    <?php
-                                    $params = "filtro_status=" . urlencode($filtro_status);
+                                    $p_params = "filtro_status=" . urlencode($filtro_status);
                                     if (!empty($search)) {
-                                        $params .= "&search=" . urlencode($search);
+                                        $p_params .= "&search=" . urlencode($search);
                                     }
 
-                                    if ((int) $current_page > 1) {
-                                        echo "<li><a href='?page=" . ((int) $current_page - 1) . "&" . $params . "'>« Anterior</a></li>";
+                                    $total_p = (int)$total_pages;
+
+                                    // Botão Anterior
+                                    if ($pg_atual > 1) {
+                                        echo "<li><a href='?page=" . ($pg_atual - 1) . "&" . $p_params . "'>« Anterior</a></li>";
+                                    } else {
+                                        echo "<li class='disabled'><span>« Anterior</span></li>";
                                     }
-                                    for ($page = 1; $page <= $total_pages; $page++) {
-                                        if ($page == $current_page) {
-                                            echo "<li class='active'><span>$page</span></li>";
+
+                                    // Janela de páginas (exibir até 6 páginas como no exemplo)
+                                    $max_links = 6;
+                                    $start_p = max(1, $pg_atual - 2);
+                                    $end_p = min($total_p, $start_p + $max_links - 1);
+                                    if ($end_p - $start_p < $max_links - 1) {
+                                        $start_p = max(1, $end_p - $max_links + 1);
+                                    }
+
+                                    for ($p = $start_p; $p <= $end_p; $p++) {
+                                        if ($p == $pg_atual) {
+                                            echo "<li class='active'><span>$p</span></li>";
                                         } else {
-                                            echo "<li><a href='?page=$page&" . $params . "'>$page</a></li>";
+                                            echo "<li><a href='?page=$p&" . $p_params . "'>$p</a></li>";
                                         }
                                     }
-                                    if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "&" . $params . "'>Próximo »</a></li>";
+
+                                    // Botão Próximo
+                                    if ($pg_atual < $total_p) {
+                                        echo "<li><a href='?page=" . ($pg_atual + 1) . "&" . $p_params . "'>Próximo »</a></li>";
+                                    } else {
+                                        echo "<li class='disabled'><span>Próximo »</span></li>";
                                     }
                                     ?>
                                 </ul>

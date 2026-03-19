@@ -40,22 +40,26 @@
         box-shadow: 0 4px 12px rgba(44, 64, 74, 0.12);
     }
 
-    .pagination-custom li.active span {
+    .pagination-custom li.active span,
+    .pagination-custom li.active a {
         background-color: #2c404a !important;
         color: #ffffff !important;
         border-color: #2c404a !important;
-        box-shadow: 0 4px 15px rgba(44, 64, 74, 0.45) !important;
+        box-shadow: 0 2px 6px rgba(44, 64, 74, 0.2) !important;
+        cursor: default;
     }
 
-    .pagination-custom li.active span:hover {
-        background: #1e2d35;
+    .pagination-custom li.active span:hover,
+    .pagination-custom li.active a:hover {
+        background-color: #2c404a !important;
+        color: #ffffff !important;
     }
 
     /* Estilo para Anterior/Próximo */
     .pagination-custom li:first-child a,
     .pagination-custom li:last-child a {
-        padding: 0 18px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
+        padding: 0 20px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
     }
 </style>

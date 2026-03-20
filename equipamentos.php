@@ -27,10 +27,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         padding: 5px 0;
     }
 
-    /* Estilo premium para o sistema de manutenção (Cor Laranja) */
+    /* Estilo premium para o sistema de manutenção (Cor Escura) */
     .btn-maintenance-system {
-        background-color: #ff8c00 !important;
-        border-color: #ff8c00 !important;
+        background-color: #2c404a !important;
+        border-color: #2c404a !important;
         color: white !important;
         transition: all 0.3s ease;
     }
@@ -50,7 +50,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     }
 
     .border-left-maintenance-system {
-        border-left: .25rem solid #ff8c00 !important;
+        border-left: .25rem solid #2c404a !important;
     }
 
     .btn-medium {
@@ -237,7 +237,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
                                             <div class="text-uppercase text-warning font-weight-bold text-xs mb-1"
-                                                style="color: #ff8c00 !important;">
+                                                style="color: #2c404a !important;">
                                                 <span><?php echo __('Manutenção'); ?></span>
                                             </div>
                                             <div class="text-dark font-weight-bold h5 mb-0">
@@ -395,7 +395,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 }
                                                 ?>
                                                 <tr class="clickable-row"
-                                                    onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
+                                                    onclick="window.location='perfil_ativo.php?id=<?php echo $row['id_asset']; ?>'">
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         // Exibe miniatura da foto do ativo ou ícone padrão
@@ -411,7 +411,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td>
-                                                        <a href="detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>"
+                                                        <a href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>"
                                                             class="font-weight-bold" style="color: #2c404a;"
                                                             onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
                                                     </td>
@@ -448,7 +448,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                                                     <td>
                                                         <span
-                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-maintenance-system' : 'badge-danger'); ?>">
+                                                            class="status-badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-warning' : 'badge-danger'); ?>">
                                                             <?php echo __(ucfirst($row['status'])); ?>
                                                         </span>
                                                     </td>
@@ -566,28 +566,28 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     </div>
 
     <!-- Modal para Enviar Ativo para Manutenção -->
-    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="maintenanceModalLabel"><?php echo __('Enviar para Manutenção'); ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+                <div class="modal-header" style="background: #2c404a; color: white;">
+                    <h5 class="modal-title" id="maintenanceModalLabel"><?php echo __('Solicitar Manutenção'); ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form id="maintenanceForm">
                     <div class="modal-body">
                         <input type="hidden" id="maintenance_asset_id" name="id_asset">
+                        <p class="text-muted small mb-3"><?php echo __('Descreva o motivo ou problema encontrado no ativo para registro no histórico.'); ?></p>
                         <div class="form-group">
-                            <label for="maintenance_obs"><?php echo __('Observações / Motivo'); ?></label>
-                            <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="3" required
-                                aria-label="Observações sobre a manutenção"></textarea>
+                            <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="4" required
+                                placeholder="<?php echo __('Ex: Tela trincada, cooler barulhento...'); ?>"
+                                style="border-radius: 10px;"></textarea>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
-                        <button type="submit" class="btn btn-maintenance-system"><?php echo __('Confirmar Manutenção'); ?></button>
+                    <div class="modal-footer" style="background: #f8f9fc;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
+                        <button type="submit" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
                     </div>
                 </form>
             </div>

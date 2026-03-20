@@ -4,10 +4,10 @@
  * Interface para registro de parceiros de negócios e prestadores de serviços técnicos.
  * Armazena dados de contato, CNPJ e especialidade de serviço.
  */
-include 'auth.php'; // Proteção de sessão
+include_once 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $_SESSION['language'] == 'pt-BR' ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -41,7 +41,7 @@ include 'auth.php'; // Proteção de sessão
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
-    <?php include 'sidebar_style.php'; ?>
+    <?php include_once 'sidebar_style.php'; ?>
 </head>
 
 <body id="page-top">
@@ -49,81 +49,82 @@ include 'auth.php'; // Proteção de sessão
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div id="content-1">
                     <div class="container-fluid">
                     <h3 class="text-dark mb-1"><?php echo __('Cadastro de Fornecedor'); ?></h3>
                     <div class="card shadow">
                             <div class="card-body">
-                                <form action="inserir_fornecedor.php" method="post">
-                                    <div class="form-row">
-                                        <div class="col-sm-6 col-xl-4 offset-xl-1">
-                                            <div class="col-sm-3 col-xl-4 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('Nome da Empresa / Razão Social'); ?></label><input
-                                                class="form-control" name="empresa" type="text"
-                                                placeholder="<?php echo __('Ex: Dell Technologies'); ?>" required></div>
-                                    </div>        </div>
+                                <form action="inserir_fornecedor.php" method="post" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="nomeEmpresa"><?php echo __('Nome da Empresa / Razão Social'); ?></label>
+                                                <input class="form-control" name="nomeEmpresa" id="nomeEmpresa" type="text" placeholder="<?php echo __('Ex: Dell Technologies'); ?>" required>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-4 col-xl-3 offset-xl-1">
-                                            <div class="col-xl-3 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('CNPJ'); ?></label><input class="form-control"
-                                                name="cnpj" type="text" placeholder="<?php echo __('00.000.000/0000-00'); ?>" id="cnpj"
-                                                required></div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="cnpj"><?php echo __('CNPJ'); ?></label>
+                                                <input class="form-control" name="cnpj" id="cnpj" type="text" placeholder="<?php echo __('00.000.000/0000-00'); ?>" required>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col-sm-4 offset-xl-1">
-                                            <div class="col-sm-3 col-xl-3 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('E-mail de Contato'); ?></label><input
-                                                class="form-control" name="email_contato" type="email"
-                                                placeholder="<?php echo __('contato@empresa.com'); ?>" required></div>
-                                    </div>        </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="email"><?php echo __('E-mail de Contato'); ?></label>
+                                                <input class="form-control" name="email" id="email" type="email" placeholder="<?php echo __('contato@empresa.com'); ?>" required>
+                                            </div>
                                         </div>
-                                        <div class="col-xl-3 offset-xl-1">
-                                            <div class="col-sm-3 col-xl-2 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('Telefone / WhatsApp'); ?></label><input
-                                                class="form-control" name="telefone" type="text"
-                                                placeholder="<?php echo __('(11) 99999-9999'); ?>" id="telefone"></div>
-                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="telefone"><?php echo __('Telefone / WhatsApp'); ?></label>
+                                                <input class="form-control" name="telefone" id="telefone" type="text" placeholder="<?php echo __('(11) 99999-9999'); ?>">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col-sm-4 offset-xl-1">
-                                            <div class="col-sm-3 col-xl-3 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('Serviço Prestado'); ?></label><input
-                                                class="form-control" name="servico" type="text"
-                                                placeholder="<?php echo __('Ex: Manutenção de Hardware'); ?>"></div>
-                                    </div>        </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="servico"><?php echo __('Serviço Prestado'); ?></label>
+                                                <input class="form-control" name="servico" id="servico" type="text" placeholder="<?php echo __('Ex: Manutenção de Hardware'); ?>">
+                                            </div>
                                         </div>
-                                        <div class="col-sm-3 col-xl-3 offset-xl-1">
-                                            <div class="col-sm-3 col-xl-4 offset-xl-1">
-                                        <div class="form-group"><label class="text-gray-600 small font-weight-bold"><?php echo __('Site / URL'); ?></label><input
-                                                class="form-control" name="site" type="url"
-                                                placeholder="<?php echo __('https://www.empresa.com.br'); ?>"></div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="site"><?php echo __('Site / URL'); ?></label>
+                                                <input class="form-control" name="site" id="site" type="url" placeholder="<?php echo __('https://www.empresa.com.br'); ?>">
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="imagem"><?php echo __('Logotipo da Empresa'); ?></label>
+                                                <input class="form-control-file" name="imagem" id="imagem" type="file" accept="image/*">
+                                            </div>
                                         </div>
-                                        <div class="col-sm-2">
-                                            <div class="custom-control custom-switch" style="margin-top: 32px;">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 text-center mt-3">
+                                            <div class="custom-control custom-switch d-inline-block">
                                                 <input type="hidden" name="status" value="Inativo">
-                                            <input type="checkbox" class="custom-control-input" id="statusSwitch"
-                                                name="status" value="Ativo" checked>
-                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
-                                        </div>
+                                                <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
+                                                <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="col-xl-4 offset-xl-4">
-                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user"
-                                            type="submit"
-                                            style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 30px;"><?php echo __('Cadastrar'); ?></button>
-                                    </div>
+                                    <div class="row mt-4">
+                                        <div class="col-md-4 offset-md-4">
+                                            <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;"><?php echo __('Cadastrar'); ?></button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -153,4 +154,5 @@ include 'auth.php'; // Proteção de sessão
     <script src="/assets/js/global_search.js"></script>
 </body>
 
-</html>
+</html> 
+ 

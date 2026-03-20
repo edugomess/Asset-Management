@@ -18,7 +18,8 @@ $dataAtivacao = $_POST['dataAtivacao'];
 $centroDeCusto = $_POST['centroDeCusto'];
 $descricao = $_POST['descricao'];
 
-$imagem = '';
+$imagem = '/assets/img/no-image.png'; // Valor padrão solicitado pelo usuário
+
 if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = 'assets/img/ativos/';
     if (!file_exists($uploadDir)) {

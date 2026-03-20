@@ -3,18 +3,25 @@
  * GESTÃO DE USUÁRIOS: usuarios.php
  * Controle de níveis de acesso, perfis e dados cadastrais dos colaboradores.
  */
+
+// 1. INICIAR SESSÃO SEMPRE NA PRIMEIRA LINHA
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Inclui os arquivos de autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';
+
 // Restrição de acesso: Apenas usuários com nível 'Admin' ou 'Suporte' podem gerenciar usuários
-if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte')) {
     // Redireciona para a página inicial se o usuário não tiver permissão
     header("Location: index.php");
     exit();
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo ($_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
+<html lang="<?= (isset($_SESSION['language']) && $_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -145,7 +152,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 $foto = !empty($row['foto_perfil']) ? htmlspecialchars($row['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg';
                                                 ?>
                                                 <tr class="clickable-row"
-                                                    onclick="window.location='profile.php?id=<?php echo $row['id_usuarios']; ?>'">
+                                                    onclick="window.location='perfil_usuario.php?id=<?php echo $row['id_usuarios']; ?>'">
                                                     <td class="d-flex align-items-center">
                                                         <img src="<?php echo $foto; ?>" class="user-thumbnail"
                                                             alt="<?php echo __('Foto de ') . htmlspecialchars($row['nome']); ?>">
@@ -154,21 +161,24 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['funcao']); ?></td>
-                                                     <td>
-                                                          <?php
-                                                          $nivel_display = !empty($row['nivelUsuario']) && $row['nivelUsuario'] !== '-' ? __($row['nivelUsuario']) : __('Usuário');
-                                                          $badge_color = '#6c757d'; // Default Usuário (Gray)
-                                                          if ($row['nivelUsuario'] === 'Admin') $badge_color = '#2c404a'; // Admin (Theme Dark)
-                                                          if ($row['nivelUsuario'] === 'Suporte') $badge_color = '#36b9cc'; // Suporte (Cyan)
-                                                          ?>
-                                                         <span class="badge" style="background-color: <?php echo $badge_color; ?>; color: white;">
-                                                             <?php echo htmlspecialchars($nivel_display); ?>
-                                                         </span>
-                                                     </td>
+                                                    <td>
+                                                        <?php
+                                                        $nivel_display = !empty($row['nivelUsuario']) && $row['nivelUsuario'] !== '-' ? __($row['nivelUsuario']) : __('Usuário');
+                                                        $badge_color = '#6c757d'; // Default Usuário (Gray)
+                                                        if ($row['nivelUsuario'] === 'Admin')
+                                                            $badge_color = '#2c404a'; // Admin (Theme Dark)
+                                                        if ($row['nivelUsuario'] === 'Suporte')
+                                                            $badge_color = '#36b9cc'; // Suporte (Cyan)
+                                                        ?>
+                                                        <span class="status-badge"
+                                                            style="background-color: <?php echo $badge_color; ?>; color: white;">
+                                                            <?php echo htmlspecialchars($nivel_display); ?>
+                                                        </span>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['unidade']); ?></td>
                                                     <td>
                                                         <span
-                                                            class="badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>">
+                                                            class="status-badge badge-<?php echo ($row['status'] === 'Ativo') ? 'success' : 'danger'; ?>">
                                                             <?php echo __(htmlspecialchars($row['status'])); ?>
                                                         </span>
                                                     </td>
@@ -176,12 +186,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         <!-- Ações de Edição e Exclusão -->
                                                         <a class="btn btn-warning"
                                                             href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
-                                                            title="<?php echo __('Editar Usuário'); ?>" onclick="event.stopPropagation();">
+                                                            title="<?php echo __('Editar Usuário'); ?>"
+                                                            onclick="event.stopPropagation();">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <a class="btn btn-danger"
                                                             href="apagar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
-                                                            title="<?php echo __('Excluir Usuário'); ?>" onclick="event.stopPropagation();">
+                                                            title="<?php echo __('Excluir Usuário'); ?>"
+                                                            onclick="event.stopPropagation();">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>
@@ -240,4 +252,5 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 </body>
 
 </html>
-<?php mysqli_close($conn); // Fecha a conexão com o banco de dados ?>
+<?php mysqli_close($conn); // Fecha a conexão com o banco de dados 
+?>

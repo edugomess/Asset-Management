@@ -3,21 +3,21 @@ include 'auth.php';
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_usuarios = $_POST['id_usuarios'];
-    $nome = $_POST['nome'];
-    $sobrenome = $_POST['sobrenome'];
-    $usuarioAD = $_POST['usuarioAD'];
-    $funcao = $_POST['funcao'];
-    $dataNascimento = $_POST['dataNascimento'];
-    $email = $_POST['email'];
-    $centroDeCusto = $_POST['centroDeCusto'];
-    $matricula = $_POST['matricula'];
-    $telefone = $_POST['telefone'];
-    $senha = $_POST['senha']; // Nova senha enviada no formulário
-    $unidade = $_POST['unidade']; // Nova unidade enviada no formulário
-    $status = $_POST['status']; // Status update
-    $nivelUsuario = $_POST['nivelUsuario']; // Nível de usuário enviado no formulário
-    $tipoContrato = $_POST['tipoContrato']; // Novo tipo de contrato
+    $id_usuarios = $_POST['id_usuarios'] ?? 0;
+    $nome = $_POST['nome'] ?? '';
+    $sobrenome = $_POST['sobrenome'] ?? '';
+    $usuarioAD = $_POST['usuarioAD'] ?? '';
+    $funcao = $_POST['funcao'] ?? '';
+    $dataNascimento = $_POST['dataNascimento'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $centroDeCusto = $_POST['centroDeCusto'] ?? '';
+    $matricula = $_POST['matricula'] ?? '';
+    $telefone = $_POST['telefone'] ?? '';
+    $senha = $_POST['senha'] ?? ''; // Nova senha enviada no formulário
+    $unidade = $_POST['unidade'] ?? ''; // Nova unidade enviada no formulário
+    $status = $_POST['status'] ?? ''; // Status update
+    $nivelUsuario = $_POST['nivelUsuario'] ?? ''; // Nível de usuário enviado no formulário
+    $tipoContrato = $_POST['tipoContrato'] ?? ''; // Novo tipo de contrato
 
     $cpf = isset($_POST['cpf']) ? preg_replace('/[^\d]/', '', $_POST['cpf']) : '';
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (mysqli_num_rows($result_check) > 0) {
         echo "<script>
-                alert('<?php echo __('Erro: O nome de usuário AD já está em uso. Escolha outro.'); ?>');
+                alert('" . __('Erro: O nome de usuário AD já está em uso. Escolha outro.') . "');
                 window.history.back();
               </script>";
         exit();
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             // Se não enviou foto, não faz nada (ou apenas confirma sucesso para não dar erro no JS)
             echo "<script>
-                    alert('<?php echo __('Nenhuma alteração realizada (somente a foto pode ser alterada).'); ?>');
+                    alert('" . __('Nenhuma alteração realizada (somente a foto pode ser alterada).') . "');
                     window.location.href = 'profile.php';
                   </script>";
             exit();
@@ -131,9 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (mysqli_query($conn, $query_update)) {
-        $redirect = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'profile.php' : 'usuarios.php';
+        $redirect = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'profile.php' : 'perfil_usuario.php?id=' . $id_usuarios;
         echo "<script>
-                alert('<?php echo __('Atualizado com sucesso!'); ?>');
+                alert('" . __('Atualizado com sucesso!') . "');
                 window.location.href = '$redirect';
               </script>";
     } else {

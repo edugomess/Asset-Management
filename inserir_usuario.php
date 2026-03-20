@@ -27,7 +27,8 @@ if ($senha !== $confirmarSenha) {
 }
 
 // Upload da foto de perfil
-$foto_perfil = null;
+$foto_perfil = '/assets/img/no-image.png'; // Valor padrão solicitado pelo usuário
+
 if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
     $diretorio = "assets/img/avatars/";
     if (!is_dir($diretorio)) {

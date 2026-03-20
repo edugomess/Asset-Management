@@ -73,7 +73,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <a class="btn btn-success btn-block active text-white pulse animated btn-user"
                                         role="button"
                                         style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;display: flex;align-items: center;justify-content: center;"
-                                        href="/cadastro_de%20centro_de_custo.php"><?php echo __('Cadastrar Novo'); ?></a>
+                                        href="/cadastro_de_centro_de_custo.php"><?php echo __('Cadastrar Novo'); ?></a>
                                 </div>
                             </div>
 

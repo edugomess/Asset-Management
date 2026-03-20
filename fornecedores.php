@@ -54,6 +54,40 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <!-- Estilos Customizados do Sistema -->
     <?php include 'sidebar_style.php'; ?>
     <?php include 'pagination_style.php'; ?>
+    <style>
+        .asset-thumbnail {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .asset-placeholder {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #f8f9fc;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #b7b9cc;
+        }
+        .badge-success { background-color: #28a745 !important; color: #fff !important; }
+        .badge-danger { background-color: #dc3545 !important; color: #fff !important; }
+
+        /* Estilo para Linha Clicável */
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .clickable-row:hover {
+            background-color: rgba(44, 64, 74, 0.05) !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -108,6 +142,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th><?php echo __('Telefone'); ?></th>
                                             <th><?php echo __('Serviço'); ?></th>
                                             <th><?php echo __('CNPJ'); ?></th>
+                                            <th><?php echo __('Status'); ?></th>
                                             <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
@@ -146,13 +181,23 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         // Lista os fornecedores na tabela
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
-                                                echo "<tr>
-                                                    <td>" . htmlspecialchars($row['nomeEmpresa']) . "</td>
+                                                $status_label = ($row['status'] == 'Ativo') ? 'success' : 'danger';
+                                                $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
+                                                
+                                                echo "<tr class='clickable-row' data-href='perfil_fornecedor.php?id=" . $row['id_fornecedor'] . "'>
+                                                    <td class='d-flex align-items-center'>";
+                                                if ($foto) {
+                                                    echo "<img src='$foto' class='asset-thumbnail'>";
+                                                } else {
+                                                    echo "<div class='asset-placeholder'><i class='fas fa-building'></i></div>";
+                                                }
+                                                echo htmlspecialchars($row['nomeEmpresa']) . "</td>
                                                     <td>" . htmlspecialchars($row['email']) . "</td>
                                                     <td>" . htmlspecialchars($row['telefone']) . "</td>
                                                     <td>" . htmlspecialchars($row['servico']) . "</td>
                                                     <td>" . htmlspecialchars($row['cnpj']) . "</td>
-                                                    <td>
+                                                    <td><span class='status-badge badge-$status_label'>" . __($row['status'] ?? 'Inativo') . "</span></td>
+                                                    <td class='action-cell'>
                                                         <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "'><i class='fas fa-edit'></i></a>
                                                         <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "'><i class='fas fa-trash'></i></a>
                                                     </td>
@@ -170,6 +215,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th><?php echo __('Telefone'); ?></th>
                                             <th><?php echo __('Serviço'); ?></th>
                                             <th><?php echo __('CNPJ'); ?></th>
+                                            <th><?php echo __('Status'); ?></th>
                                             <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </tfoot>
@@ -226,6 +272,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".clickable-row td:not(.action-cell)").click(function() {
+                window.location = $(this).closest(".clickable-row").data("href");
+            });
+        });
+    </script>
 </body>
 
 </html>

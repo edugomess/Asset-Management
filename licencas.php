@@ -225,7 +225,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo $row['data_expiracao'] ? date('d/m/Y', strtotime($row['data_expiracao'])) : 'N/A'; ?>
                                                     </td>
                                                     <td><span
-                                                            class="badge <?php echo $status_badge; ?>"><?php echo __($row['status']); ?></span>
+                                                            class="status-badge <?php echo $status_badge; ?>"><?php echo __($row['status']); ?></span>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">

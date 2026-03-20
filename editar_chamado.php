@@ -1,11 +1,16 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+/**
+ * DETALHES E EDIÇÃO DE CHAMADO: editar_chamado.php
+ * Interface para técnicos e usuários visualizarem e atualizarem tickets.
+ * Gerencia status, atribuição de responsável, SLA (congelamento) e histórico de notas.
+ */
+include_once 'auth.php'; // Proteção de sessão
+include_once 'conexao.php'; // Banco de Dados
 
 $id_chamado = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = '';
 
-// Processar atualização
+// Processar atualização (POST para si mesmo)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_POST['nova_nota']) || isset($_POST['notas_existentes']))) {
     // Busca os valores atuais do banco como base (caso campos venham desabilitados no POST)
     $sql_atual = "SELECT status, responsavel_id, prioridade FROM chamados WHERE id = $id_chamado";
@@ -17,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
     $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : $chamado_base['prioridade'];
 
     // Restrição de Segurança: Se não for Admin/Suporte, ignora alterações de status, responsável e prioridade
-    // mesmo que tentem enviar via ferramentas de desenvolvedor (já coberto acima pela lógica de base, mas mantendo para clareza)
     $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
     if (!$is_tecnico) {
         $novo_status = $chamado_base['status'];
@@ -47,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         foreach ($_POST['notas_existentes'] as $i => $texto) {
             $i = intval($i);
             if (isset($notas_array[$i])) {
-                // Normaliza quebras de linha para comparação confiável
                 $texto_original = str_replace("\r\n", "\n", $notas_array[$i]['texto'] ?? '');
                 $novo_texto = str_replace("\r\n", "\n", trim($texto));
 
@@ -76,30 +79,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
     if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
         $msg = '<div class="alert alert-danger"><strong>' . __('Erro:') . '</strong> ' . __('Para alterar o status (sair de "Aberto"), é obrigatório atribuir um') . ' <strong>' . __('Responsável') . '</strong> ' . __('ao chamado.') . '</div>';
     } else {
-        // Buscar status atual para lógica de congelamento
-        $sql_query_atual = "SELECT status, data_ultimo_congelamento FROM chamados WHERE id = $id_chamado";
-        $res_atual = $conn->query($sql_query_atual);
-        $chamado_atual = $res_atual->fetch_assoc();
-
-        // LÓGICA DE CONGELAMENTO DE SLA: Pausa o contador quando o chamado está "Pendente"
+        // LÓGICA DE CONGELAMENTO DE SLA e DATA FECHAMENTO
         $congelamento_sql = "";
-        $status_anterior = $chamado_atual['status'];
-
-        // Se mudou PARA Pendente, registra o início do congelamento
-        if ($status_anterior !== 'Pendente' && $novo_status === 'Pendente') {
+        $fechamento_sql = "";
+        
+        $sql_old = "SELECT status, data_ultimo_congelamento FROM chamados WHERE id = $id_chamado";
+        $res_old = $conn->query($sql_old);
+        $old = $res_old->fetch_assoc();
+        
+        if ($old['status'] !== 'Pendente' && $novo_status === 'Pendente') {
             $congelamento_sql = ", data_ultimo_congelamento = NOW()";
-        }
-        // Se saiu de Pendente, calcula o tempo e acumula os minutos congelados
-        elseif ($status_anterior === 'Pendente' && $novo_status !== 'Pendente') {
-            $data_inicio = $chamado_atual['data_ultimo_congelamento'];
-            if (!empty($data_inicio)) {
-                $minutos_adicionais = "TIMESTAMPDIFF(MINUTE, '$data_inicio', NOW())";
-                $congelamento_sql = ", tempo_congelado_minutos = tempo_congelado_minutos + $minutos_adicionais, data_ultimo_congelamento = NULL";
+        } elseif ($old['status'] === 'Pendente' && $novo_status !== 'Pendente') {
+            $inicio = $old['data_ultimo_congelamento'];
+            if (!empty($inicio)) {
+                $congelamento_sql = ", tempo_congelado_minutos = tempo_congelado_minutos + TIMESTAMPDIFF(MINUTE, '$inicio', NOW()), data_ultimo_congelamento = NULL";
             }
         }
 
-        // Lógica para data_fechamento (Restaurada)
-        $fechamento_sql = "";
         $status_fechados = ['Resolvido', 'Fechado', 'Cancelado'];
         if (in_array($novo_status, $status_fechados)) {
             $fechamento_sql = ", data_fechamento = NOW()";
@@ -110,16 +106,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
-            $msg = '<div class="alert alert-success">' . __('Chamado atualizado com sucesso!') . ' <a href="chamados.php">' . __('Voltar para lista') . '</a></div>';
-            // Atualizar objeto $chamado para refletir mudanças se necessário (ou redirecionar)
-            $chamado['status'] = $novo_status;
+            $msg = '<div class="alert alert-success">' . __('Chamado atualizado com sucesso!') . '</div>';
         } else {
             $msg = '<div class="alert alert-danger">Erro ao atualizar: ' . $conn->error . '</div>';
         }
     }
 }
 
-// Buscar dados do chamado (Solicitante e Responsável)
+// Buscar dados finais do chamado
 $sql = "SELECT c.*, 
                u.nome AS sol_nome, u.sobrenome AS sol_sobrenome,
                r.nome AS resp_nome, r.sobrenome AS resp_sobrenome 
@@ -130,59 +124,49 @@ $sql = "SELECT c.*,
 $result = $conn->query($sql);
 
 if ($result->num_rows == 0) {
-    die(__('Chamado não encontrado.'));
+    header("Location: chamados.php");
+    exit();
 }
 $chamado = $result->fetch_assoc();
 
-// Buscar lista de usuários para Responsável (Apenas Admin e Suporte)
+// Lista de Técnicos
 $sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios WHERE nivelUsuario IN ('Admin', 'Suporte') ORDER BY nome";
 $result_users = $conn->query($sql_users);
 
 $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
 
-// Buscar configurações de IA (Geral e Chamados)
-$sql_config_ia = "SELECT ia_agente_ativo, ia_chamados_ativo FROM configuracoes_alertas LIMIT 1";
-$res_config_ia = mysqli_query($conn, $sql_config_ia);
-$ia_geral_ativo = true;
-$ia_chamados_ativo = true;
-if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
-    $row_ia = mysqli_fetch_assoc($res_config_ia);
-    $ia_geral_ativo = (bool) ($row_ia['ia_agente_ativo'] ?? 1);
-    $ia_chamados_ativo = (bool) ($row_ia['ia_chamados_ativo'] ?? 1);
+// Configurações de IA
+$sql_ia = "SELECT ia_agente_ativo, ia_chamados_ativo FROM configuracoes_alertas LIMIT 1";
+$res_ia = mysqli_query($conn, $sql_ia);
+$ia_ativo = true;
+if ($res_ia && mysqli_num_rows($res_ia) > 0) {
+    $row_ia = mysqli_fetch_assoc($res_ia);
+    $ia_ativo = (bool)($row_ia['ia_agente_ativo'] && $row_ia['ia_chamados_ativo']);
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title><?php echo __('Editar Chamado'); ?> #<?php echo $chamado['id']; ?></title>
+    <title><?php echo __('Editar Chamado'); ?> #<?php echo $chamado['id']; ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
-    <link rel="stylesheet" href="/assets/css/Montserrat.css">
-    <link rel="stylesheet" href="/assets/css/Nunito.css">
-    <link rel="stylesheet" href="/assets/css/Raleway.css">
-    <link rel="stylesheet" href="/assets/css/Roboto.css">
+    <link rel="stylesheet" href="/assets/css/Montserrat.css?h=d6a29779d310462e7fcdde7b9a80e0db">
+    <link rel="stylesheet" href="/assets/css/Nunito.css?h=5f41e73f827c7b56616237a1da13b6e2">
+    <link rel="stylesheet" href="/assets/css/Raleway.css?h=19488c1c6619bc9bd5c02de5f7ffbfd4">
+    <link rel="stylesheet" href="/assets/css/Roboto.css?h=193916adb9d7af47fe74d9a2270caac3">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
-    <link rel="stylesheet" href="/assets/css/Animated-numbers-section.css">
-    <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css">
-    <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css">
-    <link rel="stylesheet" href="/assets/css/Footer-Dark.css">
-    <link rel="stylesheet" href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="/assets/css/Map-Clean.css">
-    <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css">
-    <link rel="stylesheet" href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu-1.css">
-    <link rel="stylesheet" href="/assets/css/Password-Strenght-Checker---Ambrodu.css">
-    <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css">
-    <link rel="stylesheet" href="/assets/css/TR-Form.css">
-    <?php include 'sidebar_style.php'; ?>
+    <?php include_once 'sidebar_style.php'; ?>
+    <style>
+        .lightbox-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; }
+        .lightbox-close { position:absolute; top:20px; right:30px; color:#fff; font-size:35px; cursor:pointer; z-index:10000; line-height:1; }
+        .nota-historico { border: 1px solid #e3e6f0; border-radius: 8px; padding: 12px; background: #f8f9fc; position: relative; }
+    </style>
 </head>
 
 <body id="page-top">
@@ -190,80 +174,134 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><?php echo __('Detalhes do Chamado #'); ?><?php echo $chamado['id']; ?></h3>
-                    <div class="text-center"><?php echo $msg; ?></div>
+                    <h3 class="text-dark mb-1"><?php echo __('Detalhes do Chamado'); ?> #<?php echo $chamado['id']; ?></h3>
+                    <div class="text-center mb-3"><?php echo $msg; ?></div>
 
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary"><?php echo __('Informações'); ?></h6>
-                        </div>
+                    <div class="card shadow">
                         <div class="card-body">
-                            <form method="post">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Título'); ?></label>
-                                        <input type="text" class="form-control"
-                                            value="<?php echo htmlspecialchars($chamado['titulo']); ?>" readonly>
+                            <form method="post" id="form-editar-chamado">
+                                <!-- Row 1: Identificação Principal -->
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Assunto / Título'); ?></label>
+                                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['titulo']); ?>" readonly>
+                                        </div>
                                     </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
-                                        <input type="text" class="form-control"
-                                            value="<?php echo htmlspecialchars($chamado['categoria']); ?>" readonly>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
+                                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['categoria']); ?>" readonly>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Solicitante'); ?></label>
-                                        <input type="text" class="form-control"
-                                            value="<?php echo htmlspecialchars($chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome']); ?>"
-                                            readonly>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Data Abertura'); ?></label>
-                                        <input type="text" class="form-control"
-                                            value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>"
-                                            readonly>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-4">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Prioridade'); ?></label>
-                                        <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
-                                            <option value="Baixa" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Baixa' ? 'selected' : ''; ?>><?php echo __('Baixa'); ?></option>
-                                            <option value="Média" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Média' ? 'selected' : ''; ?>><?php echo __('Média'); ?></option>
-                                            <option value="Alta" <?php echo ($chamado['prioridade'] ?? 'Média') == 'Alta' ? 'selected' : ''; ?>><?php echo __('Alta'); ?></option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="text-gray-600 small font-weight-bold"><?php echo __('Descrição'); ?></label>
-                                    <textarea id="chamado-descricao" class="form-control" rows="5"
-                                        readonly><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
                                 </div>
 
-                                <!-- SUGESTÃO DE IA -->
-                                <?php if ($ia_geral_ativo && $ia_chamados_ativo): ?>
-                                    <div class="form-group mt-3">
-                                        <div class="card bg-light border-left-info shadow-sm">
-                                            <div class="card-body py-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="mr-3">
-                                                        <i class="fas fa-magic fa-lg text-info"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="small text-info font-weight-bold text-uppercase">
-                                                            <?php echo __('Sugestão de Ação (IA)'); ?></div>
-                                                        <div id="ai-suggestion-text" class="text-dark small">
-                                                            <span class="spinner-border spinner-border-sm text-info"
-                                                                role="status"></span> <?php echo __('Analisando chamado...'); ?>
+                                <!-- Row 2: Solicitante e Cronologia -->
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Solicitante'); ?></label>
+                                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome']); ?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Abertura'); ?></label>
+                                            <input type="text" class="form-control" value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Prioridade'); ?></label>
+                                            <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
+                                                <option value="Baixa" <?php echo ($chamado['prioridade'] == 'Baixa') ? 'selected' : ''; ?>><?php echo __('Baixa'); ?></option>
+                                                <option value="Média" <?php echo ($chamado['prioridade'] == 'Média' || empty($chamado['prioridade'])) ? 'selected' : ''; ?>><?php echo __('Média'); ?></option>
+                                                <option value="Alta" <?php echo ($chamado['prioridade'] == 'Alta') ? 'selected' : ''; ?>><?php echo __('Alta'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Atribuição e Status -->
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Responsável Técnico'); ?></label>
+                                            <select class="form-control" name="responsavel_id" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
+                                                <option value=""><?php echo __('Não Atribuído'); ?></option>
+                                                <?php
+                                                if ($result_users && $result_users->num_rows > 0) {
+                                                    mysqli_data_seek($result_users, 0);
+                                                    while ($u = $result_users->fetch_assoc()) {
+                                                        $sel = ($chamado['responsavel_id'] == $u['id_usuarios']) ? 'selected' : '';
+                                                        echo '<option value="'.$u['id_usuarios'].'" '.$sel.'>'.htmlspecialchars($u['nome'].' '.$u['sobrenome']).'</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Status Atual'); ?></label>
+                                            <select class="form-control" name="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
+                                                <option value="Aberto" <?php echo $chamado['status'] == 'Aberto' ? 'selected' : ''; ?>><?php echo __('Aberto'); ?></option>
+                                                <option value="Em Atendimento" <?php echo $chamado['status'] == 'Em Atendimento' ? 'selected' : ''; ?>><?php echo __('Em Atendimento'); ?></option>
+                                                <option value="Pendente" <?php echo $chamado['status'] == 'Pendente' ? 'selected' : ''; ?>><?php echo __('Pendente'); ?></option>
+                                                <option value="Resolvido" <?php echo $chamado['status'] == 'Resolvido' ? 'selected' : ''; ?>><?php echo __('Resolvido'); ?></option>
+                                                <option value="Fechado" <?php echo $chamado['status'] == 'Fechado' ? 'selected' : ''; ?>><?php echo __('Fechado'); ?></option>
+                                                <option value="Cancelado" <?php echo $chamado['status'] == 'Cancelado' ? 'selected' : ''; ?>><?php echo __('Cancelado'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> <?php echo __('Anexo / Evidência'); ?></label>
+                                            <?php if (!empty($chamado['anexo'])): ?>
+                                                <div class="d-flex align-items-center bg-light p-2 rounded border">
+                                                    <?php 
+                                                    $ext = strtolower(pathinfo($chamado['anexo'], PATHINFO_EXTENSION));
+                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp'])): ?>
+                                                        <img src="/<?php echo htmlspecialchars($chamado['anexo']); ?>" 
+                                                            class="img-thumbnail mr-2" style="width: 45px; height: 45px; object-fit: cover; cursor: pointer;"
+                                                            onclick="document.getElementById('imgLightbox').style.display='flex'">
+                                                        <small class="text-primary" style="cursor: pointer;" onclick="document.getElementById('imgLightbox').style.display='flex'">
+                                                            <?php echo __('Ver Imagem'); ?>
+                                                        </small>
+                                                    <?php else: ?>
+                                                        <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank" class="btn btn-outline-primary btn-sm btn-block">
+                                                            <i class="fas fa-file-download mr-1"></i> <?php echo __('Baixar Arquivo'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <input type="text" class="form-control" value="<?php echo __('Nenhum anexo'); ?>" readonly>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sugestão de IA -->
+                                <?php if ($ia_ativo): ?>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="card bg-light border-left-info shadow-sm">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-magic fa-lg text-info mr-3"></i>
+                                                        <div>
+                                                            <div class="small text-info font-weight-bold text-uppercase"><?php echo __('Sugestão da IA'); ?></div>
+                                                            <div id="ai-suggestion" class="text-dark small">
+                                                                <span class="spinner-border spinner-border-sm text-info"></span> <?php echo __('Analisando chamado...'); ?>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,135 +310,77 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if (!empty($chamado['anexo'])): ?>
-                                    <div class="form-group">
-                                        <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> <?php echo __('Anexo'); ?></label>
-                                        <div
-                                            style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 15px; background: #f8f9fc; display: flex; align-items: center; gap: 12px;">
-                                            <?php
-                                            $ext = strtolower(pathinfo($chamado['anexo'], PATHINFO_EXTENSION));
-                                            $is_image = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
-                                            if ($is_image): ?>
-                                                <img src="/<?php echo htmlspecialchars($chamado['anexo']); ?>"
-                                                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #dee2e6; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
-                                                    alt="Anexo do chamado"
-                                                    onclick="document.getElementById('imageModal').style.display='flex'"
-                                                    onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)'"
-                                                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'"
-                                                    title="Clique para expandir">
-                                                <small class="text-muted"><i class="fas fa-search-plus"></i> <?php echo __('Clique para expandir'); ?></small>
-
-                                                <!-- Image Lightbox Modal -->
-                                                <div id="imageModal" onclick="if(event.target===this)this.style.display='none'"
-                                                    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
-                                                    <span onclick="document.getElementById('imageModal').style.display='none'"
-                                                        style="position:absolute; top:20px; right:30px; color:#fff; font-size:35px; cursor:pointer; z-index:10000; line-height:1;">&times;</span>
-                                                    <img src="/<?php echo htmlspecialchars($chamado['anexo']); ?>"
-                                                        style="max-width:90%; max-height:90%; border-radius:8px; box-shadow:0 8px 32px rgba(0,0,0,0.5);"
-                                                        alt="Anexo expandido">
-                                                </div>
-                                                <?php
-                                            else: ?>
-                                                <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank"
-                                                    class="btn btn-outline-primary btn-sm">
-                                                    <i
-                                                        class="fas fa-<?php echo ($ext === 'pdf') ? 'file-pdf' : 'file-word'; ?>"></i>
-                                                    <?php echo __('Baixar Anexo'); ?> (<?php echo strtoupper($ext); ?>)
-                                                </a>
-                                                <?php
-                                            endif; ?>
+                                <!-- Descrição Detalhada -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Descrição do Problema'); ?></label>
+                                            <textarea class="form-control" rows="4" readonly style="background: #f8f9fc;"><?php echo htmlspecialchars($chamado['descricao']); ?></textarea>
                                         </div>
                                     </div>
-                                    <?php
-                                endif; ?>
+                                </div>
 
-                                <div class="form-group">
-                                    <label class="text-gray-600 small font-weight-bold"><strong><?php echo __('Notas de Resolução'); ?></strong> <small class="text-muted">(<?php echo __('Registre aqui as ações realizadas para resolver o chamado'); ?>)</small></label>
-                                    <?php
-                                    $notas_display = [];
-                                    $raw = $chamado['nota_resolucao'] ?? '';
-                                    if (!empty($raw)) {
-                                        $dec = json_decode($raw, true);
-                                        if (json_last_error() === JSON_ERROR_NONE && is_array($dec)) {
-                                            $notas_display = $dec;
-                                        } else {
-                                            // Fallback para nomes caso a nota seja legada (texto simples)
-                                            $autor_legacy = 'Sistema';
-                                            if (!empty($chamado['resp_nome'])) {
-                                                $autor_legacy = $chamado['resp_nome'] . ' ' . $chamado['resp_sobrenome'];
-                                            } elseif (!empty($chamado['sol_nome'])) {
-                                                $autor_legacy = $chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome'];
+                                <hr>
+
+                                <!-- Histórico de Notas -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="text-gray-600 small font-weight-bold"><strong><?php echo __('Histórico de Ações / Notas de Resolução'); ?></strong></label>
+                                        <div id="historico-notas">
+                                            <?php
+                                            $notas = [];
+                                            if (!empty($chamado['nota_resolucao'])) {
+                                                $dec = json_decode($chamado['nota_resolucao'], true);
+                                                if (is_array($dec)) $notas = $dec;
                                             }
-                                            $notas_display = [['texto' => $raw, 'data' => date('d/m/Y H:i', strtotime($chamado['data_abertura'])), 'usuario' => $autor_legacy]];
-                                        }
-                                    }
-                                    if (count($notas_display) > 0):
-                                        foreach ($notas_display as $idx => $nota_item): ?>
-                                            <div class="nota-historico mb-2"
-                                                style="border: 1px solid #e3e6f0; border-radius: 8px; padding: 12px; background: #f8f9fc; position: relative;">
-                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-user"></i>
-                                                        <?php
-                                                        $autor_display = $nota_item['usuario'] ?? 'Sistema';
-                                                        if ($autor_display === 'Sistema' && !empty($chamado['resp_nome'])) {
-                                                            $autor_display = $chamado['resp_nome'] . ' ' . $chamado['resp_sobrenome'];
-                                                        }
-                                                        echo htmlspecialchars($autor_display);
-                                                        ?>
-                                                        &mdash; <i class="fas fa-clock"></i>
-                                                        <?php echo htmlspecialchars($nota_item['data'] ?? ''); ?>
-                                                        <?php if (!empty($nota_item['editado_em'])): ?>
-                                                            <span class="badge badge-warning ml-1"
-                                                                style="font-size: 85%; font-weight: 600; font-style: italic;">
-                                                                <i class="fas fa-pencil-alt"></i> <?php echo __('Editado em'); ?>
-                                                                <?php echo htmlspecialchars($nota_item['editado_em']); ?>
-                                                            </span>
-                                                            <?php
-                                                        endif; ?>
-                                                    </small>
-                                                    <?php if (isset($_SESSION['nome_usuario']) && ($nota_item['usuario'] ?? '') === $_SESSION['nome_usuario']): ?>
-                                                        <button type="button" class="btn btn-outline-warning btn-sm"
-                                                            onclick="toggleEditNota(this, <?php echo $idx; ?>)" title="Editar nota">
-                                                            <i class="fas fa-edit"></i> <?php echo __('Editar'); ?>
-                                                        </button>
-                                                    <?php endif; ?>
+                                            foreach ($notas as $idx => $nota): ?>
+                                                <div class="nota-historico mb-2 shadow-sm border">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($nota['usuario'] ?? 'Sistema'); ?>
+                                                            &mdash; <i class="fas fa-clock mx-1"></i><?php echo htmlspecialchars($nota['data'] ?? ''); ?>
+                                                            <?php if (!empty($nota['editado_em'])): ?>
+                                                                <span class="badge badge-warning ml-2 font-italic"><i class="fas fa-edit"></i> <?php echo __('Editado'); ?></span>
+                                                            <?php endif; ?>
+                                                        </small>
+                                                        <?php if (isset($_SESSION['nome_usuario']) && ($nota['usuario'] ?? '') === $_SESSION['nome_usuario']): ?>
+                                                            <button type="button" class="btn btn-link text-warning p-0" onclick="toggleEditNota(this, <?php echo $idx; ?>)">
+                                                                <i class="fas fa-edit"></i> <?php echo __('Editar'); ?>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <textarea class="form-control bg-light border-0" name="notas_existentes[<?php echo $idx; ?>]" rows="2" readonly><?php echo htmlspecialchars($nota['texto']); ?></textarea>
                                                 </div>
-                                                <textarea class="form-control" name="notas_existentes[<?php echo $idx; ?>]"
-                                                    rows="2" readonly
-                                                    style="background: #eaecf4; cursor: default;"><?php echo htmlspecialchars($nota_item['texto']); ?></textarea>
-                                            </div>
-                                            <?php
-                                        endforeach;
-                                    endif; ?>
-
-                                    <!-- Nova nota -->
-                                    <div class="mt-2"
-                                        style="border: 2px dashed #b7c2d0; border-radius: 8px; padding: 12px; background: #fff;">
-                                        <label class="mb-1"><i class="fas fa-plus-circle text-primary"></i>
-                                            <strong><?php echo __('Adicionar Nova Nota'); ?></strong></label>
-                                        <textarea class="form-control mb-2" name="nova_nota" rows="3"
-                                            placeholder="<?php echo __('Descreva as ações tomadas, a solução aplicada ou observações relevantes...'); ?>"></textarea>
-                                        <div class="text-right">
-                                            <button type="submit" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-comment"></i> <?php echo __('Comentar'); ?>
-                                            </button>
+                                            <?php endforeach; ?>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="alert alert-info">
-                                    <strong><?php echo __('Alterar Status'); ?></strong>
+                                <!-- Adicionar Nota -->
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="p-3 bg-white border rounded" style="border: 2px dashed #d1d3e2 !important;">
+                                            <label class="font-weight-bold text-primary mb-1"><i class="fas fa-plus-circle mr-1"></i> <?php echo __('Adicionar Comentário ou Ação Próxima'); ?></label>
+                                            <textarea class="form-control mb-2" name="nova_nota" rows="3" placeholder="<?php echo __('Descreva o que foi feito ou o diagnóstico...'); ?>"></textarea>
+                                            <div class="text-right">
+                                                <button type="submit" class="btn btn-primary btn-sm shadow-sm">
+                                                    <i class="fas fa-comment mr-1"></i> <?php echo __('Comentar'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-row mt-4 mb-4">
+
+                                <!-- Action Buttons -->
+                                <div class="row mt-4 mb-3">
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
-                                        <a class="btn btn-secondary btn-user" href="chamados.php" 
+                                        <a class="btn btn-secondary" href="chamados.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
                                             <?php echo __('Voltar'); ?>
                                         </a>
-                                        <button class="btn btn-primary btn-user" type="submit" 
+                                        <button class="btn btn-success active pulse animated" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
-                                            <?php echo __('Salvar Alterações'); ?>
+                                            <i class="fas fa-save mr-2"></i><?php echo __('Salvar Alterações'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -409,66 +389,56 @@ if ($res_config_ia && mysqli_num_rows($res_config_ia) > 0) {
                     </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Lightbox Modal -->
+            <div id="imgLightbox" class="lightbox-modal" onclick="if(event.target===this)this.style.display='none'">
+                <span class="lightbox-close" onclick="document.getElementById('imgLightbox').style.display='none'">&times;</span>
+                <img src="/<?php echo htmlspecialchars($chamado['anexo'] ?? ''); ?>" style="max-width:90%; max-height:90%; border-radius:8px; shadow: 0 5px 15px rgba(0,0,0,.5);">
+            </div>
+
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    
     <script>
         $(document).ready(function () {
-            // Carregar sugestão da IA para o chamado
-            const titulo = "<?php echo addslashes($chamado['titulo']); ?>";
-            const descricao = <?php echo json_encode($chamado['descricao']); ?>;
-
+            // IA Suggestion Fetch
+            <?php if ($ia_ativo): ?>
+            const t = <?php echo json_encode($chamado['titulo']); ?>;
+            const d = <?php echo json_encode($chamado['descricao']); ?>;
             fetch('agent_chamado.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `titulo=${encodeURIComponent(titulo)}&descricao=${encodeURIComponent(descricao)}`
+                body: `titulo=${encodeURIComponent(t)}&descricao=${encodeURIComponent(d)}`
             })
-                .then(response => response.json())
-                .then(data => {
-                    const textContainer = document.getElementById('ai-suggestion-text');
-                    let reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    reply = reply.replace(/\n/g, '<br>');
-                    textContainer.innerHTML = reply;
-                })
-                .catch(error => {
-                    document.getElementById('ai-suggestion-text').innerHTML = '⚠️ <?php echo __('Não foi possível obter sugestão da IA.'); ?>';
-                });
+            .then(r => r.json())
+            .then(data => {
+                let txt = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                $('#ai-suggestion').html(txt);
+            })
+            .catch(() => $('#ai-suggestion').html('⚠️ <?php echo __('Erro ao obter sugestão da IA.'); ?>'));
+            <?php endif; ?>
         });
 
         function toggleEditNota(btn, idx) {
-            var container = btn.closest('.nota-historico');
-            var textarea = container.querySelector('textarea');
-
-            if (textarea.readOnly) {
-                // Modo Edição
-                textarea.readOnly = false;
-                textarea.style.background = '#fff';
-                textarea.style.cursor = 'text';
-                textarea.focus();
-                btn.innerHTML = '<i class="fas fa-check"></i> <?php echo __('Pronto'); ?>';
-                btn.classList.remove('btn-outline-warning');
-                btn.classList.add('btn-success', 'text-white');
+            const container = $(btn).closest('.nota-historico');
+            const area = container.find('textarea');
+            if (area.prop('readonly')) {
+                area.prop('readonly', false).removeClass('bg-light').addClass('bg-white border').focus();
+                $(btn).html('<i class="fas fa-check"></i> <?php echo __('Pronto'); ?>').removeClass('text-warning').addClass('text-success font-weight-bold');
             } else {
-                // Modo Visualização
-                textarea.readOnly = true;
-                textarea.style.background = '#eaecf4';
-                textarea.style.cursor = 'default';
-                btn.innerHTML = '<i class="fas fa-edit"></i> <?php echo __('Editar'); ?>';
-                btn.classList.remove('btn-success', 'text-white');
-                btn.classList.add('btn-outline-warning');
+                area.prop('readonly', true).removeClass('bg-white border').addClass('bg-light');
+                $(btn).html('<i class="fas fa-edit"></i> <?php echo __('Editar'); ?>').removeClass('text-success font-weight-bold').addClass('text-warning');
             }
         }
 
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                var modal = document.getElementById('imageModal');
-                if (modal) modal.style.display = 'none';
-            }
-        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#imgLightbox').hide(); });
     </script>
-        <script src="/assets/js/global_search.js"></script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

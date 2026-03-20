@@ -4,11 +4,17 @@
  * Exibe o histórico de doações de ativos de TI para terceiros ou colaboradores.
  * Permite a geração de relatórios PDF para prestação de contas.
  */
+
+// Inicia a sessão se ainda não tiver sido iniciada (evita o erro na linha 11)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 include 'auth.php';
 include 'conexao.php';
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?= (isset($_SESSION['language']) && $_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
 <style>
     .btn-tamanho-fixo {
         width: 130px;
@@ -63,7 +69,7 @@ include 'conexao.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Ativos Doados</title>
+    <title><?php echo __('Ativos Doados'); ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -123,14 +129,16 @@ include 'conexao.php';
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark">Ativos Doados</h3>
+                        <h3 class="text-dark"><?php echo __('Ativos Doados'); ?></h3>
                         <div>
                             <a class="btn btn-danger active text-white pulse animated btn-user mr-2" role="button"
                                 style="border-radius: 10px; height: 50px; padding: 13px 30px;"
-                                href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                                href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i>
+                                PDF</a>
                             <a class="btn btn-success active text-white pulse animated btn-user" role="button"
                                 style="border-radius: 10px; height: 50px; padding: 13px 30px; background-color: #1cc88a; border-color: #1cc88a;"
-                                href="/gerar_relatorio_doacoes.php?format=xlsx" target="_blank"><i class="fas fa-file-excel"></i> XLSX</a>
+                                href="/gerar_relatorio_doacoes.php?format=xlsx" target="_blank"><i
+                                    class="fas fa-file-excel"></i> XLSX</a>
                         </div>
                     </div>
 
@@ -145,7 +153,7 @@ include 'conexao.php';
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
                                         <form method="GET" action=""><label><input type="search" name="search"
                                                     class="form-control form-control-sm" aria-controls="dataTable"
-                                                    placeholder="Buscar..."
+                                                    placeholder="<?php echo __('Buscar...'); ?>"
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"></label>
                                         </form>
                                     </div>
@@ -188,15 +196,15 @@ include 'conexao.php';
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Modelo</th>
-                                            <th>Fabricante</th>
-                                            <th>Categoria</th>
-                                            <th>Tag</th>
-                                            <th>HostName</th>
-                                            <th>Doado para</th>
-                                            <th>Centro de Custo</th>
-                                            <th>Data Doação</th>
-                                            <th>Status</th>
+                                            <th><?php echo __('Modelo'); ?></th>
+                                            <th><?php echo __('Fabricante'); ?></th>
+                                            <th><?php echo __('Categoria'); ?></th>
+                                            <th><?php echo __('Tag'); ?></th>
+                                            <th><?php echo __('HostName'); ?></th>
+                                            <th><?php echo __('Doado para'); ?></th>
+                                            <th><?php echo __('Centro de Custo'); ?></th>
+                                            <th><?php echo __('Data Doação'); ?></th>
+                                            <th><?php echo __('Status'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -227,13 +235,13 @@ include 'conexao.php';
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo $data_venda; ?></td>
                                                     <td><span
-                                                            class="badge badge-info"><?php echo htmlspecialchars(ucfirst($row['status'])); ?>
-                                                            (Doado)</span></td>
+                                                            class="badge badge-info"><?php echo htmlspecialchars(ucfirst(__($row['status']))); ?>
+                                                            (<?php echo __('Doado'); ?>)</span></td>
                                                 </tr>
                                                 <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='9' class='text-center'>Nenhum ativo doado encontrado.</td></tr>";
+                                            echo "<tr><td colspan='9' class='text-center'>" . __('Nenhum ativo doado encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -244,7 +252,7 @@ include 'conexao.php';
                                         <?php
                                         $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
                                         if ($current_page > 1) {
-                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« Anterior</a></li>";
+                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>" . __('« Anterior') . "</a></li>";
                                         }
                                         for ($page = 1; $page <= $total_pages; $page++) {
                                             if ($page == $current_page) {
@@ -254,7 +262,7 @@ include 'conexao.php';
                                             }
                                         }
                                         if ($current_page < $total_pages) {
-                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>Próximo »</a></li>";
+                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo »') . "</a></li>";
                                         }
                                         ?>
                                     </ul>

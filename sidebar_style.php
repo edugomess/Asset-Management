@@ -92,7 +92,16 @@
     }
 
 
-    /* Scrollbar now handled by ul.sidebar */
+    .card-shadow {
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+        border: none !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-shadow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2) !important;
+    }
 
     .sidebar-brand {
         position: sticky !important;
@@ -420,8 +429,95 @@
         padding-right: 2.5rem !important;
     }
 
+    /* Table Global Refresh - Larger Fonts & Harmony */
+    .table {
+        font-size: 0.95rem !important;
+        color: #2c404a !important;
+    }
+    
+    .table thead th {
+        font-size: 0.8rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.8px !important;
+        font-weight: 700 !important;
+        color: #4e73df !important;
+        padding: 15px 10px !important;
+        vertical-align: middle !important;
+        border-top: none !important;
+    }
+    
+    .table tbody td {
+        padding: 12px 10px !important;
+        vertical-align: middle !important;
+    }
+    
+    .table-sm th, .table-sm td {
+        padding: 10px 8px !important;
+    }
+    
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
     .form-inline .form-group {
         margin-bottom: 0px !important;
     }
+
+    /* Global Dot Badge Style - Refined & Discreet */
+    .dot-badge {
+        font-size: 0.82rem;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        border: none !important;
+    }
+    
+    .dot-badge.badge-success { background-color: #1cc88a !important; color: #fff !important; }
+    .dot-badge.badge-danger { background-color: #e74a3b !important; color: #fff !important; }
+    .dot-badge.badge-warning { background-color: #f6c23e !important; color: #fff !important; }
+    .dot-badge.badge-info { background-color: #36b9cc !important; color: #fff !important; }
+    .dot-badge.badge-secondary { background-color: #858796 !important; color: #fff !important; }
+    
+    .dot-badge::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Premium Status Badge - Larger & Robust Pattern */
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .status-badge:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .status-badge.badge-success { background-color: #1cc88a !important; color: #fff !important; }
+    .status-badge.badge-danger { background-color: #e74a3b !important; color: #fff !important; }
+    .status-badge.badge-warning { background-color: #f6c23e !important; color: #fff !important; }
+    .status-badge.badge-info { background-color: #36b9cc !important; color: #fff !important; }
+    .status-badge.badge-secondary { background-color: #858796 !important; color: #fff !important; }
 </style>
 <?php include_once 'pagination_style.php'; ?>

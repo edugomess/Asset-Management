@@ -4,14 +4,15 @@ return [
     'Menu Principal' => 'Main Menu',
     'Dashboard' => 'Dashboard',
     'Console Operacional' => 'Operational Console',
-    
+
     'Gestão de Ativos' => 'Asset Management',
     'Inventário de Ativos' => 'Asset Inventory',
     'Ativos em Manutenção' => 'Assets in Maintenance',
     'Licenças & Software' => 'Licenses & Software',
+    'Centro de Custo' => 'Cost Center',
     'Erros do Console:' => 'Console Errors:',
     'Erros (se houver):' => 'Errors (if any):',
-    
+
     // Centro de Custo
     'Centro de Custo' => 'Cost Center',
     'Setor' => 'Sector',
@@ -82,7 +83,7 @@ return [
     'Por favor, selecione um tipo de relatório.' => 'Please select a report type.',
     'Nenhum resultado encontrado' => 'No results found',
     'Controle de Usuários' => 'User Control',
-    
+
     // Cadastro e Edição de Usuários
     'Cadastro de Usuário' => 'User Registration',
     'Nome' => 'First Name',
@@ -103,7 +104,7 @@ return [
     'Tipo de Usuário' => 'User Type',
     'Administrador' => 'Administrator',
     'Suporte' => 'Support',
-    'Usuário' => 'User',
+    'Usuário' => 'Common User',
     'Unidade' => 'Unit',
     'Usuário Ativo' => 'Active User',
     'Senha' => 'Password',
@@ -551,7 +552,7 @@ return [
     'Fabricante' => 'Manufacturer',
     'HostName' => 'Hostname',
     'MAC Address' => 'MAC Address',
-    'Usuário' => 'User',
+    'Usuário' => 'Common User',
     'Centro de Custo' => 'Cost Center',
     'Ações' => 'Actions',
     'Não encontrado' => 'Not found',
@@ -592,7 +593,7 @@ return [
     'Operacional' => 'Operational',
     'Central de Chamados' => 'Help Desk',
     'Relatórios Internos' => 'Internal Reports',
-    
+
     'Inteligência & Ajuda' => 'Intelligence & Help',
     'Previsão & Prevenção' => 'Prediction & Prevention',
     'Assistente IA' => 'AI Assistant',
@@ -604,7 +605,7 @@ return [
     'Configurações' => 'Settings',
     'Registro de Atividades' => 'Activity Log',
     'Sair' => 'Logout',
-    
+
     // Modal Sair
     'Pronto para Sair?' => 'Ready to Leave?',
     'Selecione "Logout" abaixo se você está pronto para encerrar sua sessão atual.' => 'Select "Logout" below if you are ready to end your current session.',
@@ -705,7 +706,7 @@ return [
     'Concluído' => 'Completed',
     'Cancelado' => 'Canceled',
     'Nenhum chamado encontrado.' => 'No ticket found.',
-    
+
     // Configurações e Alertas
     'Configurações do Sistema' => 'System Settings',
     'Configuração de E-mail (SMTP)' => 'E-mail Configuration (SMTP)',
@@ -1122,4 +1123,55 @@ return [
     'onde está [tag]' => 'where is [tag]',
     'Localizar ativo' => 'Locate asset',
     'Ver todos os comandos' => 'See all commands',
+    'Inteligência e Prevenção - Asset Management' => 'Intelligence & Prevention - Asset Management',
+    '🔄 Top Incidentes Recorrentes' => '🔄 Top Recurring Incidents',
+    'ocorrências' => 'occurrences',
+    'Visualizar chamados sobre ' => 'View tickets about ',
+    'Nenhuma recorrência crítica detectada ainda.' => 'No critical recurrences detected yet.',
+    '⚠️ Ativos Críticos (Alto Índice de Manutenção)' => '⚠️ Critical Assets (High Maintenance Rate)',
+    'Tabela de Ativos Críticos' => 'Critical Assets Table',
+    'HostName' => 'Hostname',
+    'Modelo' => 'Model',
+    'Manutenções' => 'Maintenances',
+    'Clique para detalhes do ativo' => 'Click for asset details',
+    'Todos os ativos estão operando dentro da normalidade.' => 'All assets are operating within normal parameters.',
+    '💡 Sugestões de Prevenção e Melhores Práticas' => '💡 Prevention Suggestions and Best Practices',
+    'Consultoria Estratégica Automática' => 'Automatic Strategic Consultancy',
+    'Analisando dados da infraestrutura em tempo real...' => 'Analyzing infrastructure data in real time...',
+    'Consultoria de IA Desativada:' => 'AI Consultancy Disabled:',
+    'A análise preditiva estratégica foi desabilitada nas configurações do sistema.' => 'Strategic predictive analysis has been disabled in the system settings.',
+    'Checklist para:' => 'Checklist for:',
+    'O sistema ainda está minerando padrões em seus dados.' => 'The system is still mining patterns in your data.',
+    'Continue registrando chamados para ativar os insights automáticos.' => 'Continue recording tickets to activate automatic insights.',
+    'Nenhum insight estratégico encontrado no momento.' => 'No strategic insights found at the moment.',
+    '⚠️ Não foi possível conectar ao motor de consultoria por IA.' => '⚠️ Could not connect to the AI consultancy engine.',
+    'vezes' => 'times',
+    'Ativos Doados' => 'Donated Assets',
+    'Doado para' => 'Donated to',
+    'Data Doação' => 'Donation Date',
+    'Doado' => 'Donated',
+    'Nenhum ativo doado encontrado.' => 'No donated assets found.',
+    '« Anterior' => '« Previous',
+    'Próximo »' => 'Next »',
+    'Responsável' => 'Responsible',
+    'Não Atribuído' => 'Not Assigned',
+    'Alterar Status' => 'Change Status',
+    'Aberto' => 'Open',
+    'Em Atendimento' => 'In Progress',
+    'Pendente' => 'Pending',
+    'Resolvido' => 'Resolved',
+    'Fechado' => 'Closed',
+    'Cancelado' => 'Cancelled',
+    'Nome do Software' => 'Software Name',
+    'Quantidade de Licenças' => 'License Quantity',
+    'Chave de Ativação' => 'Activation Key',
+    'Valor Total (R$)' => 'Total Value (R$)',
+    'Data de Aquisição' => 'Acquisition Date',
+    'Data de Expiração' => 'Expiration Date',
+    'Global / Comum' => 'Global / Common',
+    'Nome de Usuário (Login)' => 'Username (Login)',
+    'Perfil de Acesso' => 'Access Profile',
+    'Administrador' => 'Administrator',
+    'Estágio' => 'Internship',
+    'Terceirizado' => 'Outsourced',
 ];

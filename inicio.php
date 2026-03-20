@@ -221,7 +221,7 @@ if (isset($_GET['id'])) {
                                                 }
                                                 ?>
                                                 <tr class="clickable-row"
-                                                    onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
+                                                    onclick="window.location='perfil_ativo.php?id=<?php echo $row['id_asset']; ?>'">
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';

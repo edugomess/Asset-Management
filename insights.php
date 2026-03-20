@@ -1,4 +1,9 @@
 <?php
+// Certifique-se de que a sessão foi iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Inclui autenticação e conexão com o banco de dados
 include 'auth.php';
 include 'conexao.php';
@@ -60,12 +65,12 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?= (isset($_SESSION['language']) && $_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Inteligência e Prevenção - Asset Management</title>
+    <title><?php echo __('Inteligência e Prevenção - Asset Management'); ?></title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="/assets/css/Montserrat.css">
@@ -153,29 +158,32 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow border-bottom-warning">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">🔄 Top Incidentes Recorrentes</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <?php echo __('🔄 Top Incidentes Recorrentes'); ?>
+                                    </h6>
                                 </div>
                                 <div class="card-body">
                                     <?php if ($res_recorrencia->num_rows > 0): ?>
                                         <?php while ($row = $res_recorrencia->fetch_assoc()): ?>
                                             <div class="mb-3 p-2 insight-item"
-                                                aria-label="Visualizar chamados sobre <?php echo htmlspecialchars($row['titulo']); ?>"
+                                                aria-label="<?php echo __('Visualizar chamados sobre ') . htmlspecialchars($row['titulo']); ?>"
                                                 onclick="window.location='chamados.php?busca=<?php echo urlencode($row['titulo']); ?>'">
                                                 <div class="small font-weight-bold">
                                                     <?php echo htmlspecialchars($row['titulo']); ?>
                                                     <span class="float-right badge badge-warning">
-                                                        <?php echo $row['total']; ?> ocorrências
+                                                        <?php echo $row['total']; ?>         <?php echo __('ocorrências'); ?>
                                                     </span>
                                                 </div>
                                                 <div class="progress progress-sm mt-2">
                                                     <div class="progress-bar bg-warning" role="progressbar"
-                                                        title="<?php echo $row['total']; ?> ocorrências"
+                                                        title="<?php echo $row['total']; ?> <?php echo __('ocorrências'); ?>"
                                                         style="width: <?php echo min(100, $row['total'] * 10); ?>%"></div>
                                                 </div>
                                             </div>
                                         <?php endwhile; ?>
                                     <?php else: ?>
-                                        <p class="text-muted text-center py-4">Nenhuma recorrência crítica detectada ainda.
+                                        <p class="text-muted text-center py-4">
+                                            <?php echo __('Nenhuma recorrência crítica detectada ainda.'); ?>
                                         </p>
                                     <?php endif; ?>
                                 </div>
@@ -186,25 +194,28 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow border-bottom-danger">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-danger">⚠️ Ativos Críticos (Alto Índice de
-                                        Manutenção)</h6>
+                                    <h6 class="m-0 font-weight-bold text-danger">
+                                        <?php echo __('⚠️ Ativos Críticos (Alto Índice de Manutenção)'); ?>
+                                    </h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-sm table-hover"
-                                            aria-label="Tabela de Ativos Críticos">
+                                            aria-label="<?php echo __('Tabela de Ativos Críticos'); ?>">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">HostName</th>
-                                                    <th scope="col">Modelo</th>
-                                                    <th scope="col" class="text-center">Manutenções</th>
+                                                    <th scope="col"><?php echo __('HostName'); ?></th>
+                                                    <th scope="col"><?php echo __('Modelo'); ?></th>
+                                                    <th scope="col" class="text-center"><?php echo __('Manutenções'); ?>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php if ($res_ativos->num_rows > 0): ?>
                                                     <?php while ($row = $res_ativos->fetch_assoc()): ?>
-                                                        <tr class="clickable-row" title="Clique para detalhes do ativo"
-                                                            onclick="window.location='detalhes_do_equipamento.php?id=<?php echo $row['id_asset']; ?>'">
+                                                        <tr class="clickable-row"
+                                                            title="<?php echo __('Clique para detalhes do ativo'); ?>"
+                                                            onclick="window.location='perfil_ativo.php?id=<?php echo $row['id_asset']; ?>'">
                                                             <td><strong><?php echo htmlspecialchars($row['hostName']); ?></strong>
                                                             </td>
                                                             <td><small><?php echo htmlspecialchars($row['modelo']); ?></small>
@@ -216,8 +227,9 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                                     <?php endwhile; ?>
                                                 <?php else: ?>
                                                     <tr>
-                                                        <td colspan="3" class="text-center text-muted py-4">Todos os ativos
-                                                            estão operando dentro da normalidade.</td>
+                                                        <td colspan="3" class="text-center text-muted py-4">
+                                                            <?php echo __('Todos os ativos estão operando dentro da normalidade.'); ?>
+                                                        </td>
                                                     </tr>
                                                 <?php endif; ?>
                                             </tbody>
@@ -233,8 +245,9 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                         <div class="col-12 mb-4">
                             <div class="card shadow">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-success">💡 Sugestões de Prevenção e Melhores
-                                        Práticas</h6>
+                                    <h6 class="m-0 font-weight-bold text-success">
+                                        <?php echo __('💡 Sugestões de Prevenção e Melhores Práticas'); ?>
+                                    </h6>
                                 </div>
                                 <div class="card-body">
                                     <!-- CONSULTORIA ESTRATÉGICA POR IA -->
@@ -253,14 +266,14 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                                             <div class="col">
                                                                 <div
                                                                     class="text-uppercase text-primary font-weight-bold text-xs mb-1">
-                                                                    Consultoria Estratégica Automática <span
-                                                                        class="badge badge-primary">Gemini 2.0 AI</span>
+                                                                    <?php echo __('Consultoria Estratégica Automática'); ?>
+                                                                    <span class="badge badge-primary">Gemini 2.0 AI</span>
                                                                 </div>
                                                                 <div id="ai-analysis-text"
                                                                     class="text-dark mb-0 font-italic">
                                                                     <div class="typing-dots">
-                                                                        <span></span><span></span><span></span> Analisando
-                                                                        dados da infraestrutura em tempo real...
+                                                                        <span></span><span></span><span></span>
+                                                                        <?php echo __('Analisando dados da infraestrutura em tempo real...'); ?>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -274,7 +287,8 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                             <div class="d-flex align-items-center">
                                                 <i class="fas fa-info-circle fa-2x mr-3"></i>
                                                 <div>
-                                                    <strong>Consultoria de IA Desativada:</strong> A análise preditiva estratégica foi desabilitada nas configurações do sistema.
+                                                    <strong><?php echo __('Consultoria de IA Desativada:'); ?></strong>
+                                                    <?php echo __('A análise preditiva estratégica foi desabilitada nas configurações do sistema.'); ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -289,8 +303,10 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="icon-box"><i class="fas fa-lightbulb text-warning"></i>
                                                             </div>
-                                                            <div class="font-weight-bold text-dark">Checklist para:
-                                                                "<?php echo htmlspecialchars($problema); ?>"</div>
+                                                            <div class="font-weight-bold text-dark">
+                                                                <?php echo __('Checklist para:'); ?>
+                                                                "<?php echo htmlspecialchars($problema); ?>"
+                                                            </div>
                                                         </div>
                                                         <p class="mb-0 small text-secondary">
                                                             <?php echo htmlspecialchars($dica); ?>
@@ -301,8 +317,10 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                         <?php else: ?>
                                             <div class="col-12 text-center py-5">
                                                 <i class="fas fa-magic fa-3x text-gray-300 mb-3"></i>
-                                                <p class="text-muted">O sistema ainda está minerando padrões em seus dados.
-                                                    <br> Continue registrando chamados para ativar os insights automáticos.
+                                                <p class="text-muted">
+                                                    <?php echo __('O sistema ainda está minerando padrões em seus dados.'); ?>
+                                                    <br>
+                                                    <?php echo __('Continue registrando chamados para ativar os insights automáticos.'); ?>
                                                 </p>
                                             </div>
                                         <?php endif; ?>
@@ -341,11 +359,11 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                         textContainer.innerHTML = reply;
                         textContainer.classList.remove('font-italic');
                     } else {
-                        textContainer.innerHTML = 'Nenhum insight estratégico encontrado no momento.';
+                        textContainer.innerHTML = "<?php echo __('Nenhum insight estratégico encontrado no momento.'); ?>";
                     }
                 })
                 .catch(error => {
-                    document.getElementById('ai-analysis-text').innerHTML = '⚠️ Não foi possível conectar ao motor de consultoria por IA.';
+                    document.getElementById('ai-analysis-text').innerHTML = "⚠️ <?php echo __('Não foi possível conectar ao motor de consultoria por IA.'); ?>";
                     console.error('Error:', error);
                 });
         });

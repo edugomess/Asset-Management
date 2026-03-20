@@ -6,16 +6,39 @@
 include 'conexao.php';
 
 
-$nomeEmpresa = $_POST['nomeEmpresa'];
-$cnpj = $_POST['cnpj'];
-$email = $_POST['email'];
-$telefone = $_POST['telefone'];
-$servico = $_POST['servico'];
-$site = $_POST['site'];
-$status = $_POST['status'];
+$nomeEmpresa = mysqli_real_escape_string($conn, $_POST['nomeEmpresa']);
+$cnpj = mysqli_real_escape_string($conn, $_POST['cnpj']);
+$email = mysqli_real_escape_string($conn, $_POST['email']);
+$telefone = mysqli_real_escape_string($conn, $_POST['telefone']);
+$servico = mysqli_real_escape_string($conn, $_POST['servico']);
+$site = mysqli_real_escape_string($conn, $_POST['site']);
+$status = mysqli_real_escape_string($conn, $_POST['status']);
 
-$sql = "INSERT INTO fornecedor (nomeEmpresa, cnpj, email, telefone, servico, site, status)
-    VALUES ('$nomeEmpresa', '$cnpj', '$email', '$telefone', '$servico', '$site', '$status')";
+// Upload da imagem ou uso do placeholder padrão
+$imagem = '/assets/img/no-image.png'; // Valor padrão solicitado pelo usuário
+
+if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = 'assets/img/fornecedores/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $fileInfo = pathinfo($_FILES['imagem']['name']);
+    $extension = strtolower($fileInfo['extension']);
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    if (in_array($extension, $allowedExtensions)) {
+        $newFileName = 'fornecedor_' . time() . '_' . uniqid() . '.' . $extension;
+        $targetPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($_FILES['imagem']['tmp_name'], $targetPath)) {
+            $imagem = '/' . $targetPath;
+        }
+    }
+}
+
+$sql = "INSERT INTO fornecedor (nomeEmpresa, cnpj, email, telefone, servico, site, status, imagem)
+    VALUES ('$nomeEmpresa', '$cnpj', '$email', '$telefone', '$servico', '$site', '$status', '$imagem')";
 
 if (mysqli_query($conn, $sql)) {
         echo "<script>

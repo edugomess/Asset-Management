@@ -480,7 +480,7 @@ function getHoursAndMinutes($total_minutes)
         }
 
         .notif-desc {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: #858796;
             margin: 0;
         }
@@ -1774,6 +1774,8 @@ function getHoursAndMinutes($total_minutes)
 
         });
     </script>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
 </body>
 
 </html>

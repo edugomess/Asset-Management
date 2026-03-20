@@ -1,111 +1,13 @@
-<?php include_once 'auth.php'; ?>
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title><?php echo __('Detalhes do Equipamento'); ?></title>
-    <?php
-    include 'conexao.php';
-    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-    // Buscar detalhes do ativo
-    $sql_ativo = "SELECT a.*, m.observacoes AS manutencao_desc, m.data_inicio AS manutencao_data 
-                 FROM ativos a 
-                 LEFT JOIN manutencao m ON a.id_asset = m.id_asset AND m.status_manutencao = 'Em Manutenção'
-                 WHERE a.id_asset = '$id'";
-    $result_ativo = mysqli_query($conn, $sql_ativo);
-
-    if (mysqli_num_rows($result_ativo) > 0) {
-        $ativo = mysqli_fetch_assoc($result_ativo);
-
-        // Buscar configurações de depreciação do banco
-        $dep_config = [
-            'taxa_depreciacao' => 10.00,
-            'periodo_anos' => 1,
-            'periodo_meses' => 0,
-            'elegivel_doacao' => 0,
-            'tempo_doacao_anos' => 5,
-            'tempo_doacao_meses' => 0
-        ];
-        $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
-        if ($result_dep && mysqli_num_rows($result_dep) > 0) {
-            $dep_config = mysqli_fetch_assoc($result_dep);
-        }
-
-        // Calcular tempo desde cadastro
-        $data_ativacao = new DateTime($ativo['dataAtivacao']);
-        $data_atual = new DateTime();
-        $diff = $data_ativacao->diff($data_atual);
-        $dias_ativos = $diff->days;
-
-        // Depreciação baseada nas configurações
-        $valor_original = floatval($ativo['valor']);
-        $taxa_pct = floatval($dep_config['taxa_depreciacao']); // ex: 10 = 10%
-        $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
-
-        if ($periodo_total_meses > 0 && $valor_original > 0) {
-            // Quantos períodos completos já se passaram
-            $meses_ativos = ($diff->y * 12) + $diff->m;
-            $periodos_completos = floor($meses_ativos / $periodo_total_meses);
-            // Depreciação acumulada (nunca ultrapassa o valor original)
-            $depreciacao_total = min($valor_original, $valor_original * ($taxa_pct / 100) * $periodos_completos);
-            $valor_atual = max(0, $valor_original - $depreciacao_total);
-            $percentual_depreciado = min(100, round(($depreciacao_total / $valor_original) * 100, 1));
-        } else {
-            $depreciacao_total = 0;
-            $valor_atual = $valor_original;
-            $percentual_depreciado = 0;
-        }
-
-        // Elegibilidade para doação baseada nas configurações
-        $doacao_habilitada = intval($dep_config['elegivel_doacao']);
-        $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
-        $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
-
-        // Verificar elegibilidade por categoria
-        $categoria_ativo = $ativo['categoria'];
-        $cat_elegivel = 1; // Default: elegível
-        $result_cat_eleg = mysqli_query($conn, "SELECT elegivel_doacao FROM categoria_doacao WHERE categoria = '" . mysqli_real_escape_string($conn, $categoria_ativo) . "' LIMIT 1");
-        if ($result_cat_eleg && mysqli_num_rows($result_cat_eleg) > 0) {
-            $row_cat_eleg = mysqli_fetch_assoc($result_cat_eleg);
-            $cat_elegivel = intval($row_cat_eleg['elegivel_doacao']);
-        }
-
-        if (!$doacao_habilitada) {
-            $status_doacao = __('Doação Desativada');
-            $cor_doacao = "text-secondary";
-        } elseif (!$cat_elegivel) {
-            $status_doacao = __('Categoria não elegível para doação');
-            $cor_doacao = "text-warning";
-        } elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
-            $status_doacao = __('Elegível para Doação');
-            $cor_doacao = "text-success";
-        } else {
-            $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
-            $anos_rest = floor($restante_meses / 12);
-            $meses_rest = $restante_meses % 12;
-            $tempo_str = '';
-            if ($anos_rest > 0)
-                $tempo_str .= $anos_rest . ' ' . __('ano(s)');
-            if ($anos_rest > 0 && $meses_rest > 0)
-                $tempo_str .= ' e ';
-            if ($meses_rest > 0)
-                $tempo_str .= $meses_rest . ' ' . __('mês(es)');
-            if (empty($tempo_str))
-                $tempo_str = __('menos de 1 mês');
-            $status_doacao = __('Bloqueado (Carência: ') . $tempo_str . ")";
-            $cor_doacao = "text-danger";
-        }
-    } else {
-        echo "<script>alert('" . __('Ativo não encontrado!') . "'); window.location.href='equipamentos.php';</script>";
-        exit;
-    }
-
-    // Determinar imagem
-    $imagem = !empty($ativo['imagem']) ? $ativo['imagem'] : '/assets/img/dogs/image2.jpeg';
-    ?>
+<?php
+include_once 'auth.php';
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id > 0) {
+    header("Location: perfil_ativo.php?id=$id");
+} else {
+    header("Location: equipamentos.php");
+}
+exit();
+?>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=ab31356e4f631a0a7556d48e827f1a2e">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=2fbfaadd1b3a8788aae69992363f994b">

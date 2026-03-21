@@ -41,6 +41,7 @@ try {
         $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, imagem, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtDoacao = $conn->prepare($queryDoacao);
+        $status_doado = 'Doado';
         $stmtDoacao->bind_param(
             'sssssssssssi i',
             $ativo['categoria'],
@@ -51,7 +52,7 @@ try {
             $ativo['valor'],
             $ativo['macAdress'],
             $ativo['imagem'],
-            $ativo['status'],
+            $status_doado,
             $ativo['dataAtivacao'],
             $ativo['centroDeCusto'],
             $ativo['descricao'],

@@ -493,11 +493,11 @@
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.3);
     }
 
-    /* Premium Status Badge - Larger & Robust Pattern */
+    /* Premium Status Badge - Refined & Proportional */
     .status-badge {
-        font-size: 0.85rem;
-        padding: 10px 20px !important;
-        min-width: 150px !important;
+        font-size: 0.81rem;
+        padding: 8px 18px !important;
+        min-width: 130px !important;
         border-radius: 10px;
         font-weight: 800;
         text-transform: uppercase;

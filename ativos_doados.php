@@ -235,8 +235,7 @@ include 'conexao.php';
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo $data_venda; ?></td>
                                                     <td><span
-                                                            class="badge badge-info"><?php echo htmlspecialchars(ucfirst(__($row['status']))); ?>
-                                                            (<?php echo __('Doado'); ?>)</span></td>
+                                                            class="status-badge badge-info"><?php echo __('Doado'); ?></span></td>
                                                 </tr>
                                                 <?php
                                             }

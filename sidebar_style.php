@@ -496,7 +496,8 @@
     /* Premium Status Badge - Larger & Robust Pattern */
     .status-badge {
         font-size: 0.85rem;
-        padding: 10px 20px;
+        padding: 10px 20px !important;
+        min-width: 150px !important;
         border-radius: 10px;
         font-weight: 800;
         text-transform: uppercase;

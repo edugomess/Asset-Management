@@ -276,6 +276,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </div>
                                 <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter">
+                                        <?php if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')): ?>
                                         <!-- Formulário de busca simples na tabela -->
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">
@@ -286,6 +287,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     aria-label="<?php echo __('Buscar Ativos'); ?>">
                                             </div>
                                         </form>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -531,10 +533,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+                <div class="modal-header" style="background: #2c404a; color: white;">
                     <h5 class="modal-title" id="assignModalLabel"><?php echo __('Atribuir Ativo'); ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" style="color: white;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -556,9 +558,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
-                        <button type="submit" class="btn btn-primary"><?php echo __('Atribuir'); ?></button>
+                    <div class="modal-footer" style="background: #f8f9fc;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
+                        <button type="submit" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Atribuir'); ?></button>
                     </div>
                 </form>
             </div>

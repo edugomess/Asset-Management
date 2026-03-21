@@ -138,10 +138,10 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                                             <th scope="col"><?php echo __('E-Mail'); ?></th>
                                             <th scope="col"><?php echo __('Centro de Custo'); ?></th>
                                             <th scope="col"><?php echo __('Função'); ?></th>
-                                            <th scope="col"><?php echo __('Nível'); ?></th>
                                             <th scope="col"><?php echo __('Unidade'); ?></th>
-                                            <th scope="col"><?php echo __('Status'); ?></th>
-                                            <th scope="col"><?php echo __('Ações'); ?></th>
+                                            <th scope="col" style="width: 170px; text-align: center;"><?php echo __('Nível'); ?></th>
+                                            <th scope="col" style="width: 170px; text-align: center;"><?php echo __('Status'); ?></th>
+                                            <th scope="col" style="width: 110px; text-align: center;"><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -161,7 +161,8 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['funcao']); ?></td>
-                                                    <td>
+                                                    <td><?php echo htmlspecialchars($row['unidade']); ?></td>
+                                                    <td style="text-align: center;">
                                                         <?php
                                                         $nivel_display = !empty($row['nivelUsuario']) && $row['nivelUsuario'] !== '-' ? __($row['nivelUsuario']) : __('Usuário');
                                                         $badge_color = '#6c757d'; // Default Usuário (Gray)
@@ -175,14 +176,13 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                                                             <?php echo htmlspecialchars($nivel_display); ?>
                                                         </span>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['unidade']); ?></td>
-                                                    <td>
+                                                    <td style="text-align: center;">
                                                         <span
                                                             class="status-badge badge-<?php echo ($row['status'] === 'Ativo') ? 'success' : 'danger'; ?>">
                                                             <?php echo __(htmlspecialchars($row['status'])); ?>
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <td style="text-align: center;">
                                                         <!-- Ações de Edição e Exclusão -->
                                                         <a class="btn btn-warning"
                                                             href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"

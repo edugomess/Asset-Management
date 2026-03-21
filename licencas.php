@@ -293,10 +293,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
             <!-- Modal para atribuir licença -->
             <div id="assignModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
                 <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
+                    <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+                        <div class="modal-header" style="background: #2c404a; color: white;">
                             <h5 class="modal-title"><?php echo __('Atribuir Licença ao Usuário'); ?></h5>
-                            <button type="button" class="close" onclick="closeAssignModal()">&times;</button>
+                            <button type="button" class="close" onclick="closeAssignModal()" style="color: white; opacity: 0.8;">&times;</button>
                         </div>
                         <div class="modal-body">
                             <p class="text-muted small"><?php echo __('Pesquise o usuário para vincular esta licença.'); ?></p>
@@ -304,8 +304,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 oninput="searchUsers()">
                             <ul id="userList" class="list-group mt-2" style="max-height: 200px; overflow-y: auto;"></ul>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()"><?php echo __('Fechar'); ?></button>
+                        <div class="modal-footer" style="background: #f8f9fc;">
+                            <button type="button" class="btn btn-secondary" onclick="closeAssignModal()" style="border-radius: 10px; background: #6c757d; border: none;"><?php echo __('Fechar'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -314,10 +314,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
             <!-- Modal para detalhes da licença -->
             <div id="detailsModal" class="modal" tabindex="-1" role="dialog" style="display: none;">
                 <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
+                    <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+                        <div class="modal-header" style="background: #2c404a; color: white;">
                             <h5 class="modal-title"><?php echo __('Detalhes de Atribuição'); ?>: <span id="detailsSoftwareName"></span></h5>
-                            <button type="button" class="close" onclick="closeDetailsModal()">&times;</button>
+                            <button type="button" class="close" onclick="closeDetailsModal()" style="color: white; opacity: 0.8;">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="table-responsive">
@@ -342,12 +342,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <p class="text-muted"><?php echo __('Nenhuma atribuição encontrada para esta licença.'); ?></p>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger-system btn-system"
+                        <div class="modal-footer" style="background: #f8f9fc;">
+                            <button type="button" class="btn btn-danger-system btn-system" style="border-radius: 10px;"
                                 onclick="window.open('relatorio_atribuicoes_geral.php', '_blank')">
                                 <i class="fas fa-file-pdf"></i> <?php echo __('Gerar Relatório PDF'); ?>
                             </button>
-                            <button type="button" class="btn btn-secondary"
+                            <button type="button" class="btn btn-secondary" style="border-radius: 10px; background: #6c757d; border: none;"
                                 onclick="closeDetailsModal()"><?php echo __('Fechar'); ?></button>
                         </div>
                     </div>

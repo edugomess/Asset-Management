@@ -220,6 +220,10 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <div class="detail-label"><?php echo __('Endereço MAC'); ?></div>
                                         <div class="detail-value"><?php echo htmlspecialchars($ativo['macAdress']); ?></div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Service Tag / Certificado'); ?></div>
+                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['tag']); ?></div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -273,6 +277,18 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 </div>
                             </div>
 
+                            <!-- Observações Adicionais -->
+                            <?php if (!empty($ativo['descricao'])): ?>
+                                <div class="info-card shadow card-shadow">
+                                    <h6 class="font-weight-bold text-primary mb-3">
+                                        <i class="fas fa-sticky-note mr-2"></i><?php echo __('Observações Adicionais'); ?>
+                                    </h6>
+                                    <div class="p-3 bg-light rounded shadow-sm">
+                                        <?php echo nl2br(htmlspecialchars($ativo['descricao'])); ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                             <!-- Manutenção (Se houver) -->
                             <?php if ($ativo['manutencao_desc']): ?>
                                 <div class="info-card shadow card-shadow border-left-warning">
@@ -303,7 +319,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $sql_hist = "SELECT * FROM historico_ativos WHERE ativo_id = $id ORDER BY data_evento DESC";
+                                            $sql_hist = "SELECT h.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome 
+                                                         FROM historico_ativos h 
+                                                         LEFT JOIN usuarios u ON h.usuario_id = u.id_usuarios 
+                                                         WHERE h.ativo_id = $id 
+                                                         ORDER BY h.data_evento DESC";
                                             $res_hist = $conn->query($sql_hist);
                                             $has_creation = false;
                                             $history_rows = [];
@@ -328,7 +348,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                                     <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($h['data_evento'])); ?></td>
                                                     <td class="font-weight-bold"><?php echo htmlspecialchars($h['acao']); ?></td>
                                                     <td><?php echo htmlspecialchars($h['detalhes']); ?></td>
-                                                    <td><?php echo htmlspecialchars($h['user_nome'] ?? __('Sistema')); ?></td>
+                                                    <td><?php echo htmlspecialchars(trim(($h['user_nome'] ?? '') . ' ' . ($h['user_sobrenome'] ?? '')) ?: __('Sistema')); ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

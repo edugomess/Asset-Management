@@ -80,9 +80,8 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                             <div class="row">
                                 <div class="col-md-6 col-xl-2 text-nowrap">
                                     <!-- Botão para cadastrar novo usuário -->
-                                    <a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                    <a class="btn-premium-cadastro pulse animated"
                                         role="button"
-                                        style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
                                         href="/cadastro_de_usuario.php"><?php echo __('Cadastrar Novo'); ?></a>
                                 </div>
                                 <div class="col-md-6 col-xl-10">
@@ -127,7 +126,7 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                                 $start_from = ($current_page - 1) * $results_per_page;
 
                                 // Busca os usuários limitados pela paginação
-                                $sql_users = "SELECT * FROM usuarios $where_clause ORDER BY id_usuarios DESC LIMIT $start_from, $results_per_page";
+                                $sql_users = "SELECT * FROM usuarios $where_clause ORDER BY nome ASC LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql_users);
                                 ?>
 
@@ -156,7 +155,7 @@ if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' 
                                                     <td class="d-flex align-items-center">
                                                         <img src="<?php echo $foto; ?>" class="user-thumbnail"
                                                             alt="<?php echo __('Foto de ') . htmlspecialchars($row['nome']); ?>">
-                                                        <?php echo htmlspecialchars($row['usuarioAD']); ?>
+                                                        <strong><?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?></strong>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>

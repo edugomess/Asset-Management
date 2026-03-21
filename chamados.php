@@ -143,14 +143,13 @@ $result = mysqli_query($conn, $sql);
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 col-xl-3 text-nowrap">
+                                <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div class=""><a
-                                            class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            class="btn-premium-cadastro pulse animated"
                                             role="button"
-                                            style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 0px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;"
                                             href="/cadastro_de_chamados.php"><?php echo __('Novo Chamado'); ?></a></div>
                                 </div>
-                                <div class="col-md-6 col-xl-5">
+                                <div class="col-md-6 col-xl-6">
                                     <form method="GET" class="form-inline" style="margin-top: 0px;">
                                         <label for="filtro_status" class="mr-2 font-weight-bold"><?php echo __('Filtrar por:'); ?></label>
                                         <select name="filtro_status" id="filtro_status" class="form-control mr-2"
@@ -269,26 +268,30 @@ $result = mysqli_query($conn, $sql);
                                                     } elseif ($minutos_decorridos < 1440) {
                                                         $horas = floor($minutos_decorridos / 60);
                                                         $minutos = $minutos_decorridos % 60;
-                                                        $tempo_formatado = "{$horas}h {$minutos}m";
                                                     } else {
                                                         $dias = floor($minutos_decorridos / 1440);
                                                         $horas = floor(($minutos_decorridos % 1440) / 60);
                                                         $tempo_formatado = "{$dias}d {$horas}h";
                                                     }
 
+                                                    $deadline_timestamp = $data_abertura->getTimestamp() + ($sla_total_minutos * 60) + ($tempo_congelado * 60);
+
                                                     $sla_status_html = '
-                <div class="d-flex flex-column">
-                    <span class="small font-weight-bold mb-1" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
-                    <div class="progress" style="height: 10px; min-width: 100px;">
-                        <div class="progress-bar ' . $progress_bar_class . ' ' . $animation_class . '" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="d-flex flex-column sla-container" 
+                     data-deadline="' . $deadline_timestamp . '" 
+                     data-sla-total="' . ($sla_total_minutos * 60) . '" 
+                     data-status="' . $row['status'] . '">
+                    <span class="small font-weight-bold mb-1 sla-timer-text" style="font-size: 0.75rem;">' . $sla_status_text . ' (' . $tempo_formatado . ')</span>
+                    <div class="progress" style="height: 15px; min-width: 130px;">
+                        <div class="progress-bar sla-progress-bar ' . $progress_bar_class . ' ' . $animation_class . '" role="progressbar" style="width: ' . $sla_percentage . '%" aria-valuenow="' . $sla_percentage . '" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>';
                                                 } elseif ($row['status'] == 'Resolvido' || $row['status'] == 'Fechado') {
-                                                    $sla_status_html = '<span class="badge badge-success">' . __('Concluído') . '</span>';
+                                                    $sla_status_html = '<span class="status-badge badge-success font-weight-bold">' . __('Concluído') . '</span>';
                                                 } elseif ($row['status'] == 'Cancelado') {
-                                                    $sla_status_html = '<span class="badge badge-danger">' . __('Cancelado') . '</span>';
+                                                    $sla_status_html = '<span class="status-badge badge-danger font-weight-bold">' . __('Cancelado') . '</span>';
                                                 } else {
-                                                    $sla_status_html = '<span class="badge badge-secondary">-</span>';
+                                                    $sla_status_html = '<span class="status-badge badge-secondary font-weight-bold">-</span>';
                                                 }
 
                                                 // Definição das cores dos Badges de Status
@@ -332,14 +335,14 @@ $result = mysqli_query($conn, $sql);
                                                 }
 
                                                 echo "<tr onclick=\"window.location='editar_chamado.php?id=" . $row['id'] . "'\" style='cursor: pointer;'>
-                <td>" . htmlspecialchars($row['id']) . "</td>
+                <td class='font-weight-bold text-dark'>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
-                <td>" . __($row['categoria']) . "</td>
-                <td><span class='badge " . $prioridade_class . "'>" . __($prioridade) . "</span></td>
-                <td>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
-                <td>" . htmlspecialchars($solicitante) . "</td>
-                <td><span class='badge " . $responsavel_class . "'>" . htmlspecialchars($responsavel) . "</span></td>
-                <td><span class='badge " . $status_class . "'>" . __($row['status']) . "</span></td>
+                <td class='font-weight-bold text-dark'>" . __($row['categoria']) . "</td>
+                <td><span class='status-badge " . $prioridade_class . " font-weight-bold'>" . __($prioridade) . "</span></td>
+                <td class='font-weight-bold text-dark'>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
+                <td class='font-weight-bold text-dark'>" . htmlspecialchars($solicitante) . "</td>
+                <td><span class='status-badge " . $responsavel_class . " font-weight-bold'>" . htmlspecialchars($responsavel) . "</span></td>
+                <td><span class='status-badge " . $status_class . " font-weight-bold'>" . __($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
             </tr>";
                                             }
@@ -406,6 +409,73 @@ $result = mysqli_query($conn, $sql);
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+
+    <script>
+    function updateSLATimers() {
+        const now = Math.floor(Date.now() / 1000);
+        
+        document.querySelectorAll('.sla-container').forEach(container => {
+            const status = container.dataset.status;
+            if (status === 'Pendente') return; // Skip dynamic update for frozen tickets
+
+            const deadline = parseInt(container.dataset.deadline);
+            const slaTotal = parseInt(container.dataset.slaTotal);
+            const textElement = container.querySelector('.sla-timer-text');
+            const progressBar = container.querySelector('.sla-progress-bar');
+            
+            if (!textElement || !progressBar) return;
+
+            let diff = deadline - now;
+            let statusText = '';
+            let barClass = 'bg-success';
+            
+            if (diff <= 0) {
+                statusText = '<?php echo __("Vencido"); ?>';
+                diff = Math.abs(diff);
+                barClass = 'bg-danger';
+            } else {
+                if (diff <= (slaTotal * 0.2)) { // Less than 20% time remaining (80% used)
+                    statusText = '<?php echo __("Atenção"); ?>';
+                    barClass = 'bg-warning';
+                } else {
+                    statusText = '<?php echo __("No Prazo"); ?>';
+                }
+            }
+
+            // Time Formatting
+            let timeStr = '';
+            const days = Math.floor(diff / 86400);
+            const hours = Math.floor((diff % 86400) / 3600);
+            const minutes = Math.floor((diff % 3600) / 60);
+            const seconds = diff % 60;
+
+            if (days > 0) {
+                timeStr = `${days}d ${hours}h`;
+            } else if (hours > 0) {
+                timeStr = `${hours}h ${minutes}m`;
+            } else {
+                timeStr = `${minutes}m ${seconds}s`;
+            }
+
+            textElement.textContent = `${statusText} (${timeStr})`;
+            
+            // Update Progress Bar
+            progressBar.className = `progress-bar sla-progress-bar ${barClass} progress-bar-striped progress-bar-animated`;
+            
+            let percentage = 100;
+            if (slaTotal > 0) {
+                const usedSeconds = slaTotal - (deadline - now);
+                percentage = Math.min(100, Math.max(0, (usedSeconds / slaTotal) * 100));
+            }
+            if (deadline - now < 0) percentage = 100;
+            progressBar.style.width = percentage + '%';
+        });
+    }
+
+    // Start timer
+    setInterval(updateSLATimers, 1000);
+    updateSLATimers(); // Initial call
+    </script>
 </body>
 
 </html>

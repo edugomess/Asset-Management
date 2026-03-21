@@ -125,14 +125,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 col-xl-3 text-nowrap">
+                                <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><a
-                                            class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            class="btn-premium-cadastro pulse animated"
                                             role="button"
-                                            style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;margin-top: 0px;padding: 30px, 30px;margin-bottom: 0px;padding-top: 13px;"
                                             href="/cadastro_de_licenca.php"><?php echo __('Nova Licença'); ?></a></div>
                                 </div>
-                                <div class="col-md-6 col-xl-9">
+                                <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">

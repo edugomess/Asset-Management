@@ -110,15 +110,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         <div class="card-body">
                             <div class="row">
                                 <!-- Botão para Cadastro de Novo Fornecedor -->
-                                <div class="col-md-6 col-xl-3 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
-                                    </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                <div class="col-md-6 col-xl-2 text-nowrap">
+                                    <a class="btn-premium-cadastro pulse animated"
                                         role="button"
-                                        style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 0px;padding-top: 13px;"
                                         href="/cadastro_de_fornecedor.php"><?php echo __('Cadastrar Novo'); ?></a>
                                 </div>
                                 <!-- Filtro de Busca na Tabela -->
-                                <div class="col-md-6 col-xl-9">
+                                <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter">
                                         <form method="GET" action="" class="form-inline justify-content-end">
                                             <div class="form-group mr-2">
@@ -191,7 +189,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 } else {
                                                     echo "<div class='asset-placeholder'><i class='fas fa-building'></i></div>";
                                                 }
-                                                echo htmlspecialchars($row['nomeEmpresa']) . "</td>
+                                                echo "<strong>" . htmlspecialchars($row['nomeEmpresa']) . "</strong></td>
                                                     <td>" . htmlspecialchars($row['email']) . "</td>
                                                     <td>" . htmlspecialchars($row['telefone']) . "</td>
                                                     <td>" . htmlspecialchars($row['servico']) . "</td>

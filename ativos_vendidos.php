@@ -72,14 +72,12 @@
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 col-xl-3 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
-                                    </div><a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                <div class="col-md-6 col-xl-2 text-nowrap">
+                                    <a class="btn-premium-cadastro pulse animated"
                                         role="button"
-                                        style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;"
-                                        href="/inicio.php">Voltar</a>
+                                        href="/inicio.php"><?php echo __('Voltar'); ?></a>
                                 </div>
-                                <div class="col-md-6 col-xl-9">
+                                <div class="col-md-6 col-xl-10">
                                     <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input
                                                 type="search" class="form-control form-control-sm"
                                                 aria-controls="dataTable" placeholder="Buscar..."></label></div>

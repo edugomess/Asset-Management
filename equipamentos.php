@@ -267,9 +267,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         // Exibe o botão de cadastro apenas se não estivermos na visualização de manutenção
                                         if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')):
                                             ?>
-                                            <a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                            <a class="btn-premium-cadastro pulse animated"
                                                 role="button"
-                                                style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;padding-top: 13px;"
                                                 href="/cadastro_de_equipamentos.php"><?php echo __('Cadastrar Novo'); ?></a>
                                         <?php endif; ?>
                                     </div>
@@ -407,7 +406,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         } else {
                                                             echo "<div class='asset-placeholder'><i class='fas fa-box'></i></div>";
                                                         }
-                                                        echo htmlspecialchars($row['modelo']);
+                                                        echo "<strong>" . htmlspecialchars($row['modelo']) . "</strong>";
                                                         ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>

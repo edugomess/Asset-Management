@@ -68,11 +68,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row mb-3">
-                                <div class="col-md-6 col-xl-3 text-nowrap">
+                                <div class="col-md-6 col-xl-2 text-nowrap">
                                     <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
-                                    <a class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                    <a class="btn-premium-cadastro pulse animated"
                                         role="button"
-                                        style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;display: flex;align-items: center;justify-content: center;"
                                         href="/cadastro_de_centro_de_custo.php"><?php echo __('Cadastrar Novo'); ?></a>
                                 </div>
                             </div>
@@ -150,7 +149,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 //     $sla_total_minutos = $cat_sla;
                                                 // }
                                                 echo "<tr>
-                    <td>" . htmlspecialchars($row['nomeSetor']) . "</td>
+                                         <td><strong>" . htmlspecialchars($row['nomeSetor']) . "</strong></td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
                     <td>" . htmlspecialchars($row['unidade']) . "</td>

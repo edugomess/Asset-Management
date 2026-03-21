@@ -520,5 +520,32 @@
     .status-badge.badge-warning { background-color: #f6c23e !important; color: #fff !important; }
     .status-badge.badge-info { background-color: #36b9cc !important; color: #fff !important; }
     .status-badge.badge-secondary { background-color: #858796 !important; color: #fff !important; }
+
+    /* Botão Premium para Topo de Lista (Cadastrar Novo) */
+    .btn-premium-cadastro {
+        background-color: rgb(44, 64, 74) !important;
+        border-radius: 10px !important;
+        border: none !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        text-transform: none !important; /* Mantém capitalize do PHP se necessário */
+        transition: all 0.3s ease !important;
+        padding: 0 25px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+        width: 100% !important; /* Garante preenchimento da coluna */
+        margin-bottom: 15px !important; /* Espaço para o grid abaixo em mobile */
+    }
+
+    .btn-premium-cadastro:hover {
+        background-color: #3e5b69 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+        color: #fff !important;
+        text-decoration: none !important;
+    }
 </style>
 <?php include_once 'pagination_style.php'; ?>

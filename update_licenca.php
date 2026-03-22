@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data_expiracao = !empty($_POST['data_expiracao']) ? "'" . mysqli_real_escape_string($conn, $_POST['data_expiracao']) . "'" : "NULL";
     $status = mysqli_real_escape_string($conn, $_POST['status']);
     $id_centro_custo = !empty($_POST['id_centro_custo']) ? intval($_POST['id_centro_custo']) : "NULL";
+    $fornecedor = mysqli_real_escape_string($conn, $_POST['fornecedor']);
 
     $sql = "UPDATE licencas SET 
             software = '$software', 
@@ -28,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             quantidade_total = $quantidade_total, 
             valor_unitario = $valor_unitario, 
             id_centro_custo = $id_centro_custo,
+            fornecedor = '$fornecedor',
             data_aquisicao = $data_aquisicao, 
             data_expiracao = $data_expiracao, 
             status = '$status' 

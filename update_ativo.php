@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $status = $_POST['status'];
     $macAdress = $_POST['macAdress'];
     $centroDeCusto = $_POST['centroDeCusto'];
+    $fornecedor = $_POST['fornecedor'];
     $descricao = $_POST['descricao'];
     $dataAtivacao = $_POST['dataAtivacao'];
 
@@ -86,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         status='$status', 
         macAdress='$macAdress',
         centroDeCusto='$centroDeCusto', 
+        fornecedor='$fornecedor',
         descricao='$descricao',
         dataAtivacao='$dataAtivacao'
         $imagemSql
@@ -115,6 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $changes[] = "MacAdress: {$old_data['macAdress']} -> $macAdress";
         if ($old_data['centroDeCusto'] != $centroDeCusto)
             $changes[] = "Centro de Custo: {$old_data['centroDeCusto']} -> $centroDeCusto";
+        if (isset($old_data['fornecedor']) && $old_data['fornecedor'] != $fornecedor)
+            $changes[] = "Fornecedor: {$old_data['fornecedor']} -> $fornecedor";
         if ($old_data['descricao'] != $descricao)
             $changes[] = "Descrição alterada";
 

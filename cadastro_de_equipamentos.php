@@ -99,18 +99,12 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Row 3: Financeiro e Datas -->
+                                <!-- Row 3: Financeiro e Organização -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
                                             <input class="form-control" name="valor" id="valor" type="number" step="0.01" placeholder="<?php echo __('Ex: 4500.00'); ?>" required="">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="dataAtivacao"><?php echo __('Data de Cadastro'); ?></label>
-                                            <input class="form-control" name="dataAtivacao" id="dataAtivacao" type="date" value="<?php echo date('Y-m-d'); ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -130,11 +124,34 @@ include_once 'auth.php'; // Proteção de sessão
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
+                                            <select class="form-control" name="fornecedor" id="fornecedor">
+                                                <option value="Nenhum"><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_for = "SELECT nomeEmpresa FROM fornecedor ORDER BY nomeEmpresa ASC";
+                                                $res_for = $conn->query($sql_for);
+                                                if ($res_for && $res_for->num_rows > 0) {
+                                                    while ($row_for = $res_for->fetch_assoc()) {
+                                                        echo '<option value="' . htmlspecialchars($row_for['nomeEmpresa']) . '">' . htmlspecialchars($row_for['nomeEmpresa']) . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Row 4: Imagem e Status -->
+                                <!-- Row 4: Datas, Imagem e Status -->
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="dataAtivacao"><?php echo __('Data de Cadastro'); ?></label>
+                                            <input class="form-control" name="dataAtivacao" id="dataAtivacao" type="date" value="<?php echo date('Y-m-d'); ?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="imagem"><?php echo __('Imagem do Ativo'); ?></label>
                                             <input class="form-control-file" name="imagem" id="imagem" type="file" accept="image/*">
@@ -159,9 +176,16 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <div class="row mt-4">
-                                    <div class="col-md-4 offset-md-4">
-                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;"><?php echo __('Cadastrar Equipamento'); ?></button>
+                                <div class="row mt-4 mb-3">
+                                    <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
+                                        <a class="btn btn-secondary" href="equipamentos.php" 
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
+                                            <?php echo __('Voltar'); ?>
+                                        </a>
+                                        <button class="btn btn-success active pulse animated" type="submit" 
+                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                            <i class="fas fa-save mr-2"></i><?php echo __('Cadastrar Equipamento'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </form>

@@ -98,21 +98,6 @@ $result_cc = $conn->query($sql_cc);
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="data_aquisicao"><?php echo __('Data de Aquisição'); ?></label>
-                                            <input class="form-control" name="data_aquisicao" id="data_aquisicao" type="date" required="">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="data_expiracao"><?php echo __('Data de Expiração'); ?></label>
-                                            <input class="form-control" name="data_expiracao" id="data_expiracao" type="date">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="id_centro_custo"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="id_centro_custo" id="id_centro_custo">
                                                 <option value=""><?php echo __('Global / Comum'); ?></option>
@@ -126,11 +111,57 @@ $result_cc = $conn->query($sql_cc);
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
+                                            <select class="form-control" name="fornecedor" id="fornecedor">
+                                                <option value="Nenhum"><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_for = "SELECT nomeEmpresa FROM fornecedor ORDER BY nomeEmpresa ASC";
+                                                $res_for = $conn->query($sql_for);
+                                                if ($res_for && $res_for->num_rows > 0) {
+                                                    while ($row_for = $res_for->fetch_assoc()) {
+                                                        echo '<option value="' . htmlspecialchars($row_for['nomeEmpresa']) . '">' . htmlspecialchars($row_for['nomeEmpresa']) . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-4 offset-md-4">
-                                        <button class="btn btn-success btn-block active text-white pulse animated btn-user" type="submit" style="background: rgb(44,64,74);border-radius: 10px;border-width: 0px;height: 50px;"><?php echo __('Cadastrar'); ?></button>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="data_aquisicao"><?php echo __('Data de Aquisição'); ?></label>
+                                            <input class="form-control" name="data_aquisicao" id="data_aquisicao" type="date" value="<?php echo date('Y-m-d'); ?>" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="data_expiracao"><?php echo __('Data de Expiração'); ?></label>
+                                            <input class="form-control" name="data_expiracao" id="data_expiracao" type="date">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="custom-control custom-switch" style="margin-top: 32px;">
+                                            <input type="hidden" name="status" value="Cancelada">
+                                            <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativa" checked>
+                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4 mb-3">
+                                    <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
+                                        <a class="btn btn-secondary" href="licencas.php" 
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
+                                            <?php echo __('Voltar'); ?>
+                                        </a>
+                                        <button class="btn btn-success active pulse animated" type="submit" 
+                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                            <i class="fas fa-save mr-2"></i><?php echo __('Cadastrar Licença'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </form>

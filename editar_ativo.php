@@ -116,18 +116,12 @@ if (!$asset) {
                                     </div>
                                 </div>
 
-                                <!-- Row 3: Financeiro e Datas -->
+                                <!-- Row 3: Financeiro e Organização -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
                                             <input class="form-control" name="valor" id="valor" type="number" step="0.01" value="<?php echo $asset['valor']; ?>" required="">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="dataAtivacao"><?php echo __('Data de Cadastro'); ?></label>
-                                            <input class="form-control" name="dataAtivacao" id="dataAtivacao" type="date" value="<?php echo $asset['dataAtivacao']; ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -148,26 +142,49 @@ if (!$asset) {
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
+                                            <select class="form-control" name="fornecedor" id="fornecedor">
+                                                <option value="Nenhum" <?php echo ($asset['fornecedor'] == 'Nenhum' || empty($asset['fornecedor'])) ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_for = "SELECT nomeEmpresa FROM fornecedor ORDER BY nomeEmpresa ASC";
+                                                $res_for = $conn->query($sql_for);
+                                                if ($res_for && $res_for->num_rows > 0) {
+                                                    while ($row_for = $res_for->fetch_assoc()) {
+                                                        $selected_for = ($asset['fornecedor'] == $row_for['nomeEmpresa']) ? 'selected' : '';
+                                                        echo '<option value="' . $row_for['nomeEmpresa'] . '" ' . $selected_for . '>' . htmlspecialchars($row_for['nomeEmpresa']) . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Row 4: Imagem e Status -->
-                                <div class="row align-items-center">
-                                    <div class="col-md-2 text-center">
-                                        <label class="text-gray-600 small font-weight-bold d-block"><?php echo __('Imagem Atual'); ?></label>
-                                        <img src="<?php echo !empty($asset['imagem']) ? htmlspecialchars($asset['imagem']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
-                                            class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                                    </div>
-                                    <div class="col-md-7">
+                                <!-- Row 4: Visual, Datas e Status -->
+                                <div class="row">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="imagem"><?php echo __('Alterar Imagem do Ativo'); ?></label>
+                                            <label class="text-gray-600 small font-weight-bold" for="dataAtivacao"><?php echo __('Data de Cadastro'); ?></label>
+                                            <input class="form-control" name="dataAtivacao" id="dataAtivacao" type="date" value="<?php echo $asset['dataAtivacao']; ?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="imagem">
+                                                <?php echo __('Alterar Imagem do Ativo'); ?>
+                                                <img src="<?php echo !empty($asset['imagem']) ? htmlspecialchars($asset['imagem']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
+                                                     class="img-thumbnail ml-2" style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;">
+                                            </label>
                                             <input class="form-control-file" name="imagem" id="imagem" type="file" accept="image/*">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="custom-control custom-switch" style="margin-top: 15px;">
+                                    <div class="col-md-4">
+                                        <div class="custom-control custom-switch" style="margin-top: 32px;">
                                             <input type="hidden" name="status" value="Inativo">
                                             <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" <?php echo ($asset['status'] == 'Ativo') ? 'checked' : ''; ?>>
-                                            <label class="custom-control-label font-weight-bold" for="statusSwitch"><?php echo __('Ativo'); ?></label>
+                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
                                         </div>
                                     </div>
                                 </div>

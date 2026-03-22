@@ -16,6 +16,7 @@ $macAdress = $_POST['macAdress'];
 $status = $_POST['status'];
 $dataAtivacao = $_POST['dataAtivacao'];
 $centroDeCusto = $_POST['centroDeCusto'];
+$fornecedor = $_POST['fornecedor'];
 $descricao = $_POST['descricao'];
 
 $imagem = '/assets/img/no-image.png'; // Valor padrão solicitado pelo usuário
@@ -41,8 +42,8 @@ if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
     }
 }
 
-$sql = "INSERT INTO ativos (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, centroDeCusto, descricao, imagem, dataAtivacao)
-        VALUES ('$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', '$centroDeCusto', '$descricao', '$imagem', '$dataAtivacao')";
+$sql = "INSERT INTO ativos (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, centroDeCusto, fornecedor, descricao, imagem, dataAtivacao)
+        VALUES ('$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', '$centroDeCusto', '$fornecedor', '$descricao', '$imagem', '$dataAtivacao')";
 
 $inserir = mysqli_query($conn, $sql);
 

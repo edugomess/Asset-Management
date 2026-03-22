@@ -115,21 +115,6 @@ $result_cc = $conn->query($sql_cc);
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="data_aquisicao"><?php echo __('Data de Aquisição'); ?></label>
-                                            <input class="form-control" name="data_aquisicao" id="data_aquisicao" type="date" value="<?php echo $licensa['data_aquisicao']; ?>" required="">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="data_expiracao"><?php echo __('Data de Expiração'); ?></label>
-                                            <input class="form-control" name="data_expiracao" id="data_expiracao" type="date" value="<?php echo $licensa['data_expiracao']; ?>">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="id_centro_custo"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="id_centro_custo" id="id_centro_custo">
                                                 <option value=""><?php echo __('Global / Comum'); ?></option>
@@ -142,6 +127,39 @@ $result_cc = $conn->query($sql_cc);
                                                 }
                                                 ?>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
+                                            <select class="form-control" name="fornecedor" id="fornecedor">
+                                                <option value="Nenhum" <?php echo ($licensa['fornecedor'] == 'Nenhum' || empty($licensa['fornecedor'])) ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_for = "SELECT nomeEmpresa FROM fornecedor ORDER BY nomeEmpresa ASC";
+                                                $res_for = $conn->query($sql_for);
+                                                if ($res_for && $res_for->num_rows > 0) {
+                                                    while ($row_for = $res_for->fetch_assoc()) {
+                                                        $selected_for = ($licensa['fornecedor'] == $row_for['nomeEmpresa']) ? 'selected' : '';
+                                                        echo '<option value="' . $row_for['nomeEmpresa'] . '" ' . $selected_for . '>' . htmlspecialchars($row_for['nomeEmpresa']) . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="data_aquisicao"><?php echo __('Data de Aquisição'); ?></label>
+                                            <input class="form-control" name="data_aquisicao" id="data_aquisicao" type="date" value="<?php echo $licensa['data_aquisicao']; ?>" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="data_expiracao"><?php echo __('Data de Expiração'); ?></label>
+                                            <input class="form-control" name="data_expiracao" id="data_expiracao" type="date" value="<?php echo $licensa['data_expiracao']; ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -159,7 +177,7 @@ $result_cc = $conn->query($sql_cc);
                                 <div class="row mt-4 mb-3">
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
                                         <a class="btn btn-secondary" href="licencas.php" 
-                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #2c404a; font-weight: 600;">
+                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
                                             <?php echo __('Voltar'); ?>
                                         </a>
                                         <button class="btn btn-success active pulse animated" type="submit" 

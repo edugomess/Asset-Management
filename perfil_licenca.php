@@ -183,7 +183,15 @@ $excedente = ($uso > $total);
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
-                                        <div class="detail-value"><?php echo !empty($licenca['nomeSetor']) ? htmlspecialchars($licenca['nomeSetor']) : __('Global / Comum'); ?></div>
+                                        <div class="detail-value text-primary font-weight-bold">
+                                            <?php 
+                                            if (!empty($licenca['nomeSetor'])) {
+                                                echo '<a href="perfil_centro_de_custo.php?id='.$licenca['id_centro_custo'].'">'.htmlspecialchars($licenca['nomeSetor']).'</a>';
+                                            } else {
+                                                echo '<span class="text-muted small">'.__('Global / Comum').'</span>';
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Investimento Unitário'); ?></div>

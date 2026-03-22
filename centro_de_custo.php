@@ -49,6 +49,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
     <?php include 'sidebar_style.php'; ?>
     <?php include 'pagination_style.php'; ?>
+    <style>
+        .clickable-row { cursor: pointer; transition: all 0.2s; }
+        .clickable-row:hover { background-color: rgba(0,0,0,0.05) !important; transform: scale(1.002); }
+    </style>
 </head>
 
 <body id="page-top">
@@ -100,8 +104,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                                 $start_from = ($current_page - 1) * $results_per_page;
 
-                                // CONSULTA DINÂMICA: Recupera os dados ordenados por ID decrescente
-                                $sql = "SELECT * FROM centro_de_custo $where_clause ORDER BY id_centro_de_custo DESC LIMIT $start_from, $results_per_page";
+                                // CONSULTA DINÂMICA: Recupera os dados ordenados ALFABETICAMENTE
+                                $sql = "SELECT * FROM centro_de_custo $where_clause ORDER BY nomeSetor ASC LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
 
@@ -120,44 +124,17 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <tbody>
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
-                                            // 1. GESTÃO DE SLA: Busca metas configuradas no painel administrativo
-                                            // Esta lógica é um exemplo e deve ser aplicada onde o cálculo de SLA é feito.
-                                            // $sla_configs = [];
-                                            // $res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
-                                        
-                                            // if ($res_config) {
-                                            //     while ($row_config = mysqli_fetch_assoc($res_config)) {
-                                            //         $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
-                                            //     }
-                                            // }
-                                        
-                                            // Fallback: Tempos padrão em minutos caso não haja definição no banco
-                                            // $defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
-                                        
                                             while ($row = mysqli_fetch_assoc($result)) {
-                                                // $categoria = $row['categoria'];
-                                                // $prioridade = isset($row['prioridade']) ? $row['prioridade'] : 'Média';
-                                        
-                                                // 2. CÁLCULO DE TEMPO BASE: Ajusta SLA conforme prioridade (Alta reduz o tempo drasticamente)
-                                                // $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
-                                        
-                                                // if ($prioridade === 'Alta') {
-                                                //     $sla_total_minutos = round($cat_sla / 3);
-                                                // } elseif ($prioridade === 'Média') {
-                                                //     $sla_total_minutos = round(($cat_sla * 2) / 3);
-                                                // } else {
-                                                //     $sla_total_minutos = $cat_sla;
-                                                // }
-                                                echo "<tr>
-                                         <td><strong>" . htmlspecialchars($row['nomeSetor']) . "</strong></td>
+                                                echo "<tr class='clickable-row' onclick=\"window.location='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'\">
+                                           <td><strong><a href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'>" . htmlspecialchars($row['nomeSetor']) . "</a></strong></td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
                     <td>" . htmlspecialchars($row['unidade']) . "</td>
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>
-                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
+                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'><i class='fas fa-edit'></i></a>
+                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
                                             }
@@ -220,7 +197,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.css"></script>
     <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
     <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
     <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>

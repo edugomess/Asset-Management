@@ -173,7 +173,21 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($usuario['centroDeCusto']); ?></div>
+                                        <div class="detail-value text-primary font-weight-bold">
+                                            <?php 
+                                            $cc_name = $usuario['centroDeCusto'];
+                                            if (!empty($cc_name)) {
+                                                $res_cc = mysqli_query($conn, "SELECT id_centro_de_custo FROM centro_de_custo WHERE nomeSetor = '".mysqli_real_escape_string($conn, $cc_name)."' LIMIT 1");
+                                                if ($res_cc && $row_cc = mysqli_fetch_assoc($res_cc)) {
+                                                    echo '<a href="perfil_centro_de_custo.php?id='.$row_cc['id_centro_de_custo'].'">'.htmlspecialchars($cc_name).'</a>';
+                                                } else {
+                                                    echo htmlspecialchars($cc_name);
+                                                }
+                                            } else {
+                                                echo '-';
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Unidade'); ?></div>

@@ -81,6 +81,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         background-color: rgba(0, 0, 0, 0.05) !important;
     }
 
+    .asset-thumbnail { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; margin-right: 12px; border: 1px solid #e3e6f0; }
+    .asset-placeholder { width: 45px; height: 45px; border-radius: 8px; background: #f8f9fc; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #b7b9cc; border: 1px solid #e3e6f0; }
+
     .btn-system {
         border-radius: 8px;
         font-weight: 600;
@@ -328,10 +331,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                                 $start_from = ($current_page - 1) * $results_per_page;
 
-                                // Ordenação: Mais recentes primeiro
-                                $order_by = "a.id_asset DESC";
+                                // Ordenação: Alfabética por Modelo
+                                $order_by = "a.modelo ASC";
                                 if ($status_filter === 'Manutenção' || $status_filter === 'Manutencao') {
-                                    $order_by = "m.id_manutencao DESC";
+                                    $order_by = "a.modelo ASC";
                                 }
 
                                 // Busca os dados dos ativos com JOIN em usuários e status de manutenção
@@ -372,6 +375,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             $res_dep_config = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
                                             if ($res_dep_config && mysqli_num_rows($res_dep_config) > 0) {
                                                 $dep_config = mysqli_fetch_assoc($res_dep_config);
+                                            }
+
+                                            // Mapa de Centros de Custo para links
+                                            $cc_map = [];
+                                            $res_cc_map = mysqli_query($conn, "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo");
+                                            while($cc_row = mysqli_fetch_assoc($res_cc_map)) {
+                                                $cc_map[$cc_row['nomeSetor']] = $cc_row['id_centro_de_custo'];
                                             }
 
                                             while ($row = mysqli_fetch_assoc($result)) {
@@ -426,7 +436,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                                    <td>
+                                                        <?php 
+                                                        $cc_nome = $row['centroDeCusto'];
+                                                        if (isset($cc_map[$cc_nome])) {
+                                                            echo "<a href='perfil_centro_de_custo.php?id=" . $cc_map[$cc_nome] . "' onclick='event.stopPropagation();' class='font-weight-bold'>" . htmlspecialchars($cc_nome) . "</a>";
+                                                        } else {
+                                                            echo htmlspecialchars($cc_nome);
+                                                        }
+                                                        ?>
+                                                    </td>
 
                                                     <?php if ($status_filter !== 'Manutencao'): ?>
                                                         <td>

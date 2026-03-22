@@ -19,7 +19,7 @@ switch ($filtro_status) {
         $where_clause = "WHERE c.status = 'Aberto'";
         break;
     case 'em_andamento':
-        $where_clause = "WHERE c.status = 'Em Andamento'";
+        $where_clause = "WHERE c.status IN ('Em Andamento', 'Em Atendimento')";
         break;
     case 'pendente':
         $where_clause = "WHERE c.status = 'Pendente'";
@@ -242,8 +242,9 @@ $result = mysqli_query($conn, $sql);
                                                 $sla_status_text = '';
                                                 $progress_bar_class = '';
                                                 $sla_status_html = '';
+                                                $tempo_formatado = ''; // Inicializa para evitar warnings
 
-                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento' || $row['status'] == 'Pendente') {
+                                                if ($row['status'] == 'Aberto' || $row['status'] == 'Em Andamento' || $row['status'] == 'Em Atendimento' || $row['status'] == 'Pendente') {
                                                     if ($row['status'] == 'Pendente') {
                                                         $sla_status_text = __('Pendente');
                                                         $progress_bar_class = 'bg-secondary';
@@ -268,6 +269,7 @@ $result = mysqli_query($conn, $sql);
                                                     } elseif ($minutos_decorridos < 1440) {
                                                         $horas = floor($minutos_decorridos / 60);
                                                         $minutos = $minutos_decorridos % 60;
+                                                        $tempo_formatado = "{$horas}h {$minutos}m";
                                                     } else {
                                                         $dias = floor($minutos_decorridos / 1440);
                                                         $horas = floor(($minutos_decorridos % 1440) / 60);
@@ -301,6 +303,7 @@ $result = mysqli_query($conn, $sql);
                                                         $status_class = 'badge-primary';
                                                         break;
                                                     case 'Em Andamento':
+                                                    case 'Em Atendimento':
                                                         $status_class = 'badge-info';
                                                         break;
                                                     case 'Pendente':

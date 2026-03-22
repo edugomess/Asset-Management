@@ -19,14 +19,15 @@ $result_user = mysqli_query($conn, $sql_user);
 $user_data = mysqli_fetch_assoc($result_user);
 
 // BUSCA DE ATIVOS: Recupera todos os equipamentos que estão atualmente sob responsabilidade do usuário
-$sql_assets = "SELECT * FROM ativos WHERE assigned_to = $id_usuario";
+$sql_assets = "SELECT id_asset, tag, categoria, fabricante, modelo, hostName FROM ativos WHERE assigned_to = $id_usuario";
 $result_assets = mysqli_query($conn, $sql_assets);
 
 // BUSCA DE LICENÇAS: Recupera softwares vinculados via tabela de junção (n:n)
-$sql_lic = "SELECT l.* FROM licencas l 
+$sql_lic = "SELECT l.id_licenca, l.software, l.fabricante, l.tipo, l.data_expiracao FROM licencas l 
             JOIN atribuicoes_licencas al ON l.id_licenca = al.id_licenca 
             WHERE al.id_usuario = $id_usuario";
 $result_lic = mysqli_query($conn, $sql_lic);
+$can_click = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
 ?>
 <!DOCTYPE html>
 <html>
@@ -140,8 +141,8 @@ $result_lic = mysqli_query($conn, $sql_lic);
                                                         <?php
                                                         if (mysqli_num_rows($result_assets) > 0) {
                                                             while ($asset = mysqli_fetch_assoc($result_assets)) {
-                                                                echo "<tr>";
-                                                                echo "<td>" . htmlspecialchars($asset['tag']) . "</td>";
+                                                                echo "<tr " . ($can_click ? "onclick=\"window.location='perfil_ativo.php?id=" . $asset['id_asset'] . "'\" style='cursor: pointer;' class='clickable-row'" : "class='no-click-row'") . ">";
+                                                                echo "<td><strong>" . htmlspecialchars($asset['tag']) . "</strong></td>";
                                                                 echo "<td>" . htmlspecialchars($asset['categoria']) . "</td>";
                                                                 echo "<td>" . htmlspecialchars($asset['fabricante']) . "</td>";
                                                                 echo "<td>" . htmlspecialchars($asset['modelo']) . "</td>";
@@ -178,7 +179,7 @@ $result_lic = mysqli_query($conn, $sql_lic);
                                                         <?php
                                                         if (mysqli_num_rows($result_lic) > 0) {
                                                             while ($lic = mysqli_fetch_assoc($result_lic)) {
-                                                                echo "<tr>";
+                                                                echo "<tr " . ($can_click ? "onclick=\"window.location='perfil_licenca.php?id=" . $lic['id_licenca'] . "'\" style='cursor: pointer;' class='clickable-row'" : "class='no-click-row'") . ">";
                                                                 echo "<td><strong>" . htmlspecialchars($lic['software']) . "</strong></td>";
                                                                 echo "<td>" . htmlspecialchars($lic['fabricante']) . "</td>";
                                                                 echo "<td>" . htmlspecialchars($lic['tipo']) . "</td>";

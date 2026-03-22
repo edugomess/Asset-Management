@@ -146,14 +146,19 @@ include 'conexao.php';
                                                     </option>
                                                 </optgroup>
 
+                                                <optgroup label="<?php echo __('Fornecedores'); ?>">
+                                                    <option value="relatorio_fornecedores_lista.php"><?php echo __('Lista de Fornecedores'); ?></option>
+                                                    <option value="relatorio_fornecedores_servico.php"><?php echo __('Por Tipo de Serviço'); ?></option>
+                                                    <option value="relatorio_ativos_fornecedor.php"><?php echo __('Ativos por Fornecedor'); ?></option>
+                                                    <option value="relatorio_licencas_fornecedor.php"><?php echo __('Licenças por Fornecedor'); ?></option>
+                                                    <option value="relatorio_compras_fornecedor.php"><?php echo __('Investimento por Fornecedor'); ?></option>
+                                                </optgroup>
+
                                                 <optgroup label="<?php echo __('Outros'); ?>">
                                                     <option value="relatorio_centro_de_custo.php"><?php echo __('Centros de Custo (Lista)'); ?>
                                                     </option>
                                                     <option value="relatorio_cc_detalhado.php"><?php echo __('Centros de Custo (Detalhado)'); ?>
                                                     </option>
-                                                    <option value="relatorio_fornecedores_lista.php"><?php echo __('Fornecedores (Lista)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_fornecedores_servico.php"><?php echo __('Fornecedores (Serviços)'); ?></option>
                                                     <option value="relatorio_resumo_geral.php"><?php echo __('Resumo Geral do Sistema'); ?>
                                                     </option>
                                                 </optgroup>

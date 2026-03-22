@@ -6,10 +6,10 @@
 include_once 'auth.php';
 include_once 'conexao.php';
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$id = isset($_GET['id']) ? intval($_GET['id']) : $_SESSION['id_usuarios'];
 
 if ($id <= 0) {
-    header("Location: usuarios.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -208,15 +208,25 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                             <?php
                                             $sql_assets = "SELECT * FROM ativos WHERE assigned_to = $id";
                                             $res_assets = $conn->query($sql_assets);
+                                            $can_click = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
                                             if ($res_assets && $res_assets->num_rows > 0):
                                                 while ($asset = $res_assets->fetch_assoc()):
                                             ?>
-                                                <tr>
+                                                <tr <?php if ($can_click): ?>
+                                                    onclick="location.href='perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>'" 
+                                                    style="cursor: pointer;" class="clickable-row"
+                                                    <?php else: ?>
+                                                    class="no-click-row"
+                                                    <?php endif; ?>>
                                                     <td><?php echo htmlspecialchars($asset['modelo']); ?></td>
                                                     <td>
-                                                        <a href="perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>">
+                                                        <?php if ($can_click): ?>
+                                                            <a href="perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>">
+                                                                <?php echo htmlspecialchars($asset['tag']); ?>
+                                                            </a>
+                                                        <?php else: ?>
                                                             <?php echo htmlspecialchars($asset['tag']); ?>
-                                                        </a>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td>
                                                         <span class="status-badge <?php echo ($asset['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>">
@@ -255,16 +265,17 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $sql_lic = "SELECT l.software, l.fabricante, al.data_atribuicao 
+                                            $sql_lic = "SELECT l.id_licenca, l.software, l.fabricante, al.data_atribuicao 
                                                        FROM atribuicoes_licencas al 
                                                        JOIN licencas l ON al.id_licenca = l.id_licenca 
                                                        WHERE al.id_usuario = $id 
                                                        ORDER BY al.data_atribuicao DESC";
                                             $res_lic = $conn->query($sql_lic);
+                                            $can_click = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
                                             if ($res_lic && $res_lic->num_rows > 0):
                                                 while ($lic = $res_lic->fetch_assoc()):
                                             ?>
-                                                <tr>
+                                                <tr <?php if ($can_click) echo 'onclick="location.href=\'perfil_licenca.php?id=' . $lic['id_licenca'] . '\'" style="cursor: pointer;" class="clickable-row"'; else echo 'class="no-click-row"'; ?>>
                                                     <td><strong><?php echo htmlspecialchars($lic['software']); ?></strong></td>
                                                     <td><?php echo htmlspecialchars($lic['fabricante']); ?></td>
                                                     <td><?php echo date('d/m/Y', strtotime($lic['data_atribuicao'])); ?></td>

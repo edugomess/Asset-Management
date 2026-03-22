@@ -28,7 +28,7 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
                     <img class="border rounded-circle img-profile" src="<?php echo $fotoPerfil; ?>">
                 </a>
                 <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in">
-                    <a class="dropdown-item" href="profile.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i><?php echo __('Perfil'); ?></a>
+                    <a class="dropdown-item" href="perfil_usuario.php"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i><?php echo __('Perfil'); ?></a>
                     <a class="dropdown-item" href="configuracoes.php"><i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i><?php echo __('Configurações'); ?></a>
                     <?php if ($isAdminOrSuporte): ?>
                         <a class="dropdown-item" href="equipamentos.php?status=Manutencao"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i><?php echo __('Ativos em Manutenção'); ?></a>

@@ -277,7 +277,22 @@
     }
 
     .table tr:hover {
-        background-color: #f8f9fc;
+        background-color: rgba(78, 115, 223, 0.05) !important; /* Premium Blue Hover */
+    }
+
+    /* Global Zebra Striping */
+    .table tbody tr:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+    }
+
+    /* Disable hover and click cursor for specific rows */
+    .table tr.no-click-row:hover {
+        background-color: transparent !important;
+        cursor: default !important;
+    }
+    
+    .table tbody tr.no-click-row:nth-child(even):hover {
+        background-color: rgba(0, 0, 0, 0.02) !important;
     }
 
     /* Sidebar Toggle Styling */

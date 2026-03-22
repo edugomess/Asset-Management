@@ -34,6 +34,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <?php include 'pagination_style.php'; ?>
 
     <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .clickable-row:hover {
+            background-color: rgba(0,0,0,0.05) !important;
+        }
+
         .badge-success {
             background-color: #28a745 !important;
             color: #fff !important;
@@ -193,8 +201,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     $status_badge = 'badge-secondary';
                                                 }
                                                 ?>
-                                                <tr>
-                                                    <td><strong><?php echo htmlspecialchars($row['software']); ?></strong></td>
+                                                <tr class="clickable-row" onclick="window.location='perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>'">
+                                                    <td>
+                                                        <a href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>" class="font-weight-bold">
+                                                            <?php echo htmlspecialchars($row['software']); ?>
+                                                        </a>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
                                                     <td><?php echo $row['tipo']; ?></td>
                                                     <td>

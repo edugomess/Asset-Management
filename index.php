@@ -74,22 +74,22 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     $where_chamados = " AND usuario_id = " . $_SESSION['id_usuarios'];
 }
 
-$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') $where_chamados GROUP BY status");
+$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Em Atendimento', 'Pendente') $where_chamados GROUP BY status");
 if ($res) {
     while ($row = mysqli_fetch_assoc($res)) {
         $data[$row['status']] = $row['total'];
         $total_ativos += $row['total'];
         if ($row['status'] == 'Aberto')
             $count_aberto = $row['total'];
-        elseif ($row['status'] == 'Em Andamento')
-            $count_andamento = $row['total'];
+        elseif ($row['status'] == 'Em Andamento' || $row['status'] == 'Em Atendimento')
+            $count_andamento += $row['total'];
         elseif ($row['status'] == 'Pendente')
             $count_pendente = $row['total'];
     }
 }
 $data_string = implode(",", [
     isset($data['Aberto']) ? $data['Aberto'] : 0,
-    isset($data['Em Andamento']) ? $data['Em Andamento'] : 0,
+    $count_andamento,
     isset($data['Pendente']) ? $data['Pendente'] : 0
 ]);
 
@@ -495,9 +495,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-5">
                         <div class="col-lg-7 col-xl-8">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center"
                                     style="background: rgb(248, 249, 252);">
                                     <h6 class="text-primary font-weight-bold m-0"><?php echo __('Chamados Finalizados (Mês)'); ?></h6>
@@ -510,7 +510,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body d-flex flex-column justify-content-center">
                                     <div class="chart-area"><canvas
                                             data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Jan'); ?>&quot;,&quot;<?php echo __('Fev'); ?>&quot;,&quot;<?php echo __('Mar'); ?>&quot;,&quot;<?php echo __('Abr'); ?>&quot;,&quot;<?php echo __('Mai'); ?>&quot;,&quot;<?php echo __('Jun'); ?>&quot;,&quot;<?php echo __('Jul'); ?>&quot;,&quot;<?php echo __('Ago'); ?>&quot;,&quot;<?php echo __('Set'); ?>&quot;,&quot;<?php echo __('Out'); ?>&quot;,&quot;<?php echo __('Nov'); ?>&quot;,&quot;<?php echo __('Dez'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;<?php echo __('Chamados'); ?>&quot;,&quot;fill&quot;:true,&quot;data&quot;:[<?php echo $closed_string; ?>],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgb(26, 121, 158)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}"></canvas>
                                     </div>
@@ -518,7 +518,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             </div>
                         </div>
                         <div class="col-lg-5 col-xl-4">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0"><?php echo __('Status dos Chamados'); ?></h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
@@ -530,7 +530,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
                                             data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>

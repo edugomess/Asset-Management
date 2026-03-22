@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Se não enviou foto, não faz nada (ou apenas confirma sucesso para não dar erro no JS)
             echo "<script>
                     alert('" . __('Nenhuma alteração realizada (somente a foto pode ser alterada).') . "');
-                    window.location.href = 'profile.php';
+                    window.location.href = 'perfil_usuario.php';
                   </script>";
             exit();
         }
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (mysqli_query($conn, $query_update)) {
-        $redirect = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 'profile.php' : 'perfil_usuario.php?id=' . $id_usuarios;
+        $redirect = 'perfil_usuario.php?id=' . $id_usuarios;
         echo "<script>
                 alert('" . __('Atualizado com sucesso!') . "');
                 window.location.href = '$redirect';

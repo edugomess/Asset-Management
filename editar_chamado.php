@@ -165,7 +165,10 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
     <style>
         .lightbox-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; }
         .lightbox-close { position:absolute; top:20px; right:30px; color:#fff; font-size:35px; cursor:pointer; z-index:10000; line-height:1; }
-        .nota-historico { border: 1px solid #e3e6f0; border-radius: 8px; padding: 12px; background: #f8f9fc; position: relative; }
+        .nota-historico { border: 1px solid #e3e6f0; border-radius: 8px; padding: 12px; background: #f8f9fc; position: relative; transition: all 0.2s ease; }
+        .nota-solicitante { background-color: #f0f7ff !important; border-left: 5px solid #007bff !important; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        .nota-tecnico { background-color: #f0fff4 !important; border-left: 5px solid #28a745 !important; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        .nota-historico textarea { transition: background 0.2s ease; }
     </style>
 </head>
 
@@ -254,7 +257,7 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Status Atual'); ?></label>
                                             <select class="form-control" name="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                                 <option value="Aberto" <?php echo $chamado['status'] == 'Aberto' ? 'selected' : ''; ?>><?php echo __('Aberto'); ?></option>
-                                                <option value="Em Atendimento" <?php echo $chamado['status'] == 'Em Atendimento' ? 'selected' : ''; ?>><?php echo __('Em Atendimento'); ?></option>
+                                                    <option value="Em Andamento" <?php echo ($chamado['status'] == 'Em Andamento' || $chamado['status'] == 'Em Atendimento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
                                                 <option value="Pendente" <?php echo $chamado['status'] == 'Pendente' ? 'selected' : ''; ?>><?php echo __('Pendente'); ?></option>
                                                 <option value="Resolvido" <?php echo $chamado['status'] == 'Resolvido' ? 'selected' : ''; ?>><?php echo __('Resolvido'); ?></option>
                                                 <option value="Fechado" <?php echo $chamado['status'] == 'Fechado' ? 'selected' : ''; ?>><?php echo __('Fechado'); ?></option>
@@ -333,25 +336,36 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                                 $dec = json_decode($chamado['nota_resolucao'], true);
                                                 if (is_array($dec)) $notas = $dec;
                                             }
-                                            foreach ($notas as $idx => $nota): ?>
-                                                <div class="nota-historico mb-2 shadow-sm border">
+                                            
+                                            foreach ($notas as $idx => $nota): 
+                                                $nome_sol = ($chamado['sol_nome'] ?? '') . ' ' . ($chamado['sol_sobrenome'] ?? '');
+                                                $nome_resp = ($chamado['resp_nome'] ?? '') . ' ' . ($chamado['resp_sobrenome'] ?? '');
+                                                $autor = $nota['usuario'] ?? '';
+                                                
+                                                $class_extra = '';
+                                                if ($autor === $nome_sol) $class_extra = 'nota-solicitante';
+                                                elseif ($autor === $nome_resp) $class_extra = 'nota-tecnico';
+                                                
+                                                $bg_textarea = ($class_extra !== '') ? 'bg-transparent' : 'bg-light';
+                                             ?>
+                                                <div class="nota-historico mb-2 shadow-sm border <?php echo $class_extra; ?>">
                                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                                         <small class="text-muted">
-                                                            <i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($nota['usuario'] ?? 'Sistema'); ?>
+                                                            <i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($autor ?: 'Sistema'); ?>
                                                             &mdash; <i class="fas fa-clock mx-1"></i><?php echo htmlspecialchars($nota['data'] ?? ''); ?>
                                                             <?php if (!empty($nota['editado_em'])): ?>
                                                                 <span class="badge badge-warning ml-2 font-italic"><i class="fas fa-edit"></i> <?php echo __('Editado'); ?></span>
                                                             <?php endif; ?>
                                                         </small>
-                                                        <?php if (isset($_SESSION['nome_usuario']) && ($nota['usuario'] ?? '') === $_SESSION['nome_usuario']): ?>
+                                                        <?php if (isset($_SESSION['nome_usuario']) && $autor === $_SESSION['nome_usuario']): ?>
                                                             <button type="button" class="btn btn-link text-warning p-0" onclick="toggleEditNota(this, <?php echo $idx; ?>)">
                                                                 <i class="fas fa-edit"></i> <?php echo __('Editar'); ?>
                                                             </button>
                                                         <?php endif; ?>
                                                     </div>
-                                                    <textarea class="form-control bg-light border-0" name="notas_existentes[<?php echo $idx; ?>]" rows="2" readonly><?php echo htmlspecialchars($nota['texto']); ?></textarea>
+                                                    <textarea class="form-control <?php echo $bg_textarea; ?> border-0" name="notas_existentes[<?php echo $idx; ?>]" rows="2" readonly><?php echo htmlspecialchars($nota['texto']); ?></textarea>
                                                 </div>
-                                            <?php endforeach; ?>
+                                             <?php endforeach; ?>
                                         </div>
                                     </div>
                                 </div>

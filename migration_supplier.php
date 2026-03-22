@@ -1,5 +1,5 @@
 <?php
-include 'conexao.php';
+include_once 'conexao.php';
 
 // Add 'fornecedor' to 'ativos' table
 // Already added in first try usually, but let's check and add if missing
@@ -30,4 +30,3 @@ if (mysqli_num_rows($check2) == 0) {
 }
 
 mysqli_close($conn);
-?>

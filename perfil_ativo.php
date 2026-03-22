@@ -242,6 +242,25 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <div class="detail-value"><?php echo htmlspecialchars($ativo['centroDeCusto']); ?></div>
                                     </div>
                                     <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Fornecedor'); ?></div>
+                                        <div class="detail-value text-primary font-weight-bold">
+                                            <?php 
+                                            if (!empty($ativo['fornecedor'])) {
+                                                // Tenta buscar o ID do fornecedor para linkar
+                                                $fname = mysqli_real_escape_string($conn, $ativo['fornecedor']);
+                                                $res_f = mysqli_query($conn, "SELECT id_fornecedor FROM fornecedor WHERE nomeEmpresa = '$fname' LIMIT 1");
+                                                if ($res_f && $row_f = mysqli_fetch_assoc($res_f)) {
+                                                    echo '<a href="perfil_fornecedor.php?id='.$row_f['id_fornecedor'].'">'.htmlspecialchars($ativo['fornecedor']).'</a>';
+                                                } else {
+                                                    echo htmlspecialchars($ativo['fornecedor']);
+                                                }
+                                            } else {
+                                                echo '-';
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Valor Original'); ?></div>
                                         <div class="detail-value">R$ <?php echo number_format($valor_original, 2, ',', '.'); ?></div>
                                     </div>

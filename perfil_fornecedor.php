@@ -97,6 +97,13 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        .clickable-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .clickable-row:hover {
+            background-color: rgba(0,0,0,0.05) !important;
+        }
     </style>
 </head>
 
@@ -201,12 +208,82 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                                 </div>
                             </div>
                             
-                            <!-- Exemplo de Ativos Relacionados (Futuro) -->
-                            <div class="info-card shadow opacity-50">
-                                <h6 class="font-weight-bold text-muted mb-3">
+                            <!-- Ativos e Licenças Relacionados -->
+                            <div class="info-card shadow">
+                                <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-boxes mr-2"></i><?php echo __('Ativos Adquiridos / Suportados'); ?>
                                 </h6>
-                                <p class="text-center py-4 mb-0"><?php echo __('Funcionalidade em desenvolvimento...'); ?></p>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th><?php echo __('Ativo / Licença'); ?></th>
+                                                <th><?php echo __('Tipo/Tag'); ?></th>
+                                                <th><?php echo __('Status'); ?></th>
+                                                <th class="text-right"><?php echo __('Valor'); ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $fname = mysqli_real_escape_string($conn, $fornecedor['nomeEmpresa']);
+                                            
+                                            // 1. Buscar Ativos
+                                            $sql_assets = "SELECT id_asset, modelo, tag, status, valor FROM ativos WHERE fornecedor = '$fname' ORDER BY modelo ASC";
+                                            $res_assets = $conn->query($sql_assets);
+                                            
+                                            $total_items = 0;
+                                            $total_value = 0;
+
+                                            if ($res_assets && $res_assets->num_rows > 0) {
+                                                while ($row = $res_assets->fetch_assoc()) {
+                                                    $total_items++;
+                                                    $total_value += $row['valor'];
+                                                    echo '<tr class="clickable-row" onclick="window.location=\'perfil_ativo.php?id='.$row['id_asset'].'\'">';
+                                                    echo '<td><a href="perfil_ativo.php?id='.$row['id_asset'].'" class="font-weight-bold">'.htmlspecialchars($row['modelo']).'</a></td>';
+                                                    echo '<td><span class="badge badge-info">'.htmlspecialchars($row['tag']).'</span></td>';
+                                                    echo '<td>'.htmlspecialchars($row['status']).'</td>';
+                                                    echo '<td class="text-right">R$ '.number_format($row['valor'], 2, ',', '.').'</td>';
+                                                    echo '</tr>';
+                                                }
+                                            }
+
+                                            // 2. Buscar Licenças
+                                            $sql_lics = "SELECT id_licenca, software, chave, status, valor_unitario, quantidade_total FROM licencas WHERE fornecedor = '$fname' ORDER BY software ASC";
+                                            $res_lics = $conn->query($sql_lics);
+
+                                            if ($res_lics && $res_lics->num_rows > 0) {
+                                                while ($row = $res_lics->fetch_assoc()) {
+                                                    $total_items++;
+                                                    $row_total = $row['valor_unitario'] * $row['quantidade_total'];
+                                                    $total_value += $row_total;
+                                                    // Nota: Licenças podem não ter um "perfil_licenca.php" equivalente de visualização direta 
+                                                    // mas se houver editar_licenca.php ou similar, podemos usar. 
+                                                    // Por enquanto, vou omitir o link ou apontar para editar se perfil não existir.
+                                                    // Verificando se existe perfil_licenca.php (provavelmente sim dada a simetria)
+                                                    echo '<tr class="clickable-row" onclick="window.location=\'perfil_licenca.php?id='.$row['id_licenca'].'\'">';
+                                                    echo '<td><span class="font-weight-bold">'.htmlspecialchars($row['software']).'</span> <small class="text-muted">(Licença)</small></td>';
+                                                    echo '<td><small>'.htmlspecialchars($row['chave']).'</small></td>';
+                                                    echo '<td>'.htmlspecialchars($row['status']).'</td>';
+                                                    echo '<td class="text-right">R$ '.number_format($row_total, 2, ',', '.').'</td>';
+                                                    echo '</tr>';
+                                                }
+                                            }
+
+                                            if ($total_items === 0) {
+                                                echo '<tr><td colspan="4" class="text-center text-muted py-4">'.__('Nenhum item vinculado a este fornecedor.').'</td></tr>';
+                                            }
+                                            ?>
+                                        </tbody>
+                                        <?php if ($total_items > 0): ?>
+                                        <tfoot class="bg-light font-weight-bold">
+                                            <tr>
+                                                <td colspan="3" class="text-right"><?php echo __('Investimento Total:'); ?></td>
+                                                <td class="text-right text-primary">R$ <?php echo number_format($total_value, 2, ',', '.'); ?></td>
+                                            </tr>
+                                        </tfoot>
+                                        <?php endif; ?>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

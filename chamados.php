@@ -209,9 +209,11 @@ $result = mysqli_query($conn, $sql);
                                                 // 2. CÁLCULO DE TEMPO BASE: Ajusta SLA conforme prioridade (Alta reduz o tempo drasticamente)
                                                 $cat_sla = $sla_configs[$categoria] ?? ($defaults[$categoria] ?? 360);
 
-                                                if ($prioridade === 'Alta') {
+                                                if ($prioridade === 'P1') {
+                                                    $sla_total_minutos = round($cat_sla / 6);
+                                                } elseif ($prioridade === 'P2' || $prioridade === 'Alta') {
                                                     $sla_total_minutos = round($cat_sla / 3);
-                                                } elseif ($prioridade === 'Média') {
+                                                } elseif ($prioridade === 'P3' || $prioridade === 'Média') {
                                                     $sla_total_minutos = round(($cat_sla * 2) / 3);
                                                 } else {
                                                     $sla_total_minutos = $cat_sla;
@@ -330,12 +332,18 @@ $result = mysqli_query($conn, $sql);
 
                                                 $prioridade_class = 'badge-secondary';
                                                 switch ($prioridade) {
+                                                    case 'P1':
+                                                        $prioridade_class = 'badge-danger border border-white';
+                                                        break;
+                                                    case 'P2':
                                                     case 'Alta':
                                                         $prioridade_class = 'badge-danger';
                                                         break;
+                                                    case 'P3':
                                                     case 'Média':
-                                                        $prioridade_class = 'badge-warning';
+                                                        $prioridade_class = 'badge-warning text-dark';
                                                         break;
+                                                    case 'P4':
                                                     case 'Baixa':
                                                         $prioridade_class = 'badge-info';
                                                         break;

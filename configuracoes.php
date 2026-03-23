@@ -208,21 +208,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
     $email = isset($_POST['email_ativo']) ? 1 : 0;
     $wa_chamados = isset($_POST['whatsapp_recebe_chamados']) ? 1 : 0;
     $wa_manutencao = isset($_POST['whatsapp_recebe_manutencao']) ? 1 : 0;
-    $wa_baixa = isset($_POST['whatsapp_prioridade_baixa']) ? 1 : 0;
-    $wa_media = isset($_POST['whatsapp_prioridade_media']) ? 1 : 0;
-    $wa_alta = isset($_POST['whatsapp_prioridade_alta']) ? 1 : 0;
-    $wa_incidente = isset($_POST['whatsapp_tipo_incidente']) ? 1 : 0;
-    $wa_requisicao = isset($_POST['whatsapp_tipo_requisicao']) ? 1 : 0;
-    $wa_mudanca = isset($_POST['whatsapp_tipo_mudanca']) ? 1 : 0;
+    $wa_p1 = isset($_POST['whatsapp_prioridade_p1']) ? 1 : 0;
+    $wa_p2 = isset($_POST['whatsapp_prioridade_p2']) ? 1 : 0;
+    $wa_p3 = isset($_POST['whatsapp_prioridade_p3']) ? 1 : 0;
+    $wa_p4 = isset($_POST['whatsapp_prioridade_p4']) ? 1 : 0;
 
-    $email_chamados = isset($_POST['email_recebe_chamados']) ? 1 : 0;
-    $email_manutencao = isset($_POST['email_recebe_manutencao']) ? 1 : 0;
-    $email_baixa = isset($_POST['email_prioridade_baixa']) ? 1 : 0;
-    $email_media = isset($_POST['email_prioridade_media']) ? 1 : 0;
-    $email_alta = isset($_POST['email_prioridade_alta']) ? 1 : 0;
-    $email_incidente = isset($_POST['email_tipo_incidente']) ? 1 : 0;
-    $email_requisicao = isset($_POST['email_tipo_requisicao']) ? 1 : 0;
-    $email_mudanca = isset($_POST['email_tipo_mudanca']) ? 1 : 0;
+    $email_p1 = isset($_POST['email_prioridade_p1']) ? 1 : 0;
+    $email_p2 = isset($_POST['email_prioridade_p2']) ? 1 : 0;
+    $email_p3 = isset($_POST['email_prioridade_p3']) ? 1 : 0;
+    $email_p4 = isset($_POST['email_prioridade_p4']) ? 1 : 0;
 
     $sql = "UPDATE configuracoes_alertas SET 
             chamados_ativo = 1,
@@ -231,17 +225,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
             email_ativo = $email,
             whatsapp_recebe_chamados = $wa_chamados,
             whatsapp_recebe_manutencao = $wa_manutencao,
-            whatsapp_prioridade_baixa = $wa_baixa,
-            whatsapp_prioridade_media = $wa_media,
-            whatsapp_prioridade_alta = $wa_alta,
+            whatsapp_prioridade_p1 = $wa_p1,
+            whatsapp_prioridade_p2 = $wa_p2,
+            whatsapp_prioridade_p3 = $wa_p3,
+            whatsapp_prioridade_p4 = $wa_p4,
             cat_incidente = $wa_incidente,
             cat_requisicao = $wa_requisicao,
             cat_mudanca = $wa_mudanca,
             email_recebe_chamados = $email_chamados,
             email_recebe_manutencao = $email_manutencao,
-            email_prioridade_baixa = $email_baixa,
-            email_prioridade_media = $email_media,
-            email_prioridade_alta = $email_alta,
+            email_prioridade_p1 = $email_p1,
+            email_prioridade_p2 = $email_p2,
+            email_prioridade_p3 = $email_p3,
+            email_prioridade_p4 = $email_p4,
             email_tipo_incidente = $email_incidente,
             email_tipo_requisicao = $email_requisicao,
             email_tipo_mudanca = $email_mudanca
@@ -997,23 +993,29 @@ function getHoursAndMinutes($total_minutes)
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
                                                         <?php echo __('PRIORIDADES PERMITIDAS (GLOBAL)'); ?></div>
-                                                    <input type="checkbox" id="wa_prio_alta"
-                                                        name="whatsapp_prioridade_alta" value="1" class="badge-checkbox"
-                                                        <?php echo (($alert_config['whatsapp_prioridade_alta'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_alta"
-                                                        class="badge-label badge-alta"><?php echo __('Alta'); ?></label>
+                                                    <input type="checkbox" id="wa_prio_p1"
+                                                        name="whatsapp_prioridade_p1" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['whatsapp_prioridade_p1'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p1"
+                                                        class="badge-label" style="background-color: #8b0000; color: white;">P1</label>
+                                                    
+                                                    <input type="checkbox" id="wa_prio_p2"
+                                                        name="whatsapp_prioridade_p2" value="1" class="badge-checkbox"
+                                                        <?php echo (($alert_config['whatsapp_prioridade_p2'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p2"
+                                                        class="badge-label badge-alta">P2</label>
 
-                                                    <input type="checkbox" id="wa_prio_media"
-                                                        name="whatsapp_prioridade_media" value="1"
-                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_media'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_media"
-                                                        class="badge-label badge-media"><?php echo __('Média'); ?></label>
+                                                    <input type="checkbox" id="wa_prio_p3"
+                                                        name="whatsapp_prioridade_p3" value="1"
+                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p3'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p3"
+                                                        class="badge-label badge-media">P3</label>
 
-                                                    <input type="checkbox" id="wa_prio_baixa"
-                                                        name="whatsapp_prioridade_baixa" value="1"
-                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_baixa'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_baixa"
-                                                        class="badge-label badge-baixa"><?php echo __('Baixa'); ?></label>
+                                                    <input type="checkbox" id="wa_prio_p4"
+                                                        name="whatsapp_prioridade_p4" value="1"
+                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p4'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p4"
+                                                        class="badge-label badge-baixa">P4</label>
                                                 </div>
 
                                                 <div class="wa-category-group">
@@ -1137,31 +1139,28 @@ function getHoursAndMinutes($total_minutes)
                                         <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2"
                                             style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
                                             <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-danger mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;"><?php echo __('Alta'); ?></span>
-                                                <div
-                                                    style="height: 6px; background: #dc3545; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
-                                                </div>
-                                                <strong class="text-dark d-block label-50"
-                                                    style="font-size: 0.85rem;">--</strong>
-                                            </div>
-                                            <div class="text-center mx-1" style="flex: 1;">
-                                                <span class="badge badge-warning mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;"><?php echo __('Média'); ?></span>
-                                                <div
-                                                    style="height: 6px; background: #f6c23e; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
-                                                </div>
-                                                <strong class="text-dark d-block label-75"
-                                                    style="font-size: 0.85rem;">--</strong>
+                                                <span class="badge mb-2 px-2 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; background-color: #8b0000; color: white;">P1</span>
+                                                <div style="height: 6px; background: #8b0000; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-p1" style="font-size: 0.75rem;">--</strong>
                                             </div>
                                             <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-success mb-2 px-3 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.5px;"><?php echo __('Baixa'); ?></span>
-                                                <div
-                                                    style="height: 6px; background: #1cc88a; margin: 0 5px 8px 5px; border-radius: 10px; opacity: 0.8;">
-                                                </div>
-                                                <strong class="text-dark d-block label-100"
-                                                    style="font-size: 0.85rem;">--</strong>
+                                                <span class="badge badge-danger mb-2 px-2 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P2</span>
+                                                <div style="height: 6px; background: #dc3545; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-p2" style="font-size: 0.75rem;">--</strong>
+                                            </div>
+                                            <div class="text-center" style="flex: 1;">
+                                                <span class="badge badge-warning mb-2 px-2 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">P3</span>
+                                                <div style="height: 6px; background: #f6c23e; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-p3" style="font-size: 0.75rem;">--</strong>
+                                            </div>
+                                            <div class="text-center" style="flex: 1;">
+                                                <span class="badge badge-success mb-2 px-2 py-1"
+                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P4</span>
+                                                <div style="height: 6px; background: #1cc88a; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
+                                                <strong class="text-dark d-block label-p4" style="font-size: 0.75rem;">--</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -1545,9 +1544,10 @@ function getHoursAndMinutes($total_minutes)
                     const minutes = parseInt($row.find('.sla-minutes').val()) || 0;
                     const total = (hours * 60) + minutes;
 
-                    $row.find('.label-50').text(formatTimeDisplay(Math.round(total / 3)));
-                    $row.find('.label-75').text(formatTimeDisplay(Math.round(total * 2 / 3)));
-                    $row.find('.label-100').text(formatTimeDisplay(total));
+                    $row.find('.label-p1').text(formatTimeDisplay(Math.round(total / 6)));
+                    $row.find('.label-p2').text(formatTimeDisplay(Math.round(total / 3)));
+                    $row.find('.label-p3').text(formatTimeDisplay(Math.round(total * 2 / 3)));
+                    $row.find('.label-p4').text(formatTimeDisplay(total));
                 });
             }
 

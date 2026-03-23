@@ -154,12 +154,19 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="prioridade"><?php echo __('Prioridade'); ?></label>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <label class="text-gray-600 small font-weight-bold mb-0" for="prioridade"><?php echo __('Prioridade'); ?></label>
+                                                <button type="button" class="btn btn-sm btn-link p-0 text-primary font-weight-bold" id="btn-ai-priority" style="text-decoration: none; font-size: 0.75rem;">
+                                                    <i class="fas fa-magic mr-1"></i><?php echo __('Sugerir com IA'); ?>
+                                                </button>
+                                            </div>
                                             <select class="form-control" name="prioridade" id="prioridade" required="">
-                                                <option value="Baixa"><?php echo __('Baixa'); ?></option>
-                                                <option value="Média" selected><?php echo __('Média'); ?></option>
-                                                <option value="Alta"><?php echo __('Alta'); ?></option>
+                                                <option value="P1" style="color: #8b0000; font-weight: bold;">P1 - Crítica (SLA Urgente)</option>
+                                                <option value="P2" style="color: #e74a3b;">P2 - Alta</option>
+                                                <option value="P3" style="color: #f6c23e;">P3 - Média</option>
+                                                <option value="P4" style="color: #1cc88a;" selected>P4 - Baixa</option>
                                             </select>
+                                            <div id="ai-priority-reason" class="small text-info mt-1" style="display: none; line-height: 1.2;"></div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -372,6 +379,52 @@ include_once 'auth.php'; // Proteção de sessão
             if (!document.getElementById('row-gestor').contains(e.target)) {
                 document.getElementById('gestor-results').style.display = 'none';
             }
+        });
+
+        // AI PRIORITY CLASSIFICATION
+        document.getElementById('btn-ai-priority').addEventListener('click', function() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
+            const btn = this;
+            const reasonDiv = document.getElementById('ai-priority-reason');
+
+            if (!titulo || !descricao) {
+                alert('<?php echo __('Por favor, preencha o título e a descrição antes de solicitar a classificação.'); ?>');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i><?php echo __('Analisando...'); ?>';
+            reasonDiv.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('titulo', titulo);
+            formData.append('descricao', descricao);
+
+            fetch('ajax_classificar_prioridade.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-1"></i><?php echo __('Sugerir com IA'); ?>';
+
+                if (data.success) {
+                    document.getElementById('prioridade').value = data.prioridade;
+                    reasonDiv.textContent = '✨ AI: ' + data.justificativa;
+                    reasonDiv.style.display = 'block';
+                    $(reasonDiv).addClass('animated fadeIn');
+                } else {
+                    alert(data.message || 'Erro ao classificar prioridade.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic mr-1"></i><?php echo __('Sugerir com IA'); ?>';
+                alert('Erro de conexão com o servidor de IA.');
+            });
         });
 
         // ENVIO VIA AJAX: Processa o formulário sem recarregar a página

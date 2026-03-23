@@ -598,10 +598,14 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                 ?>
                                 <span class="badge-premium <?php echo $status_class; ?> text-white"><i class="fas fa-circle mr-2" style="font-size: 8px;"></i><?php echo __($chamado['status']); ?></span>
                                 
-                                <?php
-                                $prio_class = 'bg-light text-dark';
-                                if ($chamado['prioridade'] == 'Alta') { $prio_class = 'bg-danger text-white'; }
-                                elseif ($chamado['prioridade'] == 'Média') { $prio_class = 'bg-warning text-dark'; }
+                                 <?php
+                                 $prio_class = 'bg-light text-dark';
+                                 if ($chamado['prioridade'] == 'P1') { $prio_class = 'bg-danger text-white border-left-danger'; }
+                                 elseif ($chamado['prioridade'] == 'P2') { $prio_class = 'bg-warning text-dark border-left-warning'; }
+                                 elseif ($chamado['prioridade'] == 'P3') { $prio_class = 'bg-info text-dark border-left-info'; }
+                                 elseif ($chamado['prioridade'] == 'P4') { $prio_class = 'bg-success text-white border-left-success'; }
+                                 elseif ($chamado['prioridade'] == 'Alta') { $prio_class = 'bg-danger text-white'; }
+                                 elseif ($chamado['prioridade'] == 'Média') { $prio_class = 'bg-warning text-dark'; }
                                 ?>
                                 <span class="badge-premium <?php echo $prio_class; ?>"><i class="fas fa-bolt mr-2"></i><?php echo __($chamado['prioridade'] ?: 'Sem Prioridade'); ?></span>
                             </div>
@@ -783,13 +787,22 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="prioridade" class="form-label-premium"><?php echo __('Prioridade'); ?></label>
-                                            <select id="prioridade" class="form-control form-control-premium" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
-                                                <option value="Baixa" <?php echo ($chamado['prioridade'] == 'Baixa') ? 'selected' : ''; ?>><?php echo __('Baixa'); ?></option>
-                                                <option value="Média" <?php echo ($chamado['prioridade'] == 'Média' || empty($chamado['prioridade'])) ? 'selected' : ''; ?>><?php echo __('Média'); ?></option>
-                                                <option value="Alta" <?php echo ($chamado['prioridade'] == 'Alta') ? 'selected' : ''; ?>><?php echo __('Alta'); ?></option>
-                                            </select>
-                                        </div>
+                                             <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <label for="prioridade" class="form-label-premium mb-0"><?php echo __('Prioridade'); ?></label>
+                                                <?php if ($is_tecnico): ?>
+                                                <button type="button" class="btn btn-sm btn-link p-0 text-primary font-weight-bold" id="btn-ai-priority" style="text-decoration: none; font-size: 0.7rem;">
+                                                    <i class="fas fa-magic mr-1"></i><?php echo __('Sugerir com IA'); ?>
+                                                </button>
+                                                <?php endif; ?>
+                                             </div>
+                                             <select id="prioridade" class="form-control form-control-premium" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
+                                                 <option value="P1" <?php echo ($chamado['prioridade'] == 'P1') ? 'selected' : ''; ?> style="color: #8b0000; font-weight: bold;">P1 - <?php echo __('Crítica (SLA Urgente)'); ?></option>
+                                                 <option value="P2" <?php echo ($chamado['prioridade'] == 'P2' || $chamado['prioridade'] == 'Alta') ? 'selected' : ''; ?> style="color: #e74a3b;">P2 - <?php echo __('Alta'); ?></option>
+                                                 <option value="P3" <?php echo ($chamado['prioridade'] == 'P3' || $chamado['prioridade'] == 'Média' || empty($chamado['prioridade'])) ? 'selected' : ''; ?> style="color: #f6c23e;">P3 - <?php echo __('Média'); ?></option>
+                                                 <option value="P4" <?php echo ($chamado['prioridade'] == 'P4' || $chamado['prioridade'] == 'Baixa') ? 'selected' : ''; ?> style="color: #1cc88a;">P4 - <?php echo __('Baixa'); ?></option>
+                                             </select>
+                                             <div id="ai-priority-reason" class="small text-info mt-1" style="display: none; line-height: 1.2;"></div>
+                                         </div>
                                         <div class="mb-3">
                                             <label for="status" class="form-label-premium"><?php echo __('Alterar Status'); ?></label>
                                             <select id="status" class="form-control form-control-premium" name="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>

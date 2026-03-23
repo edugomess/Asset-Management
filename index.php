@@ -186,8 +186,9 @@ $closed_string = implode(",", $closed_data);
             ELSE 1440 
         END * 
         CASE 
-            WHEN c.prioridade = 'Alta' THEN 1/3.0
-            WHEN c.prioridade = 'Média' THEN 2/3.0
+            WHEN c.prioridade = 'P1' THEN 1/6.0
+            WHEN c.prioridade = 'P2' OR c.prioridade = 'Alta' THEN 1/3.0
+            WHEN c.prioridade = 'P3' OR c.prioridade = 'Média' THEN 2/3.0
             ELSE 1.0
         END) THEN 1 ELSE 0 END) as met_sla
 FROM chamados c

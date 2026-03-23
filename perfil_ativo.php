@@ -4,8 +4,14 @@
  * Visualização detalhada e prêmium de um equipamento/ativo.
  * Integra lógica de depreciação, doação e histórico.
  */
-include_once 'auth.php';
-include_once 'conexao.php';
+include_once 'auth.php'; // Proteção de sessão
+include_once 'conexao.php'; // Banco de Dados
+
+// Verificação de permissão: Apenas Admin e Suporte podem editar ativos
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

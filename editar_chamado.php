@@ -11,15 +11,40 @@ $id_chamado = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = '';
 
 // Processar atualização (POST para si mesmo)
+$id_usuario_logado = $_SESSION['id_usuarios'];
+
+// Para o bloco de aprovação, precisamos do id_gestor_aprovador_base antes do POST principal
+// Busca os valores atuais do banco como base para aprovação
+$sql_base_aprovacao = "SELECT id_gestor_aprovador FROM chamados WHERE id = $id_chamado";
+$res_base_aprovacao = $conn->query($sql_base_aprovacao);
+$chamado_base_aprovacao = $res_base_aprovacao->fetch_assoc();
+$id_gestor_aprovador_base = $chamado_base_aprovacao['id_gestor_aprovador'] ?? null;
+
+
+// Processar Aprovação do Gestor
+if (isset($_POST['acao_gestor']) && $id_usuario_logado == $id_gestor_aprovador_base) {
+    $aprovacao = ($_POST['acao_gestor'] === 'aprovar') ? 1 : 0;
+    $sql_aprov = "UPDATE chamados SET aprovado_gestor = $aprovacao WHERE id = $id_chamado";
+    if ($conn->query($sql_aprov) === TRUE) {
+        $msg = '<div class="alert alert-success">' . ($aprovacao ? __('Chamado aprovado com sucesso!') : __('Chamado marcado como pendente de aprovação.')) . '</div>';
+    } else {
+        $msg = '<div class="alert alert-danger">Erro ao processar aprovação: ' . $conn->error . '</div>';
+    }
+    // Recarregar os dados do chamado após a aprovação para refletir a mudança
+    // A recarga completa será feita mais abaixo, mas para o fluxo do POST, podemos atualizar o $chamado_base_aprovacao
+    // ou simplesmente deixar que o fetch final do chamado atualize tudo.
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_POST['nova_nota']) || isset($_POST['notas_existentes']))) {
     // Busca os valores atuais do banco como base (caso campos venham desabilitados no POST)
-    $sql_atual = "SELECT status, responsavel_id, prioridade FROM chamados WHERE id = $id_chamado";
+    $sql_atual = "SELECT status, responsavel_id, prioridade, service_tag, categoria, aprovado_gestor FROM chamados WHERE id = $id_chamado";
     $res_atual = $conn->query($sql_atual);
     $chamado_base = $res_atual->fetch_assoc();
 
     $novo_status = isset($_POST['status']) ? mysqli_real_escape_string($conn, $_POST['status']) : $chamado_base['status'];
     $responsavel_id = isset($_POST['responsavel_id']) ? (!empty($_POST['responsavel_id']) ? intval($_POST['responsavel_id']) : 'NULL') : (!empty($chamado_base['responsavel_id']) ? intval($chamado_base['responsavel_id']) : 'NULL');
     $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : $chamado_base['prioridade'];
+    $service_tag = isset($_POST['service_tag']) ? mysqli_real_escape_string($conn, $_POST['service_tag']) : ($chamado_base['service_tag'] ?? null);
 
     // Restrição de Segurança: Se não for Admin/Suporte, ignora alterações de status, responsável e prioridade
     $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
@@ -78,6 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
     // Validação: Impedir alteração de status (se não for Aberto) sem responsável
     if ($novo_status !== 'Aberto' && $responsavel_id === 'NULL') {
         $msg = '<div class="alert alert-danger"><strong>' . __('Erro:') . '</strong> ' . __('Para alterar o status (sair de "Aberto"), é obrigatório atribuir um') . ' <strong>' . __('Responsável') . '</strong> ' . __('ao chamado.') . '</div>';
+    } elseif ($novo_status === 'Em Andamento' && ($chamado_base['categoria'] === 'Requisição' || $chamado_base['categoria'] === 'Mudança') && !$chamado_base['aprovado_gestor']) {
+        $msg = '<div class="alert alert-warning"><strong>' . __('Atenção:') . '</strong> ' . __('Este chamado requer aprovação do gestor antes de ser colocado "Em Andamento".') . '</div>';
     } else {
         // LÓGICA DE CONGELAMENTO DE SLA e DATA FECHAMENTO
         $congelamento_sql = "";
@@ -103,7 +130,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
             $fechamento_sql = ", data_fechamento = NULL";
         }
 
-        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
+        $id_asset = isset($_POST['id_asset']) && !empty($_POST['id_asset']) ? (int)$_POST['id_asset'] : ($chamado_base['id_asset'] ?? 'NULL');
+        $id_gestor_aprovador = isset($_POST['id_gestor_aprovador']) && !empty($_POST['id_gestor_aprovador']) ? (int)$_POST['id_gestor_aprovador'] : ($chamado_base['id_gestor_aprovador'] ?? 'NULL');
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', service_tag = '$service_tag', id_asset = $id_asset, id_gestor_aprovador = $id_gestor_aprovador, nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === TRUE) {
             $msg = '<div class="alert alert-success">' . __('Chamado atualizado com sucesso!') . '</div>';
@@ -116,10 +145,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
 // Buscar dados finais do chamado
 $sql = "SELECT c.*, 
                u.nome AS sol_nome, u.sobrenome AS sol_sobrenome,
-               r.nome AS resp_nome, r.sobrenome AS resp_sobrenome 
+               r.nome AS resp_nome, r.sobrenome AS resp_sobrenome,
+               g.nome AS gestor_nome, g.sobrenome AS gestor_sobrenome,
+               COALESCE(c.id_asset, a.id_asset) AS resolvido_id_asset
         FROM chamados c 
         LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
         LEFT JOIN usuarios r ON c.responsavel_id = r.id_usuarios
+        LEFT JOIN usuarios g ON c.id_gestor_aprovador = g.id_usuarios
+        LEFT JOIN ativos a ON c.service_tag = a.tag
         WHERE c.id = $id_chamado";
 $result = $conn->query($sql);
 
@@ -192,15 +225,15 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                         <div class="card-body">
                             <form method="post" id="form-editar-chamado">
                                 <!-- Row 1: Identificação Principal -->
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group">
+                                <div class="row mb-3">
+                                    <div class="col-md-9">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Assunto / Título'); ?></label>
                                             <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['titulo']); ?>" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria'); ?></label>
                                             <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['categoria']); ?>" readonly>
                                         </div>
@@ -208,21 +241,21 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                 </div>
 
                                 <!-- Row 2: Solicitante e Cronologia -->
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Solicitante'); ?></label>
                                             <input type="text" class="form-control" value="<?php echo htmlspecialchars($chamado['sol_nome'] . ' ' . $chamado['sol_sobrenome']); ?>" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Data de Abertura'); ?></label>
                                             <input type="text" class="form-control" value="<?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?>" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Prioridade'); ?></label>
                                             <select class="form-control" name="prioridade" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                                 <option value="Baixa" <?php echo ($chamado['prioridade'] == 'Baixa') ? 'selected' : ''; ?>><?php echo __('Baixa'); ?></option>
@@ -231,12 +264,35 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group mb-0">
+                                            <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> <?php echo __('Anexo / Evidência'); ?></label>
+                                            <?php if (!empty($chamado['anexo'])): ?>
+                                                <div class="d-flex align-items-center bg-light p-1 rounded border" style="height: 38px;">
+                                                    <?php 
+                                                    $ext = strtolower(pathinfo($chamado['anexo'], PATHINFO_EXTENSION));
+                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp'])): ?>
+                                                        <i class="fas fa-image text-primary mx-2"></i>
+                                                        <small class="text-primary font-weight-bold" style="cursor: pointer;" onclick="document.getElementById('imgLightbox').style.display='flex'">
+                                                            <?php echo __('Ver Imagem'); ?>
+                                                        </small>
+                                                    <?php else: ?>
+                                                        <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank" class="text-primary small font-weight-bold ml-2">
+                                                            <i class="fas fa-file-download mr-1"></i> <?php echo __('Baixar'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php else: ?>
+                                                <input type="text" class="form-control" value="<?php echo __('Nenhum'); ?>" readonly>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Row 3: Atribuição e Status -->
-                                <div class="row">
+                                <!-- Row 3: Atribuição, Status e Ativo -->
+                                <div class="row mb-3">
                                     <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Responsável Técnico'); ?></label>
                                             <select class="form-control" name="responsavel_id" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                                 <option value=""><?php echo __('Não Atribuído'); ?></option>
@@ -253,11 +309,11 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group">
+                                        <div class="form-group mb-0">
                                             <label class="text-gray-600 small font-weight-bold"><?php echo __('Status Atual'); ?></label>
                                             <select class="form-control" name="status" <?php echo !$is_tecnico ? 'disabled' : ''; ?>>
                                                 <option value="Aberto" <?php echo $chamado['status'] == 'Aberto' ? 'selected' : ''; ?>><?php echo __('Aberto'); ?></option>
-                                                    <option value="Em Andamento" <?php echo ($chamado['status'] == 'Em Andamento' || $chamado['status'] == 'Em Atendimento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
+                                                <option value="Em Andamento" <?php echo ($chamado['status'] == 'Em Andamento' || $chamado['status'] == 'Em Atendimento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
                                                 <option value="Pendente" <?php echo $chamado['status'] == 'Pendente' ? 'selected' : ''; ?>><?php echo __('Pendente'); ?></option>
                                                 <option value="Resolvido" <?php echo $chamado['status'] == 'Resolvido' ? 'selected' : ''; ?>><?php echo __('Resolvido'); ?></option>
                                                 <option value="Fechado" <?php echo $chamado['status'] == 'Fechado' ? 'selected' : ''; ?>><?php echo __('Fechado'); ?></option>
@@ -266,31 +322,66 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold"><i class="fas fa-paperclip"></i> <?php echo __('Anexo / Evidência'); ?></label>
-                                            <?php if (!empty($chamado['anexo'])): ?>
-                                                <div class="d-flex align-items-center bg-light p-2 rounded border">
-                                                    <?php 
-                                                    $ext = strtolower(pathinfo($chamado['anexo'], PATHINFO_EXTENSION));
-                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp'])): ?>
-                                                        <img src="/<?php echo htmlspecialchars($chamado['anexo']); ?>" 
-                                                            class="img-thumbnail mr-2" style="width: 45px; height: 45px; object-fit: cover; cursor: pointer;"
-                                                            onclick="document.getElementById('imgLightbox').style.display='flex'">
-                                                        <small class="text-primary" style="cursor: pointer;" onclick="document.getElementById('imgLightbox').style.display='flex'">
-                                                            <?php echo __('Ver Imagem'); ?>
-                                                        </small>
-                                                    <?php else: ?>
-                                                        <a href="/<?php echo htmlspecialchars($chamado['anexo']); ?>" target="_blank" class="btn btn-outline-primary btn-sm btn-block">
-                                                            <i class="fas fa-file-download mr-1"></i> <?php echo __('Baixar Arquivo'); ?>
-                                                        </a>
-                                                    <?php endif; ?>
+                                        <div class="row" id="row-service-tag" <?php echo ($chamado['categoria'] != 'Incidente' && empty($chamado['service_tag'])) ? 'style="display:none;"' : ''; ?>>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-0">
+                                                    <label class="text-gray-600 small font-weight-bold"><?php echo __('Service Tag / Ativo'); ?></label>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="text" name="service_tag" class="form-control" value="<?php echo htmlspecialchars($chamado['service_tag'] ?? ''); ?>" readonly>
+                                                        <?php if (!empty($chamado['resolvido_id_asset']) && $is_tecnico): ?>
+                                                            <div class="input-group-append">
+                                                                <a href="perfil_ativo.php?id=<?php echo $chamado['resolvido_id_asset']; ?>" class="btn btn-info" title="<?php echo __('Ver Ativo'); ?>" target="_blank">
+                                                                    <i class="fas fa-desktop"></i>
+                                                                </a>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <input type="hidden" name="id_asset" value="<?php echo $chamado['resolvido_id_asset'] ?? ''; ?>">
                                                 </div>
-                                            <?php else: ?>
-                                                <input type="text" class="form-control" value="<?php echo __('Nenhum anexo'); ?>" readonly>
-                                            <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Manager Approval Field -->
+                                <?php if ($chamado['categoria'] === 'Requisição' || $chamado['categoria'] === 'Mudança'): ?>
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="card border-left-primary shadow-sm bg-white">
+                                            <div class="card-body">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-auto">
+                                                        <i class="fas fa-user-tie fa-2x text-primary mr-3"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label class="text-gray-600 small font-weight-bold mb-1 d-block"><?php echo __('Gestor para Aprovação'); ?></label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control form-control-sm" value="<?php echo htmlspecialchars(($chamado['gestor_nome'] ?? '') . ' ' . ($chamado['gestor_sobrenome'] ?? '')); ?>" readonly>
+                                                            <input type="hidden" name="id_gestor_aprovador" value="<?php echo $chamado['id_gestor_aprovador'] ?? ''; ?>">
+                                                        </div>
+                                                        <?php if (!empty($chamado['gestor_email'])): ?>
+                                                            <small class="text-muted"><?php echo $chamado['gestor_email']; ?></small>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="col-md-auto mt-2 mt-md-0">
+                                                        <?php if ($chamado['aprovado_gestor']): ?>
+                                                            <span class="badge badge-success p-2"><i class="fas fa-check-circle mr-1"></i> <?php echo __('APROVADO'); ?></span>
+                                                        <?php else: ?>
+                                                            <span class="badge badge-warning p-2"><i class="fas fa-clock mr-1"></i> <?php echo __('AGUARDANDO APROVAÇÃO'); ?></span>
+                                                            <?php if ($id_usuario_logado == $chamado['id_gestor_aprovador']): ?>
+                                                                <form method="POST" style="display:inline;" class="ml-2">
+                                                                    <input type="hidden" name="acao_gestor" value="aprovar">
+                                                                    <button type="submit" class="btn btn-sm btn-success border-0 shadow-sm"><i class="fas fa-thumbs-up mr-1"></i> <?php echo __('Aprovar Agora'); ?></button>
+                                                                </form>
+                                                            <?php endif; ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
 
                                 <!-- Sugestão de IA -->
                                 <?php if ($ia_ativo): ?>
@@ -305,7 +396,7 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
                                                             <div id="ai-suggestion" class="text-dark small">
                                                                 <span class="spinner-border spinner-border-sm text-info"></span> <?php echo __('Analisando chamado...'); ?>
                                                             </div>
-                                                        </div>
+                                                       </div>
                                                     </div>
                                                 </div>
                                             </div>

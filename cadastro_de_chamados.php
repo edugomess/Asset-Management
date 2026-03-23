@@ -64,6 +64,57 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
+                                <!-- Row 1.5: Service Tag (Visible only for Incidente) -->
+                                <div class="row" id="row-service-tag" style="display: none;">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="service_tag"><?php echo __('Service Tag / Identificação do Ativo'); ?></label>
+                                            <div class="input-group">
+                                                <input class="form-control" name="service_tag" id="service_tag" type="text" placeholder="<?php echo __('Informe a Service Tag ou ID do ativo com problema'); ?>">
+                                                <div class="input-group-append" id="spinner-search" style="display: none;">
+                                                    <span class="input-group-text bg-white border-left-0">
+                                                        <span class="spinner-border spinner-border-sm text-primary"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted"><?php echo __('Ao digitar, o sistema buscará o ativo automaticamente.'); ?></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 1.6: Gestor Aprovador (Visible only for Requisição and Mudança) -->
+                                <div class="row" id="row-gestor" style="display: none;">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="gestor_search"><?php echo __('Gestor para Aprovação'); ?></label>
+                                            <div class="input-group">
+                                                <input class="form-control" id="gestor_search" type="text" placeholder="<?php echo __('Digite o nome do gestor responsável pela aprovação...'); ?>" autocomplete="off">
+                                                <div class="input-group-append" id="spinner-gestor" style="display: none;">
+                                                    <span class="input-group-text bg-white border-left-0">
+                                                        <span class="spinner-border spinner-border-sm text-primary"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div id="gestor-results" class="list-group shadow-sm mt-1" style="position: absolute; width: 100%; z-index: 1000; display: none;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Selected Gestor Info -->
+                                <div class="row" id="gestor-preview" style="display: none; margin-top: -10px;">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-primary d-flex align-items-center mb-3 shadow-sm border-left-primary" style="padding: 10px 20px;">
+                                            <i class="fas fa-user-tie fa-2x mr-3 text-primary"></i>
+                                            <div class="flex-grow-1">
+                                                <div class="font-weight-bold mb-0"><?php echo __('Gestor Selecionado:'); ?> <span id="gestor-name" class="text-dark"></span></div>
+                                                <div class="small text-muted"><span id="gestor-info"></span></div>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearSelectedGestor()"><i class="fas fa-times"></i></button>
+                                            <input type="hidden" name="id_gestor_aprovador" id="id_gestor_aprovador">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Row 2: Solicitante, Prioridade e Anexo -->
                                 <div class="row">
                                     <div class="col-md-4">
@@ -152,6 +203,155 @@ include_once 'auth.php'; // Proteção de sessão
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
+        // Mostrar/Ocultar campo Service Tag baseado na categoria
+        const selectCategoria = document.getElementById('categoria');
+        const rowServiceTag = document.getElementById('row-service-tag');
+        const rowGestor = document.getElementById('row-gestor');
+        const inputServiceTag = document.getElementById('service_tag');
+        const inputGestorSearch = document.getElementById('gestor_search');
+
+        function toggleServiceTag() {
+            const categoria = selectCategoria.value;
+            
+            // Reset visibility
+            rowServiceTag.style.display = 'none';
+            rowGestor.style.display = 'none';
+            inputServiceTag.removeAttribute('required');
+            inputGestorSearch.removeAttribute('required');
+
+            if (categoria === 'Incidente') {
+                rowServiceTag.style.display = 'block';
+                inputServiceTag.setAttribute('required', 'required');
+            } else if (categoria === 'Requisição' || categoria === 'Mudança') {
+                rowGestor.style.display = 'block';
+                inputGestorSearch.setAttribute('required', 'required');
+            }
+
+            // Preview logic
+            if (categoria !== 'Incidente') {
+                document.getElementById('asset-preview').style.display = 'none';
+            }
+            if (categoria !== 'Requisição' && categoria !== 'Mudança') {
+                document.getElementById('gestor-preview').style.display = 'none';
+            }
+        }
+
+        selectCategoria.addEventListener('change', toggleServiceTag);
+        
+        // Executar ao carregar para garantir o estado correto (caso venha pré-selecionado)
+        window.addEventListener('DOMContentLoaded', toggleServiceTag);
+
+        // BUSCA DE ATIVO EM TEMPO REAL
+        let searchTimeout;
+        inputServiceTag.addEventListener('input', function() {
+            const tag = this.value.trim();
+            const preview = document.getElementById('asset-preview');
+            const spinner = document.getElementById('spinner-search');
+            
+            clearTimeout(searchTimeout);
+            
+            if (tag.length < 3) {
+                preview.style.display = 'none';
+                document.getElementById('id_asset').value = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                spinner.style.display = 'flex';
+                fetch(`ajax_buscar_ativo.php?tag=${encodeURIComponent(tag)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        spinner.style.display = 'none';
+                        if (data.success) {
+                            document.getElementById('id_asset').value = data.ativo.id;
+                            document.getElementById('asset-name').textContent = `${data.ativo.fabricante} ${data.ativo.modelo}`;
+                            document.getElementById('asset-info').textContent = `Categoria: ${data.ativo.categoria} | Status: ${data.ativo.status}`;
+                            document.getElementById('asset-link').href = data.ativo.link_perfil;
+                            preview.style.display = 'flex';
+                            $(preview).addClass('animated fadeIn');
+                        } else {
+                            preview.style.display = 'none';
+                            document.getElementById('id_asset').value = '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        spinner.style.display = 'none';
+                    });
+            }, 500);
+        });
+
+        // BUSCA DE GESTOR EM TEMPO REAL
+        let gestorTimeout;
+        inputGestorSearch.addEventListener('input', function() {
+            const query = this.value.trim();
+            const resultsDiv = document.getElementById('gestor-results');
+            const spinner = document.getElementById('spinner-gestor');
+            
+            clearTimeout(gestorTimeout);
+            
+            if (query.length < 3) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            gestorTimeout = setTimeout(() => {
+                spinner.style.display = 'flex';
+                fetch(`ajax_buscar_usuario.php?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        spinner.style.display = 'none';
+                        resultsDiv.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(user => {
+                                const btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.className = 'list-group-item list-group-item-action flex-column align-items-start';
+                                btn.innerHTML = `
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 font-weight-bold">${user.nome_completo}</h6>
+                                        <small>${user.funcao || ''}</small>
+                                    </div>
+                                    <p class="mb-1 small">${user.email}</p>
+                                `;
+                                btn.onclick = () => selectGestor(user);
+                                resultsDiv.appendChild(btn);
+                            });
+                            resultsDiv.style.display = 'block';
+                        } else {
+                            resultsDiv.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        spinner.style.display = 'none';
+                    });
+            }, 300);
+        });
+
+        function selectGestor(user) {
+            document.getElementById('id_gestor_aprovador').value = user.id;
+            document.getElementById('gestor-name').textContent = user.nome_completo;
+            document.getElementById('gestor-info').textContent = `${user.email} | ${user.funcao || 'N/A'}`;
+            document.getElementById('gestor-preview').style.display = 'flex';
+            document.getElementById('gestor-results').style.display = 'none';
+            document.getElementById('gestor_search').value = user.nome_completo;
+        }
+
+        function clearSelectedGestor() {
+            document.getElementById('id_gestor_aprovador').value = '';
+            document.getElementById('gestor-preview').style.display = 'none';
+            document.getElementById('gestor_search').value = '';
+            document.getElementById('gestor-results').style.display = 'none';
+        }
+
+        // Fechar resultados ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('row-gestor').contains(e.target)) {
+                document.getElementById('gestor-results').style.display = 'none';
+            }
+        });
+
         // ENVIO VIA AJAX: Processa o formulário sem recarregar a página
         document.getElementById('form-novo-chamado').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -179,7 +379,7 @@ include_once 'auth.php'; // Proteção de sessão
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('<?php echo __('Ocorreu um erro na requisição.'); ?>');
+                    alert('<?php echo __('Ocorreu um erro na requisição. Verifique se o banco de dados está atualizado.'); ?>');
                 });
         });
     </script>

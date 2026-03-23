@@ -40,19 +40,19 @@ switch ($filtro_status) {
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 if (!empty($search)) {
     if (empty($where_clause)) {
-        $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
+        $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%' OR c.service_tag LIKE '%$search%')";
     } else {
-        $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%')";
+        $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%' OR c.service_tag LIKE '%$search%')";
     }
 }
 
-// === RESTRIÇÃO DE USUÁRIO: Garante que usuários comuns vejam apenas seus próprios tickets ===
+// === RESTRIÇÃO DE USUÁRIO: Garante que usuários comuns vejam seus próprios tickets E os que precisam de sua aprovação ===
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     $user_id = $_SESSION['id_usuarios'];
     if (empty($where_clause)) {
-        $where_clause = "WHERE c.usuario_id = $user_id";
+        $where_clause = "WHERE (c.usuario_id = $user_id OR c.id_gestor_aprovador = $user_id)";
     } else {
-        $where_clause .= " AND c.usuario_id = $user_id";
+        $where_clause .= " AND (c.usuario_id = $user_id OR c.id_gestor_aprovador = $user_id)";
     }
 }
 

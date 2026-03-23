@@ -12,6 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario_id = intval($_POST['usuario_id']);
     $descricao = mysqli_real_escape_string($conn, $_POST['descricao']);
     $prioridade = mysqli_real_escape_string($conn, $_POST['prioridade']);
+    $service_tag = isset($_POST['service_tag']) ? mysqli_real_escape_string($conn, $_POST['service_tag']) : '';
+    $id_asset = isset($_POST['id_asset']) && !empty($_POST['id_asset']) ? (int)$_POST['id_asset'] : 'NULL';
+    $id_gestor_aprovador = isset($_POST['id_gestor_aprovador']) && !empty($_POST['id_gestor_aprovador']) ? (int)$_POST['id_gestor_aprovador'] : 'NULL';
 
     // Processar upload de anexo (se houver)
     $anexo_path = null;
@@ -62,11 +65,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Montar SQL com ou sem anexo
     if ($anexo_path) {
         $anexo_escaped = mysqli_real_escape_string($conn, $anexo_path);
-        $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id, anexo) 
-                VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id', '$anexo_escaped')";
+        $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id, anexo, service_tag, id_asset, id_gestor_aprovador) 
+                VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id', '$anexo_escaped', '$service_tag', $id_asset, $id_gestor_aprovador)";
     } else {
-        $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id) 
-                VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id')";
+        $sql = "INSERT INTO chamados (titulo, categoria, prioridade, descricao, usuario_id, service_tag, id_asset, id_gestor_aprovador) 
+                VALUES ('$titulo', '$categoria', '$prioridade', '$descricao', '$usuario_id', '$service_tag', $id_asset, $id_gestor_aprovador)";
     }
 
     if ($conn->query($sql) === TRUE) {

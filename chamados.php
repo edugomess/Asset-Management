@@ -36,13 +36,14 @@ switch ($filtro_status) {
         break;
 }
 
-// === BUSCA GLOBAL: Integração com filtros de texto (Título ou ID) ===
+// === BUSCA GLOBAL: Integração com filtros de texto (Título, ID, Tag, Solicitante ou Técnico) ===
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 if (!empty($search)) {
+    $search_condition = "(c.titulo LIKE '%$search%' OR c.id LIKE '%$search%' OR c.service_tag LIKE '%$search%' OR u.nome LIKE '%$search%' OR u.sobrenome LIKE '%$search%' OR r.nome LIKE '%$search%' OR r.sobrenome LIKE '%$search%')";
     if (empty($where_clause)) {
-        $where_clause = "WHERE (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%' OR c.service_tag LIKE '%$search%')";
+        $where_clause = "WHERE $search_condition";
     } else {
-        $where_clause .= " AND (c.titulo LIKE '%$search%' OR c.id LIKE '%$search%' OR c.service_tag LIKE '%$search%')";
+        $where_clause .= " AND $search_condition";
     }
 }
 
@@ -56,7 +57,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     }
 }
 
-$sql_count = "SELECT COUNT(*) AS total FROM chamados c $where_clause";
+$sql_count = "SELECT COUNT(*) AS total FROM chamados c 
+              LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
+              LEFT JOIN usuarios r ON c.responsavel_id = r.id_usuarios 
+              $where_clause";
 $result_count = mysqli_query($conn, $sql_count);
 $row_count = mysqli_fetch_assoc($result_count);
 $total_results = $row_count['total'];

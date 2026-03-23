@@ -48,14 +48,23 @@ if ($res_assets) {
 }
 
 // 3. Search Tickets (Chamados - 'chamados' table)
-// Correct columns: id, titulo (from editar_chamado.php)
-$sql_tickets = "SELECT id, titulo FROM chamados WHERE titulo LIKE '$search' OR id LIKE '$search' LIMIT 5";
+// Correct columns: id, titulo, service_tag
+$sql_tickets = "SELECT c.id, c.titulo, c.service_tag, u.nome, u.sobrenome 
+                FROM chamados c 
+                LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios
+                WHERE c.titulo LIKE '$search' 
+                   OR c.id LIKE '$search' 
+                   OR c.service_tag LIKE '$search'
+                   OR u.nome LIKE '$search'
+                   OR u.sobrenome LIKE '$search'
+                LIMIT 5";
 $res_tickets = mysqli_query($conn, $sql_tickets);
 if ($res_tickets) {
     while ($row = mysqli_fetch_assoc($res_tickets)) {
+        $solicitante = !empty($row['nome']) ? ' (' . $row['nome'] . ' ' . $row['sobrenome'] . ')' : '';
         $results[] = [
             'category' => 'Chamados',
-            'label' => '#' . $row['id'] . ' - ' . $row['titulo'],
+            'label' => '#' . $row['id'] . ' - ' . $row['titulo'] . $solicitante,
             'url' => 'chamados.php?filtro_status=todos&search=' . urlencode($row['id']),
             'type' => 'ticket'
         ];

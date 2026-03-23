@@ -75,7 +75,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                 // Filtros de Busca
                                 $where_clause = "";
                                 if (!empty($search)) {
-                                    $where_clause = "WHERE nome LIKE '%$search%' OR email LIKE '%$search%' OR centroDeCusto LIKE '%$search%'";
+                                    $where_clause = "WHERE nome LIKE '%$search%' OR sobrenome LIKE '%$search%' OR email LIKE '%$search%' OR centroDeCusto LIKE '%$search%'";
                                 }
 
                                 // Paginação

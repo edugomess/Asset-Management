@@ -11,19 +11,20 @@ $res = $conn->query($sql);
 if ($res && $res->num_rows > 0) {
     while ($row = $res->fetch_assoc()) {
         $name = htmlspecialchars(trim($row['nome'] . ' ' . $row['sobrenome']));
-        $initials = strtoupper(substr($row['nome'], 0, 1) . substr($row['sobrenome'], 0, 1));
+        $initials = strtoupper(substr($row['nome'], 0, 1) . (isset($row['sobrenome'][0]) ? substr($row['sobrenome'], 0, 1) : ''));
 
         // Ativos
-        $isActiveChamados = $row['recebe_chamados'] == 1 ? 'active' : '';
-        $isActiveManutencao = $row['recebe_manutencao'] == 1 ? 'active' : '';
+        $isActiveChamados = ($row['recebe_chamados'] ?? 0) == 1 ? 'active' : '';
+        $isActiveManutencao = ($row['recebe_manutencao'] ?? 0) == 1 ? 'active' : '';
 
-        $cBaixa = $row['prioridade_baixa'] == 1 ? 'active' : '';
-        $cMedia = $row['prioridade_media'] == 1 ? 'active' : '';
-        $cAlta = $row['prioridade_alta'] == 1 ? 'active' : '';
+        $cP1 = ($row['prioridade_p1'] ?? 1) == 1 ? 'active' : '';
+        $cP2 = ($row['prioridade_p2'] ?? 1) == 1 ? 'active' : '';
+        $cP3 = ($row['prioridade_p3'] ?? 1) == 1 ? 'active' : '';
+        $cP4 = ($row['prioridade_p4'] ?? 1) == 1 ? 'active' : '';
 
-        $cInc = $row['tipo_incidente'] == 1 ? 'active' : '';
-        $cReq = $row['tipo_requisicao'] == 1 ? 'active' : '';
-        $cMud = $row['tipo_mudanca'] == 1 ? 'active' : '';
+        $cInc = ($row['tipo_incidente'] ?? 1) == 1 ? 'active' : '';
+        $cReq = ($row['tipo_requisicao'] ?? 1) == 1 ? 'active' : '';
+        $cMud = ($row['tipo_mudanca'] ?? 1) == 1 ? 'active' : '';
 
         echo '
         <div class="recipient-item" data-uid="' . $row['usuario_id'] . '">
@@ -47,9 +48,10 @@ if ($res && $res->num_rows > 0) {
 
                 <!-- Prioridade -->
                 <div class="recipient-badge-group">
-                    <button type="button" class="mini-badge-btn bg-danger ' . $cAlta . '" data-pref="prioridade_alta" title="Alta">A</button>
-                    <button type="button" class="mini-badge-btn bg-warning ' . $cMedia . '" data-pref="prioridade_media" title="Média">M</button>
-                    <button type="button" class="mini-badge-btn bg-success ' . $cBaixa . '" data-pref="prioridade_baixa" title="Baixa" style="background-color: #1cc88a !important;">B</button>
+                    <button type="button" class="mini-badge-btn ' . $cP1 . '" data-pref="prioridade_p1" title="Crítica" style="background-color: #8b0000 !important;">1</button>
+                    <button type="button" class="mini-badge-btn bg-danger ' . $cP2 . '" data-pref="prioridade_p2" title="Alta">2</button>
+                    <button type="button" class="mini-badge-btn bg-warning ' . $cP3 . '" data-pref="prioridade_p3" title="Média">3</button>
+                    <button type="button" class="mini-badge-btn bg-success ' . $cP4 . '" data-pref="prioridade_p4" title="Baixa" style="background-color: #1cc88a !important;">4</button>
                 </div>
                 
                 <!-- Categoria -->

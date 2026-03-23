@@ -649,11 +649,29 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                                     <p><?php echo __('Nenhuma interação registrada ainda.'); ?></p>
                                                 </div>
                                             <?php endif;
+                                            
+                                            // Mapeamento de Fotos para a Timeline
+                                            $unique_commenters = [];
+                                            foreach ($notas as $nota) {
+                                                if (!empty($nota['usuario'])) $unique_commenters[] = mysqli_real_escape_string($conn, $nota['usuario']);
+                                            }
+                                            $user_photos_map = [];
+                                            if (!empty($unique_commenters)) {
+                                                $commenters_list = "'" . implode("','", array_unique($unique_commenters)) . "'";
+                                                $res_photos = $conn->query("SELECT nome, sobrenome, foto_perfil FROM usuarios WHERE CONCAT(nome, ' ', sobrenome) IN ($commenters_list)");
+                                                if ($res_photos) {
+                                                    while($u = $res_photos->fetch_assoc()) {
+                                                        $full_n = trim($u['nome'] . ' ' . $u['sobrenome']);
+                                                        $user_photos_map[$full_n] = !empty($u['foto_perfil']) ? htmlspecialchars($u['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg';
+                                                    }
+                                                }
+                                            }
 
                                             foreach ($notas as $idx => $nota): 
                                                 $nome_sol = ($chamado['sol_nome'] ?? '') . ' ' . ($chamado['sol_sobrenome'] ?? '');
                                                 $nome_resp = ($chamado['resp_nome'] ?? '') . ' ' . ($chamado['resp_sobrenome'] ?? '');
                                                 $autor = $nota['usuario'] ?? '';
+                                                $foto_autor = $user_photos_map[$autor] ?? '/assets/img/avatars/avatar1.jpeg';
                                                 
                                                 // Verifica se o autor é técnico (para estilização)
                                                 // Como não temos o ID do autor na nota, comparamos o nome com a lista de técnicos obtida no início
@@ -678,10 +696,15 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                                 <div class="timeline-entry <?php echo $entry_class; ?>">
                                                     <div class="timeline-dot"></div>
                                                     <div class="timeline-bubble">
-                                                        <div class="timeline-meta">
-                                                            <span class="timeline-user">
-                                                                <i class="fas <?php echo ($entry_class == 'entry-tecnico') ? 'fa-user-shield' : 'fa-user'; ?>"></i>
-                                                                <?php echo htmlspecialchars($autor ?: 'Sistema'); ?>
+                                                        <div class="timeline-meta d-flex align-items-center justify-content-between">
+                                                            <span class="timeline-user d-flex align-items-center">
+                                                                <div class="position-relative mr-2">
+                                                                    <img src="<?php echo $foto_autor; ?>" class="rounded-circle shadow-sm" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid #fff;">
+                                                                    <div class="position-absolute d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="bottom: -2px; right: -2px; width: 14px; height: 14px; background: <?php echo ($entry_class == 'entry-tecnico') ? '#2c404a' : '#4e73df'; ?>; color: #fff; border: 1.5px solid #fff;">
+                                                                        <i class="fas <?php echo ($entry_class == 'entry-tecnico') ? 'fa-user-shield' : 'fa-user'; ?>" style="font-size: 7px;"></i>
+                                                                    </div>
+                                                                </div>
+                                                                <strong><?php echo htmlspecialchars($autor ?: 'Sistema'); ?></strong>
                                                             </span>
                                                             <span class="timeline-date"><?php echo htmlspecialchars($nota['data'] ?? ''); ?></span>
                                                         </div>

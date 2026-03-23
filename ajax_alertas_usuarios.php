@@ -36,8 +36,8 @@ if ($action == 'add') {
     }
 
     // Configurações padrão ao adicionar
-    $sql = "INSERT INTO alertas_usuarios (usuario_id, recebe_chamados, recebe_manutencao, prioridade_baixa, prioridade_media, prioridade_alta, tipo_incidente, tipo_requisicao, tipo_mudanca)
-            VALUES ($user_id, 1, 0, 1, 1, 1, 1, 1, 1)";
+    $sql = "INSERT INTO alertas_usuarios (usuario_id, recebe_chamados, recebe_manutencao, prioridade_p1, prioridade_p2, prioridade_p3, prioridade_p4, tipo_incidente, tipo_requisicao, tipo_mudanca)
+            VALUES ($user_id, 1, 0, 1, 1, 1, 1, 1, 1, 1)";
     if ($conn->query($sql)) {
         echo json_encode(['success' => true]);
     } else {
@@ -48,10 +48,10 @@ if ($action == 'add') {
 
 if ($action == 'toggle') {
     $user_id = (int) $_POST['user_id'];
-    $pref = preg_replace('/[^a-z_]/', '', strtolower($_POST['pref']));
+    $pref = preg_replace('/[^a-z0-9_]/', '', strtolower($_POST['pref']));
     $state = (int) $_POST['state'];
 
-    $allowed_prefs = ['recebe_chamados', 'recebe_manutencao', 'prioridade_baixa', 'prioridade_media', 'prioridade_alta', 'tipo_incidente', 'tipo_requisicao', 'tipo_mudanca'];
+    $allowed_prefs = ['recebe_chamados', 'recebe_manutencao', 'prioridade_p1', 'prioridade_p2', 'prioridade_p3', 'prioridade_p4', 'tipo_incidente', 'tipo_requisicao', 'tipo_mudanca'];
 
     if (in_array($pref, $allowed_prefs)) {
         $sql = "UPDATE alertas_usuarios SET `$pref` = $state WHERE usuario_id = $user_id";

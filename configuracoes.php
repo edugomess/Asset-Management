@@ -202,8 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['idioma_config'])) {
 
 // === PROCESSAMENTO DE ALERTAS: Salva as configurações de canais e tipos de alerta ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
-    $chamados = isset($_POST['chamados_ativo']) ? 1 : 0;
-    $manutencao = isset($_POST['manutencao_ativo']) ? 1 : 0;
     $whatsapp = isset($_POST['whatsapp_ativo']) ? 1 : 0;
     $email = isset($_POST['email_ativo']) ? 1 : 0;
     $wa_chamados = isset($_POST['whatsapp_recebe_chamados']) ? 1 : 0;
@@ -212,15 +210,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
     $wa_p2 = isset($_POST['whatsapp_prioridade_p2']) ? 1 : 0;
     $wa_p3 = isset($_POST['whatsapp_prioridade_p3']) ? 1 : 0;
     $wa_p4 = isset($_POST['whatsapp_prioridade_p4']) ? 1 : 0;
+    $wa_incidente = isset($_POST['whatsapp_tipo_incidente']) ? 1 : 0;
+    $wa_requisicao = isset($_POST['whatsapp_tipo_requisicao']) ? 1 : 0;
+    $wa_mudanca = isset($_POST['whatsapp_tipo_mudanca']) ? 1 : 0;
 
-    $email_p1 = isset($_POST['email_prioridade_p1']) ? 1 : 0;
-    $email_p2 = isset($_POST['email_prioridade_p2']) ? 1 : 0;
-    $email_p3 = isset($_POST['email_prioridade_p3']) ? 1 : 0;
-    $email_p4 = isset($_POST['email_prioridade_p4']) ? 1 : 0;
+    $email_incidente = isset($_POST['email_tipo_incidente']) ? 1 : 0;
+    $email_requisicao = isset($_POST['email_tipo_requisicao']) ? 1 : 0;
+    $email_mudanca = isset($_POST['email_tipo_mudanca']) ? 1 : 0;
 
     $sql = "UPDATE configuracoes_alertas SET 
-            chamados_ativo = 1,
-            manutencao_ativo = 1,
             whatsapp_ativo = $whatsapp,
             email_ativo = $email,
             whatsapp_recebe_chamados = $wa_chamados,
@@ -232,12 +230,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
             cat_incidente = $wa_incidente,
             cat_requisicao = $wa_requisicao,
             cat_mudanca = $wa_mudanca,
-            email_recebe_chamados = $email_chamados,
-            email_recebe_manutencao = $email_manutencao,
-            email_prioridade_p1 = $email_p1,
-            email_prioridade_p2 = $email_p2,
-            email_prioridade_p3 = $email_p3,
-            email_prioridade_p4 = $email_p4,
             email_tipo_incidente = $email_incidente,
             email_tipo_requisicao = $email_requisicao,
             email_tipo_mudanca = $email_mudanca
@@ -1077,11 +1069,12 @@ function getHoursAndMinutes($total_minutes)
 
                                                 <div class="small font-weight-bold text-primary mb-2 text-uppercase">
                                                     <?php echo __('DESTINATÁRIOS ATIVOS'); ?></div>
-                                                <div class="recipient-list" id="activeEmailRecipients">
+                                                <div class="recipient-list mb-3" id="activeEmailRecipients">
                                                     <!-- Loading or empty state -->
                                                         <div class="p-3 text-center text-muted small"><i
                                                                 class="fas fa-spinner fa-spin mr-1"></i> <?php echo __('Carregando destinatários...'); ?></div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>

@@ -110,8 +110,8 @@ function callGitHubModels($prompt, $systemContext, $token, $history = [])
  */
 function callGeminiUnified($prompt, $systemContext, $apiKey, $history = [])
 {
-    // Tenta gemini-flash-latest (v1beta) primeiro - Mais estável em termos de quota no momento
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $apiKey;
+    // Tenta gemini-2.0-flash primeiro - Um dos mais estáveis e rápidos disponíveis no momento
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $apiKey;
 
     $payload = [];
     if (!empty($systemContext)) {
@@ -159,8 +159,8 @@ function callGeminiUnified($prompt, $systemContext, $apiKey, $history = [])
         $_SESSION['last_ai_error'] = "Gemini Error (v1, HTTP $httpCode): " . $response;
     }
 
-    // Se falhar (ex: 429), tenta gemini-1.5-flash como fallback secundário
-    $urlBeta = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
+    // Se falhar (ex: 429), tenta gemini-flash-latest como fallback secundário
+    $urlBeta = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" . $apiKey;
     $ch = curl_init($urlBeta);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,

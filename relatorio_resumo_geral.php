@@ -1,13 +1,15 @@
 <?php
 require('fpdf/fpdf.php');
+require_once 'ReportGenerator.php';
 include 'conexao.php';
 
 class PDF extends FPDF
 {
     function Header()
     {
-        // Logo
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
+        // Logo dinâmico
+        $logo = ReportGenerator::getLogoPath($GLOBALS['conn']);
+        $this->Image($logo, 6, 6, 12);
 
         // System Name
         $this->SetFont('Arial', 'B', 15);
@@ -23,6 +25,7 @@ class PDF extends FPDF
 }
 
 $pdf = new PDF();
+$pdf->SetMargins(6, 6, 6);
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 12);
 

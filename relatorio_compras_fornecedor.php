@@ -4,6 +4,7 @@
  * Consolida gastos com Ativos e Licenças para uma visão de compras por fornecedor.
  */
 require('fpdf/fpdf.php');
+require_once 'ReportGenerator.php';
 include 'conexao.php';
 
 if ($conn->connect_error) {
@@ -19,17 +20,26 @@ class PDF extends FPDF
 {
     function Header()
     {
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
+        // Logo dinâmico
+        $logo = ReportGenerator::getLogoPath($GLOBALS['conn']);
+        $this->Image($logo, 6, 6, 12);
+        
         $this->SetFont('Arial', 'B', 15);
-        $this->Cell(80);
-        $this->Cell(30, 10, 'Asset MGT', 0, 0, 'C');
+        $this->SetTextColor(44, 64, 74);
+        $this->Cell(15);
+        $this->Cell(100, 10, 'Asset MGT', 0, 0, 'L');
+        
+        $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(128, 128, 128);
+        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+        
+        $this->Ln(-2);
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 10, utf8_to_iso88591(mb_strtoupper('Relatório de Investimento por Fornecedor (Consolidado)')), 0, 1, 'C');
+        
+        $this->Line(6, 23, 204, 23);
         $this->Ln(5);
-        $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 10, utf8_to_iso88591('Relatório de Investimento por Fornecedor (Consolidado)'), 0, 1, 'C');
-        $this->Ln(5);
-        $this->SetFont('Arial', '', 10);
-        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'C');
-        $this->Ln(10);
     }
 
     function Footer()
@@ -42,13 +52,14 @@ class PDF extends FPDF
 
 ob_start();
 $pdf = new PDF();
+$pdf->SetMargins(6, 6, 6);
 $pdf->AddPage();
 
 // Table Header
 $pdf->SetFont('Arial', 'B', 11);
 $pdf->SetFillColor(44, 64, 74);
 $pdf->SetTextColor(255, 255, 255);
-$pdf->Cell(80, 10, utf8_to_iso88591('Fornecedor'), 1, 0, 'L', true);
+$pdf->Cell(88, 10, utf8_to_iso88591('Fornecedor'), 1, 0, 'L', true);
 $pdf->Cell(35, 10, utf8_to_iso88591('Ativos (R$)'), 1, 0, 'R', true);
 $pdf->Cell(35, 10, utf8_to_iso88591('Licenças (R$)'), 1, 0, 'R', true);
 $pdf->Cell(40, 10, utf8_to_iso88591('Total (R$)'), 1, 1, 'R', true);
@@ -84,7 +95,7 @@ foreach ($suppliers as $name => $val) {
     $grand_total_ativos += $total_a;
     $grand_total_licencas += $total_l;
 
-    $pdf->Cell(80, 8, utf8_to_iso88591($name), 1);
+    $pdf->Cell(88, 8, utf8_to_iso88591($name), 1);
     $pdf->Cell(35, 8, number_format($total_a, 2, ',', '.'), 1, 0, 'R');
     $pdf->Cell(35, 8, number_format($total_l, 2, ',', '.'), 1, 0, 'R');
     $pdf->SetFont('Arial', 'B', 10);
@@ -95,7 +106,7 @@ foreach ($suppliers as $name => $val) {
 // Grand Totals
 $pdf->SetFont('Arial', 'B', 11);
 $pdf->SetFillColor(230, 230, 230);
-$pdf->Cell(80, 10, utf8_to_iso88591('TOTAL GERAL'), 1, 0, 'L', true);
+$pdf->Cell(88, 10, utf8_to_iso88591('TOTAL GERAL'), 1, 0, 'L', true);
 $pdf->Cell(35, 10, number_format($grand_total_ativos, 2, ',', '.'), 1, 0, 'R', true);
 $pdf->Cell(35, 10, number_format($grand_total_licencas, 2, ',', '.'), 1, 0, 'R', true);
 $pdf->Cell(40, 10, number_format($grand_total_ativos + $grand_total_licencas, 2, ',', '.'), 1, 1, 'R', true);

@@ -4,8 +4,8 @@
  * Classe extendida do FPDF para padronizar a criação de relatórios do sistema.
  * Gerencia automaticamente cabeçalho, rodapé, conversão de caracteres e formatação.
  */
-require('fpdf/fpdf.php');
-include 'conexao.php';
+require_once 'fpdf/fpdf.php';
+include_once 'conexao.php';
 
 class ReportGenerator extends FPDF
 {
@@ -13,39 +13,58 @@ class ReportGenerator extends FPDF
     protected $columns;
     protected $conn;
 
-    function __construct($title, $columns, $conn, $orientation = 'P')
+    public static function getLogoPath($conn)
+    {
+        $logo = 'dashboard/images/favicon.png';
+        $res = $conn->query("SELECT logo_path FROM configuracoes_alertas WHERE id = 1");
+        if ($res && $row = $res->fetch_assoc()) {
+            if (!empty($row['logo_path']) && file_exists(__DIR__ . '/' . $row['logo_path'])) {
+                $logo = $row['logo_path'];
+            }
+        }
+        return $logo;
+    }
+
+    public function __construct($title, $columns, $conn, $orientation = 'P')
     {
         // Inicializa o FPDF com orientação (P=Retrato, L=Paisagem) e papel A4
         parent::__construct($orientation, 'mm', 'A4');
+        $this->SetMargins(6, 6, 6); // Margens equilibradas de 6mm
+        $this->SetAutoPageBreak(true, 10);
         $this->reportTitle = $title;
         $this->columns = $columns;
         $this->conn = $conn;
     }
 
-    function Header()
+    public function Header()
     {
-        // Logo
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
+        // Logo dinâmico
+        $logo = self::getLogoPath($this->conn);
 
-        // System Name
+        // Layout de Cabeçalho Profissional
+        $this->Image($logo, 6, 6, 12);
+        
         $this->SetFont('Arial', 'B', 15);
-
-        $this->Cell(0, 10, 'Asset MGT', 0, 1, 'C');
-
-        // Report Title
+        $this->SetTextColor(44, 64, 74); // Cor primária do dashboard
+        $this->Cell(15); // Espaço para o logo
+        $this->Cell(100, 10, 'Asset MGT', 0, 0, 'L');
+        
+        $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(128, 128, 128);
+        $this->Cell(0, 10, $this->utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+        
+        $this->Ln(-2);
         $this->SetFont('Arial', 'B', 12);
-        $this->Cell(0, 10, $this->utf8_to_iso88591($this->reportTitle), 0, 1, 'C');
-        $this->Ln(2);
-
-        // Timestamp
-        $this->SetFont('Arial', '', 9);
-        $this->Cell(0, 5, $this->utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'C');
-        $this->Ln(10);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 10, $this->utf8_to_iso88591(mb_strtoupper($this->reportTitle)), 0, 1, 'C');
+        
+        $this->Line(6, 23, 204, 23); // Linha horizontal moderna (210 - 6 - 6 = 198 span)
+        $this->Ln(5);
 
         // Table Header
-        $this->SetFillColor(44, 64, 74); // Dark blue/grey from dashboard
-        $this->SetTextColor(255, 255, 255); // White text
-        $this->SetFont('Arial', 'B', 10);
+        $this->SetFillColor(44, 64, 74);
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 9);
         foreach ($this->columns as $col) {
             $this->Cell($col['width'], 10, $this->utf8_to_iso88591($col['header']), 1, 0, $col['align'], true);
         }

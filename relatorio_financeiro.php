@@ -5,6 +5,7 @@
  * Utiliza FPDF diretamente para customizações complexas de layout.
  */
 require('fpdf/fpdf.php');
+require_once 'ReportGenerator.php';
 include 'conexao.php';
 
 if ($conn->connect_error) {
@@ -20,31 +21,37 @@ class PDF extends FPDF
 {
     function Header()
     {
-        // Logo
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
-
-        // System Name
+        // Logo dinâmico
+        $logo = ReportGenerator::getLogoPath($GLOBALS['conn']);
+        $this->Image($logo, 6, 6, 12);
+        
         $this->SetFont('Arial', 'B', 15);
-        $this->Cell(80); // Move to right
-        $this->Cell(30, 10, 'Asset MGT', 0, 0, 'C');
+        $this->SetTextColor(44, 64, 74); // Cor primária do dashboard
+        $this->Cell(15); // Espaço para o logo
+        $this->Cell(100, 10, 'Asset MGT', 0, 0, 'L');
+        
+        $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(128, 128, 128);
+        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+        
+        $this->Ln(-2);
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 10, utf8_to_iso88591(mb_strtoupper('Relatório Financeiro de Ativos')), 0, 1, 'C');
+        
+        $this->Line(6, 23, 204, 23); // Linha horizontal moderna
         $this->Ln(5);
-
-        // Report Title
-        $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 10, utf8_to_iso88591('Relatório Financeiro de Ativos'), 0, 1, 'C');
-        $this->Ln(5);
-        $this->SetFont('Arial', '', 10);
-        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'C');
-        $this->Ln(10);
 
         // Table Header
-        $this->SetFillColor(200, 255, 200);
-        $this->SetFont('Arial', 'B', 10);
-        $this->Cell(60, 10, utf8_to_iso88591('Categoria do Ativo'), 1, 0, 'L', true);
+        $this->SetFillColor(44, 64, 74); // Cor padrão das tabelas
+        $this->SetTextColor(255, 255, 255);
+        $this->SetFont('Arial', 'B', 9);
+        $this->Cell(68, 10, utf8_to_iso88591('Categoria do Ativo'), 1, 0, 'L', true);
         $this->Cell(30, 10, utf8_to_iso88591('Qtd.'), 1, 0, 'C', true);
         $this->Cell(50, 10, utf8_to_iso88591('Valor Total (R$)'), 1, 0, 'R', true);
         $this->Cell(50, 10, utf8_to_iso88591('Valor Médio (R$)'), 1, 0, 'R', true);
         $this->Ln();
+        $this->SetTextColor(0, 0, 0);
     }
 
     function Footer()
@@ -72,6 +79,7 @@ $result = $conn->query($sql);
 
 ob_start();
 $pdf = new PDF();
+$pdf->SetMargins(6, 6, 6);
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
@@ -88,7 +96,7 @@ if ($result && $result->num_rows > 0) {
         $grand_total_qtd += $qtd;
         $grand_total_val += $total;
 
-        $pdf->Cell(60, 10, utf8_to_iso88591(substr($cat, 0, 30)), 1, 0, 'L');
+        $pdf->Cell(68, 10, utf8_to_iso88591(substr($cat, 0, 30)), 1, 0, 'L');
         $pdf->Cell(30, 10, $qtd, 1, 0, 'C');
         $pdf->Cell(50, 10, number_format($total, 2, ',', '.'), 1, 0, 'R');
         $pdf->Cell(50, 10, number_format($avg, 2, ',', '.'), 1, 0, 'R');
@@ -97,7 +105,7 @@ if ($result && $result->num_rows > 0) {
 
     // Grand Total Row
     $pdf->SetFont('Arial', 'B', 10);
-    $pdf->Cell(60, 10, utf8_to_iso88591('TOTAIS GERAIS'), 1, 0, 'L');
+    $pdf->Cell(68, 10, utf8_to_iso88591('TOTAIS GERAIS'), 1, 0, 'L');
     $pdf->Cell(30, 10, $grand_total_qtd, 1, 0, 'C');
     $pdf->Cell(50, 10, number_format($grand_total_val, 2, ',', '.'), 1, 0, 'R');
     $pdf->Cell(50, 10, '-', 1, 0, 'R');

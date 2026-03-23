@@ -5,6 +5,7 @@
  * UtilizaF PDF diretamente para permitir cálculos de porcentagem no corpo do relatório.
  */
 require('fpdf/fpdf.php');
+require_once 'ReportGenerator.php';
 include 'conexao.php';
 
 if ($conn->connect_error) {
@@ -48,31 +49,37 @@ class PDF extends FPDF
 {
     function Header()
     {
-        // Logo
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
-
-        // System Name
+        // Logo dinâmico
+        $logo = ReportGenerator::getLogoPath($GLOBALS['conn']);
+        $this->Image($logo, 6, 6, 12);
+        
         $this->SetFont('Arial', 'B', 15);
-        $this->Cell(80); // Move to right
-        $this->Cell(30, 10, 'Asset MGT', 0, 0, 'C');
+        $this->SetTextColor(44, 64, 74);
+        $this->Cell(15);
+        $this->Cell(100, 10, 'Asset MGT', 0, 0, 'L');
+        
+        $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(128, 128, 128);
+        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'R');
+        
+        $this->Ln(-2);
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 10, utf8_to_iso88591(mb_strtoupper('Relatório Mensal de Chamados')), 0, 1, 'C');
+        
+        $this->Line(6, 23, 204, 23);
         $this->Ln(5);
-
-        // Report Title
-        $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 10, utf8_to_iso88591('Relatório Mensal de Chamados'), 0, 1, 'C');
-        $this->Ln(5);
-        $this->SetFont('Arial', '', 10);
-        $this->Cell(0, 10, utf8_to_iso88591('Gerado em: ' . date('d/m/Y H:i:s')), 0, 1, 'C');
-        $this->Ln(10);
 
         // Table Header
-        $this->SetFillColor(200, 220, 255);
+        $this->SetFillColor(44, 64, 74);
+        $this->SetTextColor(255, 255, 255);
         $this->SetFont('Arial', 'B', 10);
-        $this->Cell(60, 10, utf8_to_iso88591('Mês/Ano'), 1, 0, 'C', true);
+        $this->Cell(68, 10, utf8_to_iso88591('Mês/Ano'), 1, 0, 'C', true);
         $this->Cell(40, 10, utf8_to_iso88591('Total Abertos'), 1, 0, 'C', true);
         $this->Cell(40, 10, utf8_to_iso88591('Total Fechados'), 1, 0, 'C', true);
         $this->Cell(50, 10, utf8_to_iso88591('Taxa de Resolução'), 1, 0, 'C', true);
         $this->Ln();
+        $this->SetTextColor(0, 0, 0);
     }
 
     function Footer()
@@ -101,6 +108,7 @@ $result = $conn->query($sql);
 
 ob_start();
 $pdf = new PDF();
+$pdf->SetMargins(6, 6, 6);
 $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
@@ -119,7 +127,7 @@ if ($result && $result->num_rows > 0) {
             $taxa = ($fechados / $total) * 100;
         }
 
-        $pdf->Cell(60, 10, $mes_formatado, 1, 0, 'C');
+        $pdf->Cell(68, 10, $mes_formatado, 1, 0, 'C');
         $pdf->Cell(40, 10, $total, 1, 0, 'C');
         $pdf->Cell(40, 10, $fechados, 1, 0, 'C');
         $pdf->Cell(50, 10, number_format($taxa, 1) . '%', 1, 0, 'C');

@@ -266,6 +266,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['config_alertas'])) {
     exit();
 }
 
+// === PROCESSAMENTO DE LOGOTIPO: Salva o logo para os relatórios ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['logo_upload'])) {
+    $success = false;
+    $message = __('Erro no upload');
+    $new_path = '';
+
+    if (isset($_FILES['logo_file']) && $_FILES['logo_file']['error'] === 0) {
+        $allowed = ['png', 'jpg', 'jpeg', 'gif'];
+        $filename = $_FILES['logo_file']['name'];
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        if (in_array($ext, $allowed)) {
+            $upload_dir = 'assets/img/logos/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            $new_name = 'logo_report_' . time() . '.' . $ext;
+            $target = $upload_dir . $new_name;
+
+            if (move_uploaded_file($_FILES['logo_file']['tmp_name'], $target)) {
+                $sql = "UPDATE configuracoes_alertas SET logo_path = '$target' WHERE id = 1";
+                if (mysqli_query($conn, $sql)) {
+                    $success = true;
+                    $message = __('Logo atualizado com sucesso!');
+                    $new_path = $target;
+                }
+            }
+        } else {
+            $message = __('Formato não permitido');
+        }
+    }
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success, 'message' => $message, 'path' => $new_path]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "logo_success" : "error"));
+    }
+    exit();
+}
+
 
 // === COLETA DE DADOS ATUAIS: Busca as configurações salvas para preencher o formulário ===
 $configs = [];
@@ -855,6 +897,51 @@ function getHoursAndMinutes($total_minutes)
                                 </form>
                                 <!-- Resultado do teste -->
                                 <div id="smtpTestResult" class="mt-3" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════ -->
+                    <!-- PERSONALIZAÇÃO DE RELATÓRIOS (LOGO)      -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <div class="card shadow mb-4" id="cardLogo">
+                        <div class="card-header py-3">
+                            <h6 class="text-primary m-0 font-weight-bold">
+                                <i class="fas fa-image mr-2"></i><?php echo __('Personalização de Relatórios'); ?>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-4">
+                                <?php echo __('Escolha o logotipo que aparecerá no cabeçalho de todos os relatórios gerados pelo sistema (PDF e Excel).'); ?>
+                            </p>
+                            
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                    <div class="p-3 border rounded bg-light d-inline-block">
+                                        <img id="logoPreview" src="<?php echo htmlspecialchars($alert_config['logo_path'] ?? 'dashboard/images/favicon.png'); ?>" 
+                                             alt="Logo" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+                                    </div>
+                                    <div class="mt-2 text-muted small"><?php echo __('Prévia do Logotipo'); ?></div>
+                                </div>
+                                <div class="col-md-8">
+                                    <form id="formLogoUpload" enctype="multipart/form-data">
+                                        <input type="hidden" name="logo_upload" value="1">
+                                        <div class="form-group mb-3">
+                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Selecione uma imagem (PNG, JPG, GIF)'); ?></label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="logo_file" name="logo_file" accept="image/*" required>
+                                                <label class="custom-file-label" for="logo_file"><?php echo __('Escolher arquivo...'); ?></label>
+                                            </div>
+                                        </div>
+                                        <div class="text-right mt-3">
+                                            <button type="submit" class="btn btn-primary btn-sm" id="btnUploadLogo"
+                                                    style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
+                                                <i class="fas fa-save mr-1"></i><?php echo __('Salvar Logotipo'); ?>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div id="uploadStatus" class="mt-2 small"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1776,6 +1863,72 @@ function getHoursAndMinutes($total_minutes)
     </script>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+    <script>
+        $(document).ready(function() {
+            // Preview do logo ao selecionar arquivo
+            $('#logo_file').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').addClass("selected").html(fileName);
+
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#logoPreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Upload via AJAX
+            $('#formLogoUpload').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var $btn = $('#btnUploadLogo');
+                var oldHtml = $btn.html();
+
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i><?php echo __('Enviando...'); ?>');
+
+                $.ajax({
+                    url: 'configuracoes.php',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        try {
+                            var res = JSON.parse(response);
+                            if (res.success) {
+                                $('#logoPreview').attr('src', res.path + '?v=' + new Date().getTime());
+                                showAutoSave('<?php echo __('Logotipo atualizado!'); ?>');
+                                // Clear the file input after successful upload
+                                $('#logo_file').val('');
+                                $('#logo_file').next('.custom-file-label').html('<?php echo __('Escolher arquivo...'); ?>');
+                            } else {
+                                alert(res.message);
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert('<?php echo __('Erro ao processar resposta do servidor'); ?>');
+                        }
+                    },
+                    error: function() {
+                        alert('<?php echo __('Erro na requisição'); ?>');
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).html(oldHtml);
+                    }
+                });
+            });
+        });
+
+        // Função global para mostrar status de salvamento
+        function showAutoSave(message) {
+            var $toast = $('#autoSaveStatus');
+            $('#autoSaveMessage').text(message);
+            $toast.fadeIn().delay(3000).fadeOut();
+        }
+    </script>
 </body>
 
 </html>
+```

@@ -1,6 +1,6 @@
 <?php
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -88,7 +88,8 @@ include 'conexao.php';
                                                     <option value="relatorio_ativos_por_usuario.php"><?php echo __('Por Usuário'); ?></option>
                                                     <option value="relatorio_ativos_unidade.php"><?php echo __('Por Unidade'); ?></option>
                                                     <option value="relatorio_ativos_historico.php"><?php echo __('Trilha de Auditoria (Histórico)'); ?></option>
-                                                    <option value="ativos_doados.php"><?php echo __('Doações'); ?></option>
+                                                     <option value="relatorio_ativos_incidentes.php"><?php echo __('Incidentes por Ativo'); ?></option>
+                                                     <option value="ativos_doados.php"><?php echo __('Doações'); ?></option>
                                                 </optgroup>
                                             <?php else: ?>
                                                 <optgroup label="<?php echo __('Meus Ativos'); ?>">
@@ -113,8 +114,9 @@ include 'conexao.php';
                                                     </option>
                                                     <option value="relatorio_chamados_sla_vencido.php"><?php echo __('SLA Vencido'); ?></option>
                                                     <option value="relatorio_chamados_prioridade.php"><?php echo __('Por Prioridade'); ?></option>
-                                                    <option value="relatorio_chamados_sem_atribuicao.php"><?php echo __('Sem Atribuição'); ?>
-                                                    </option>
+                                                     <option value="relatorio_chamados_sem_atribuicao.php"><?php echo __('Sem Atribuição'); ?>
+                                                     </option>
+                                                     <option value="relatorio_chamados_aprovacoes.php"><?php echo __('Aprovações de Gestores'); ?></option>
                                                 <?php endif; ?>
                                             </optgroup>
 

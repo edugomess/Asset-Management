@@ -1,5 +1,6 @@
 <?php
 require('fpdf/fpdf.php');
+require_once 'ReportGenerator.php';
 include 'conexao.php';
 
 $mes = isset($_GET['mes']) ? intval($_GET['mes']) : date('m');
@@ -25,9 +26,10 @@ class PDF extends FPDF
     function Header()
     {
         global $mes, $ano, $meses;
-        $this->Image('dashboard/images/favicon.png', 10, 6, 15);
+        $logo = ReportGenerator::getLogoPath($GLOBALS['conn']);
+        $this->Image($logo, 6, 6, 12);
         $this->SetFont('Arial', 'B', 15);
-        $this->Cell(80);
+        $this->Cell(15);
         $this->Cell(30, 10, 'Asset MGT', 0, 0, 'C');
         $this->Ln(5);
         $this->SetFont('Arial', 'B', 14);
@@ -45,13 +47,14 @@ class PDF extends FPDF
 }
 
 $pdf = new PDF();
+$pdf->SetMargins(6, 6, 6);
 $pdf->AliasNbPages();
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 10);
 
 // Cabeçalho da Tabela
 $pdf->SetFillColor(234, 236, 244);
-$pdf->Cell(80, 10, 'Tecnico', 1, 0, 'C', true);
+$pdf->Cell(88, 10, 'Tecnico', 1, 0, 'C', true);
 $pdf->Cell(40, 10, 'Resolvidos', 1, 0, 'C', true);
 $pdf->Cell(40, 10, 'No Prazo', 1, 0, 'C', true);
 $pdf->Cell(30, 10, '% SLA', 1, 1, 'C', true);
@@ -104,13 +107,13 @@ if (mysqli_num_rows($res) > 0) {
         $met = $row['met_sla'];
         $pct = round(($met / $total) * 100) . '%';
 
-        $pdf->Cell(80, 10, $nome, 1);
+        $pdf->Cell(88, 10, $nome, 1);
         $pdf->Cell(40, 10, $total, 1, 0, 'C');
         $pdf->Cell(40, 10, $met, 1, 0, 'C');
         $pdf->Cell(30, 10, $pct, 1, 1, 'C');
     }
 } else {
-    $pdf->Cell(190, 10, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', 'Nenhum dado encontrado para este periodo.'), 1, 1, 'C');
+    $pdf->Cell(198, 10, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', 'Nenhum dado encontrado para este periodo.'), 1, 1, 'C');
 }
 
 $pdf->Output();

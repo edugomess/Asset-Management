@@ -82,6 +82,23 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
+                                <!-- Selected Asset Info (AJAX) -->
+                                <div class="row" id="asset-preview" style="display: none; margin-top: -10px;">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-info d-flex align-items-center mb-3 shadow-sm border-left-info" style="padding: 10px 20px;">
+                                            <i class="fas fa-laptop fa-2x mr-3 text-info"></i>
+                                            <div class="flex-grow-1">
+                                                <div class="font-weight-bold mb-0"><?php echo __('Ativo Selecionado:'); ?> <span id="asset-name" class="text-dark"></span></div>
+                                                <div class="small text-muted"><span id="asset-info"></span></div>
+                                            </div>
+                                            <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
+                                                <a id="asset-link" href="#" target="_blank" class="btn btn-sm btn-outline-info mr-2" title="<?php echo __('Ver Detalhes do Ativo'); ?>"><i class="fas fa-external-link-alt"></i></a>
+                                            <?php endif; ?>
+                                            <input type="hidden" name="id_asset" id="id_asset">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Row 1.6: Gestor Aprovador (Visible only for Requisição and Mudança) -->
                                 <div class="row" id="row-gestor" style="display: none;">
                                     <div class="col-md-12">
@@ -266,7 +283,12 @@ include_once 'auth.php'; // Proteção de sessão
                             document.getElementById('id_asset').value = data.ativo.id;
                             document.getElementById('asset-name').textContent = `${data.ativo.fabricante} ${data.ativo.modelo}`;
                             document.getElementById('asset-info').textContent = `Categoria: ${data.ativo.categoria} | Status: ${data.ativo.status}`;
-                            document.getElementById('asset-link').href = data.ativo.link_perfil;
+                            
+                            const assetLink = document.getElementById('asset-link');
+                            if (assetLink) {
+                                assetLink.href = data.ativo.link_perfil;
+                            }
+                            
                             preview.style.display = 'flex';
                             $(preview).addClass('animated fadeIn');
                         } else {

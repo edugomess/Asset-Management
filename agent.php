@@ -4,8 +4,8 @@
  * Página frontal do Agente Inteligente, fornecendo a interface de chat
  * para interação com a IA Gemini e comandos rápidos do sistema.
  */
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 
 // Buscar configuração de ativação do chat
 $chat_ativo = true;
@@ -38,8 +38,14 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
     <link rel="stylesheet" href="/assets/css/Bootstrap-Image-Uploader.css?h=406ba72429389f6080fdb666c60fb216">
     <link rel="stylesheet" href="/assets/css/card-image-zoom-on-hover.css?h=82e6162bc70edfde8bfd14b57fdcb3f7">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <?php include 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <?php include_once 'sidebar_style.php'; ?>
     <style>
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; 
+        }
         .chat-container {
             height: 60vh;
             overflow-y: auto;
@@ -164,16 +170,16 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><?php echo __('Agente Inteligente - Assistente Virtual'); ?></h3>
-                    <div class="card shadow mb-4">
+                    <h3 class="text-dark mb-4 animate__animated animate__fadeInDown"><?php echo __('Agente Inteligente - Assistente Virtual'); ?></h3>
+                    <div class="card shadow card-shadow mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold" style="color: rgb(44,64,74);">
                                 <i class="fas fa-robot mr-1"></i> <?php echo __('Chat com IA'); ?>

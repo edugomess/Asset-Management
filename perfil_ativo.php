@@ -127,6 +127,8 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
         .info-card { background: #fff; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
         .btn-action { border-radius: 10px; padding: 12px 25px; font-weight: 600; transition: all 0.3s ease; }
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; }
         .financial-summary { background: #f8f9fc; border-radius: 10px; padding: 15px; margin-top: 10px; border-left: 4px solid #4e73df; }
     </style>
 </head>
@@ -143,7 +145,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><?php echo __('Perfil do Ativo'); ?></h3>
                         <div class="d-flex gap-2" style="gap: 10px;">
                             <button class="btn btn-danger btn-sm" onclick="gerarPDF()">
@@ -156,7 +158,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     </div>
                     
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
                             <!-- Header Card -->
                             <div class="card shadow card-shadow profile-card mb-4">
                                 <div class="profile-header">
@@ -205,7 +207,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                         <div class="col-lg-8">
                             <!-- Especificações Técnicas -->
-                            <div class="info-card shadow card-shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-microchip mr-2"></i><?php echo __('Especificações Técnicas'); ?>
                                 </h6>
@@ -234,7 +236,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                             </div>
 
                             <!-- Financeiro e Vida Útil (Values and Status) -->
-                            <div class="info-card shadow card-shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-chart-line mr-2"></i><?php echo __('Valores e Status'); ?>
                                 </h6>

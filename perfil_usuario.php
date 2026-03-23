@@ -95,6 +95,8 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; }
     </style>
 </head>
 
@@ -111,7 +113,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><?php echo __('Perfil do Usuário'); ?></h3>
                         <a class="btn btn-dark btn-sm d-none d-sm-inline-block" href="usuarios.php">
                             <i class="fas fa-arrow-left fa-sm text-white-50 mr-2"></i><?php echo __('Voltar para Lista'); ?>
@@ -120,7 +122,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                     
                     <div class="row">
                         <!-- Coluna Esquerda: Header e Identificação -->
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
                             <div class="card shadow profile-card mb-4">
                                 <div class="profile-header">
                                     <div class="profile-img-container shadow">
@@ -162,7 +164,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
 
                         <!-- Coluna Direita: Detalhes Profissionais e Contato -->
                         <div class="col-lg-8">
-                            <div class="info-card shadow card-shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-id-card mr-2"></i><?php echo __('Informações Profissionais'); ?>
                                 </h6>
@@ -177,7 +179,8 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                             <?php 
                                             $cc_name = $usuario['centroDeCusto'];
                                             if (!empty($cc_name)) {
-                                                $res_cc = mysqli_query($conn, "SELECT id_centro_de_custo FROM centro_de_custo WHERE nomeSetor = '".mysqli_real_escape_string($conn, $cc_name)."' LIMIT 1");
+                                                $cc_name_escaped = mysqli_real_escape_string($conn, $cc_name);
+                                                $res_cc = mysqli_query($conn, "SELECT id_centro_de_custo FROM centro_de_custo WHERE nomeSetor = '$cc_name_escaped' LIMIT 1");
                                                 if ($res_cc && $row_cc = mysqli_fetch_assoc($res_cc)) {
                                                     echo '<a href="perfil_centro_de_custo.php?id='.$row_cc['id_centro_de_custo'].'">'.htmlspecialchars($cc_name).'</a>';
                                                 } else {
@@ -205,7 +208,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                             </div>
                             
                             <!-- Ativos em Posse -->
-                            <div class="info-card shadow card-shadow mb-4">
+                            <div class="info-card shadow card-shadow mb-4 animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-laptop mr-2"></i><?php echo __('Ativos em Posse'); ?>
                                 </h6>
@@ -228,6 +231,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                             ?>
                                                 <tr <?php if ($can_click): ?>
                                                     onclick="location.href='perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>'" 
+                                                    onkeypress="if(event.key==='Enter')location.href='perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>'"
                                                     style="cursor: pointer;" class="clickable-row"
                                                     <?php else: ?>
                                                     class="no-click-row"
@@ -264,7 +268,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                             </div>
 
                             <!-- Licenças em Posse (Licenses Assigned) -->
-                            <div class="info-card shadow card-shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.4s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-key mr-2"></i><?php echo __('Licenças em Posse'); ?>
                                 </h6>

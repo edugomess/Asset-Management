@@ -299,7 +299,7 @@ if (isset($_GET['id'])) {
                                                 <?php
                                             }
                                         } else {
-                                             echo "<tr><td colspan='10'>" . __('Nenhum ativo atribuído encontrado.') . "</td></tr>";
+                                            echo "<tr><td colspan='10'>" . __('Nenhum ativo atribuído encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -333,7 +333,7 @@ if (isset($_GET['id'])) {
 
                     // Função para doar o ativo (transferir para a tabela "venda" - agora doações)
                     function sellAsset(assetId) {
-                         if (confirm("<?php echo __('Tem certeza que deseja doar este ativo?'); ?>")) {
+                        if (confirm("<?php echo __('Tem certeza que deseja doar este ativo?'); ?>")) {
                             fetch('doar_ativo.php', {
                                 method: 'POST',
                                 headers: {
@@ -343,7 +343,7 @@ if (isset($_GET['id'])) {
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                     if (data.success) {
+                                    if (data.success) {
                                         alert("<?php echo __('Ativo doado com sucesso!'); ?>");
                                         location.reload(); // Recarrega a página para refletir as mudanças
                                     } else {
@@ -369,29 +369,28 @@ if (isset($_GET['id'])) {
 
 
             </div>
-            </div>
         </div>
-        </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-        <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-        <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-        <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-        <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-        <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-        <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-        <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-        <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-        <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-        <script src="/assets/js/global_search.js"></script>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
+    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
+    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
+    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
+    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
+    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
+    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="/assets/js/global_search.js"></script>
 </body>
 
 </html>

@@ -67,6 +67,8 @@ $total_lic = mysqli_num_rows($result_lic);
         .info-card { background: #fff; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
         .btn-action { border-radius: 10px; padding: 12px 25px; font-weight: 600; transition: all 0.3s ease; }
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; }
         .stats-badge { font-size: 1.2rem; font-weight: 700; color: #2c404a; }
         .stats-label { font-size: 0.75rem; color: #858796; text-transform: uppercase; font-weight: 800; }
         .nav-tabs-premium { border: none; background: #f8f9fc; border-radius: 12px; padding: 5px; display: inline-flex; margin-bottom: 20px; }
@@ -88,7 +90,7 @@ $total_lic = mysqli_num_rows($result_lic);
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><?php echo __('Perfil do Centro de Custo'); ?></h3>
                         <a class="btn btn-dark btn-sm" href="centro_de_custo.php">
                             <i class="fas fa-arrow-left fa-sm mr-1"></i><?php echo __('Voltar'); ?>
@@ -97,8 +99,8 @@ $total_lic = mysqli_num_rows($result_lic);
 
                     <div class="row">
                         <!-- Coluna Esquerda: Identificação -->
-                        <div class="col-lg-4">
-                            <div class="card shadow profile-card mb-4">
+                        <div class="col-lg-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
+                            <div class="card shadow card-shadow profile-card mb-4">
                                 <div class="profile-header">
                                     <div class="profile-img-container shadow">
                                         <i class="fas fa-building profile-icon"></i>
@@ -127,7 +129,7 @@ $total_lic = mysqli_num_rows($result_lic);
                                 </div>
                             </div>
 
-                            <div class="info-card shadow">
+                            <div class="info-card shadow card-shadow">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-info-circle mr-2"></i><?php echo __('Detalhes Técnicos'); ?>
                                 </h6>
@@ -152,7 +154,7 @@ $total_lic = mysqli_num_rows($result_lic);
 
                         <!-- Coluna Direita: Listagens -->
                         <div class="col-lg-8">
-                            <div class="info-card shadow mb-4" style="padding: 0; overflow: hidden;">
+                            <div class="info-card shadow card-shadow mb-4 animate__animated animate__fadeInRight" style="animation-delay: 0.2s; padding: 0; overflow: hidden;">
                                 <div class="bg-light p-3 border-bottom">
                                     <ul class="nav nav-pills nav-tabs-premium" id="ccTabs" style="margin-bottom: 0; background: #eaecf4;">
                                     <li class="nav-item">
@@ -261,7 +263,7 @@ $total_lic = mysqli_num_rows($result_lic);
 
                             <!-- Descrição -->
                             <?php if (!empty($cc['descricao'])): ?>
-                                <div class="info-card shadow">
+                                <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                     <h6 class="font-weight-bold text-primary mb-3">
                                         <i class="fas fa-align-left mr-2"></i><?php echo __('Descrição do Setor'); ?>
                                     </h6>

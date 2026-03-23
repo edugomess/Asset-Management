@@ -14,7 +14,7 @@ if (empty($tag)) {
     exit;
 }
 
-$sql = "SELECT id_asset, modelo, fabricante, categoria, status FROM ativos WHERE tag = '$tag' LIMIT 1";
+$sql = "SELECT id_asset, modelo, fabricante, categoria, status FROM ativos WHERE tag LIKE '$tag%' LIMIT 1";
 $result = $conn->query($sql);
 
 if ($result && $result->num_rows > 0) {

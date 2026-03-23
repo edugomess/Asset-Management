@@ -97,6 +97,8 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; }
         .clickable-row {
             cursor: pointer;
             transition: background 0.2s;
@@ -120,7 +122,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><?php echo __('Perfil do Fornecedor'); ?></h3>
                         <a class="btn btn-dark btn-sm d-none d-sm-inline-block" href="fornecedores.php">
                             <i class="fas fa-arrow-left fa-sm text-white-50 mr-2"></i><?php echo __('Voltar para Lista'); ?>
@@ -129,11 +131,11 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                     
                     <div class="row">
                         <!-- Coluna Direita: Header e Identificação -->
-                        <div class="col-lg-4">
-                            <div class="card shadow profile-card mb-4">
+                        <div class="col-lg-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
+                            <div class="card shadow card-shadow profile-card mb-4">
                                 <div class="profile-header">
                                     <div class="profile-img-container shadow">
-                                        <img src="<?php echo $foto; ?>" class="profile-img">
+                                        <img src="<?php echo $foto; ?>" class="profile-img" alt="<?php echo htmlspecialchars($fornecedor['nomeEmpresa']); ?>">
                                     </div>
                                     <h4 class="font-weight-bold mb-1"><?php echo htmlspecialchars($fornecedor['nomeEmpresa']); ?></h4>
                                     <p class="mb-3 opacity-75"><?php echo htmlspecialchars($fornecedor['servico']); ?></p>
@@ -152,7 +154,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                             </div>
 
                             <!-- Botões de Ação -->
-                            <div class="info-card shadow mb-4 text-center">
+                            <div class="info-card shadow card-shadow mb-4 text-center">
                                 <h6 class="font-weight-bold text-primary mb-3"><?php echo __('Ações Rápidas'); ?></h6>
                                 <div class="d-flex flex-column gap-2" style="gap: 10px;">
                                     <a href="editar_fornecedor.php?id=<?php echo $id; ?>" class="btn btn-warning btn-action">
@@ -167,7 +169,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
 
                         <!-- Coluna Esquerda: Detalhes de Contato e Outros -->
                         <div class="col-lg-8">
-                            <div class="info-card shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-info-circle mr-2"></i><?php echo __('Informações de Contato'); ?>
                                 </h6>
@@ -209,7 +211,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                             </div>
                             
                             <!-- Ativos e Licenças Relacionados -->
-                            <div class="info-card shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-boxes mr-2"></i><?php echo __('Ativos Adquiridos / Suportados'); ?>
                                 </h6>

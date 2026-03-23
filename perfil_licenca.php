@@ -48,6 +48,7 @@ $excedente = ($uso > $total);
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=d6a29779d310462e7fcdde7b9a80e0db">
     <link rel="stylesheet" href="/assets/css/Nunito.css?h=5f41e73f827c7b56616237a1da13b6e2">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
     <style>
         .profile-card { border-radius: 15px; overflow: hidden; border: none; }
@@ -58,6 +59,8 @@ $excedente = ($uso > $total);
         .info-card { background: #fff; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
         .btn-action { border-radius: 10px; padding: 12px 25px; font-weight: 600; transition: all 0.3s ease; }
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; }
         .usage-container { background: #f8f9fc; border-radius: 10px; padding: 20px; border-left: 4px solid #4e73df; }
     </style>
 </head>
@@ -74,7 +77,7 @@ $excedente = ($uso > $total);
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><?php echo __('Perfil da Licença'); ?></h3>
                         <div class="d-flex gap-2" style="gap: 10px;">
                             <a class="btn btn-dark btn-sm" href="licencas.php">
@@ -84,9 +87,9 @@ $excedente = ($uso > $total);
                     </div>
                     
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
                             <!-- Header Card -->
-                            <div class="card shadow profile-card mb-4">
+                            <div class="card shadow card-shadow profile-card mb-4">
                                 <div class="profile-header">
                                     <div class="software-icon">
                                         <i class="fas fa-file-code"></i>
@@ -119,7 +122,7 @@ $excedente = ($uso > $total);
                             </div>
 
                             <!-- Fornecedor -->
-                            <div class="info-card shadow mb-4">
+                            <div class="info-card shadow card-shadow mb-4">
                                 <h6 class="font-weight-bold text-primary mb-3">
                                     <i class="fas fa-handshake mr-2"></i><?php echo __('Fornecedor'); ?>
                                 </h6>
@@ -141,7 +144,7 @@ $excedente = ($uso > $total);
                             </div>
 
                             <!-- Ações -->
-                            <div class="info-card shadow mb-4 text-center">
+                            <div class="info-card shadow card-shadow mb-4 text-center">
                                 <h6 class="font-weight-bold text-primary mb-3"><?php echo __('Ações Rápidas'); ?></h6>
                                 <div class="d-flex flex-column gap-2" style="gap: 10px;">
                                     <a href="editar_licenca.php?id=<?php echo $id; ?>" class="btn btn-warning btn-action">
@@ -153,7 +156,7 @@ $excedente = ($uso > $total);
 
                         <div class="col-lg-8">
                             <!-- Detalhes da Licença -->
-                            <div class="info-card shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-info-circle mr-2"></i><?php echo __('Informações da Licença'); ?>
                                 </h6>
@@ -201,7 +204,7 @@ $excedente = ($uso > $total);
                             </div>
 
                             <!-- Quem está utilizando -->
-                            <div class="info-card shadow">
+                            <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
                                     <i class="fas fa-users mr-2"></i><?php echo __('Quem está utilizando'); ?>
                                 </h6>

@@ -74,16 +74,17 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="/assets/css/Montserrat.css">
-    <?php include 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <?php include_once 'sidebar_style.php'; ?>
     <style>
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; 
+        }
         /* Estilos visuais para os cards de insights da IA */
         .card-insight {
             border-left: 4px solid #f6c23e;
-            transition: transform 0.2s;
-        }
-
-        .card-insight:hover {
-            transform: scale(1.02);
         }
 
         .icon-box {
@@ -142,21 +143,21 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);" aria-label="Navegação Lateral">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
 
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <!-- Topbar Principal -->
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
 
                 <div class="container-fluid">
-                    <div class="row">
+                    <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                         <!-- Card: Incidentes Recorrentes -->
                         <div class="col-lg-6 mb-4">
-                            <div class="card shadow border-bottom-warning">
+                            <div class="card shadow card-shadow border-bottom-warning h-100">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">
                                         <?php echo __('🔄 Top Incidentes Recorrentes'); ?>
@@ -192,7 +193,7 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
 
                         <!-- Card: Ativos Críticos -->
                         <div class="col-lg-6 mb-4">
-                            <div class="card shadow border-bottom-danger">
+                            <div class="card shadow card-shadow border-bottom-danger h-100">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-danger">
                                         <?php echo __('⚠️ Ativos Críticos (Alto Índice de Manutenção)'); ?>
@@ -241,9 +242,9 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                     </div>
 
                     <!-- Seção: Guia de Melhores Práticas e Consultoria por IA -->
-                    <div class="row">
+                    <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
                         <div class="col-12 mb-4">
-                            <div class="card shadow">
+                            <div class="card shadow card-shadow">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-success">
                                         <?php echo __('💡 Sugestões de Prevenção e Melhores Práticas'); ?>

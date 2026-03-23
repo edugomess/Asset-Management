@@ -46,16 +46,18 @@ $count_andamento = 0;
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <?php include 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <?php include_once 'sidebar_style.php'; ?>
     <style>
         .card.shadow {
             transition: all 0.3s ease-in-out;
             cursor: pointer;
         }
 
-        .card.shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-shadow:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; 
         }
     </style>
 </head>
@@ -319,9 +321,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         // Vamos exibir todos:
                         ?>
 
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-primary py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.1s;">
+                            <div class="card shadow card-shadow border-left-primary py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -341,9 +343,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-success py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.2s;">
+                            <div class="card shadow card-shadow border-left-success py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -363,9 +365,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-info py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.3s;">
+                            <div class="card shadow card-shadow border-left-info py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -385,9 +387,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-warning py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.4s;">
+                            <div class="card shadow card-shadow border-left-warning py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -407,9 +409,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             </div>
                         </div>
                         <!-- Novas Licenças na mesma fileira -->
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-secondary py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.5s;">
+                            <div class="card shadow card-shadow border-left-secondary py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -428,9 +430,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-danger py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.6s;">
+                            <div class="card shadow card-shadow border-left-danger py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -450,9 +452,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-dark py-2">
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.7s;">
+                            <div class="card shadow card-shadow border-left-dark py-2">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
@@ -472,9 +474,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px;">
-                            <div class="card shadow border-left-warning py-2"
+                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.8s;">
+                            <div class="card shadow card-shadow border-left-warning py-2"
                                 style="border-left-color: #f6c23e !important;">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
@@ -533,7 +535,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
                                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.7rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
                                             <?php echo $total_ativos; ?>

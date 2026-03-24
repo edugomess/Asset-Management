@@ -2,7 +2,6 @@
 /**
  * CADASTRO DE EQUIPAMENTOS: cadastro_de_equipamentos.php
  * Interface para inclusão de novos itens ao inventário de hardware.
- * Captura dados técnicos (MAC, Tags), financeiros (Valor) e organizacionais (Centro de Custo).
  */
 include_once 'auth.php'; // Proteção de sessão
 ?>
@@ -43,7 +42,7 @@ include_once 'auth.php'; // Proteção de sessão
                     <h3 class="text-dark mb-1"><?php echo __('Cadastro de Ativo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <form action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
+                            <form id="assetForm" action="inserir_equipamento.php" method="post" enctype="multipart/form-data">
                                 <!-- Row 1: Identificação Básica -->
                                 <div class="row">
                                     <div class="col-md-4">
@@ -83,7 +82,6 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag / Service Tag'); ?></label>
                                             <?php
-                                            // Buscar próximo ID para preenchimento automático
                                             $res_next = mysqli_query($conn, "SHOW TABLE STATUS LIKE 'ativos'");
                                             $row_next = mysqli_fetch_assoc($res_next);
                                             $next_id = $row_next['Auto_increment'];
@@ -156,13 +154,13 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Row 4: Dados Financeiros / Nota Fiscal (New) -->
+                                <!-- Row 4: Dados Compra -->
                                 <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados de Compra / Nota Fiscal'); ?></h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></label>
-                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}" title="A chave de acesso deve ter exatamente 44 dígitos numéricos">
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -173,8 +171,8 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Hardware Details (Conditional) -->
-                                <div id="hardwareSection" style="display: none; border-left: 4px solid #2c404a; padding-left: 15px; margin-bottom: 25px; background: #f8f9fc; padding-top: 10px; padding-bottom: 5px; border-radius: 5px;">
+                                <!-- Hardware Section -->
+                                <div id="hardwareSection" style="display: none; border-left: 4px solid #2c404a; padding-left: 15px; margin-bottom: 25px; background: #f8f9fc; border-radius: 5px;">
                                     <h5 class="text-primary font-weight-bold mb-3"><?php echo __('Especificações de Hardware'); ?></h5>
                                     <div class="row">
                                         <div class="col-md-3">
@@ -186,7 +184,7 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="processador"><?php echo __('Processador'); ?></label>
-                                                <input class="form-control" name="processador" id="processador" type="text" placeholder="Ex: Intel i7-1185G7">
+                                                <input class="form-control" name="processador" id="processador" type="text" placeholder="Ex: Intel i7">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -202,14 +200,13 @@ include_once 'auth.php'; // Proteção de sessão
                                                     <option value="SSD">SSD</option>
                                                     <option value="HD">HD</option>
                                                     <option value="NVMe">NVMe</option>
-                                                    <option value="Híbrido">Híbrido</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Row 5: Datas, Imagem e Status -->
+                                <!-- Outros Dados -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -232,24 +229,19 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Row 5: Descrição -->
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="descricao"><?php echo __('Observações Adicionais'); ?></label>
-                                            <textarea class="form-control" name="descricao" id="descricao" placeholder="<?php echo __('Detalhes técnicos, estado de conservação, etc...'); ?>" style="height: 80px;"></textarea>
+                                            <textarea class="form-control" name="descricao" id="descricao" style="height: 80px;"></textarea>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row mt-4 mb-3">
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
-                                        <a class="btn btn-secondary" href="equipamentos.php" 
-                                            style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
-                                            <?php echo __('Voltar'); ?>
-                                        </a>
-                                        <button class="btn btn-success active pulse animated" type="submit" 
-                                            style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
+                                        <a class="btn btn-secondary" href="equipamentos.php" style="border-radius: 10px; padding: 10px 30px; font-weight: 600;"><?php echo __('Voltar'); ?></a>
+                                        <button class="btn btn-primary" type="submit" style="background: #2c404a; border: none; border-radius: 10px; padding: 10px 30px; font-weight: 600;">
                                             <i class="fas fa-save mr-2"></i><?php echo __('Cadastrar Equipamento'); ?>
                                         </button>
                                     </div>
@@ -259,39 +251,109 @@ include_once 'auth.php'; // Proteção de sessão
                     </div>
                 </div>
             </div>
-
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+
+    <!-- Modal Sucesso Cadastro com Etiqueta -->
+    <div class="modal fade" id="successTagModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header border-0 bg-light" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                    <h5 class="modal-title font-weight-bold text-success"><i class="fas fa-check-circle mr-2"></i><?php echo __('Equipamento Cadastrado!'); ?></h5>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <p class="mb-4 text-muted"><?php echo __('A etiqueta patrimonial já está pronta para identificação física.'); ?></p>
+                    <div class="p-3 bg-white d-inline-block rounded shadow-sm mb-3" style="border: 1px dashed #ddd;"><div id="qrcode_reg"></div></div>
+                    <div class="mt-2"><span class="badge badge-dark p-2" id="tag_badge_reg" style="font-size: 1.2rem; border-radius: 10px; letter-spacing: 1px;"></span></div>
+                </div>
+                <div class="modal-footer border-0 p-4 flex-column">
+                    <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold mb-2" id="btn-print-reg" style="border-radius: 12px;"><i class="fas fa-print mr-2"></i><?php echo __('Imprimir Etiqueta Agora'); ?></button>
+                    <div class="d-flex w-100" style="gap: 10px;">
+                        <button type="button" class="btn btn-outline-secondary flex-fill" onclick="location.reload();" style="border-radius: 10px;"><?php echo __('Novo Cadastro'); ?></button>
+                        <a href="equipamentos.php" class="btn btn-outline-primary flex-fill" style="border-radius: 10px;"><?php echo __('Ver Inventário'); ?></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="/assets/js/global_search.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        let currentAssetData = null;
         $(document).ready(function() {
             function toggleFields() {
                 var cat = $('#categoria').val();
-                
-                // Hardware Section (CPU, RAM, Disk)
-                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') {
-                    $('#hardwareSection').slideDown();
-                } else {
-                    $('#hardwareSection').slideUp();
-                }
-
-                // Host Name visibility
-                if (cat === 'Monitor' || cat === 'Periféricos') {
-                    $('#hostnameContainer').slideUp();
-                    $('#hostName').removeAttr('required');
-                } else {
-                    $('#hostnameContainer').slideDown();
-                    $('#hostName').attr('required', 'required');
-                }
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') { $('#hardwareSection').slideDown(); } else { $('#hardwareSection').slideUp(); }
+                if (cat === 'Monitor' || cat === 'Periféricos') { $('#hostnameContainer').slideUp(); $('#hostName').removeAttr('required'); } else { $('#hostnameContainer').slideDown(); $('#hostName').attr('required', 'required'); }
             }
             $('#categoria').change(toggleFields);
-            toggleFields(); // Initial check
+            toggleFields();
+
+            $('#assetForm').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                formData.append('ajax', '1');
+                Swal.fire({ title: 'Salvando...', didOpen: () => { Swal.showLoading(); } });
+                $.ajax({
+                    url: 'inserir_equipamento.php?ts=' + new Date().getTime(),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        try {
+                            const res = typeof response === 'object' ? response : JSON.parse(response);
+                            if (res.success) {
+                                Swal.close();
+                                currentAssetData = res;
+                                $('#tag_badge_reg').text(res.tag);
+                                $('#qrcode_reg').empty();
+                                new QRCode(document.getElementById("qrcode_reg"), { text: `ID: ${res.id_asset}\nTag: ${res.tag}\nModelo: ${res.modelo}`, width: 180, height: 180 });
+                                $('#successTagModal').modal('show');
+                            } else { 
+                                Swal.fire('Erro de Negócio', res.message, 'error'); 
+                            }
+                        } catch (e) {
+                            console.error("DEBUG - Resposta bruta do servidor:", response);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro de Análise JSON',
+                                html: `O servidor retornou um formato inválido.<br><br><b>Conteúdo:</b><br><pre style="text-align:left; font-size:10px;">${response.substring(0, 200)}...</pre>`,
+                                footer: 'Dica: Verifique o console do navegador (F12) para o log completo.'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("DEBUG - Erro de Rede:", xhr.status, xhr.responseText);
+                        Swal.fire('Erro de Rede', `Falha no servidor (Status ${xhr.status}).<br>${xhr.responseText.substring(0, 100)}`, 'error');
+                    }
+                });
+            });
+
+            $('#btn-print-reg').on('click', function() {
+                const qrImg = document.querySelector('#qrcode_reg img').src;
+                const printWindow = window.open('', '_blank', 'width=400,height=500');
+                printWindow.document.write(`
+                    <html><head><style>
+                        body { margin: 0; padding: 20px; text-align: center; font-family: sans-serif; }
+                        .label-container { width: 220px; padding: 10px; }
+                        img { width: 180px; height: 180px; }
+                        .tag { font-size: 1.4rem; font-weight: bold; border-top: 2px solid #000; margin-top: 10px; padding-top: 5px; }
+                        .model { font-size: 0.8rem; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+                    </style></head>
+                    <body onload="window.print(); window.close();">
+                        <div class="model">${currentAssetData.modelo}</div>
+                        <img src="${qrImg}">
+                        <div class="tag">${currentAssetData.tag}</div>
+                    </body></html>
+                `);
+                printWindow.document.close();
+            });
         });
     </script>
 </body>
-
 </html>

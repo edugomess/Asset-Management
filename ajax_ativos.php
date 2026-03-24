@@ -78,9 +78,15 @@ switch ($action) {
         break;
 
     case 'send_to_maintenance':
+        $tipo = isset($_POST['tipo_manutencao']) ? $_POST['tipo_manutencao'] : 'Reparo';
         $observacoes = isset($_POST['observacoes']) ? trim($_POST['observacoes']) : '';
-        if (empty($observacoes)) {
-            echo json_encode(['success' => false, 'message' => 'Observações são obrigatórias.']);
+        $item_trocado = isset($_POST['item_trocado']) ? trim($_POST['item_trocado']) : '';
+        $detalhes_update = isset($_POST['detalhes_update']) ? trim($_POST['detalhes_update']) : '';
+        $cat_upgrade = isset($_POST['categoria_upgrade']) ? $_POST['categoria_upgrade'] : NULL;
+        $val_upgrade = isset($_POST['valor_upgrade']) ? (float)$_POST['valor_upgrade'] : 0.00;
+
+        if (empty($observacoes) && $tipo === 'Reparo') {
+            echo json_encode(['success' => false, 'message' => 'Observações são obrigatórias para reparo.']);
             exit;
         }
 
@@ -91,17 +97,54 @@ switch ($action) {
             $stmt->bind_param('i', $id_asset);
             $stmt->execute();
 
-            // Insert into maintenance table
-            $stmt_m = $conn->prepare("INSERT INTO manutencao (id_asset, data_inicio, observacoes, status_manutencao) VALUES (?, NOW(), ?, 'Em Manutenção')");
-            $stmt_m->bind_param('is', $id_asset, $observacoes);
+            // Insert into maintenance table inclusive new dynamic fields
+            $stmt_m = $conn->prepare("INSERT INTO manutencao (id_asset, data_inicio, tipo_manutencao, categoria_upgrade, observacoes, item_trocado, detalhes_update, valor_upgrade, status_manutencao) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, 'Em Manutenção')");
+            $stmt_m->bind_param('isssssd', $id_asset, $tipo, $cat_upgrade, $observacoes, $item_trocado, $detalhes_update, $val_upgrade);
             $stmt_m->execute();
+            $stmt_m->close();
 
-            recordHistory($conn, $id_asset, $admin_id, 'Manutenção', "Enviado para manutenção: $observacoes");
+            // Sincronização automática de hardware para Upgrades
+            if ($tipo === 'Upgrade') {
+                // Busca valores atuais para comparação no histórico
+                $stmt_curr = $conn->prepare("SELECT memoria, armazenamento FROM ativos WHERE id_asset = ?");
+                $stmt_curr->bind_param('i', $id_asset);
+                $stmt_curr->execute();
+                $res_curr = $stmt_curr->get_result();
+                $old_data = $res_curr->fetch_assoc();
+                $stmt_curr->close();
+
+                if ($cat_upgrade === 'Memória') {
+                    $old_val = $old_data['memoria'] ?: 'Nao informado';
+                    $stmt_up = $conn->prepare("UPDATE ativos SET memoria = ? WHERE id_asset = ?");
+                    $stmt_up->bind_param('si', $item_trocado, $id_asset);
+                    if ($stmt_up->execute()) {
+                        recordHistory($conn, $id_asset, $admin_id, 'Atualização Técnica', "Hardware atualizado via Upgrade: Memória RAM alterada de [$old_val] para [$item_trocado].");
+                    }
+                    $stmt_up->close();
+                } elseif ($cat_upgrade === 'Armazenamento') {
+                    $old_val = $old_data['armazenamento'] ?: 'Nao informado';
+                    // Atualiza tanto a capacidade quanto a tecnologia (tipo_armazenamento)
+                    $stmt_up = $conn->prepare("UPDATE ativos SET armazenamento = ?, tipo_armazenamento = ? WHERE id_asset = ?");
+                    $stmt_up->bind_param('ssi', $detalhes_update, $item_trocado, $id_asset);
+                    if ($stmt_up->execute()) {
+                        recordHistory($conn, $id_asset, $admin_id, 'Atualização Técnica', "Hardware atualizado via Upgrade: Armazenamento alterado para [$item_trocado $detalhes_update].");
+                    }
+                    $stmt_up->close();
+                }
+            }
+
+            $hist_details = "[$tipo] " . ($tipo === 'Upgrade' ? "$cat_upgrade: " : "") . $observacoes;
+            if (!empty($item_trocado)) $hist_details .= " | Peça/Módulo: $item_trocado";
+            if (!empty($detalhes_update)) $hist_details .= " | Detalhes: $detalhes_update";
+            if ($val_upgrade > 0) $hist_details .= " | Valor: R$ " . number_format($val_upgrade, 2, ',', '.');
+
+            recordHistory($conn, $id_asset, $admin_id, 'Manutenção', $hist_details);
 
             // ALERTAS (Background - Email e WhatsApp)
             $php_path = 'c:\xampp\php\php.exe';
             $script_path = 'c:\xampp\htdocs\processar_alertas.php';
-            $cmd = "start /B $php_path $script_path manutencao $id_asset \"$observacoes\" > NUL 2>&1";
+            $alert_obs = $hist_details;
+            $cmd = "start /B $php_path $script_path manutencao $id_asset \"$alert_obs\" > NUL 2>&1";
             pclose(popen($cmd, "r"));
 
             $conn->commit();
@@ -113,25 +156,41 @@ switch ($action) {
         break;
 
     case 'release_maintenance':
+    case 'finish_maintenance':
+        $id_m = isset($_POST['id_manutencao']) ? intval($_POST['id_manutencao']) : 0;
+        $id_a = isset($_POST['id_asset']) ? intval($_POST['id_asset']) : 0;
+        
         $conn->begin_transaction();
         try {
-            // Finalize maintenance record
-            $stmt_m = $conn->prepare("UPDATE manutencao SET status_manutencao = 'Concluído', data_fim = NOW() 
-                                    WHERE id_asset = ? AND status_manutencao = 'Em Manutenção'");
-            $stmt_m->bind_param('i', $id_asset);
+            if ($id_m > 0) {
+                // Busca o ID do ativo associado para o histórico posterior
+                $stmt_find = $conn->prepare("SELECT id_asset FROM manutencao WHERE id_manutencao = ?");
+                $stmt_find->bind_param('i', $id_m);
+                $stmt_find->execute();
+                $id_a = $stmt_find->get_result()->fetch_assoc()['id_asset'] ?? 0;
+                $stmt_find->close();
+
+                $stmt_m = $conn->prepare("UPDATE manutencao SET status_manutencao = 'Concluído', data_fim = NOW() WHERE id_manutencao = ?");
+                $stmt_m->bind_param('i', $id_m);
+            } else {
+                $stmt_m = $conn->prepare("UPDATE manutencao SET status_manutencao = 'Concluído', data_fim = NOW() 
+                                        WHERE id_asset = ? AND status_manutencao = 'Em Manutenção'");
+                $stmt_m->bind_param('i', $id_a);
+            }
+            
             $stmt_m->execute();
 
-            if ($stmt_m->affected_rows > 0) {
+            if ($stmt_m->affected_rows > 0 && $id_a > 0) {
                 // Update asset status to Ativo
                 $stmt = $conn->prepare("UPDATE ativos SET status = 'Ativo' WHERE id_asset = ?");
-                $stmt->bind_param('i', $id_asset);
+                $stmt->bind_param('i', $id_a);
                 $stmt->execute();
 
-                recordHistory($conn, $id_asset, $admin_id, 'Fim de Manutenção', "Manutenção concluída e ativo liberado.");
+                recordHistory($conn, $id_a, $admin_id, 'Fim de Manutenção', "Manutenção concluída e ativo liberado via perfil.");
                 $conn->commit();
                 echo json_encode(['success' => true]);
             } else {
-                throw new Exception("Nenhuma manutenção ativa encontrada para este ativo.");
+                throw new Exception("Nenhuma manutenção ativa encontrada ou identificada.");
             }
         } catch (Exception $e) {
             $conn->rollback();
@@ -145,4 +204,3 @@ switch ($action) {
 }
 
 $conn->close();
-?>

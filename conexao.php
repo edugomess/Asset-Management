@@ -21,4 +21,3 @@ $conn->set_charset("utf8mb4");
 
 // CARREGA SISTEMA DE IDIOMA
 require_once __DIR__ . '/language.php';
-?>

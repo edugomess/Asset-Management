@@ -36,4 +36,3 @@ if (!function_exists('__')) {
         return $lang_data[$key] ?? $key;
     }
 }
-?>

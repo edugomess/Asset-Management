@@ -29,6 +29,12 @@ $numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_s
 
 // Validação rigorosa de Chave de Acesso NF-e
 if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
+    if (isset($_POST['ajax'])) {
+        ob_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Erro: A Chave de Acesso é obrigatória e deve ter exatamente 44 dígitos numéricos.']);
+        exit();
+    }
     echo "<script>alert('Erro: A Chave de Acesso é obrigatória e deve ter exatamente 44 dígitos numéricos.'); window.history.back();</script>";
     exit();
 }
@@ -94,14 +100,25 @@ if ($inserir) {
     $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, 'Criação', 'Ativo criado e Service Tag gerada automaticamente: $generated_tag')";
     mysqli_query($conn, $sql_historico);
 
-    echo "<script>
-            alert('" . __('Equipamento cadastrado com sucesso!') . "');
-            window.location.href = 'equipamentos.php';
-          </script>";
+    if (isset($_POST['ajax'])) {
+        ob_clean();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'id_asset' => $ativo_id,
+            'tag' => $generated_tag,
+            'modelo' => $modelo
+        ]);
+        exit();
+    }
+    header("Location: equipamentos.php?new_asset_id=$ativo_id&show_tag=1");
+    exit();
 } else {
-    echo "<script>
-            alert('" . __('Erro ao cadastrar: ') . "' + " . json_encode(mysqli_error($conn)) . ");
-            window.history.back();
-          </script>";
+    if (isset($_POST['ajax'])) {
+        ob_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => mysqli_error($conn)]);
+        exit();
+    }
+    echo "<script>alert('" . __('Erro ao cadastrar: ') . "' + " . json_encode(mysqli_error($conn)) . "); window.history.back();</script>";
 }
-?>

@@ -7,7 +7,15 @@
 include 'auth.php';
 include 'conexao.php';
 
-// Restrição de acesso: Verifica se o usuário tem nível 'Admin' ou 'Suporte' para acessar o inventário
+// Captura de sucesso pós-cadastro para exibir modal de etiqueta
+$new_asset = null;
+if (isset($_GET['new_asset_id']) && isset($_GET['show_tag'])) {
+    $new_id = intval($_GET['new_asset_id']);
+    $query_new = mysqli_query($conn, "SELECT id_asset, tag, modelo FROM ativos WHERE id_asset = $new_id");
+    $new_asset = mysqli_fetch_assoc($query_new);
+}
+
+// Restrição de acesso
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     // Redireciona para a página inicial se não tiver permissão
     header("Location: index.php");
@@ -601,28 +609,145 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <!-- Modal para Enviar Ativo para Manutenção -->
     <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
+            <div class="modal-content" style="border-radius: 15px; border: none; shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden;">
                 <div class="modal-header" style="background: #2c404a; color: white;">
                     <h5 class="modal-title" id="maintenanceModalLabel"><?php echo __('Solicitar Manutenção'); ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="maintenanceForm">
-                    <div class="modal-body">
-                        <input type="hidden" id="maintenance_asset_id" name="id_asset">
-                        <p class="text-muted small mb-3"><?php echo __('Descreva o motivo ou problema encontrado no ativo para registro no histórico.'); ?></p>
-                        <div class="form-group">
-                            <textarea class="form-control" id="maintenance_obs" name="observacoes" rows="4" required
-                                placeholder="<?php echo __('Ex: Tela trincada, cooler barulhento...'); ?>"
-                                style="border-radius: 10px;"></textarea>
+                <div class="modal-body">
+                    <input type="hidden" id="maintenance_asset_id">
+                    <p class="text-muted small mb-4"><?php echo __('Selecione o fluxo técnico para registro da manutenção.'); ?></p>
+                    
+                    <!-- Seleção de Tipo -->
+                    <div class="row text-center mb-4">
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeInsumo" name="maintenanceType" class="custom-control-input" value="Insumo" checked>
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeInsumo" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-fill-drip d-block mb-1 text-success"></i> <?php echo __('Suprimento'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeRepair" name="maintenanceType" class="custom-control-input" value="Reparo">
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeRepair" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-wrench d-block mb-1 text-warning"></i> <?php echo __('Reparo'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeUpgrade" name="maintenanceType" class="custom-control-input" value="Upgrade">
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeUpgrade" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-arrow-up d-block mb-1 text-primary"></i> <?php echo __('Upgrade'); ?>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="background: #f8f9fc;">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
-                        <button type="submit" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
+
+                    <!-- Fluxo de REPARO -->
+                    <div id="repairFields" style="display: none;">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="maintenanceReason"><?php echo __('Motivo / Problema'); ?></label>
+                            <textarea id="maintenanceReason" class="form-control" rows="3" placeholder="<?php echo __('Ex: Teclado falhando, carregador com defeito...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="itemTrocado"><?php echo __('Peças Trocadas (opcional)'); ?></label>
+                            <textarea id="itemTrocado" class="form-control" rows="2" placeholder="<?php echo __('Liste os componentes substituídos...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
                     </div>
-                </form>
+
+                    <!-- Fluxo de UPGRADE -->
+                    <div id="upgradeFields" style="display: none;">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="upgradeCategory"><?php echo __('Categoria do Upgrade'); ?></label>
+                            <select id="upgradeCategory" class="form-control" style="border-radius: 10px;">
+                                <option value=""><?php echo __('Selecione uma categoria...'); ?></option>
+                                <option value="Memória"><?php echo __('Memória RAM'); ?></option>
+                                <option value="Armazenamento"><?php echo __('Armazenamento (Disco)'); ?></option>
+                                <option value="Outro"><?php echo __('Outro'); ?></option>
+                            </select>
+                        </div>
+
+                        <div id="ramFields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label class="text-gray-600 small font-weight-bold" for="ramModule"><?php echo __('Módulo Selecionado'); ?></label>
+                                <select id="ramModule" class="form-control" style="border-radius: 10px;">
+                                    <option value="4GB DDR4">4GB DDR4</option>
+                                    <option value="8GB DDR4">8GB DDR4</option>
+                                    <option value="16GB DDR4">16GB DDR4</option>
+                                    <option value="32GB DDR4">32GB DDR4</option>
+                                    <option value="8GB DDR5">8GB DDR5</option>
+                                    <option value="16GB DDR5">16GB DDR5</option>
+                                    <option value="32GB DDR5">32GB DDR5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="storageFields" style="display: none;">
+                            <div class="row">
+                                <div id="divDiskType" class="col-md-7">
+                                    <div class="form-group mb-3">
+                                        <label class="text-gray-600 small font-weight-bold" for="diskType"><?php echo __('Tecnologia de Disco'); ?></label>
+                                        <select id="diskType" class="form-control" style="border-radius: 10px;">
+                                            <option value="SSD SATA">SSD SATA</option>
+                                            <option value="SSD NVMe">SSD NVMe</option>
+                                            <option value="HDD">HDD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="divUpgradeValue" class="col-md-5">
+                                    <div class="form-group mb-3">
+                                        <label class="text-gray-600 small font-weight-bold" for="upgradeValue"><?php echo __('Capacidade'); ?></label>
+                                        <select id="upgradeValue" class="form-control" style="border-radius: 10px;">
+                                            <option value="120GB">120GB</option>
+                                            <option value="240GB">240GB</option>
+                                            <option value="480GB">480GB</option>
+                                            <option value="960GB">960GB</option>
+                                            <option value="256GB">256GB</option>
+                                            <option value="512GB">512GB</option>
+                                            <option value="1TB">1TB</option>
+                                            <option value="2TB">2TB</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="upgradeDescription"><?php echo __('Observações do Upgrade'); ?></label>
+                            <textarea id="upgradeDescription" class="form-control" rows="2" placeholder="<?php echo __('Detalhes adicionais do upgrade...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Fluxo de INSUMO -->
+                    <div id="supplyFields">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="supplyType"><?php echo __('Tipo de Insumo'); ?></label>
+                            <select id="supplyType" class="form-control" style="border-radius: 10px;">
+                                <option value=""><?php echo __('Selecione o insumo...'); ?></option>
+                                <option value="Toner">Toner</option>
+                                <option value="Difusor"><?php echo __('Difusor'); ?></option>
+                                <option value="Cartucho de Tinta"><?php echo __('Cartucho de Tinta'); ?></option>
+                                <option value="Cilindro / Drum"><?php echo __('Cilindro / Drum'); ?></option>
+                                <option value="Fita de Impressão"><?php echo __('Fita de Impressão'); ?></option>
+                                <option value="Kit Fusor"><?php echo __('Kit Fusor'); ?></option>
+                                <option value="Outro"><?php echo __('Outros Suprimentos'); ?></option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="supplyDescription"><?php echo __('Observações'); ?></label>
+                            <textarea id="supplyDescription" class="form-control" rows="2" placeholder="<?php echo __('Ex: Troca do Toner Preto - Unidade A'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f8f9fc;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
+                    <button type="button" id="confirmMaintenance" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
+                </div>
             </div>
         </div>
     </div>
@@ -685,26 +810,180 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         // Abre o modal de manutenção definindo o ID do ativo
         function sendToMaintenance(id) {
             $('#maintenance_asset_id').val(id);
+            // Reset fields
+            $('#maintenanceReason, #itemTrocado, #upgradeDescription, #supplyDescription, #upgradeValue').val('');
+            $('#upgradeCategory, #ramModule, #diskType, #supplyType').val('');
+            $('#ramFields, #storageFields').hide();
+            
+            // Set default view (Supply/Insumo)
+            $('#typeInsumo').prop('checked', true);
+            $('#repairFields, #upgradeFields').hide();
+            $('#supplyFields').show();
+            
             $('#maintenanceModal').modal('show');
         }
 
-        // Envia os dados para colocar o ativo em manutenção
-        $('#maintenanceForm').on('submit', function (e) {
-            e.preventDefault();
-            $.post('ajax_ativos.php', {
+        // Lógica dinâmica para alternar fluxos no modal
+        $(document).on('change', 'input[name="maintenanceType"]', function() {
+            const type = $(this).val();
+            $('#repairFields, #upgradeFields, #supplyFields').hide();
+            
+            if (type === 'Reparo') {
+                $('#repairFields').slideDown();
+            } else if (type === 'Upgrade') {
+                $('#upgradeFields').slideDown();
+            } else if (type === 'Insumo') {
+                $('#supplyFields').slideDown();
+            }
+        });
+
+        $(document).on('change', '#upgradeCategory', function() {
+            const cat = $(this).val();
+            $('#ramFields, #storageFields').hide();
+            if (cat === 'Memória') {
+                $('#ramFields').slideDown();
+            }
+            if (cat === 'Armazenamento') {
+                $('#storageFields').slideDown();
+                // Mostrar ambos os campos conforme nova solicitação (Tecnologia e Capacidade)
+                $('#divUpgradeValue').show();
+                $('#divDiskType').removeClass('col-md-12').addClass('col-md-7');
+            } else {
+                $('#divUpgradeValue').show();
+                $('#divDiskType').removeClass('col-md-12').addClass('col-md-7');
+            }
+        });
+
+        // Envia os dados para manutenção via AJAX
+        $(document).on('click', '#confirmMaintenance', function() {
+            const type = $('input[name="maintenanceType"]:checked').val();
+            let data = {
                 action: 'send_to_maintenance',
                 id_asset: $('#maintenance_asset_id').val(),
-                observacoes: $('#maintenance_obs').val()
-            }, function (res) {
+                tipo_manutencao: type
+            };
+
+            if (type === 'Reparo') {
+                data.observacoes = $('#maintenanceReason').val();
+                data.item_trocado = $('#itemTrocado').val();
+            } else if (type === 'Upgrade') {
+                data.categoria_upgrade = $('#upgradeCategory').val();
+                data.observacoes = $('#upgradeDescription').val();
+                data.valor_upgrade = $('#upgradeValue').val();
+                if (data.categoria_upgrade === 'Memória') data.item_trocado = $('#ramModule').val();
+                if (data.categoria_upgrade === 'Armazenamento') {
+                    data.item_trocado = $('#diskType').val(); // Tecnologia (SSD NVMe)
+                    data.detalhes_update = $('#upgradeValue').val(); // Capacidade (1TB)
+                    data.valor_upgrade = 0; // Resetar valor financeiro
+                }
+            } else if (type === 'Insumo') {
+                data.item_trocado = $('#supplyType').val();
+                data.observacoes = $('#supplyDescription').val();
+            }
+
+            if (!data.observacoes && type !== 'Insumo') {
+                Swal.fire('Aviso', 'Por favor, preencha as observações.', 'warning');
+                return;
+            }
+
+            $.post('ajax_ativos.php', data, function(res) {
                 if (res.success) {
                     location.reload();
                 } else {
-                    Swal.fire('Erro', res.message || 'Erro ao enviar para manutenção', 'error');
+                    Swal.fire('Erro', res.message || 'Erro ao processar manutenção', 'error');
                 }
             }, 'json');
         });
 
-        // Finaliza o status de manutenção do ativo
+    <!-- Modal Sucesso Cadastro com Etiqueta -->
+    <div class="modal fade" id="successTagModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header border-0 bg-light" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                    <h5 class="modal-title font-weight-bold text-success">
+                        <i class="fas fa-check-circle mr-2"></i><?php echo __('Ativo Cadastrado!'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <p class="mb-4 text-muted"><?php echo __('A identificação visual já está pronta para identificação física.'); ?></p>
+                    
+                    <div class="p-3 bg-white d-inline-block rounded shadow-sm mb-3" style="border: 1px dashed #ddd;">
+                        <div id="qrcode_success"></div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <span class="badge badge-dark p-2" id="tag_badge_success" style="font-size: 1.2rem; border-radius: 10px; letter-spacing: 1px;">
+                            <?php echo $new_asset ? htmlspecialchars($new_asset['tag']) : ''; ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4">
+                    <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold" onclick="printAssetTagSuccess()" style="border-radius: 12px;">
+                        <i class="fas fa-print mr-2"></i><?php echo __('Imprimir Etiqueta Agora'); ?>
+                    </button>
+                    <button type="button" class="btn btn-link text-muted btn-block" data-dismiss="modal"><?php echo __('Ignorar e Continuar'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Lógica de Impressão e Modal de Sucesso
+        document.addEventListener("DOMContentLoaded", function() {
+            <?php if ($new_asset): ?>
+                const qrContainer = document.getElementById("qrcode_success");
+                if (qrContainer) {
+                    const qrData = <?php echo json_encode("ID: " . $new_asset['id_asset'] . "\nTag: " . $new_asset['tag'] . "\nModelo: " . $new_asset['modelo']); ?>;
+                    new QRCode(qrContainer, {
+                        text: qrData,
+                        width: 200,
+                        height: 200,
+                        colorDark : "#2c404a",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                    setTimeout(() => { $('#successTagModal').modal('show'); }, 500);
+                }
+            <?php endif; ?>
+        });
+
+        function printAssetTagSuccess() {
+            const qrImg = document.querySelector('#qrcode_success img').src;
+            const tagText = document.getElementById('tag_badge_success').innerText;
+            const assetModel = <?php echo $new_asset ? json_encode($new_asset['modelo']) : "''"; ?>;
+            
+            const printWindow = window.open('', '_blank', 'width=400,height=500');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Imprimir Etiqueta - ${tagText}</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+                        body { margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; background: white; }
+                        .label-container { text-align: center; width: 220px; padding: 10px; border: 1px dashed #ccc; border-radius: 10px; }
+                        img { width: 180px; height: 180px; }
+                        .tag-text { font-size: 1.4rem; font-weight: 800; color: #000; margin-top: 5px; border-top: 2px solid #000; padding-top: 5px; }
+                        .asset-info { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+                        @media print { .label-container { border: none; } body { padding: 0; } }
+                    </style>
+                </head>
+                <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
+                    <div class="label-container">
+                        <div class="asset-info">${assetModel}</div>
+                        <img src="${qrImg}">
+                        <div class="tag-text">${tagText}</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Finaliza o status de manutenção
         function releaseFromMaintenance(id) {
             Swal.fire({
                 title: '<?php echo __('Finalizar Manutenção?'); ?>',

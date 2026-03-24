@@ -912,9 +912,16 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                 <a class="btn-premium btn-back" href="chamados.php">
                                     <i class="fas fa-arrow-left"></i> <?php echo __('Voltar'); ?>
                                 </a>
-                                <button type="submit" class="btn-premium btn-save">
-                                    <i class="fas fa-save"></i> <?php echo __('Salvar Todas as Alterações'); ?>
-                                </button>
+                                <div class="d-flex align-items-center">
+                                    <?php if ($chamado['usuario_id'] == $id_usuario_logado && in_array($chamado['status'], ['Aberto', 'Pendente'])): ?>
+                                        <button type="button" class="btn-premium mr-2 text-white" onclick="confirmarCancelamento(<?php echo $id_chamado; ?>)" style="background: var(--accent-danger);">
+                                            <i class="fas fa-times-circle"></i> <?php echo __('Cancelar Chamado'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                    <button type="submit" class="btn-premium btn-save">
+                                        <i class="fas fa-save"></i> <?php echo __('Salvar Todas as Alterações'); ?>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -1043,6 +1050,18 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
             }
             if (deadline - now < 0 && status !== 'Pendente') percentage = 100;
             progressBar.style.width = percentage + '%';
+        }
+
+        function confirmarCancelamento(id) {
+            if (confirm("<?php echo __('Deseja realmente cancelar este chamado?'); ?>")) {
+                $.post('ajax_chamados.php', { acao: 'cancelar', id: id }, function(response) {
+                    if (response.success) {
+                        window.location.href = 'chamados.php?filtro_status=finalizados';
+                    } else {
+                        alert(response.message || "<?php echo __('Erro ao cancelar chamado.'); ?>");
+                    }
+                }, 'json');
+            }
         }
 
         setInterval(updateHeaderSLATimer, 1000);

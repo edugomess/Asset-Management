@@ -184,6 +184,7 @@ $result = mysqli_query($conn, $sql);
                                             <th><?php echo __('Responsável'); ?></th>
                                             <th><?php echo __('Status'); ?></th>
                                             <th><?php echo __('SLA STATUS'); ?></th>
+                                            <th class="text-center"><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -349,6 +350,15 @@ $result = mysqli_query($conn, $sql);
                                                         break;
                                                 }
 
+                                                $pode_cancelar = ($row['usuario_id'] == $_SESSION['id_usuarios'] && in_array($row['status'], ['Aberto', 'Pendente']));
+                                                $btn_cancelar = $pode_cancelar ? "
+                                                    <button class='btn btn-sm btn-outline-danger border-0' 
+                                                            onclick='event.stopPropagation(); confirmarCancelamento(" . $row['id'] . ")' 
+                                                            title='" . __('Cancelar Chamado') . "'
+                                                            style='border-radius: 8px;'>
+                                                        <i class='fas fa-times-circle'></i>
+                                                    </button>" : "";
+
                                                 echo "<tr onclick=\"window.location='editar_chamado.php?id=" . $row['id'] . "'\" style='cursor: pointer;'>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
@@ -359,6 +369,7 @@ $result = mysqli_query($conn, $sql);
                 <td><span class='status-badge " . $responsavel_class . " font-weight-bold'>" . htmlspecialchars($responsavel) . "</span></td>
                 <td><span class='status-badge " . $status_class . " font-weight-bold'>" . __($row['status']) . "</span></td>
                 <td style='vertical-align: middle;'>" . $sla_status_html . "</td>
+                <td class='text-center' style='vertical-align: middle;'>" . $btn_cancelar . "</td>
             </tr>";
                                             }
                                         } else {
@@ -485,6 +496,27 @@ $result = mysqli_query($conn, $sql);
             if (deadline - now < 0) percentage = 100;
             progressBar.style.width = percentage + '%';
         });
+    }
+
+    function confirmarCancelamento(id) {
+        if (confirm("<?php echo __('Deseja realmente cancelar este chamado?'); ?>")) {
+            $.ajax({
+                url: 'ajax_chamados.php',
+                type: 'POST',
+                data: { acao: 'cancelar', id: id },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message || "<?php echo __('Erro ao cancelar chamado.'); ?>");
+                    }
+                },
+                error: function() {
+                    alert("<?php echo __('Erro de rede ao tentar cancelar o chamado.'); ?>");
+                }
+            });
+        }
     }
 
     // Start timer

@@ -21,7 +21,8 @@ if ($id <= 0) {
 }
 
 // 1. Buscar detalhes do ativo
-$sql_ativo = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, m.observacoes AS manutencao_desc, m.data_inicio AS manutencao_data 
+$sql_ativo = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, 
+             m.id_manutencao, m.tipo_manutencao, m.categoria_upgrade, m.observacoes AS manutencao_desc 
              FROM ativos a 
              LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios
              LEFT JOIN manutencao m ON a.id_asset = m.id_asset AND m.status_manutencao = 'Em Manutenção'
@@ -174,12 +175,12 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 <div class="card-body bg-light">
                                     <div class="detail-label text-center"><?php echo __('Atribuído a'); ?></div>
                                     <div class="detail-value text-center mb-0">
-                                        <?php if($ativo['assigned_to']): ?>
-                                            <a href="perfil_usuario.php?id=<?php echo $ativo['assigned_to']; ?>" class="font-weight-bold text-primary">
-                                                <?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?>
-                                            </a>
+                                        <?php if ($ativo['assigned_to']): ?>
+                                                <a href="perfil_usuario.php?id=<?php echo $ativo['assigned_to']; ?>" class="font-weight-bold text-primary">
+                                                    <?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?>
+                                                </a>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary"><?php echo __('Disponível'); ?></span>
+                                                <span class="badge badge-secondary"><?php echo __('Disponível'); ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -192,10 +193,10 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <div id="qrcode"></div>
                                     <?php
                                     $qr_data = "ID: " . $id . "\n" .
-                                               "Tag: " . $ativo['tag'] . "\n" .
-                                               "Modelo: " . $ativo['modelo'] . "\n" .
-                                               "Fabricante: " . $ativo['fabricante'] . "\n" .
-                                               "MAC: " . $ativo['macAdress'];
+                                        "Tag: " . $ativo['tag'] . "\n" .
+                                        "Modelo: " . $ativo['modelo'] . "\n" .
+                                        "Fabricante: " . $ativo['fabricante'] . "\n" .
+                                        "MAC: " . $ativo['macAdress'];
                                     ?>
                                 </div>
                                 <div class="mt-0">
@@ -218,13 +219,13 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <i class="fas fa-edit mr-2"></i><?php echo __('Editar Ativo'); ?>
                                     </a>
                                     <?php if (empty($ativo['manutencao_data'])): ?>
-                                        <button class="btn btn-info btn-action" style="background: #2c404a; border: none;" data-toggle="modal" data-target="#maintenanceModal">
-                                            <i class="fas fa-tools mr-2"></i><?php echo __('Enviar Manutenção'); ?>
-                                        </button>
+                                            <button class="btn btn-info btn-action" style="background: #2c404a; border: none;" onclick="openMaintenanceModal()">
+                                                <i class="fas fa-tools mr-2"></i><?php echo __('Enviar Manutenção'); ?>
+                                            </button>
                                     <?php else: ?>
-                                        <button class="btn btn-success btn-action" onclick="releaseMaintenance(<?php echo $id; ?>)">
-                                            <i class="fas fa-check-circle mr-2"></i><?php echo __('Liberar Manutenção'); ?>
-                                        </button>
+                                            <button class="btn btn-success btn-action" onclick="releaseMaintenance(<?php echo $id; ?>)">
+                                                <i class="fas fa-check-circle mr-2"></i><?php echo __('Liberar Manutenção'); ?>
+                                            </button>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -262,29 +263,29 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                             <!-- Hardware Specifications (Conditional) -->
                             <?php if (!empty($ativo['memoria']) || !empty($ativo['processador']) || !empty($ativo['armazenamento'])): ?>
-                                <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.25s; border-left: 4px solid #2c404a;">
-                                    <h6 class="font-weight-bold text-primary mb-4">
-                                        <i class="fas fa-server mr-2"></i><?php echo __('Especificações de Hardware'); ?>
-                                    </h6>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
-                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['memoria'] ?: '-'); ?></div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="detail-label"><?php echo __('Processador'); ?></div>
-                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['processador'] ?: '-'); ?></div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="detail-label"><?php echo __('Capacidade'); ?></div>
-                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['armazenamento'] ?: '-'); ?></div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="detail-label"><?php echo __('Tipo Disco'); ?></div>
-                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: '-'); ?></div>
+                                    <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.25s; border-left: 4px solid #2c404a;">
+                                        <h6 class="font-weight-bold text-primary mb-4">
+                                            <i class="fas fa-server mr-2"></i><?php echo __('Especificações de Hardware'); ?>
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
+                                                <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['memoria'] ?: '-'); ?></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="detail-label"><?php echo __('Processador'); ?></div>
+                                                <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['processador'] ?: '-'); ?></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="detail-label"><?php echo __('Capacidade'); ?></div>
+                                                <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['armazenamento'] ?: '-'); ?></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="detail-label"><?php echo __('Tipo Disco'); ?></div>
+                                                <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: '-'); ?></div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                             <?php endif; ?>
 
                             <!-- Financeiro e Vida Útil (Values and Status) -->
@@ -300,12 +301,12 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
                                         <div class="detail-value text-primary font-weight-bold">
-                                            <?php 
+                                            <?php
                                             $cc_name = $ativo['centroDeCusto'];
                                             if (!empty($cc_name)) {
-                                                $res_cc = mysqli_query($conn, "SELECT id_centro_de_custo FROM centro_de_custo WHERE nomeSetor = '".mysqli_real_escape_string($conn, $cc_name)."' LIMIT 1");
+                                                $res_cc = mysqli_query($conn, "SELECT id_centro_de_custo FROM centro_de_custo WHERE nomeSetor = '" . mysqli_real_escape_string($conn, $cc_name) . "' LIMIT 1");
                                                 if ($res_cc && $row_cc = mysqli_fetch_assoc($res_cc)) {
-                                                    echo '<a href="perfil_centro_de_custo.php?id='.$row_cc['id_centro_de_custo'].'">'.htmlspecialchars($cc_name).'</a>';
+                                                    echo '<a href="perfil_centro_de_custo.php?id=' . $row_cc['id_centro_de_custo'] . '">' . htmlspecialchars($cc_name) . '</a>';
                                                 } else {
                                                     echo htmlspecialchars($cc_name);
                                                 }
@@ -322,13 +323,13 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Fornecedor'); ?></div>
                                         <div class="detail-value text-primary font-weight-bold">
-                                            <?php 
+                                            <?php
                                             if (!empty($ativo['fornecedor'])) {
                                                 // Tenta buscar o ID do fornecedor para linkar
                                                 $fname = mysqli_real_escape_string($conn, $ativo['fornecedor']);
                                                 $res_f = mysqli_query($conn, "SELECT id_fornecedor FROM fornecedor WHERE nomeEmpresa = '$fname' LIMIT 1");
                                                 if ($res_f && $row_f = mysqli_fetch_assoc($res_f)) {
-                                                    echo '<a href="perfil_fornecedor.php?id='.$row_f['id_fornecedor'].'">'.htmlspecialchars($ativo['fornecedor']).'</a>';
+                                                    echo '<a href="perfil_fornecedor.php?id=' . $row_f['id_fornecedor'] . '">' . htmlspecialchars($ativo['fornecedor']) . '</a>';
                                                 } else {
                                                     echo htmlspecialchars($ativo['fornecedor']);
                                                 }
@@ -358,14 +359,14 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <div class="detail-value" style="word-break: break-all;">
                                             <span id="nfNumber"><?php echo htmlspecialchars($ativo['numero_nota_fiscal'] ?? '-'); ?></span>
                                             <?php if (!empty($ativo['numero_nota_fiscal'])): ?>
-                                                <button onclick="copyNF('<?php echo $ativo['numero_nota_fiscal']; ?>')" class="btn btn-sm btn-link text-primary p-0 ml-2" title="<?php echo __('Copiar Chave'); ?>">
-                                                    <i id="copyIcon" class="fas fa-copy"></i>
-                                                </button>
+                                                    <button onclick="copyNF('<?php echo $ativo['numero_nota_fiscal']; ?>')" class="btn btn-sm btn-link text-primary p-0 ml-2" title="<?php echo __('Copiar Chave'); ?>">
+                                                        <i id="copyIcon" class="fas fa-copy"></i>
+                                                    </button>
                                             <?php endif; ?>
                                             <?php if (!empty($ativo['anexo_nota_fiscal'])): ?>
-                                                <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>" target="_blank" class="badge badge-primary ml-2">
-                                                    <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
-                                                </a>
+                                                    <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>" target="_blank" class="badge badge-primary ml-2">
+                                                        <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
+                                                    </a>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -381,9 +382,9 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <div class="detail-value py-2 px-3 rounded <?php echo strpos($cor_doacao, 'success') !== false ? 'bg-light-success' : (strpos($cor_doacao, 'danger') !== false ? 'bg-light-danger' : 'bg-light'); ?>" style="border-left: 4px solid currentColor; display: flex; justify-content: space-between; align-items: center;">
                                             <span class="font-weight-bold <?php echo $cor_doacao; ?>"><?php echo $status_doacao; ?></span>
                                             <?php if ($status_doacao === __('Elegível para Doação')): ?>
-                                                <button class="btn btn-success btn-sm px-3" onclick="sellAsset(<?php echo $id; ?>)" style="border-radius: 20px; font-weight: 600;">
-                                                    <i class="fas fa-hand-holding-heart mr-1"></i><?php echo __('Doar'); ?>
-                                                </button>
+                                                    <button class="btn btn-success btn-sm px-3" onclick="sellAsset(<?php echo $id; ?>)" style="border-radius: 20px; font-weight: 600;">
+                                                        <i class="fas fa-hand-holding-heart mr-1"></i><?php echo __('Doar'); ?>
+                                                    </button>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -392,27 +393,157 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                             <!-- Observações Adicionais -->
                             <?php if (!empty($ativo['descricao'])): ?>
-                                <div class="info-card shadow card-shadow">
-                                    <h6 class="font-weight-bold text-primary mb-3">
-                                        <i class="fas fa-sticky-note mr-2"></i><?php echo __('Observações Adicionais'); ?>
-                                    </h6>
-                                    <div class="p-3 bg-light rounded shadow-sm">
-                                        <?php echo nl2br(htmlspecialchars($ativo['descricao'])); ?>
+                                    <div class="info-card shadow card-shadow">
+                                        <h6 class="font-weight-bold text-primary mb-3">
+                                            <i class="fas fa-sticky-note mr-2"></i><?php echo __('Observações Adicionais'); ?>
+                                        </h6>
+                                        <div class="p-3 bg-light rounded shadow-sm">
+                                            <?php echo nl2br(htmlspecialchars($ativo['descricao'])); ?>
+                                        </div>
                                     </div>
-                                </div>
                             <?php endif; ?>
 
-                            <!-- Manutenção (Se houver) -->
-                            <?php if ($ativo['manutencao_desc']): ?>
-                                <div class="info-card shadow card-shadow border-left-warning">
-                                    <h6 class="font-weight-bold text-warning mb-3">
-                                        <i class="fas fa-tools mr-2"></i><?php echo __('Detalhes da Manutenção'); ?>
-                                    </h6>
-                                    <p class="mb-1 text-muted small"><?php echo __('Início em'); ?>: <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
-                                    <div class="p-3 bg-light rounded small">
-                                        <?php echo nl2br(htmlspecialchars($ativo['manutencao_desc'])); ?>
+                            <!-- Linha do Tempo Técnica (Upgrades e Reparos Concluídos) -->
+                            <?php
+                            $sql_tecnico = "SELECT data_fim, tipo_manutencao, categoria_upgrade, item_trocado, detalhes_update, observacoes 
+                                             FROM manutencao 
+                                             WHERE id_asset = ? AND (tipo_manutencao = 'Upgrade' OR tipo_manutencao = 'Reparo') AND status_manutencao = 'Concluído'
+                                             ORDER BY data_fim DESC";
+                            $stmt_tec = $conn->prepare($sql_tecnico);
+                            $stmt_tec->bind_param('i', $id);
+                            $stmt_tec->execute();
+                            $res_tec = $stmt_tec->get_result();
+
+                            if ($res_tec->num_rows > 0):
+                                ?>
+                                    <div class="info-card shadow card-shadow border-left-primary">
+                                        <h6 class="font-weight-bold text-primary mb-3">
+                                            <i class="fas fa-history mr-2"></i><?php echo __('Linha do Tempo Técnica'); ?>
+                                        </h6>
+                                        <div class="row">
+                                            <?php while ($tec = $res_tec->fetch_assoc()):
+                                                $is_upgrade = ($tec['tipo_manutencao'] === 'Upgrade');
+                                                $badge_class = $is_upgrade ? 'badge-primary' : 'badge-warning';
+                                                $border_inner = $is_upgrade ? 'border-left-primary' : 'border-left-warning';
+                                                $icon_inner = $is_upgrade ? 'fa-arrow-up' : 'fa-wrench';
+                                                $title_text = $is_upgrade ? $tec['categoria_upgrade'] : __('Reparo Finalizado');
+                                                $main_info = $is_upgrade ? $tec['item_trocado'] : $tec['observacoes'];
+                                                ?>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="p-3 bg-light rounded shadow-sm <?php echo $border_inner; ?>" style="border-left-width: 4px; transition: all 0.3s ease;">
+                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                <span class="badge <?php echo $badge_class; ?> px-2 py-1" style="border-radius: 6px; font-size: 0.75rem;">
+                                                                    <i class="fas <?php echo $icon_inner; ?> mr-1"></i><?php echo htmlspecialchars($title_text); ?>
+                                                                </span>
+                                                                <small class="text-muted font-weight-bold">
+                                                                    <i class="far fa-calendar-alt mr-1"></i><?php echo date('d/m/Y', strtotime($tec['data_fim'])); ?>
+                                                                </small>
+                                                            </div>
+                                                            <div class="text-dark font-weight-bold" style="font-size: 0.9rem;">
+                                                                <?php echo htmlspecialchars($main_info); ?>
+                                                                <?php if ($is_upgrade && !empty($tec['detalhes_update'])): ?>
+                                                                        <span class="text-muted font-weight-normal small"> - <?php echo htmlspecialchars($tec['detalhes_update']); ?></span>
+                                                                <?php endif; ?>
+                                                                <?php if (!$is_upgrade && !empty($tec['item_trocado'])): ?>
+                                                                        <div class="text-muted font-weight-normal smallest mt-1">
+                                                                            <i class="fas fa-microchip mr-1"></i><?php echo __('Peças'); ?>: <?php echo htmlspecialchars($tec['item_trocado']); ?>
+                                                                        </div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            <?php endwhile; ?>
+                                        </div>
                                     </div>
-                                </div>
+                            <?php endif;
+                            $stmt_tec->close(); ?>
+
+                            <!-- Manutenção (Se houver) -->
+                            <?php if ($ativo['manutencao_desc'] || isset($ativo['tipo_manutencao'])): ?>
+                                    <div class="info-card shadow card-shadow border-left-warning">
+                                        <h6 class="font-weight-bold text-warning mb-3">
+                                            <i class="fas fa-tools mr-2"></i><?php echo __('Detalhes da Manutenção'); ?>
+                                        </h6>
+                                        <p class="mb-2 text-muted small"><?php echo __('Início em'); ?>: <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
+                                    
+                                        <?php
+                                        // Buscar dados estendidos da manutenção
+                                        $stmt_ext = $conn->prepare("SELECT tipo_manutencao, categoria_upgrade, item_trocado, detalhes_update, valor_upgrade, observacoes FROM manutencao WHERE id_asset = ? AND status_manutencao = 'Em Manutenção' LIMIT 1");
+                                        $stmt_ext->bind_param('i', $id);
+                                        $stmt_ext->execute();
+                                        $res_ext = $stmt_ext->get_result();
+                                        if ($row_ext = $res_ext->fetch_assoc()):
+                                            $is_upgrade = ($row_ext['tipo_manutencao'] === 'Upgrade');
+                                            ?>
+                                                <div class="mb-3">
+                                                    <?php
+                                                    $badge_class = 'badge-warning';
+                                                    $icon = 'fa-wrench';
+                                                    if ($row_ext['tipo_manutencao'] === 'Upgrade') {
+                                                        $badge_class = 'badge-primary';
+                                                        $icon = 'fa-arrow-up';
+                                                    } elseif ($row_ext['tipo_manutencao'] === 'Insumo') {
+                                                        $badge_class = 'badge-success';
+                                                        $icon = 'fa-fill-drip';
+                                                    }
+                                                    ?>
+                                                    <span class="badge <?php echo $badge_class; ?> p-2" style="border-radius: 6px;">
+                                                        <i class="fas <?php echo $icon; ?> mr-1"></i>
+                                                        <?php echo __($row_ext['tipo_manutencao']); ?>
+                                                    </span>
+                                                </div>
+
+                                                <?php if (!empty($row_ext['observacoes'])): ?>
+                                                        <div class="detail-label small"><?php echo __('Descrição'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2"><?php echo nl2br(htmlspecialchars($row_ext['observacoes'])); ?></div>
+                                                <?php endif; ?>
+
+                                                <?php if ($row_ext['tipo_manutencao'] === 'Upgrade'): ?>
+                                                        <div class="detail-label small"><?php echo __('Categoria'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2 font-weight-bold"><?php echo htmlspecialchars($row_ext['categoria_upgrade']); ?></div>
+
+                                                        <?php if ($row_ext['categoria_upgrade'] === 'Memória'): ?>
+                                                                <div class="detail-label small"><?php echo __('Módulo Instalado'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-primary"><?php echo htmlspecialchars($row_ext['item_trocado']); ?></div>
+                                                        <?php elseif ($row_ext['categoria_upgrade'] === 'Armazenamento'): ?>
+                                                                <div class="detail-label small"><?php echo __('Tipo de Disco'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-primary"><?php echo htmlspecialchars($row_ext['detalhes_update']); ?></div>
+                                                        <?php endif; ?>
+
+                                                        <?php if ($row_ext['valor_upgrade'] > 0): ?>
+                                                                <div class="detail-label small"><?php echo __('Investimento'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">R$ <?php echo number_format($row_ext['valor_upgrade'], 2, ',', '.'); ?></div>
+                                                        <?php endif; ?>
+                                                <?php elseif ($row_ext['tipo_manutencao'] === 'Insumo'): ?>
+                                                        <div class="detail-label small"><?php echo __('Suprimento'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">
+                                                            <i class="fas fa-box-open mr-1"></i><?php echo htmlspecialchars($row_ext['item_trocado']); ?>
+                                                        </div>
+                                                <?php else: ?>
+                                                        <?php if (!empty($row_ext['item_trocado'])): ?>
+                                                                <div class="detail-label small"><?php echo __('Itens Trocados'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 border-left-info"><?php echo nl2br(htmlspecialchars($row_ext['item_trocado'])); ?></div>
+                                                        <?php endif; ?>
+                                                <?php endif; ?>
+
+                                                <!-- Botão de Conclusão Dinâmico -->
+                                                <div class="mt-4 pt-3 border-top">
+                                                    <button class="btn btn-success btn-block font-weight-bold" onclick="releaseMaintenance(<?php echo $id; ?>)" style="border-radius: 12px; padding: 12px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);">
+                                                        <i class="fas fa-check-double mr-2"></i>
+                                                        <?php
+                                                        $btn_label = __('Concluir Manutenção');
+                                                        if ($row_ext['tipo_manutencao'] === 'Reparo')
+                                                            $btn_label = __('Concluir Reparo');
+                                                        elseif ($row_ext['tipo_manutencao'] === 'Upgrade')
+                                                            $btn_label = __('Concluir Upgrade');
+                                                        elseif ($row_ext['tipo_manutencao'] === 'Insumo')
+                                                            $btn_label = __('Concluir Insumo');
+                                                        echo $btn_label;
+                                                        ?>
+                                                    </button>
+                                                </div>
+                                        <?php endif; ?>
+                                    </div>
                             <?php endif; ?>
 
                             <!-- Histórico -->
@@ -440,8 +571,9 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             $res_hist = $conn->query($sql_hist);
                                             $has_creation = false;
                                             $history_rows = [];
-                                            while($h = $res_hist->fetch_assoc()) {
-                                                if ($h['acao'] === 'Criação') $has_creation = true;
+                                            while ($h = $res_hist->fetch_assoc()) {
+                                                if ($h['acao'] === 'Criação')
+                                                    $has_creation = true;
                                                 $history_rows[] = $h;
                                             }
 
@@ -455,14 +587,14 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                                 ];
                                             }
 
-                                            foreach($history_rows as $h):
-                                            ?>
-                                                <tr>
-                                                    <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($h['data_evento'])); ?></td>
-                                                    <td class="font-weight-bold"><?php echo htmlspecialchars($h['acao']); ?></td>
-                                                    <td><?php echo htmlspecialchars($h['detalhes']); ?></td>
-                                                    <td><?php echo htmlspecialchars(trim(($h['user_nome'] ?? '') . ' ' . ($h['user_sobrenome'] ?? '')) ?: __('Sistema')); ?></td>
-                                                </tr>
+                                            foreach ($history_rows as $h):
+                                                ?>
+                                                    <tr>
+                                                        <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($h['data_evento'])); ?></td>
+                                                        <td class="font-weight-bold"><?php echo htmlspecialchars($h['acao']); ?></td>
+                                                        <td><?php echo htmlspecialchars($h['detalhes']); ?></td>
+                                                        <td><?php echo htmlspecialchars(trim(($h['user_nome'] ?? '') . ' ' . ($h['user_sobrenome'] ?? '')) ?: __('Sistema')); ?></td>
+                                                    </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
@@ -478,6 +610,8 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <script>
         function gerarPDF() {
             const body = document.querySelector('#content');
@@ -491,13 +625,25 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             html2pdf().set(opt).from(body).save();
         }
 
+        function openMaintenanceModal() {
+            // Reset fields
+            $('#maintenanceReason, #itemTrocado, #upgradeDescription, #supplyDescription, #upgradeValue').val('');
+            $('#upgradeCategory, #ramModule, #diskType, #supplyType').val('');
+            $('#ramFields, #storageFields').hide();
+            
+            // Set default view (Supply/Insumo)
+            $('#typeInsumo').prop('checked', true);
+            $('#repairFields, #upgradeFields').hide();
+            $('#supplyFields').show();
+            
+            $('#maintenanceModal').modal('show');
+        }
+
         function sellAsset(assetId) {
             if (confirm("<?php echo __('Tem certeza que deseja doar este ativo?'); ?>")) {
                 fetch('doar_ativo.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id_asset: assetId })
                 })
                 .then(response => response.json())
@@ -508,9 +654,6 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     } else {
                         alert("<?php echo __('Erro ao processar doação!'); ?>");
                     }
-                })
-                .catch(error => {
-                    alert("<?php echo __('Erro ao processar doação!'); ?>");
                 });
             }
         }
@@ -532,28 +675,90 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     } else {
                         alert(data.message || "<?php echo __('Erro ao liberar da manutenção.'); ?>");
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("<?php echo __('Erro de rede.'); ?>");
                 });
             }
         }
 
+        // Eventos que dependem do DOM (JQuery)
         $(document).ready(function() {
-            $('#confirmMaintenance').on('click', function() {
-                const reason = $('#maintenanceReason').val().trim();
-                if (!reason) {
-                    alert("<?php echo __('Por favor, informe o motivo da manutenção.'); ?>");
-                    return;
+            // Lógica para alternar campos no modal de manutenção
+            $(document).on('change', 'input[name="maintenanceType"]', function() {
+                const type = $(this).val();
+                $('#repairFields, #upgradeFields, #supplyFields').hide();
+                
+                if (type === 'Reparo') {
+                    $('#repairFields').slideDown();
+                } else if (type === 'Upgrade') {
+                    $('#upgradeFields').slideDown();
+                } else if (type === 'Insumo') {
+                    $('#supplyFields').slideDown();
+                }
+            });
+
+            $(document).on('change', '#upgradeCategory', function() {
+                const category = $(this).val();
+                if (category === 'Memória') {
+                    $('#ramFields').slideDown();
+                    $('#storageFields').slideUp();
+                } else if (category === 'Armazenamento') {
+                    $('#ramFields').slideUp();
+                    $('#storageFields').slideDown();
+                } else {
+                    $('#ramFields, #storageFields').slideUp();
+                }
+            });
+
+            // Delegação para garantir o clique no botão de manutenção
+            $(document).on('click', '#confirmMaintenance', function() {
+                const type = $('input[name="maintenanceType"]:checked').val();
+                let reason = '';
+                let item = '';
+                let update = '';
+                let cat_upgrade = '';
+                let val_upgrade = 0;
+
+                if (type === 'Reparo') {
+                    reason = $('#maintenanceReason').val().trim();
+                    item = $('#itemTrocado').val().trim();
+                    if (!reason) {
+                        alert("<?php echo __('Por favor, informe o motivo do reparo.'); ?>");
+                        return;
+                    }
+                } else if (type === 'Upgrade') {
+                    cat_upgrade = $('#upgradeCategory').val();
+                    reason = $('#upgradeDescription').val().trim();
+                    if (!cat_upgrade) {
+                        alert("<?php echo __('Por favor, selecione a categoria do upgrade.'); ?>");
+                        return;
+                    }
+
+                    if (cat_upgrade === 'Memória') {
+                        item = $('#ramModule').val();
+                    } else if (cat_upgrade === 'Armazenamento') {
+                        update = $('#diskType').val();
+                        val_upgrade = parseFloat($('#upgradeValue').val()) || 0;
+                    }
+                } else if (type === 'Insumo') {
+                    reason = $('#supplyDescription').val().trim();
+                    item = $('#supplyType').val();
+                    if (!item) {
+                        alert("<?php echo __('Por favor, selecione o tipo de insumo.'); ?>");
+                        return;
+                    }
                 }
 
-                $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Enviando...'); ?>');
+                const $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Enviando...'); ?>');
 
                 const formData = new FormData();
                 formData.append('action', 'send_to_maintenance');
                 formData.append('id_asset', '<?php echo $id; ?>');
+                formData.append('tipo_manutencao', type);
                 formData.append('observacoes', reason);
+                formData.append('item_trocado', item);
+                formData.append('detalhes_update', update);
+                formData.append('categoria_upgrade', cat_upgrade);
+                formData.append('valor_upgrade', val_upgrade);
 
                 fetch('ajax_ativos.php', {
                     method: 'POST',
@@ -565,16 +770,75 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                         location.reload();
                     } else {
                         alert(data.message || "<?php echo __('Erro ao enviar para manutenção.'); ?>");
-                        $(this).prop('disabled', false).html('<?php echo __('Confirmar'); ?>');
+                        $btn.prop('disabled', false).html('<?php echo __('Confirmar'); ?>');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("<?php echo __('Erro de rede ou permissão.'); ?>");
-                    $(this).prop('disabled', false).html('<?php echo __('Confirmar'); ?>');
+                    alert("<?php echo __('Erro de rede.'); ?>");
+                    $btn.prop('disabled', false).html('<?php echo __('Confirmar'); ?>');
                 });
             });
+
+            // Inicializar QR Code
+            const qrContainer = document.getElementById("qrcode");
+            if (qrContainer) {
+                new QRCode(qrContainer, {
+                    text: <?php echo json_encode($qr_data); ?>,
+                    width: 150,
+                    height: 150,
+                    colorDark : "#2c404a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                const qrImg = qrContainer.querySelector('img');
+                if (qrImg) qrImg.classList.add('img-fluid');
+            }
         });
+
+        function printAssetTag() {
+            const qrImg = document.querySelector('#qrcode img').src;
+            const tagText = document.getElementById('tag_badge_code').innerText;
+            const assetModel = <?php echo json_encode($ativo['modelo']); ?>;
+            
+            const printWindow = window.open('', '_blank', 'width=400,height=500');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Imprimir Etiqueta - ${tagText}</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+                        body { margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; background: white; }
+                        .label-container { text-align: center; width: 220px; padding: 10px; border: 1px dashed #ccc; border-radius: 10px; }
+                        img { width: 180px; height: 180px; }
+                        .tag-text { font-size: 1.4rem; font-weight: 800; color: #000; margin-top: 5px; border-top: 2px solid #000; padding-top: 5px; }
+                        .asset-info { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+                        @media print { .label-container { border: none; } body { padding: 0; } }
+                    </style>
+                </head>
+                <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
+                    <div class="label-container">
+                        <div class="asset-info">${assetModel}</div>
+                        <img src="${qrImg}">
+                        <div class="tag-text">${tagText}</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function copyNF(text) {
+            const icon = document.getElementById('copyIcon');
+            navigator.clipboard.writeText(text).then(() => {
+                icon.classList.replace('fa-copy', 'fa-check');
+                icon.classList.add('text-success');
+                setTimeout(() => {
+                    icon.classList.replace('fa-check', 'fa-copy');
+                    icon.classList.remove('text-success');
+                }, 2000);
+            });
+        }
     </script>
 
     <!-- Modal de Manutenção -->
@@ -588,107 +852,144 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small mb-3"><?php echo __('Descreva o motivo ou problema encontrado no ativo para registro no histórico.'); ?></p>
-                    <textarea id="maintenanceReason" class="form-control" rows="4" placeholder="<?php echo __('Ex: Tela trincada, cooler barulhento...'); ?>" style="border-radius: 10px;"></textarea>
+                    <p class="text-muted small mb-4"><?php echo __('Selecione o fluxo técnico para registro da manutenção.'); ?></p>
+                    
+                    <!-- Seleção de Tipo -->
+                    <!-- Seleção de Tipo -->
+                    <div class="row text-center mb-4">
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeInsumo" name="maintenanceType" class="custom-control-input" value="Insumo" checked>
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeInsumo" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-fill-drip d-block mb-1 text-success"></i> <?php echo __('Suprimento'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeRepair" name="maintenanceType" class="custom-control-input" value="Reparo">
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeRepair" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-wrench d-block mb-1 text-warning"></i> <?php echo __('Reparo'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 px-1">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" id="typeUpgrade" name="maintenanceType" class="custom-control-input" value="Upgrade">
+                                <label class="custom-control-label font-weight-bold text-dark" for="typeUpgrade" style="cursor: pointer; font-size: 0.85rem;">
+                                    <i class="fas fa-arrow-up d-block mb-1 text-primary"></i> <?php echo __('Upgrade'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fluxo de REPARO -->
+                    <div id="repairFields">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="maintenanceReason"><?php echo __('Motivo / Problema'); ?></label>
+                            <textarea id="maintenanceReason" class="form-control" rows="3" placeholder="<?php echo __('Ex: Teclado falhando, carregador com defeito...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="itemTrocado"><?php echo __('Peças Trocadas (opcional)'); ?></label>
+                            <textarea id="itemTrocado" class="form-control" rows="2" placeholder="<?php echo __('Liste os componentes substituídos...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Fluxo de UPGRADE -->
+                    <div id="upgradeFields" style="display: none;">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="upgradeCategory"><?php echo __('Categoria do Upgrade'); ?></label>
+                            <select id="upgradeCategory" class="form-control" style="border-radius: 10px;">
+                                <option value=""><?php echo __('Selecione uma categoria...'); ?></option>
+                                <option value="Memória"><?php echo __('Memória RAM'); ?></option>
+                                <option value="Armazenamento"><?php echo __('Armazenamento (Disco)'); ?></option>
+                                <option value="Outro"><?php echo __('Outros'); ?></option>
+                            </select>
+                        </div>
+
+                        <!-- Sub-campos RAM -->
+                        <div id="ramFields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label class="text-gray-600 small font-weight-bold" for="ramModule"><?php echo __('Módulo Selecionado'); ?></label>
+                                <select id="ramModule" class="form-control" style="border-radius: 10px;">
+                                    <option value="4GB DDR4">4GB DDR4</option>
+                                    <option value="8GB DDR4">8GB DDR4</option>
+                                    <option value="16GB DDR4">16GB DDR4</option>
+                                    <option value="32GB DDR4">32GB DDR4</option>
+                                    <option value="8GB DDR5">8GB DDR5</option>
+                                    <option value="16GB DDR5">16GB DDR5</option>
+                                    <option value="32GB DDR5">32GB DDR5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Sub-campos Armazenamento -->
+                        <div id="storageFields" style="display: none;">
+                            <div class="row">
+                                <div id="divDiskType" class="col-md-7">
+                                    <div class="form-group mb-3">
+                                        <label class="text-gray-600 small font-weight-bold" for="diskType"><?php echo __('Tecnologia de Disco'); ?></label>
+                                        <select id="diskType" class="form-control" style="border-radius: 10px;">
+                                            <option value="SSD SATA">SSD SATA</option>
+                                            <option value="SSD NVMe">SSD NVMe</option>
+                                            <option value="HDD">HDD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="divUpgradeValue" class="col-md-5">
+                                    <div class="form-group mb-3">
+                                        <label class="text-gray-600 small font-weight-bold" for="upgradeValue"><?php echo __('Capacidade'); ?></label>
+                                        <select id="upgradeValue" class="form-control" style="border-radius: 10px;">
+                                            <option value="120GB">120GB</option>
+                                            <option value="240GB">240GB</option>
+                                            <option value="480GB">480GB</option>
+                                            <option value="960GB">960GB</option>
+                                            <option value="256GB">256GB</option>
+                                            <option value="512GB">512GB</option>
+                                            <option value="1TB">1TB</option>
+                                            <option value="2TB">2TB</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="upgradeDescription"><?php echo __('Observações do Upgrade'); ?></label>
+                            <textarea id="upgradeDescription" class="form-control" rows="2" placeholder="<?php echo __('Detalhes adicionais do upgrade...'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Fluxo de INSUMO -->
+                    <div id="supplyFields" style="display: none;">
+                        <div class="form-group mb-3">
+                            <label class="text-gray-600 small font-weight-bold" for="supplyType"><?php echo __('Tipo de Insumo'); ?></label>
+                            <select id="supplyType" class="form-control" style="border-radius: 10px;">
+                                <option value=""><?php echo __('Selecione o insumo...'); ?></option>
+                                <option value="Toner">Toner</option>
+                                <option value="Difusor"><?php echo __('Difusor'); ?></option>
+                                <option value="Cartucho de Tinta"><?php echo __('Cartucho de Tinta'); ?></option>
+                                <option value="Cilindro / Drum"><?php echo __('Cilindro / Drum'); ?></option>
+                                <option value="Fita de Impressão"><?php echo __('Fita de Impressão'); ?></option>
+                                <option value="Kit Fusor"><?php echo __('Kit Fusor'); ?></option>
+                                <option value="Outro"><?php echo __('Outros Suprimentos'); ?></option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="text-gray-600 small font-weight-bold" for="supplyDescription"><?php echo __('Observações'); ?></label>
+                            <textarea id="supplyDescription" class="form-control" rows="2" placeholder="<?php echo __('Ex: Troca do Toner Preto - Unidade A'); ?>" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer" style="background: #f8f9fc;">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
-                    <button type="button" id="confirmMaintenance" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
+                    <button type="button" id="confirmMaintenance" class="btn btn-primary" style="background: #order: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
                 </div>
             </div>
         </div>
     </div>
-    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-    // Inicializar QR Code
-    document.addEventListener("DOMContentLoaded", function() {
-        const qrContainer = document.getElementById("qrcode");
-        if (qrContainer) {
-            new QRCode(qrContainer, {
-                text: <?php echo json_encode($qr_data); ?>,
-                width: 150,
-                height: 150,
-                colorDark : "#2c404a",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-            // Ajustar imagem gerada para ser responsiva
-            const qrImg = qrContainer.querySelector('img');
-            if (qrImg) qrImg.classList.add('img-fluid');
-        }
-    });
-
-    function printAssetTag() {
-        const qrImg = document.querySelector('#qrcode img').src;
-        const tagText = document.getElementById('tag_badge_code').innerText;
-        const assetModel = <?php echo json_encode($ativo['modelo']); ?>;
-        
-        const printWindow = window.open('', '_blank', 'width=400,height=500');
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>Imprimir Etiqueta - ${tagText}</title>
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-                    body { margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; background: white; }
-                    .label-container { text-align: center; width: 220px; padding: 10px; border: 1px dashed #ccc; border-radius: 10px; }
-                    img { width: 180px; height: 180px; }
-                    .tag-text { font-size: 1.4rem; font-weight: 800; color: #000; margin-top: 5px; border-top: 2px solid #000; padding-top: 5px; }
-                    .asset-info { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-                    @media print {
-                        .label-container { border: none; }
-                        body { padding: 0; }
-                    }
-                </style>
-            </head>
-            <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
-                <div class="label-container">
-                    <div class="asset-info">${assetModel}</div>
-                    <img src="${qrImg}">
-                    <div class="tag-text">${tagText}</div>
-                </div>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-    }
-
-    function copyNF(text) {
-        function showSuccess() {
-            const icon = document.getElementById('copyIcon');
-            icon.classList.remove('fa-copy');
-            icon.classList.add('fa-check', 'text-success');
-            setTimeout(() => {
-                icon.classList.remove('fa-check', 'text-success');
-                icon.classList.add('fa-copy');
-            }, 2000);
-        }
-
-        function fallbackCopy(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            textArea.style.top = "0";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                if (document.execCommand('copy')) showSuccess();
-            } catch (err) {
-                console.error('Erro no fallback de cópia:', err);
-            }
-            document.body.removeChild(textArea);
-        }
-
-        if (!navigator.clipboard) {
-            fallbackCopy(text);
-        } else {
-            navigator.clipboard.writeText(text).then(showSuccess, () => fallbackCopy(text));
-        }
-    }
-    </script>
 </body>
 
 </html>
+< / b o d y > < / h t m l >  
+ 

@@ -44,10 +44,10 @@ if (isset($_GET['id'])) {
     <title><?php echo __('Console Operacional'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
-    <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
-    <link rel="stylesheet" href="/assets/css/Nunito.css?h=3532322f32770367812050c1dddc256c">
-    <link rel="stylesheet" href="/assets/css/Raleway.css?h=f3d9abe8d5aa7831c01bfaa2a1563712">
-    <link rel="stylesheet" href="/assets/css/Roboto.css?h=41e93b37bc495fd67938799bb3a6adaf">
+    <link rel="stylesheet" href="/assets/css/Montserrat.css">
+    <link rel="stylesheet" href="/assets/css/Nunito.css">
+    <link rel="stylesheet" href="/assets/css/Raleway.css">
+    <link rel="stylesheet" href="/assets/css/Roboto.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
@@ -59,8 +59,7 @@ if (isset($_GET['id'])) {
         href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-    <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
+    <link rel="stylesheet" href="/assets/css/Map-Clean.css">
     <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
     <link rel="stylesheet"
         href="/assets/css/Multi-Select-Dropdown-by-Jigar-Mistry.css?h=28bd9d636c700fbf60086e2bcb002efb">
@@ -139,8 +138,13 @@ if (isset($_GET['id'])) {
                     // Calcular o limite de registros para a consulta
                     $start_from = ($current_page - 1) * $results_per_page;
 
-                    // Consultar os ativos atribuídos
-                    $sql = "SELECT * FROM ativos WHERE assigned_to IS NOT NULL ORDER BY id_asset DESC LIMIT $start_from, $results_per_page";
+                    // Consultar os ativos atribuídos com JOIN para evitar N+1
+                    $sql = "SELECT a.*, u.nome as nome_usuario 
+                            FROM ativos a 
+                            LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
+                            WHERE a.assigned_to IS NOT NULL 
+                            ORDER BY a.id_asset DESC 
+                            LIMIT $start_from, $results_per_page";
                     $result = mysqli_query($conn, $sql);
 
                     // Buscar configurações de depreciação/doação globais
@@ -172,7 +176,7 @@ if (isset($_GET['id'])) {
                     <div class="card shadow">
                         <div class="col-md-6 col-xl-3 text-nowrap">
                             <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
-                                class="btn btn-success btn-block active text-white pulse animated btn-user"
+                                class="btn btn-success btn-block active text-white animate__animated animate__pulse btn-user"
                                 role="button"
                                 style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;"
                                 href="/ativos_doados.php"><?php echo __('Doações'); ?></a>
@@ -226,7 +230,7 @@ if (isset($_GET['id'])) {
                                                         <?php
                                                         $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
                                                         if ($foto) {
-                                                            echo "<img src='$foto' class='asset-thumbnail'>";
+                                                            echo "<img src='$foto' class='asset-thumbnail' loading='lazy'>";
                                                         } else {
                                                             echo "<div class='asset-placeholder'><i class='fas fa-box'></i></div>";
                                                         }
@@ -249,14 +253,7 @@ if (isset($_GET['id'])) {
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td>
                                                         <?php
-                                                        $sql_user = "SELECT nome FROM usuarios WHERE id_usuarios = '$assigned_to'";
-                                                        $result_user = mysqli_query($conn, $sql_user);
-                                                        if ($result_user && mysqli_num_rows($result_user) > 0) {
-                                                            $user = mysqli_fetch_assoc($result_user);
-                                                            echo htmlspecialchars($user['nome']);
-                                                        } else {
-                                                            echo __('Não encontrado');
-                                                        }
+                                                        echo !empty($row['nome_usuario']) ? htmlspecialchars($row['nome_usuario']) : __('Não encontrado');
                                                         ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
@@ -375,22 +372,10 @@ if (isset($_GET['id'])) {
     <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.js"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="/assets/js/global_search.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/assets/js/bs-init.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" defer></script>
+    <script src="/assets/js/global_search.js" defer></script>
 </body>
 
 </html>

@@ -116,24 +116,36 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
                                     </div>
                                 </div>
 
-                                <!-- Row 5: Matrícula e Telefone -->
+                                <!-- Row 5: CPF e Matrícula -->
                                 <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold text-danger" for="cpf"><?php echo __('CPF (Somente Números)'); ?></label>
+                                            <input class="form-control" name="cpf" id="cpf" type="text" placeholder="000.000.000-00" required="" maxlength="14" oninput="maskCPF(this)">
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="matricula"><?php echo __('Matrícula'); ?></label>
                                             <input class="form-control" name="matricula" id="matricula" type="text" value="<?php echo $next_id; ?>" required="" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                </div>
+
+                                <!-- Row 6: Telefone, Setor e Centro de Custo -->
+                                <div class="row">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="telefone"><?php echo __('Telefone / Contato'); ?></label>
                                             <input class="form-control" name="telefone" id="telefone" type="text" placeholder="<?php echo __('(00) 00000-0000'); ?>">
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Row 6: Centro de Custo e Unidade -->
-                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" placeholder="<?php echo __('Ex: TI / RH'); ?>">
+                                        </div>
+                                    </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="centroDeCusto"><?php echo __('Centro de Custo'); ?></label>
@@ -151,27 +163,35 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
                                             </select>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- Row 7: Unidade, Tipo de Contrato e Perfil -->
+                                <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="unidade"><?php echo __('Unidade / Local'); ?></label>
-                                            <input class="form-control" name="unidade" id="unidade" type="text" placeholder="<?php echo __('Ex: Matriz'); ?>">
+                                            <select class="form-control" name="unidade" id="unidade">
+                                                <?php
+                                                $sql_un = "SELECT unidade FROM unidade ORDER BY unidade ASC";
+                                                $res_un = $conn->query($sql_un);
+                                                while ($row_un = $res_un->fetch_assoc()) {
+                                                    echo '<option value="' . $row_un['unidade'] . '">' . $row_un['unidade'] . '</option>';
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="tipoContrato"><?php echo __('Tipo de Contrato'); ?></label>
                                             <select class="form-control" name="tipoContrato" id="tipoContrato">
-                                                <option value="CLT"><?php echo __('CLT'); ?></option>
-                                                <option value="PJ"><?php echo __('PJ'); ?></option>
-                                                <option value="Estágio"><?php echo __('Estágio'); ?></option>
-                                                <option value="Terceirizado"><?php echo __('Terceirizado'); ?></option>
+                                                <option value="CLT">CLT</option>
+                                                <option value="PJ">PJ</option>
+                                                <option value="Estágio">Estágio</option>
+                                                <option value="Terceirizado">Terceirizado</option>
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Row 7: Nível de Acesso, Foto e Status -->
-                                <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="nivelUsuario"><?php echo __('Perfil de Acesso'); ?></label>
@@ -182,17 +202,21 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
+                                </div>
+
+                                <!-- Row 8: Foto e Status -->
+                                <div class="row align-items-center">
+                                    <div class="col-md-9">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="foto_perfil"><?php echo __('Foto de Perfil'); ?></label>
                                             <input class="form-control-file" name="foto_perfil" id="foto_perfil" type="file" accept="image/*">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="custom-control custom-switch" style="margin-top: 32px;">
+                                        <div class="custom-control custom-switch" style="margin-top: 15px;">
                                             <input type="hidden" name="status" value="Inativo">
                                             <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
-                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
+                                            <label class="custom-control-label font-weight-bold" for="statusSwitch"><?php echo __('Ativo'); ?></label>
                                         </div>
                                     </div>
                                 </div>
@@ -216,6 +240,71 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        function maskCPF(i) {
+            var v = i.value;
+            if (isNaN(v[v.length - 1])) {
+                i.value = v.substring(0, v.length - 1);
+                return;
+            }
+            i.setAttribute("maxlength", "14");
+            if (v.length == 3 || v.length == 7) i.value += ".";
+            if (v.length == 11) i.value += "-";
+
+            if (v.length == 14) {
+                validateCPF(v);
+            } else {
+                const errorEl = document.getElementById('cpf-error');
+                if (errorEl) errorEl.style.display = 'none';
+                i.setCustomValidity('');
+            }
+        }
+
+        function validateCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf == '') return false;
+            if (cpf.length != 11 ||
+                cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" ||
+                cpf == "33333333333" || cpf == "44444444444" || cpf == "55555555555" ||
+                cpf == "66666666666" || cpf == "77777777777" || cpf == "88888888888" ||
+                cpf == "99999999999") {
+                showCPFError(true);
+                return false;
+            }
+            add = 0;
+            for (i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) {
+                showCPFError(true);
+                return false;
+            }
+            add = 0;
+            for (i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) {
+                showCPFError(true);
+                return false;
+            }
+            showCPFError(false);
+            return true;
+        }
+
+        function showCPFError(hasError) {
+            const errorEl = document.getElementById('cpf-error');
+            const inputEl = document.getElementById('cpf');
+            if (errorEl) {
+                if (hasError) {
+                    errorEl.style.display = 'block';
+                    inputEl.setCustomValidity('<?php echo __('CPF Inválido'); ?>');
+                } else {
+                    errorEl.style.display = 'none';
+                    inputEl.setCustomValidity('');
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

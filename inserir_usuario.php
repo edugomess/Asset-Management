@@ -20,6 +20,7 @@ $confirmarSenha = $_POST['confirmarSenha'];
 $nivelUsuario = $_POST['nivelUsuario'];
 $unidade = $_POST['unidade'];
 $status = $_POST['status'];
+$setor = $_POST['setor'];
 // Verifica se as senhas coincidem
 if ($senha !== $confirmarSenha) {
     echo "<script>alert('As senhas não coincidem.');</script>";
@@ -58,15 +59,11 @@ $nivelUsuarioEnum = isset($nivelMapeamento[$nivelUsuario]) ? $nivelMapeamento[$n
 $cpfRaw = isset($_POST['cpf']) ? $_POST['cpf'] : '';
 $cpfClean = preg_replace('/[^0-9]/', '', $cpfRaw);
 
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centro de custo, matricula, telefone, senha, nivelUsuario, unidade, status, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-// Nota: Usei 'centroDeCusto' conforme o nome da coluna no DESCRIBE recebido anteriormente.
-$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centroDeCusto, matricula, telefone, tipoContrato, senha, nivelUsuario, unidade, status, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO usuarios (nome, sobrenome, usuarioAD, funcao, dataNascimento, email, cpf, centroDeCusto, setor, matricula, telefone, tipoContrato, senha, nivelUsuario, unidade, status, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $cpfClean, $centroDeCusto, $matricula, $telefone, $tipoContrato, $senhaHash, $nivelUsuarioEnum, $unidade, $status, $foto_perfil);
+$stmt->bind_param("sssssssssssssssss", $nome, $sobrenome, $usuarioAD, $funcao, $dataNascimento, $email, $cpfClean, $centroDeCusto, $setor, $matricula, $telefone, $tipoContrato, $senhaHash, $nivelUsuarioEnum, $unidade, $status, $foto_perfil);
 
 if ($stmt->execute()) {
     echo "<script>

@@ -552,7 +552,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         </div>
                     </div><!-- End: Charts -->
                     <!-- Start: SLA Ranking -->
-                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="card shadow mb-4">
@@ -651,7 +651,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         </div>
                     <?php endif; ?>
                     <!-- End: SLA Ranking -->
-                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
                         <div class="row">
                             <div class="col-lg-12 mb-4">
                                 <div class="card shadow mb-4">
@@ -735,23 +735,15 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
         // Inline script removed, moved to global_search.js
     </script>
     <script>
-        // Atualizar links de PDF dinamicamente ao mudar os selects
-        function updateSlaPdfLink() {
-            const mes = document.getElementById('mes_ranking').value;
-            const ano = document.getElementById('ano_ranking').value;
-            document.getElementById('btn_pdf_sla').href = `relatorio_ranking_sla.php?mes=${mes}&ano=${ano}`;
+        // Atualizar links de PDF dinamicamente ao mudar os selects (apenas se existirem)
+        if (document.getElementById('mes_ranking')) {
+            document.getElementById('mes_ranking').addEventListener('change', updateSlaPdfLink);
+            document.getElementById('ano_ranking').addEventListener('change', updateSlaPdfLink);
         }
-
-        function updateRecPdfLink() {
-            const mes = document.getElementById('mes_recorrencia').value;
-            const ano = document.getElementById('ano_recorrencia').value;
-            document.getElementById('btn_pdf_recorrencia').href = `relatorio_ranking_recorrencia.php?mes=${mes}&ano=${ano}`;
+        if (document.getElementById('mes_recorrencia')) {
+            document.getElementById('mes_recorrencia').addEventListener('change', updateRecPdfLink);
+            document.getElementById('ano_recorrencia').addEventListener('change', updateRecPdfLink);
         }
-
-        document.getElementById('mes_ranking').addEventListener('change', updateSlaPdfLink);
-        document.getElementById('ano_ranking').addEventListener('change', updateSlaPdfLink);
-        document.getElementById('mes_recorrencia').addEventListener('change', updateRecPdfLink);
-        document.getElementById('ano_recorrencia').addEventListener('change', updateRecPdfLink);
     </script>
 </body>
 

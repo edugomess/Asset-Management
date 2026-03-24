@@ -15,5 +15,5 @@ $sql = "SELECT a.modelo, a.tag, m.data_inicio, m.data_fim, m.observacoes
         JOIN ativos a ON m.id_asset = a.id_asset 
         WHERE m.status_manutencao = 'Concluído' 
         ORDER BY m.data_fim DESC";
-$pdf->generate($sql);
+$pdf->generate($sql, 'm.data_inicio');
 ?>

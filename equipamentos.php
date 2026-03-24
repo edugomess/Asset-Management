@@ -288,6 +288,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
                                                     aria-label="<?php echo __('Buscar Ativos'); ?>">
                                             </div>
+                                            <div class="form-group mr-2">
+                                                <input type="search" name="sector"
+                                                    class="form-control form-control-sm premium-filter"
+                                                    placeholder="<?php echo __('Setor...'); ?>" onsearch="this.form.submit()"
+                                                    value="<?php echo isset($_GET['sector']) ? htmlspecialchars($_GET['sector']) : ''; ?>"
+                                                    aria-label="<?php echo __('Filtrar por Setor'); ?>">
+                                            </div>
                                         </form>
                                         <?php endif; ?>
                                     </div>
@@ -299,6 +306,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 // Configurações de filtros e busca
                                 $results_per_page = 10;
                                 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+                                $sector_filter = isset($_GET['sector']) ? mysqli_real_escape_string($conn, $_GET['sector']) : '';
                                 $status_filter = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : '';
                                 $maintenance_join = "";
 
@@ -306,6 +314,9 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 // Filtro por termo de busca (Modelo, Tag ou HostName)
                                 if (!empty($search)) {
                                     $where_clauses[] = "(a.modelo LIKE '%$search%' OR a.tag LIKE '%$search%' OR a.hostName LIKE '%$search%')";
+                                }
+                                if (!empty($sector_filter)) {
+                                    $where_clauses[] = "a.setor LIKE '%$sector_filter%'";
                                 }
 
                                 // Lógica de filtro para ativos em manutenção
@@ -357,6 +368,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th scope="col"><?php echo __('HostName'); ?></th>
                                             <th scope="col"><?php echo __('Valor Atual'); ?></th>
                                             <th scope="col"><?php echo __('MAC'); ?></th>
+                                            <th scope="col"><?php echo __('Setor'); ?></th>
                                             <th scope="col"><?php echo __('CC'); ?></th>
                                             <?php if ($status_filter !== 'Manutencao'): ?>
                                                 <th scope="col"><?php echo __('Usuário'); ?></th>
@@ -436,6 +448,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                    <td><strong><?php echo htmlspecialchars($row['setor'] ?: '-'); ?></strong></td>
                                                     <td>
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];

@@ -13,7 +13,7 @@ $columns = [
     ['header' => 'Detalhes', 'width' => 77, 'align' => 'L', 'field' => 'detalhes']
 ];
 
-$sql = "SELECT h.data_evento, a.tag, u.nome as usuario, h.acao, h.detalhes 
+$sql = "SELECT h.data_evento, a.tag, CONCAT(u.nome, ' ', u.sobrenome) as usuario, h.acao, h.detalhes 
         FROM historico_ativos h 
         JOIN ativos a ON h.ativo_id = a.id_asset 
         JOIN usuarios u ON h.usuario_id = u.id_usuarios 

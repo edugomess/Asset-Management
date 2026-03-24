@@ -108,7 +108,7 @@ if (!$asset) {
                                             <input class="form-control" name="tag" id="tag" type="text" value="<?php echo htmlspecialchars($asset['tag']); ?>" readonly title="<?php echo __('A Tag/Patrimônio não pode ser alterada.'); ?>">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="hostnameContainer">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="hostName"><?php echo __('Host Name'); ?></label>
                                             <input class="form-control" name="hostName" id="hostName" type="text" value="<?php echo htmlspecialchars($asset['hostName']); ?>" required="">
@@ -130,7 +130,7 @@ if (!$asset) {
                                             <input class="form-control" name="valor" id="valor" type="number" step="0.01" value="<?php echo $asset['valor']; ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="centroDeCusto"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto" id="centroDeCusto">
@@ -148,7 +148,13 @@ if (!$asset) {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor Destinado'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" value="<?php echo htmlspecialchars($asset['setor'] ?? ''); ?>" placeholder="<?php echo __('Ex: Marketing, RH, TI'); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
                                             <select class="form-control" name="fornecedor" id="fornecedor">
@@ -168,7 +174,67 @@ if (!$asset) {
                                     </div>
                                 </div>
 
-                                <!-- Row 4: Visual, Datas e Status -->
+                                <!-- Row 4: Dados Financeiros / Nota Fiscal (New) -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados de Compra / Nota Fiscal'); ?></h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Número da Nota Fiscal'); ?></label>
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" value="<?php echo htmlspecialchars($asset['numero_nota_fiscal']); ?>" placeholder="Ex: NF-123456" required pattern="[A-Za-z0-9\- ]{3,}" title="O número da nota fiscal deve ter pelo menos 3 caracteres (letras, números, espaços ou hífen)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="anexo_nota_fiscal">
+                                                <?php echo __('Anexo da Nota Fiscal'); ?>
+                                                <?php if (!empty($asset['anexo_nota_fiscal'])): ?>
+                                                    <a href="<?php echo htmlspecialchars($asset['anexo_nota_fiscal']); ?>" target="_blank" class="badge badge-info ml-2">
+                                                        <i class="fas fa-file-pdf mr-1"></i><?php echo __('Ver Atual'); ?>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </label>
+                                            <input class="form-control-file" name="anexo_nota_fiscal" id="anexo_nota_fiscal" type="file" accept=".pdf,image/*">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hardware Details (Conditional) -->
+                                <div id="hardwareSection" style="display: none; border-left: 4px solid #2c404a; padding-left: 15px; margin-bottom: 25px; background: #f8f9fc; padding-top: 10px; padding-bottom: 5px; border-radius: 5px;">
+                                    <h5 class="text-primary font-weight-bold mb-3"><?php echo __('Especificações de Hardware'); ?></h5>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="memoria"><?php echo __('Memória RAM'); ?></label>
+                                                <input class="form-control" name="memoria" id="memoria" type="text" value="<?php echo htmlspecialchars($asset['memoria']); ?>" placeholder="Ex: 16GB DDR4">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="processador"><?php echo __('Processador'); ?></label>
+                                                <input class="form-control" name="processador" id="processador" type="text" value="<?php echo htmlspecialchars($asset['processador']); ?>" placeholder="Ex: Intel i7-1185G7">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="armazenamento"><?php echo __('Capacidade Armazenamento'); ?></label>
+                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" value="<?php echo htmlspecialchars($asset['armazenamento']); ?>" placeholder="Ex: 512GB">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="tipo_armazenamento"><?php echo __('Tipo de Armazenamento'); ?></label>
+                                                <select class="form-control" name="tipo_armazenamento" id="tipo_armazenamento">
+                                                    <option value="SSD" <?php echo ($asset['tipo_armazenamento'] == 'SSD') ? 'selected' : ''; ?>>SSD</option>
+                                                    <option value="HD" <?php echo ($asset['tipo_armazenamento'] == 'HD') ? 'selected' : ''; ?>>HD</option>
+                                                    <option value="NVMe" <?php echo ($asset['tipo_armazenamento'] == 'NVMe') ? 'selected' : ''; ?>>NVMe</option>
+                                                    <option value="Híbrido" <?php echo ($asset['tipo_armazenamento'] == 'Híbrido') ? 'selected' : ''; ?>>Híbrido</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 5: Visual, Datas e Status -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -231,6 +297,31 @@ if (!$asset) {
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function() {
+            function toggleFields() {
+                var cat = $('#categoria').val();
+                
+                // Hardware Section (CPU, RAM, Disk)
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') {
+                    $('#hardwareSection').slideDown();
+                } else {
+                    $('#hardwareSection').slideUp();
+                }
+
+                // Host Name visibility
+                if (cat === 'Monitor' || cat === 'Periféricos') {
+                    $('#hostnameContainer').slideUp();
+                    $('#hostName').removeAttr('required');
+                } else {
+                    $('#hostnameContainer').slideDown();
+                    $('#hostName').attr('required', 'required');
+                }
+            }
+            $('#categoria').change(toggleFields);
+            toggleFields(); // Initial check
+        });
+    </script>
 </body>
 
 </html>

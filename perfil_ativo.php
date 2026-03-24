@@ -235,6 +235,33 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 </div>
                             </div>
 
+                            <!-- Hardware Specifications (Conditional) -->
+                            <?php if (!empty($ativo['memoria']) || !empty($ativo['processador']) || !empty($ativo['armazenamento'])): ?>
+                                <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.25s; border-left: 4px solid #2c404a;">
+                                    <h6 class="font-weight-bold text-primary mb-4">
+                                        <i class="fas fa-server mr-2"></i><?php echo __('Especificações de Hardware'); ?>
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
+                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['memoria'] ?: '-'); ?></div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-label"><?php echo __('Processador'); ?></div>
+                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['processador'] ?: '-'); ?></div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-label"><?php echo __('Capacidade'); ?></div>
+                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['armazenamento'] ?: '-'); ?></div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="detail-label"><?php echo __('Tipo Disco'); ?></div>
+                                            <div class="detail-value text-dark"><?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: '-'); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                             <!-- Financeiro e Vida Útil (Values and Status) -->
                             <div class="info-card shadow card-shadow animate__animated animate__fadeInRight" style="animation-delay: 0.3s;">
                                 <h6 class="font-weight-bold text-primary mb-4">
@@ -262,6 +289,10 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             }
                                             ?>
                                         </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Setor Destinado'); ?></div>
+                                        <div class="detail-value font-weight-bold"><?php echo htmlspecialchars($ativo['setor'] ?: '-'); ?></div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Fornecedor'); ?></div>
@@ -295,6 +326,17 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <div class="detail-value">
                                             <?php echo number_format($taxa_pct, 2, ',', '.'); ?>% 
                                             <small class="text-muted">a cada <?php echo intval($dep_config['periodo_anos']); ?> ano(s) e <?php echo intval($dep_config['periodo_meses']); ?> mês(es)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Nota Fiscal'); ?></div>
+                                        <div class="detail-value">
+                                            <?php echo htmlspecialchars($ativo['numero_nota_fiscal'] ?? '-'); ?>
+                                            <?php if (!empty($ativo['anexo_nota_fiscal'])): ?>
+                                                <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>" target="_blank" class="badge badge-primary ml-2">
+                                                    <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-md-6">

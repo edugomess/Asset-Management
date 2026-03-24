@@ -1,6 +1,12 @@
 <?php
 include_once 'auth.php';
 include_once 'conexao.php';
+
+// Bloqueio de acesso para usuários comuns
+if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
+    header("Location: index.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -68,11 +74,11 @@ include_once 'conexao.php';
 
                                             <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
                                                 <optgroup label="<?php echo __('Ativos'); ?>">
-                                                    <option value="relatorio_ativo.php"><?php echo __('Geral de Ativos'); ?></option>
-                                                    <option value="relatorio_ativos_status.php"><?php echo __('Por Status'); ?></option>
-                                                    <option value="relatorio_ativos_cc.php"><?php echo __('Por Centro de Custo'); ?></option>
-                                                    <option value="relatorio_financeiro.php"><?php echo __('Resumo Financeiro'); ?></option>
-                                                    <option value="relatorio_ativos_fabricante.php"><?php echo __('Por Fabricante'); ?></option>
+                                                    <option value="relatorio_ativo.php" data-periodo="true"><?php echo __('Geral de Ativos'); ?></option>
+                                                    <option value="relatorio_ativos_status.php" data-periodo="true"><?php echo __('Por Status'); ?></option>
+                                                    <option value="relatorio_ativos_cc.php" data-periodo="true"><?php echo __('Por Centro de Custo'); ?></option>
+                                                    <option value="relatorio_financeiro.php" data-periodo="true"><?php echo __('Resumo Financeiro'); ?></option>
+                                                    <option value="relatorio_ativos_fabricante.php" data-periodo="true"><?php echo __('Por Fabricante'); ?></option>
                                                     <option value="relatorio_ativos_modelo.php"><?php echo __('Por Modelo'); ?></option>
                                                     <option value="relatorio_ativos_categoria.php"><?php echo __('Por Categoria'); ?></option>
                                                     <option value="relatorio_ativos_antigos.php"><?php echo __('Ativos Antigos (> 3 anos)'); ?>
@@ -102,15 +108,15 @@ include_once 'conexao.php';
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
                                                     <option value="relatorio_chamados_mensal.php"><?php echo __('Resumo Mensal'); ?></option>
                                                 <?php endif; ?>
-                                                <option value="relatorio_chamados_abertos.php"><?php echo __('Meus Chamados Abertos'); ?>
+                                                <option value="relatorio_chamados_abertos.php" data-periodo="true"><?php echo __('Meus Chamados Abertos'); ?>
                                                 </option>
-                                                <option value="relatorio_chamados_fechados.php"><?php echo __('Meus Chamados Fechados'); ?>
+                                                <option value="relatorio_chamados_fechados.php" data-periodo="true"><?php echo __('Meus Chamados Fechados'); ?>
                                                 </option>
-                                                <option value="relatorio_chamados_recentes.php"><?php echo __('Meus Chamados Recentes (30 dias)'); ?></option>
+                                                <option value="relatorio_chamados_recentes.php" data-periodo="true"><?php echo __('Meus Chamados Recentes (30 dias)'); ?></option>
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                    <option value="relatorio_chamados_categoria.php"><?php echo __('Por Categoria'); ?></option>
-                                                    <option value="relatorio_chamados_tecnico.php"><?php echo __('Por Técnico'); ?></option>
-                                                    <option value="relatorio_chamados_solicitante.php"><?php echo __('Por Solicitante'); ?>
+                                                    <option value="relatorio_chamados_categoria.php" data-periodo="true"><?php echo __('Por Categoria'); ?></option>
+                                                    <option value="relatorio_chamados_tecnico.php" data-periodo="true"><?php echo __('Por Técnico'); ?></option>
+                                                    <option value="relatorio_chamados_solicitante.php" data-periodo="true"><?php echo __('Por Solicitante'); ?>
                                                     </option>
                                                     <option value="relatorio_chamados_sla_vencido.php"><?php echo __('SLA Vencido'); ?></option>
                                                     <option value="relatorio_chamados_prioridade.php"><?php echo __('Por Prioridade'); ?></option>
@@ -132,7 +138,7 @@ include_once 'conexao.php';
                                                 </optgroup>
 
                                                 <optgroup label="<?php echo __('Licenças'); ?>">
-                                                    <option value="relatorio_licencas_geral.php"><?php echo __('Geral de Licenças'); ?></option>
+                                                    <option value="relatorio_licencas_geral.php" data-periodo="true"><?php echo __('Geral de Licenças'); ?></option>
                                                     <option value="relatorio_licencas_expiradas.php"><?php echo __('Expiradas / Próximas ao Vencimento'); ?></option>
                                                     <option value="relatorio_licencas_cc.php"><?php echo __('Por Centro de Custo'); ?></option>
                                                     <option value="relatorio_licencas_em_uso.php"><?php echo __('Uso de Seats (Ocupação)'); ?>
@@ -143,7 +149,7 @@ include_once 'conexao.php';
                                                 <optgroup label="<?php echo __('Manutenção'); ?>">
                                                     <option value="relatorio_manutencao_atual.php"><?php echo __('Manutenções Ativas'); ?>
                                                     </option>
-                                                    <option value="relatorio_manutencao_historico.php"><?php echo __('Histórico de Manutenções'); ?></option>
+                                                    <option value="relatorio_manutencao_historico.php" data-periodo="true"><?php echo __('Histórico de Manutenções'); ?></option>
                                                     <option value="relatorio_manutencao_estatistico.php"><?php echo __('Resumo Estatístico'); ?>
                                                     </option>
                                                 </optgroup>
@@ -153,7 +159,7 @@ include_once 'conexao.php';
                                                     <option value="relatorio_fornecedores_servico.php"><?php echo __('Por Tipo de Serviço'); ?></option>
                                                     <option value="relatorio_ativos_fornecedor.php"><?php echo __('Ativos por Fornecedor'); ?></option>
                                                     <option value="relatorio_licencas_fornecedor.php"><?php echo __('Licenças por Fornecedor'); ?></option>
-                                                    <option value="relatorio_compras_fornecedor.php"><?php echo __('Investimento por Fornecedor'); ?></option>
+                                                    <option value="relatorio_compras_fornecedor.php" data-periodo="true"><?php echo __('Investimento por Fornecedor'); ?></option>
                                                 </optgroup>
 
                                                 <optgroup label="<?php echo __('Outros'); ?>">
@@ -166,6 +172,13 @@ include_once 'conexao.php';
                                                 </optgroup>
                                             <?php endif; ?>
                                         </select>
+
+                                        <!-- Filtro de Período -->
+                                        <div id="dateFilters" class="align-items-center mr-3" style="display: none;">
+                                            <input type="date" id="startDate" class="form-control mr-2" style="height: 50px; width: 170px;" title="<?php echo __('Data Inicial'); ?>">
+                                            <span class="mr-2"><?php echo __('até'); ?></span>
+                                            <input type="date" id="endDate" class="form-control" style="height: 50px; width: 170px;" title="<?php echo __('Data Final'); ?>">
+                                        </div>
                                         <select id="reportFormat" class="form-control mr-3"
                                             style="height: 50px; width: 150px;">
                                             <option value="pdf">PDF</option>
@@ -212,13 +225,24 @@ include_once 'conexao.php';
             var format = document.getElementById('reportFormat').value;
 
             if (url) {
+                var startDate = document.getElementById('startDate').value;
+                var endDate = document.getElementById('endDate').value;
+
                 // Adiciona o parâmetro de formato se não for PDF (padrão)
                 var finalUrl = url;
-                if (format === 'xlsx') {
-                    finalUrl += (url.includes('?') ? '&' : '?') + 'format=xlsx';
+                var params = [];
+
+                if (format === 'xlsx') params.push('format=xlsx');
+                if (startDate) params.push('start=' + startDate);
+                if (endDate) params.push('end=' + endDate);
+
+                if (params.length > 0) {
+                    finalUrl += (url.includes('?') ? '&' : '?') + params.join('&');
                 }
+
                 window.open(finalUrl, '_blank');
-            } else {
+            }
+ else {
                 alert('<?php echo __('Por favor, selecione um tipo de relatório.'); ?>');
             }
         }
@@ -286,6 +310,18 @@ include_once 'conexao.php';
                     $('#globalSearchResults').hide();
                 }
             });
+
+            $('#reportType').on('change', function() {
+                let selectedOption = $(this).find('option:selected');
+                let supportsPeriodo = selectedOption.data('periodo');
+                if (supportsPeriodo) {
+                    $('#dateFilters').css('display', 'flex');
+                } else {
+                    $('#dateFilters').css('display', 'none');
+                }
+            });
+            // Trigger inicialmente para o relatório padrão
+            $('#reportType').trigger('change');
         });
     </script>
     <script src="/assets/js/global_search.js"></script>

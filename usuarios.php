@@ -96,9 +96,9 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                         <tr>
                                             <th><?php echo __('Usuário'); ?></th>
                                             <th><?php echo __('E-mail'); ?></th>
-                                            <th><?php echo __('CC'); ?></th>
                                             <th><?php echo __('Função'); ?></th>
-                                            <th><?php echo __('Unidade'); ?></th>
+                                            <th><?php echo __('Setor'); ?></th>
+                                            <th><?php echo __('CC'); ?></th>
                                             <th style="text-align: center;"><?php echo __('Nível'); ?></th>
                                             <th style="text-align: center;"><?php echo __('Status'); ?></th>
                                             <th style="text-align: center;"><?php echo __('Ações'); ?></th>
@@ -112,12 +112,16 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                 ?>
                                                 <tr class="clickable-row"
                                                     onclick="window.location='perfil_usuario.php?id=<?php echo $row['id_usuarios']; ?>'">
-                                                    <td class="d-flex align-items-center">
-                                                        <img src="<?php echo $foto; ?>" class="user-thumbnail"
-                                                            alt="<?php echo __('Foto de ') . htmlspecialchars($row['nome']); ?>">
-                                                        <strong><?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?></strong>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="<?php echo $foto; ?>" class="user-thumbnail"
+                                                                alt="<?php echo __('Foto de ') . htmlspecialchars($row['nome']); ?>">
+                                                            <strong><?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?></strong>
+                                                        </div>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['funcao']); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['setor'] ?? '-'); ?></td>
                                                     <td>
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
@@ -128,8 +132,6 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                         }
                                                         ?>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['funcao']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['unidade']); ?></td>
                                                     <td style="text-align: center;">
                                                         <?php
                                                         $nivel_display = !empty($row['nivelUsuario']) && $row['nivelUsuario'] !== '-' ? __($row['nivelUsuario']) : __('Usuário');

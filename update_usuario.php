@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $status = $_POST['status'] ?? ''; // Status update
     $nivelUsuario = $_POST['nivelUsuario'] ?? ''; // Nível de usuário enviado no formulário
     $tipoContrato = $_POST['tipoContrato'] ?? ''; // Novo tipo de contrato
+    $setor = $_POST['setor'] ?? ''; // Setor do usuário
 
     $cpf = isset($_POST['cpf']) ? preg_replace('/[^\d]/', '', $_POST['cpf']) : '';
 
@@ -98,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                  dataNascimento='$dataNascimento', 
                                  email='$email', 
                                  centroDeCusto='$centroDeCusto', 
+                                 setor='$setor',
                                  matricula='$matricula', 
                                  telefone='$telefone',
                                  unidade='$unidade', 
@@ -118,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                  dataNascimento='$dataNascimento', 
                                  email='$email', 
                                  centroDeCusto='$centroDeCusto', 
+                                 setor='$setor',
                                  matricula='$matricula', 
                                  telefone='$telefone',
                                  unidade='$unidade',

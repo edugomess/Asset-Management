@@ -85,7 +85,7 @@ include_once 'auth.php'; // Proteção de sessão
                                             <input class="form-control" name="tag" id="tag" type="text" placeholder="<?php echo __('Ex: ABC123D'); ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="hostnameContainer">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="hostName"><?php echo __('Host Name'); ?></label>
                                             <input class="form-control" name="hostName" id="hostName" type="text" placeholder="<?php echo __('Ex: NOTE-001'); ?>" required="">
@@ -107,7 +107,7 @@ include_once 'auth.php'; // Proteção de sessão
                                             <input class="form-control" name="valor" id="valor" type="number" step="0.01" placeholder="<?php echo __('Ex: 4500.00'); ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="centroDeCusto"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto" id="centroDeCusto">
@@ -124,7 +124,13 @@ include_once 'auth.php'; // Proteção de sessão
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor Destinado'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" placeholder="<?php echo __('Ex: Marketing, RH, TI'); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
                                             <select class="form-control" name="fornecedor" id="fornecedor">
@@ -143,7 +149,60 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Row 4: Datas, Imagem e Status -->
+                                <!-- Row 4: Dados Financeiros / Nota Fiscal (New) -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados de Compra / Nota Fiscal'); ?></h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Número da Nota Fiscal'); ?></label>
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: NF-123456" required pattern="[A-Za-z0-9\- ]{3,}" title="O número da nota fiscal deve ter pelo menos 3 caracteres (letras, números, espaços ou hífen)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="anexo_nota_fiscal"><?php echo __('Anexar Nota Fiscal (PDF/Imagem)'); ?></label>
+                                            <input class="form-control-file" name="anexo_nota_fiscal" id="anexo_nota_fiscal" type="file" accept=".pdf,image/*">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hardware Details (Conditional) -->
+                                <div id="hardwareSection" style="display: none; border-left: 4px solid #2c404a; padding-left: 15px; margin-bottom: 25px; background: #f8f9fc; padding-top: 10px; padding-bottom: 5px; border-radius: 5px;">
+                                    <h5 class="text-primary font-weight-bold mb-3"><?php echo __('Especificações de Hardware'); ?></h5>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="memoria"><?php echo __('Memória RAM'); ?></label>
+                                                <input class="form-control" name="memoria" id="memoria" type="text" placeholder="Ex: 16GB DDR4">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="processador"><?php echo __('Processador'); ?></label>
+                                                <input class="form-control" name="processador" id="processador" type="text" placeholder="Ex: Intel i7-1185G7">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="armazenamento"><?php echo __('Capacidade Armazenamento'); ?></label>
+                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" placeholder="Ex: 512GB">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="tipo_armazenamento"><?php echo __('Tipo de Armazenamento'); ?></label>
+                                                <select class="form-control" name="tipo_armazenamento" id="tipo_armazenamento">
+                                                    <option value="SSD">SSD</option>
+                                                    <option value="HD">HD</option>
+                                                    <option value="NVMe">NVMe</option>
+                                                    <option value="Híbrido">Híbrido</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 5: Datas, Imagem e Status -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -201,6 +260,31 @@ include_once 'auth.php'; // Proteção de sessão
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function() {
+            function toggleFields() {
+                var cat = $('#categoria').val();
+                
+                // Hardware Section (CPU, RAM, Disk)
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') {
+                    $('#hardwareSection').slideDown();
+                } else {
+                    $('#hardwareSection').slideUp();
+                }
+
+                // Host Name visibility
+                if (cat === 'Monitor' || cat === 'Periféricos') {
+                    $('#hostnameContainer').slideUp();
+                    $('#hostName').removeAttr('required');
+                } else {
+                    $('#hostnameContainer').slideDown();
+                    $('#hostName').attr('required', 'required');
+                }
+            }
+            $('#categoria').change(toggleFields);
+            toggleFields(); // Initial check
+        });
+    </script>
 </body>
 
 </html>

@@ -78,12 +78,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <i class="fas fa-ticket-alt"></i><span><?php echo __('Central de Chamados'); ?></span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link <?php echo (strpos($current_page, 'relatorio') !== false) ? 'active' : ''; ?>"
-            href="relatorios.php">
-            <i class="fas fa-file-invoice"></i><span><?php echo __('Relatórios Internos'); ?></span>
-        </a>
-    </li>
+    <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'relatorio') !== false) ? 'active' : ''; ?>"
+                href="relatorios.php">
+                <i class="fas fa-file-invoice"></i><span><?php echo __('Relatórios Internos'); ?></span>
+            </a>
+        </li>
+    <?php endif; ?>
 
     <hr class="sidebar-divider">
 

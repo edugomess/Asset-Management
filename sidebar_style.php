@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <style>
+    /* Global Animation Speedup */
+    .animate__animated {
+        --animate-duration: 0.5s !important;
+    }
     /* Premium Sidebar Design - Glassmorphism & Animations */
     :root {
         --sidebar-bg-start: #06222b;
@@ -28,7 +32,8 @@
         background: linear-gradient(180deg, var(--sidebar-bg-start) 0%, var(--sidebar-bg-end) 100%) !important;
         box-shadow: 10px 0 30px rgba(88, 109, 133, 0.3) !important;
         border-right: 0px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        will-change: transform, width;
         z-index: 1050;
         min-height: 100vh !important;
         overflow: visible !important; /* Allow hover effects to cross sidebar boundary */
@@ -70,7 +75,7 @@
         background: linear-gradient(90deg, var(--sidebar-bg-end) 0%, var(--sidebar-bg-end) 100%);
         padding: 1rem 0;
         z-index: 1051;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         display: block !important; /* Ensure it shows up if it was d-none */
     }
@@ -95,7 +100,8 @@
     .card-shadow {
         box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
         border: none !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        will-change: transform, opacity;
     }
 
     .card-shadow:hover {
@@ -157,7 +163,7 @@
     .nav-link {
         padding: 0.65rem 1.2rem !important;
         border-radius: 14px !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         font-weight: 500 !important;
         font-size: 0.92rem !important;
         color: var(--sidebar-text) !important;

@@ -154,7 +154,7 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                 <?php include_once 'topbar.php'; ?>
 
                 <div class="container-fluid">
-                    <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                    <div class="row animate__animated animate__fadeInUp">
                         <!-- Card: Incidentes Recorrentes -->
                         <div class="col-lg-6 mb-4">
                             <div class="card shadow card-shadow border-bottom-warning h-100">
@@ -242,7 +242,7 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                     </div>
 
                     <!-- Seção: Guia de Melhores Práticas e Consultoria por IA -->
-                    <div class="row animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <div class="row animate__animated animate__fadeInUp">
                         <div class="col-12 mb-4">
                             <div class="card shadow card-shadow">
                                 <div class="card-header py-3">
@@ -339,10 +339,10 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
 
     <!-- Scripts de Funcionalidade -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="/assets/js/theme.js"></script>
-    <script src="/assets/js/global_search.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/assets/js/bs-init.js" defer></script>
+    <script src="/assets/js/theme.js" defer></script>
+    <script src="/assets/js/global_search.js" defer></script>
     <script>
         $(document).ready(function () {
             /**

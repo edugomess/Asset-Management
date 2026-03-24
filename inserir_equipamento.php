@@ -6,64 +6,93 @@
 include 'conexao.php';
 session_start();
 
-$categoria = $_POST['categoria'];
-$fabricante = $_POST['fabricante'];
-$modelo = $_POST['modelo'];
-$tag = $_POST['tag'];
-$hostName = $_POST['hostName'];
-$valor = $_POST['valor'];
-$macAdress = $_POST['macAdress'];
-$status = $_POST['status'];
-$dataAtivacao = $_POST['dataAtivacao'];
-$centroDeCusto = $_POST['centroDeCusto'];
-$fornecedor = $_POST['fornecedor'];
-$descricao = $_POST['descricao'];
+$categoria = mysqli_real_escape_string($conn, $_POST['categoria']);
+$fabricante = mysqli_real_escape_string($conn, $_POST['fabricante']);
+$modelo = mysqli_real_escape_string($conn, $_POST['modelo']);
+$tag = mysqli_real_escape_string($conn, $_POST['tag']);
+$hostName = mysqli_real_escape_string($conn, $_POST['hostName']);
+$valor = mysqli_real_escape_string($conn, $_POST['valor']);
+$macAdress = mysqli_real_escape_string($conn, $_POST['macAdress']);
+$status = mysqli_real_escape_string($conn, $_POST['status']);
+$dataAtivacao = mysqli_real_escape_string($conn, $_POST['dataAtivacao']);
+$centroDeCusto = mysqli_real_escape_string($conn, $_POST['centroDeCusto']);
+$fornecedor = mysqli_real_escape_string($conn, $_POST['fornecedor']);
+$descricao = mysqli_real_escape_string($conn, $_POST['descricao']);
+$setor = mysqli_real_escape_string($conn, $_POST['setor']);
 
-$imagem = '/assets/img/no-image.png'; // Valor padrão solicitado pelo usuário
+// Novos campos
+$memoria = isset($_POST['memoria']) ? mysqli_real_escape_string($conn, $_POST['memoria']) : null;
+$processador = isset($_POST['processador']) ? mysqli_real_escape_string($conn, $_POST['processador']) : null;
+$armazenamento = isset($_POST['armazenamento']) ? mysqli_real_escape_string($conn, $_POST['armazenamento']) : null;
+$tipo_armazenamento = isset($_POST['tipo_armazenamento']) ? mysqli_real_escape_string($conn, $_POST['tipo_armazenamento']) : null;
+$numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_string($conn, $_POST['numero_nota_fiscal']) : null;
 
+// Validação básica de Nota Fiscal
+if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) < 3) {
+    echo "<script>alert('Erro: O número da Nota Fiscal é obrigatório e deve ter pelo menos 3 caracteres.'); window.history.back();</script>";
+    exit();
+}
+
+$imagem = '/assets/img/no-image.png';
+$anexo_nota_fiscal = null;
+
+// Upload da Imagem do Ativo
 if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = 'assets/img/ativos/';
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
-
-    $fileInfo = pathinfo($_FILES['imagem']['name']);
-    $extension = strtolower($fileInfo['extension']);
-    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-    if (in_array($extension, $allowedExtensions)) {
-        // We might need to generate a temp ID or just use timestamp since we don't have asset ID yet
-        $newFileName = 'ativo_new_' . time() . '.' . $extension;
-        $targetPath = $uploadDir . $newFileName;
-
-        if (move_uploaded_file($_FILES['imagem']['tmp_name'], $targetPath)) {
-            $imagem = '/' . $targetPath;
-        }
+    $extension = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
+    $newFileName = 'ativo_' . time() . '_' . rand(100, 999) . '.' . $extension;
+    if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadDir . $newFileName)) {
+        $imagem = '/' . $uploadDir . $newFileName;
     }
 }
 
-$sql = "INSERT INTO ativos (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, centroDeCusto, fornecedor, descricao, imagem, dataAtivacao)
-        VALUES ('$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', '$centroDeCusto', '$fornecedor', '$descricao', '$imagem', '$dataAtivacao')";
+// Upload do Anexo da Nota Fiscal
+if (isset($_FILES['anexo_nota_fiscal']) && $_FILES['anexo_nota_fiscal']['error'] === UPLOAD_ERR_OK) {
+    $uploadDirNF = 'assets/img/notas/';
+    if (!file_exists($uploadDirNF)) {
+        mkdir($uploadDirNF, 0777, true);
+    }
+    $extensionNF = strtolower(pathinfo($_FILES['anexo_nota_fiscal']['name'], PATHINFO_EXTENSION));
+    $newFileNameNF = 'nf_' . time() . '_' . rand(100, 999) . '.' . $extensionNF;
+    if (move_uploaded_file($_FILES['anexo_nota_fiscal']['tmp_name'], $uploadDirNF . $newFileNameNF)) {
+        $anexo_nota_fiscal = '/' . $uploadDirNF . $newFileNameNF;
+    }
+}
+
+$sql = "INSERT INTO ativos (
+            categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, 
+            centroDeCusto, setor, fornecedor, descricao, imagem, dataAtivacao, 
+            memoria, processador, armazenamento, tipo_armazenamento, 
+            numero_nota_fiscal, anexo_nota_fiscal
+        ) VALUES (
+            '$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', 
+            '$centroDeCusto', '$setor', '$fornecedor', '$descricao', '$imagem', '$dataAtivacao', 
+            " . ($memoria ? "'$memoria'" : "NULL") . ", 
+            " . ($processador ? "'$processador'" : "NULL") . ", 
+            " . ($armazenamento ? "'$armazenamento'" : "NULL") . ", 
+            " . ($tipo_armazenamento ? "'$tipo_armazenamento'" : "NULL") . ", 
+            " . ($numero_nota_fiscal ? "'$numero_nota_fiscal'" : "NULL") . ", 
+            " . ($anexo_nota_fiscal ? "'$anexo_nota_fiscal'" : "NULL") . "
+        )";
 
 $inserir = mysqli_query($conn, $sql);
 
 if ($inserir) {
     $ativo_id = mysqli_insert_id($conn);
-    $usuario_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL'; // Assumes session is started
-    $acao = 'Criação';
-    $detalhes = 'Ativo criado no sistema.';
-
-    $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, '$acao', '$detalhes')";
-    mysqli_query($conn, $sql_historico); // Execute the history insert
+    $usuario_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL';
+    $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, 'Criação', 'Ativo criado com hardware e nota fiscal.')";
+    mysqli_query($conn, $sql_historico);
 
     echo "<script>
             alert('" . __('Equipamento cadastrado com sucesso!') . "');
             window.location.href = 'equipamentos.php';
           </script>";
-    exit();
 } else {
     echo "<script>
-            alert('" . __('Erro ao cadastrar equipamento: ') . "' + " . json_encode(mysqli_error($conn)) . ");
+            alert('" . __('Erro ao cadastrar: ') . "' + " . json_encode(mysqli_error($conn)) . ");
             window.history.back();
           </script>";
 }

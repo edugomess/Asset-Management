@@ -11,9 +11,9 @@ $columns = [
 ];
 
 $pdf = new ReportGenerator('Relatório de Chamados por Solicitante', $columns, $conn);
-$sql = "SELECT u.nome as nome_solicitante, COUNT(*) as qtd 
+$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome) as nome_solicitante, COUNT(*) as qtd 
         FROM chamados c 
         JOIN usuarios u ON c.usuario_id = u.id_usuarios 
-        GROUP BY u.nome 
+        GROUP BY u.nome, u.sobrenome 
         ORDER BY qtd DESC";
 $pdf->generate($sql);

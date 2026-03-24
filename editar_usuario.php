@@ -130,15 +130,21 @@ $can_edit_all = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuari
                                     </div>
                                 </div>
 
-                                <!-- Row 5: Telefone e Centro de Custo -->
+                                <!-- Row 5: Telefone, Setor e Centro de Custo -->
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="telefone"><?php echo __('Telefone / Contato'); ?></label>
                                             <input class="form-control" name="telefone" id="telefone" type="text" value="<?php echo htmlspecialchars($user['telefone']); ?>" <?php echo $can_edit_all ? '' : 'readonly'; ?>>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" value="<?php echo htmlspecialchars($user['setor'] ?? ''); ?>" placeholder="<?php echo __('Ex: TI / RH'); ?>" <?php echo $can_edit_all ? '' : 'readonly'; ?>>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="centroDeCusto"><?php echo __('Centro de Custo'); ?></label>
                                             <select class="form-control" name="centroDeCusto" id="centroDeCusto" <?php echo $can_edit_all ? '' : 'disabled'; ?>>

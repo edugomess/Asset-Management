@@ -20,4 +20,4 @@ $columns = [
 // Landscape orientation ('L')
 $pdf = new ReportGenerator('Relatório Geral de Ativos', $columns, $conn, 'L');
 $sql = "SELECT categoria, fabricante, modelo, tag, hostName, valor, status, centroDeCusto, dataAtivacao FROM ativos ORDER BY categoria, modelo";
-$pdf->generate($sql);
+$pdf->generate($sql, 'dataAtivacao');

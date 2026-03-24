@@ -174,6 +174,10 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                         <div class="detail-value"><?php echo htmlspecialchars($usuario['funcao']); ?></div>
                                     </div>
                                     <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Setor'); ?></div>
+                                        <div class="detail-value"><?php echo htmlspecialchars($usuario['setor'] ?? '-'); ?></div>
+                                    </div>
+                                    <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
                                         <div class="detail-value text-primary font-weight-bold">
                                             <?php 
@@ -217,6 +221,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                         <thead>
                                             <tr>
                                                 <th><?php echo __('Modelo'); ?></th>
+                                                <th><?php echo __('Especificações'); ?></th>
                                                 <th><?php echo __('Tag'); ?></th>
                                                 <th><?php echo __('Status'); ?></th>
                                             </tr>
@@ -236,10 +241,21 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                                     <?php else: ?>
                                                     class="no-click-row"
                                                     <?php endif; ?>>
-                                                    <td><?php echo htmlspecialchars($asset['modelo']); ?></td>
+                                                    <td>
+                                                        <strong><?php echo htmlspecialchars($asset['modelo']); ?></strong>
+                                                    </td>
+                                                    <td>
+                                                        <?php 
+                                                        $specs = [];
+                                                        if (!empty($asset['memoria'])) $specs[] = $asset['memoria'];
+                                                        if (!empty($asset['processador'])) $specs[] = $asset['processador'];
+                                                        if (!empty($asset['armazenamento'])) $specs[] = $asset['armazenamento'];
+                                                        echo !empty($specs) ? '<small class="text-muted">' . htmlspecialchars(implode(' / ', $specs)) . '</small>' : '-';
+                                                        ?>
+                                                    </td>
                                                     <td>
                                                         <?php if ($can_click): ?>
-                                                            <a href="perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>">
+                                                            <a href="perfil_ativo.php?id=<?php echo $asset['id_asset']; ?>" class="font-weight-bold">
                                                                 <?php echo htmlspecialchars($asset['tag']); ?>
                                                             </a>
                                                         <?php else: ?>
@@ -257,7 +273,7 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                             else:
                                             ?>
                                                 <tr>
-                                                    <td colspan="3" class="text-center text-muted py-3">
+                                                    <td colspan="4" class="text-center text-muted py-3">
                                                         <?php echo __('Nenhum ativo atribuído a este usuário.'); ?>
                                                     </td>
                                                 </tr>

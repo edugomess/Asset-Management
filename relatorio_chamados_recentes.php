@@ -15,7 +15,7 @@ $columns = [
 
 $pdf = new ReportGenerator('Relatório de Chamados Recentes (30 dias)', $columns, $conn);
 $date_limit = date('Y-m-d', strtotime('-30 days'));
-$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, u.nome as nome_solicitante 
+$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, CONCAT(u.nome, ' ', u.sobrenome) as nome_solicitante 
         FROM chamados c 
         LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
         WHERE c.data_abertura >= '$date_limit' 

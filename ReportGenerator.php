@@ -12,6 +12,8 @@ class ReportGenerator extends FPDF
     protected $reportTitle;
     protected $columns;
     protected $conn;
+    protected $startDate;
+    protected $endDate;
 
     public static function getLogoPath($conn)
     {
@@ -27,13 +29,21 @@ class ReportGenerator extends FPDF
 
     public function __construct($title, $columns, $conn, $orientation = 'P')
     {
-        // Inicializa o FPDF com orientação (P=Retrato, L=Paisagem) e papel A4
+        // ... (auth check remains the same) ...
+        if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte')) {
+            die($this->utf8_to_iso88591('⚠️ Acesso Negado.'));
+        }
+
         parent::__construct($orientation, 'mm', 'A4');
-        $this->SetMargins(6, 6, 6); // Margens equilibradas de 6mm
+        $this->SetMargins(6, 6, 6);
         $this->SetAutoPageBreak(true, 10);
         $this->reportTitle = $title;
         $this->columns = $columns;
         $this->conn = $conn;
+
+        // Captura datas do período se disponíveis
+        $this->startDate = isset($_GET['start']) ? $this->conn->real_escape_string($_GET['start']) : null;
+        $this->endDate = isset($_GET['end']) ? $this->conn->real_escape_string($_GET['end']) : null;
     }
 
     public function Header()
@@ -57,6 +67,18 @@ class ReportGenerator extends FPDF
         $this->SetFont('Arial', 'B', 12);
         $this->SetTextColor(0, 0, 0);
         $this->Cell(0, 10, $this->utf8_to_iso88591(mb_strtoupper($this->reportTitle)), 0, 1, 'C');
+
+        // Exibir Período se filtrado
+        if ($this->startDate || $this->endDate) {
+            $this->SetFont('Arial', 'I', 9);
+            $this->SetTextColor(100, 100, 100);
+            $periodo = 'Período: ';
+            $periodo .= $this->startDate ? date('d/m/Y', strtotime($this->startDate)) : 'Início';
+            $periodo .= ' até ';
+            $periodo .= $this->endDate ? date('d/m/Y', strtotime($this->endDate)) : 'Hoje';
+            $this->Cell(0, 5, $this->utf8_to_iso88591($periodo), 0, 1, 'C');
+            $this->Ln(2);
+        }
         
         $this->Line(6, 23, 204, 23); // Linha horizontal moderna (210 - 6 - 6 = 198 span)
         $this->Ln(5);
@@ -73,20 +95,61 @@ class ReportGenerator extends FPDF
         $this->SetTextColor(0, 0, 0);
     }
 
-    function Footer()
+    public function Footer()
     {
         $this->SetY(-15);
         $this->SetFont('Arial', 'I', 8);
         $this->Cell(0, 10, $this->utf8_to_iso88591('Página ') . $this->PageNo(), 0, 0, 'C');
     }
 
-    function utf8_to_iso88591($text)
+    public function utf8_to_iso88591($text)
     {
         return iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $text);
     }
 
-    function generate($sql)
+    public function generate($sql, $dateColumn = null)
     {
+        // Tenta detectar a coluna de data se não for informada
+        if (!$dateColumn && ($this->startDate || $this->endDate)) {
+            if (stripos($sql, 'FROM chamados c') !== false) {
+                $dateColumn = 'c.data_abertura';
+            } elseif (stripos($sql, 'FROM chamados') !== false) {
+                $dateColumn = 'data_abertura';
+            } elseif (stripos($sql, 'FROM ativos a') !== false) {
+                $dateColumn = 'a.dataAtivacao';
+            } elseif (stripos($sql, 'FROM ativos') !== false) {
+                $dateColumn = 'dataAtivacao';
+            } elseif (stripos($sql, 'FROM manutencao m') !== false) {
+                $dateColumn = 'm.data_inicio';
+            } elseif (stripos($sql, 'FROM manutencao') !== false) {
+                $dateColumn = 'data_inicio';
+            } elseif (stripos($sql, 'FROM licencas') !== false) {
+                $dateColumn = 'data_aquisicao';
+            }
+        }
+
+        // Aplica filtro de data se uma coluna foi definida ou detectada
+        if ($dateColumn && ($this->startDate || $this->endDate)) {
+            $where = "";
+            if ($this->startDate && $this->endDate) {
+                $where = "$dateColumn BETWEEN '{$this->startDate}' AND '{$this->endDate}'";
+            } elseif ($this->startDate) {
+                $where = "$dateColumn >= '{$this->startDate}'";
+            } elseif ($this->endDate) {
+                $where = "$dateColumn <= '{$this->endDate}'";
+            }
+
+            if (!empty($where)) {
+                // Insere o filtro antes de ORDER BY, GROUP BY ou LIMIT para evitar erro de sintaxe
+                $parts = preg_split('/(ORDER\s+BY|GROUP\s+BY|LIMIT)/i', $sql, 2, PREG_SPLIT_DELIM_CAPTURE);
+                $baseSql = $parts[0];
+                $suffix = isset($parts[1]) ? $parts[1] . $parts[2] : '';
+
+                $connector = (stripos($baseSql, 'WHERE') !== false) ? ' AND ' : ' WHERE ';
+                $sql = $baseSql . $connector . $where . ' ' . $suffix;
+            }
+        }
+
         if (isset($_GET['format']) && $_GET['format'] == 'xlsx') {
             $this->generateExcel($sql);
             return;
@@ -96,6 +159,7 @@ class ReportGenerator extends FPDF
         $this->SetFont('Arial', '', 8);
 
         $result = $this->conn->query($sql);
+        // ... (rest of logic remains same) ...
 
         if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
@@ -110,8 +174,14 @@ class ReportGenerator extends FPDF
                             $val = date('d/m/Y', strtotime($val));
                         }
                     }
-                    // Truncate if too long
-                    $val = substr($val, 0, 40);
+                    // Truncate precisely to prevent leakage if it's too long for the column
+                    $cellWidth = $col['width'] - 1; // 0.5mm margin on each side
+                    if ($this->GetStringWidth($this->utf8_to_iso88591($val)) > $cellWidth) {
+                        while ($this->GetStringWidth($this->utf8_to_iso88591($val . '..')) > $cellWidth && mb_strlen($val) > 0) {
+                            $val = mb_substr($val, 0, -1);
+                        }
+                        $val .= '..';
+                    }
 
                     $this->Cell($col['width'], 7, $this->utf8_to_iso88591($val), 1, 0, $col['align']);
                 }
@@ -128,7 +198,7 @@ class ReportGenerator extends FPDF
      * Gera um arquivo Excel (.xls) baseado em uma tabela HTML.
      * Utiliza cabeçalhos HTTP para forçar o download.
      */
-    function generateExcel($sql)
+    public function generateExcel($sql)
     {
         $result = $this->conn->query($sql);
         $filename = str_replace(' ', '_', $this->reportTitle) . "_" . date('Y-m-d_H-i-s') . ".xls";

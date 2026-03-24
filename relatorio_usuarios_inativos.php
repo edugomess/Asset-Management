@@ -9,6 +9,6 @@ $columns = [
 ];
 
 $pdf = new ReportGenerator('Relatório de Usuários Inativos', $columns, $conn);
-$sql = "SELECT nome, email, funcao, status FROM usuarios WHERE status = 'Inativo' ORDER BY nome";
+$sql = "SELECT CONCAT(nome, ' ', sobrenome) as nome, email, funcao, status FROM usuarios WHERE status = 'Inativo' ORDER BY nome, sobrenome";
 $pdf->generate($sql);
 ?>

@@ -6,14 +6,14 @@
 require('ReportGenerator.php');
 
 $columns = [
-    ['header' => 'Solicitante', 'width' => 80, 'align' => 'L', 'field' => 'nome_solicitante'],
-    ['header' => 'Chamados Abertos', 'width' => 60, 'align' => 'C', 'field' => 'qtd']
+    ['header' => 'Solicitante (Setor)', 'width' => 110, 'align' => 'L', 'field' => 'nome_solicitante'],
+    ['header' => 'Chamados', 'width' => 45, 'align' => 'C', 'field' => 'qtd']
 ];
 
 $pdf = new ReportGenerator('Relatório de Chamados por Solicitante', $columns, $conn);
-$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome) as nome_solicitante, COUNT(*) as qtd 
+$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as nome_solicitante, COUNT(*) as qtd 
         FROM chamados c 
         JOIN usuarios u ON c.usuario_id = u.id_usuarios 
-        GROUP BY u.nome, u.sobrenome 
+        GROUP BY u.nome, u.sobrenome, u.setor 
         ORDER BY qtd DESC";
 $pdf->generate($sql);

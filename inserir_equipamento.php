@@ -27,9 +27,9 @@ $armazenamento = isset($_POST['armazenamento']) ? mysqli_real_escape_string($con
 $tipo_armazenamento = isset($_POST['tipo_armazenamento']) ? mysqli_real_escape_string($conn, $_POST['tipo_armazenamento']) : null;
 $numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_string($conn, $_POST['numero_nota_fiscal']) : null;
 
-// Validação básica de Nota Fiscal
-if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) < 3) {
-    echo "<script>alert('Erro: O número da Nota Fiscal é obrigatório e deve ter pelo menos 3 caracteres.'); window.history.back();</script>";
+// Validação rigorosa de Chave de Acesso NF-e
+if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
+    echo "<script>alert('Erro: A Chave de Acesso é obrigatória e deve ter exatamente 44 dígitos numéricos.'); window.history.back();</script>";
     exit();
 }
 
@@ -82,8 +82,16 @@ $inserir = mysqli_query($conn, $sql);
 
 if ($inserir) {
     $ativo_id = mysqli_insert_id($conn);
+    
+    // Gerar Service Tag padronizada: TAG-XXXXXX (ex: TAG-000123)
+    $generated_tag = 'TAG-' . str_pad($ativo_id, 6, '0', STR_PAD_LEFT);
+    
+    // Atualizar o registro com a nova tag gerada
+    $sql_update_tag = "UPDATE ativos SET tag = '$generated_tag' WHERE id_asset = $ativo_id";
+    mysqli_query($conn, $sql_update_tag);
+
     $usuario_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL';
-    $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, 'Criação', 'Ativo criado com hardware e nota fiscal.')";
+    $sql_historico = "INSERT INTO historico_ativos (ativo_id, usuario_id, acao, detalhes) VALUES ('$ativo_id', $usuario_id, 'Criação', 'Ativo criado e Service Tag gerada automaticamente: $generated_tag')";
     mysqli_query($conn, $sql_historico);
 
     echo "<script>

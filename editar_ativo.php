@@ -179,8 +179,8 @@ if (!$asset) {
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Número da Nota Fiscal'); ?></label>
-                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" value="<?php echo htmlspecialchars($asset['numero_nota_fiscal']); ?>" placeholder="Ex: NF-123456" required pattern="[A-Za-z0-9\- ]{3,}" title="O número da nota fiscal deve ter pelo menos 3 caracteres (letras, números, espaços ou hífen)">
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></label>
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" value="<?php echo htmlspecialchars($asset['numero_nota_fiscal']); ?>" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}" title="A chave de acesso deve ter exatamente 44 dígitos numéricos">
                                         </div>
                                     </div>
                                     <div class="col-md-8">

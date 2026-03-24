@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tipo_armazenamento = isset($_POST['tipo_armazenamento']) ? mysqli_real_escape_string($conn, $_POST['tipo_armazenamento']) : null;
     $numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_string($conn, $_POST['numero_nota_fiscal']) : null;
 
-    // Validação básica de Nota Fiscal
-    if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) < 3) {
-        echo "<script>alert('Erro: O número da Nota Fiscal é obrigatório e deve ter pelo menos 3 caracteres.'); window.history.back();</script>";
+    // Validação rigorosa de Chave de Acesso NF-e
+    if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
+        echo "<script>alert('Erro: A Chave de Acesso é obrigatória e deve ter exatamente 44 dígitos numéricos.'); window.history.back();</script>";
         exit();
     }
 

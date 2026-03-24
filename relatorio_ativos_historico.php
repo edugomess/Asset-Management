@@ -8,12 +8,12 @@ require('ReportGenerator.php');
 $columns = [
     ['header' => 'Data', 'width' => 45, 'align' => 'C', 'field' => 'data_evento', 'format' => 'date'],
     ['header' => 'Tag/Patrimônio', 'width' => 45, 'align' => 'L', 'field' => 'tag'],
-    ['header' => 'Responsável', 'width' => 60, 'align' => 'L', 'field' => 'usuario'],
+    ['header' => 'Responsável (Setor)', 'width' => 80, 'align' => 'L', 'field' => 'usuario'],
     ['header' => 'Ação', 'width' => 50, 'align' => 'L', 'field' => 'acao'],
     ['header' => 'Detalhes', 'width' => 77, 'align' => 'L', 'field' => 'detalhes']
 ];
 
-$sql = "SELECT h.data_evento, a.tag, CONCAT(u.nome, ' ', u.sobrenome) as usuario, h.acao, h.detalhes 
+$sql = "SELECT h.data_evento, a.tag, CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as usuario, h.acao, h.detalhes 
         FROM historico_ativos h 
         JOIN ativos a ON h.ativo_id = a.id_asset 
         JOIN usuarios u ON h.usuario_id = u.id_usuarios 

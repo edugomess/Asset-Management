@@ -10,12 +10,12 @@ $columns = [
     ['header' => 'Título', 'width' => 60, 'align' => 'L', 'field' => 'titulo'],
     ['header' => 'Data Abertura', 'width' => 40, 'align' => 'C', 'field' => 'data_abertura', 'format' => 'date'],
     ['header' => 'Status', 'width' => 35, 'align' => 'C', 'field' => 'status'],
-    ['header' => 'Solicitante', 'width' => 40, 'align' => 'L', 'field' => 'nome_solicitante']
+    ['header' => 'Solicitante (Setor)', 'width' => 70, 'align' => 'L', 'field' => 'nome_solicitante']
 ];
 
 $pdf = new ReportGenerator('Relatório de Chamados Recentes (30 dias)', $columns, $conn);
 $date_limit = date('Y-m-d', strtotime('-30 days'));
-$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, CONCAT(u.nome, ' ', u.sobrenome) as nome_solicitante 
+$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as nome_solicitante 
         FROM chamados c 
         LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
         WHERE c.data_abertura >= '$date_limit' 

@@ -14,8 +14,8 @@ $row_info = mysqli_fetch_assoc($res_info);
 $software = $row_info ? $row_info['software'] : 'Desconhecido';
 
 $columns = [
-    ['header' => 'Usuário', 'width' => 70, 'align' => 'L', 'field' => 'usuario'],
-    ['header' => 'Email', 'width' => 80, 'align' => 'L', 'field' => 'email'],
+    ['header' => 'Usuário (Setor)', 'width' => 100, 'align' => 'L', 'field' => 'usuario'],
+    ['header' => 'Email', 'width' => 60, 'align' => 'L', 'field' => 'email'],
     ['header' => 'Data de Atribuição', 'width' => 40, 'align' => 'C', 'field' => 'data_formatada']
 ];
 
@@ -23,7 +23,7 @@ $columns = [
 $pdf = new ReportGenerator("Relatório de Atribuições: $software", $columns, $conn, 'P');
 
 // Query para buscar os usuários atribuídos
-$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome) as usuario, u.email, 
+$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as usuario, u.email, 
                DATE_FORMAT(al.data_atribuicao, '%d/%m/%Y %H:%i') as data_formatada
         FROM atribuicoes_licencas al 
         JOIN usuarios u ON al.id_usuario = u.id_usuarios 

@@ -185,6 +185,31 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 </div>
                             </div>
 
+                            <!-- Identificação Visual (QR Code) -->
+                            <div class="info-card shadow card-shadow mb-4 text-center">
+                                <h6 class="font-weight-bold text-primary mb-3"><?php echo __('Identificação Visual'); ?></h6>
+                                <div class="p-2 bg-white d-inline-block rounded shadow-sm mb-3">
+                                    <div id="qrcode"></div>
+                                    <?php
+                                    $qr_data = "ID: " . $id . "\n" .
+                                               "Tag: " . $ativo['tag'] . "\n" .
+                                               "Modelo: " . $ativo['modelo'] . "\n" .
+                                               "Fabricante: " . $ativo['fabricante'] . "\n" .
+                                               "MAC: " . $ativo['macAdress'];
+                                    ?>
+                                </div>
+                                <div class="mt-0">
+                                    <span class="badge badge-dark p-2" id="tag_badge_code" style="font-size: 1rem; border-radius: 8px; letter-spacing: 1px;">
+                                        <?php echo htmlspecialchars($ativo['tag']); ?>
+                                    </span>
+                                </div>
+                                <div class="mt-3">
+                                    <button class="btn btn-outline-primary btn-sm btn-block" onclick="printAssetTag()" style="border-radius: 8px;">
+                                        <i class="fas fa-print mr-1"></i><?php echo __('Imprimir Etiqueta'); ?>
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Ações -->
                             <div class="info-card shadow card-shadow mb-4 text-center">
                                 <h6 class="font-weight-bold text-primary mb-3"><?php echo __('Ações Rápidas'); ?></h6>
@@ -329,9 +354,14 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="detail-label"><?php echo __('Nota Fiscal'); ?></div>
-                                        <div class="detail-value">
-                                            <?php echo htmlspecialchars($ativo['numero_nota_fiscal'] ?? '-'); ?>
+                                        <div class="detail-label"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></div>
+                                        <div class="detail-value" style="word-break: break-all;">
+                                            <span id="nfNumber"><?php echo htmlspecialchars($ativo['numero_nota_fiscal'] ?? '-'); ?></span>
+                                            <?php if (!empty($ativo['numero_nota_fiscal'])): ?>
+                                                <button onclick="copyNF('<?php echo $ativo['numero_nota_fiscal']; ?>')" class="btn btn-sm btn-link text-primary p-0 ml-2" title="<?php echo __('Copiar Chave'); ?>">
+                                                    <i id="copyIcon" class="fas fa-copy"></i>
+                                                </button>
+                                            <?php endif; ?>
                                             <?php if (!empty($ativo['anexo_nota_fiscal'])): ?>
                                                 <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>" target="_blank" class="badge badge-primary ml-2">
                                                     <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
@@ -569,6 +599,96 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
         </div>
     </div>
     <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+    // Inicializar QR Code
+    document.addEventListener("DOMContentLoaded", function() {
+        const qrContainer = document.getElementById("qrcode");
+        if (qrContainer) {
+            new QRCode(qrContainer, {
+                text: <?php echo json_encode($qr_data); ?>,
+                width: 150,
+                height: 150,
+                colorDark : "#2c404a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            // Ajustar imagem gerada para ser responsiva
+            const qrImg = qrContainer.querySelector('img');
+            if (qrImg) qrImg.classList.add('img-fluid');
+        }
+    });
+
+    function printAssetTag() {
+        const qrImg = document.querySelector('#qrcode img').src;
+        const tagText = document.getElementById('tag_badge_code').innerText;
+        const assetModel = <?php echo json_encode($ativo['modelo']); ?>;
+        
+        const printWindow = window.open('', '_blank', 'width=400,height=500');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Imprimir Etiqueta - ${tagText}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+                    body { margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; background: white; }
+                    .label-container { text-align: center; width: 220px; padding: 10px; border: 1px dashed #ccc; border-radius: 10px; }
+                    img { width: 180px; height: 180px; }
+                    .tag-text { font-size: 1.4rem; font-weight: 800; color: #000; margin-top: 5px; border-top: 2px solid #000; padding-top: 5px; }
+                    .asset-info { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+                    @media print {
+                        .label-container { border: none; }
+                        body { padding: 0; }
+                    }
+                </style>
+            </head>
+            <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
+                <div class="label-container">
+                    <div class="asset-info">${assetModel}</div>
+                    <img src="${qrImg}">
+                    <div class="tag-text">${tagText}</div>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    function copyNF(text) {
+        function showSuccess() {
+            const icon = document.getElementById('copyIcon');
+            icon.classList.remove('fa-copy');
+            icon.classList.add('fa-check', 'text-success');
+            setTimeout(() => {
+                icon.classList.remove('fa-check', 'text-success');
+                icon.classList.add('fa-copy');
+            }, 2000);
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                if (document.execCommand('copy')) showSuccess();
+            } catch (err) {
+                console.error('Erro no fallback de cópia:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        if (!navigator.clipboard) {
+            fallbackCopy(text);
+        } else {
+            navigator.clipboard.writeText(text).then(showSuccess, () => fallbackCopy(text));
+        }
+    }
+    </script>
 </body>
 
 </html>

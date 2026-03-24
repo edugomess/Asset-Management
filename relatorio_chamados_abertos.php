@@ -10,11 +10,11 @@ $columns = [
     ['header' => 'Título', 'width' => 70, 'align' => 'L', 'field' => 'titulo'],
     ['header' => 'Data Abertura', 'width' => 30, 'align' => 'C', 'field' => 'data_abertura', 'format' => 'date'],
     ['header' => 'Categoria', 'width' => 38, 'align' => 'L', 'field' => 'categoria'],
-    ['header' => 'Solicitante', 'width' => 40, 'align' => 'L', 'field' => 'nome_solicitante']
+    ['header' => 'Solicitante (Setor)', 'width' => 70, 'align' => 'L', 'field' => 'nome_solicitante']
 ];
 
 $pdf = new ReportGenerator('Relatório de Chamados Abertos', $columns, $conn);
-$sql = "SELECT c.id, c.titulo, c.data_abertura, c.categoria, CONCAT(u.nome, ' ', u.sobrenome) as nome_solicitante 
+$sql = "SELECT c.id, c.titulo, c.data_abertura, c.categoria, CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as nome_solicitante 
         FROM chamados c 
         LEFT JOIN usuarios u ON c.usuario_id = u.id_usuarios 
         WHERE c.status = 'Aberto' 

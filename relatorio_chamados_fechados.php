@@ -10,11 +10,11 @@ $columns = [
     ['header' => 'Título', 'width' => 75, 'align' => 'L', 'field' => 'titulo'],
     ['header' => 'Data Abertura', 'width' => 30, 'align' => 'C', 'field' => 'data_abertura', 'format' => 'date'],
     ['header' => 'Status', 'width' => 28, 'align' => 'C', 'field' => 'status'],
-    ['header' => 'Resolvido Por', 'width' => 45, 'align' => 'L', 'field' => 'nome_tecnico']
+    ['header' => 'Resolvido Por (Setor)', 'width' => 70, 'align' => 'L', 'field' => 'nome_tecnico']
 ];
 
 $pdf = new ReportGenerator('Relatório de Chamados Fechados', $columns, $conn);
-$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, CONCAT(u.nome, ' ', u.sobrenome) as nome_tecnico 
+$sql = "SELECT c.id, c.titulo, c.data_abertura, c.status, CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as nome_tecnico 
         FROM chamados c 
         LEFT JOIN usuarios u ON c.responsavel_id = u.id_usuarios 
         WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado') 

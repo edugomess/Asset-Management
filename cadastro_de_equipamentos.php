@@ -82,7 +82,14 @@ include_once 'auth.php'; // Proteção de sessão
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag / Service Tag'); ?></label>
-                                            <input class="form-control" name="tag" id="tag" type="text" placeholder="<?php echo __('Ex: ABC123D'); ?>" required="">
+                                            <?php
+                                            // Buscar próximo ID para preenchimento automático
+                                            $res_next = mysqli_query($conn, "SHOW TABLE STATUS LIKE 'ativos'");
+                                            $row_next = mysqli_fetch_assoc($res_next);
+                                            $next_id = $row_next['Auto_increment'];
+                                            $preview_tag = 'TAG-' . str_pad($next_id, 6, '0', STR_PAD_LEFT);
+                                            ?>
+                                            <input class="form-control" name="tag" id="tag" type="text" value="<?php echo $preview_tag; ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-4" id="hostnameContainer">
@@ -154,8 +161,8 @@ include_once 'auth.php'; // Proteção de sessão
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Número da Nota Fiscal'); ?></label>
-                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: NF-123456" required pattern="[A-Za-z0-9\- ]{3,}" title="O número da nota fiscal deve ter pelo menos 3 caracteres (letras, números, espaços ou hífen)">
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></label>
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}" title="A chave de acesso deve ter exatamente 44 dígitos numéricos">
                                         </div>
                                     </div>
                                     <div class="col-md-6">

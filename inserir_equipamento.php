@@ -13,12 +13,12 @@ $tag = mysqli_real_escape_string($conn, $_POST['tag']);
 $hostName = mysqli_real_escape_string($conn, $_POST['hostName']);
 $valor = mysqli_real_escape_string($conn, $_POST['valor']);
 $macAdress = mysqli_real_escape_string($conn, $_POST['macAdress']);
-$status = mysqli_real_escape_string($conn, $_POST['status']);
-$dataAtivacao = mysqli_real_escape_string($conn, $_POST['dataAtivacao']);
-$centroDeCusto = mysqli_real_escape_string($conn, $_POST['centroDeCusto']);
-$fornecedor = mysqli_real_escape_string($conn, $_POST['fornecedor']);
-$descricao = mysqli_real_escape_string($conn, $_POST['descricao']);
 $setor = mysqli_real_escape_string($conn, $_POST['setor']);
+$tier = isset($_POST['tier']) ? mysqli_real_escape_string($conn, $_POST['tier']) : null;
+$assigned_type = isset($_POST['assigned_type']) ? mysqli_real_escape_string($conn, $_POST['assigned_type']) : 'Usuario';
+$assigned_to = !empty($_POST['assigned_to']) ? intval($_POST['assigned_to']) : 'NULL';
+$id_local = !empty($_POST['id_local']) ? intval($_POST['id_local']) : 'NULL';
+$parent_asset_id = !empty($_POST['parent_asset_id']) ? intval($_POST['parent_asset_id']) : 'NULL';
 
 // Novos campos
 $memoria = isset($_POST['memoria']) ? mysqli_real_escape_string($conn, $_POST['memoria']) : null;
@@ -26,6 +26,9 @@ $processador = isset($_POST['processador']) ? mysqli_real_escape_string($conn, $
 $armazenamento = isset($_POST['armazenamento']) ? mysqli_real_escape_string($conn, $_POST['armazenamento']) : null;
 $tipo_armazenamento = isset($_POST['tipo_armazenamento']) ? mysqli_real_escape_string($conn, $_POST['tipo_armazenamento']) : null;
 $numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_string($conn, $_POST['numero_nota_fiscal']) : null;
+$gpu = isset($_POST['gpu']) ? mysqli_real_escape_string($conn, $_POST['gpu']) : null;
+$polegadas = isset($_POST['polegadas']) ? mysqli_real_escape_string($conn, $_POST['polegadas']) : null;
+$is_scanner = isset($_POST['is_scanner']) ? mysqli_real_escape_string($conn, $_POST['is_scanner']) : null;
 
 // Validação rigorosa de Chave de Acesso NF-e
 if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
@@ -72,7 +75,8 @@ $sql = "INSERT INTO ativos (
             categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, 
             centroDeCusto, setor, fornecedor, descricao, imagem, dataAtivacao, 
             memoria, processador, armazenamento, tipo_armazenamento, 
-            numero_nota_fiscal, anexo_nota_fiscal
+            numero_nota_fiscal, anexo_nota_fiscal, tier, gpu, polegadas, is_scanner,
+            assigned_type, assigned_to, id_local, parent_asset_id
         ) VALUES (
             '$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', 
             '$centroDeCusto', '$setor', '$fornecedor', '$descricao', '$imagem', '$dataAtivacao', 
@@ -81,7 +85,15 @@ $sql = "INSERT INTO ativos (
             " . ($armazenamento ? "'$armazenamento'" : "NULL") . ", 
             " . ($tipo_armazenamento ? "'$tipo_armazenamento'" : "NULL") . ", 
             " . ($numero_nota_fiscal ? "'$numero_nota_fiscal'" : "NULL") . ", 
-            " . ($anexo_nota_fiscal ? "'$anexo_nota_fiscal'" : "NULL") . "
+            " . ($anexo_nota_fiscal ? "'$anexo_nota_fiscal'" : "NULL") . ",
+            " . ($tier ? "'$tier'" : "NULL") . ",
+            " . ($gpu ? "'$gpu'" : "NULL") . ",
+            " . ($polegadas ? "'$polegadas'" : "NULL") . ",
+            " . ($is_scanner ? "'$is_scanner'" : "NULL") . ",
+            '$assigned_type', 
+            $assigned_to, 
+            $id_local, 
+            $parent_asset_id
         )";
 
 $inserir = mysqli_query($conn, $sql);

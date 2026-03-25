@@ -529,7 +529,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
                                             <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
-                                                href="chamados.php">&nbsp;Ver Chamados</a>
+                                                href="chamados.php">&nbsp;<?php echo __('Ver Chamados'); ?></a>
                                         </div>
                                     </div>
                                 </div>
@@ -600,7 +600,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                     <tr>
                                                         <th><?php echo __('Responsável'); ?></th>
                                                         <th><?php echo __('Chamados Resolvidos'); ?></th>
-                                                        <th><?php echo __('Dentro do Prazo'); ?> </th>
+                                                        <th><?php echo __('Dentro do Prazo'); ?></th>
                                                         <th><?php echo __('% SLA Atingido'); ?></th>
                                                     </tr>
                                                 </thead>

@@ -162,12 +162,11 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                             onclick="event.stopPropagation();">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a class="btn btn-danger"
-                                                            href="apagar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
+                                                        <button class="btn btn-danger"
                                                             title="<?php echo __('Excluir Usuário'); ?>"
-                                                            onclick="event.stopPropagation();">
+                                                            onclick="event.stopPropagation(); deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
                                                             <i class="fas fa-trash"></i>
-                                                        </a>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                                 <?php
@@ -232,6 +231,25 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
     <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        function deleteUser(id, name) {
+            Swal.fire({
+                title: '<?php echo __('Excluir Usuário?'); ?>',
+                text: '<?php echo __('Deseja realmente remover o acesso de:'); ?> ' + name + '?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#2c404a',
+                confirmButtonText: '<?php echo __('Sim, excluir'); ?>',
+                cancelButtonText: '<?php echo __('Cancelar'); ?>'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `apagar_usuario.php?id=${id}`;
+                }
+            });
+        }
+    </script>
     <script src="/assets/js/global_search.js"></script>
 </body>
 

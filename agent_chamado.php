@@ -26,32 +26,45 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
 }
 
 if (!$ia_geral || !$ia_chamados) {
-    $reason = !$ia_geral ? 'Agente de IA' : 'Assistente de Chamados';
-    echo json_encode(['reply' => "⚠️ O $reason está desabilitado no momento."]);
+    $reason = (!$ia_geral) ? __('Agente de IA') : __('Assistente de Chamados');
+    echo json_encode(['reply' => "⚠️ " . sprintf(__('%s está desabilitado no momento.'), $reason)]);
     exit;
 }
+
+$lang = $_SESSION['language'] ?? 'pt-BR';
+$is_en = ($lang === 'en-US');
 
 $titulo = isset($_POST['titulo']) ? $_POST['titulo'] : '';
 $descricao = isset($_POST['descricao']) ? $_POST['descricao'] : '';
 
 if (empty($titulo)) {
-    echo json_encode(['reply' => 'Título não fornecido.']);
+    echo json_encode(['reply' => __('Título não fornecido.')]);
     exit;
 }
 
-$prompt = "Você é um especialista em suporte de TI (Nível 2/3). 
+if ($is_en) {
+    $prompt = "You are an IT support specialist (Level 2/3).
+Analyze the following ticket:
+Title: $titulo
+Description: $descricao
+
+Based on this, suggest an immediate resolution action (short step-by-step) and a possible root cause.
+Respond directly and professionally in English. Use bold for important commands or terms.";
+} else {
+    $prompt = "Você é um especialista em suporte de TI (Nível 2/3). 
 Analise o seguinte chamado:
 Título: $titulo
 Descrição: $descricao
 
 Com base nisso, sugira uma ação imediata de resolução (passo a passo curto) e uma possível causa raiz.
 Responda de forma direta e profissional em português brasileiro. Use negritos para destacar comandos ou termos importantes.";
+}
 
 $reply = callAI($prompt);
 
 if ($reply) {
     echo json_encode(['reply' => $reply]);
 } else {
-    echo json_encode(['reply' => '⚠️ O assistente de IA está indisponível para este chamado no momento.']);
+    echo json_encode(['reply' => '⚠️ ' . __('O assistente de IA está indisponível para este chamado no momento.')]);
 }
 $conn->close();

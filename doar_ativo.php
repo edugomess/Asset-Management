@@ -9,7 +9,7 @@ try {
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!isset($data['id_asset'])) {
-        throw new Exception('ID do ativo não fornecido.');
+        throw new Exception(__('ID do ativo não fornecido.'));
     }
 
     $id_asset = $data['id_asset'];
@@ -33,7 +33,7 @@ try {
         $diff = $data_ativacao->diff($data_atual);
 
         if ($diff->days < 3) {
-            echo json_encode(['success' => false, 'message' => 'Ativo não elegível para doação. Necessário aguardar 3 dias após ativação.']);
+            echo json_encode(['success' => false, 'message' => __('Ativo não elegível para doação. Necessário aguardar 3 dias após ativação.')]);
             exit;
         }
 
@@ -67,10 +67,10 @@ try {
 
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao transferir o ativo para a tabela de doações.']);
+            echo json_encode(['success' => false, 'message' => __('Erro ao transferir o ativo para a tabela de doações.')]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
+        echo json_encode(['success' => false, 'message' => __('Ativo não encontrado.')]);
     }
 
     // Reativar verificação de chave estrangeira

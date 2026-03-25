@@ -13,27 +13,6 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     exit();
 }
 
-// LÓGICA DE TRANSFERÊNCIA: Processa doações de ativos enviadas via AJAX/ID
-if (isset($_GET['id'])) {
-    $ativoId = $_GET['id'];
-
-    // Move os dados básicos do ativo para o histórico de 'venda' (doações)
-    $sql = "INSERT INTO venda (categoria, modelo, tag) 
-            SELECT categoria, modelo, tag FROM ativos WHERE id = '$ativoId'";
-
-    if (mysqli_query($conn, $sql)) {
-        // Exclui o ativo do inventário ativo após o registro da transferência
-        $deleteSql = "DELETE FROM ativos WHERE id = '$ativoId'";
-        if (mysqli_query($conn, $deleteSql)) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false]);
-        }
-    } else {
-        echo json_encode(['success' => false]);
-    }
-    exit;
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -253,7 +232,7 @@ if (isset($_GET['id'])) {
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td>
                                                         <?php
-                                                        echo !empty($row['nome_usuario']) ? htmlspecialchars($row['nome_usuario']) : __('Não encontrado');
+                                                        echo !empty($row['nome_usuario']) ? htmlspecialchars($row['nome_usuario']) : __('Desconhecido');
                                                         ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
@@ -296,7 +275,7 @@ if (isset($_GET['id'])) {
                                                 <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='10'>" . __('Nenhum ativo atribuído encontrado.') . "</td></tr>";
+                                            echo "<tr><td colspan='10' class='text-center py-4 text-muted'>" . __('Nenhum ativo atribuído encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>
@@ -329,30 +308,45 @@ if (isset($_GET['id'])) {
                 <script>
 
                     // Função para doar o ativo (transferir para a tabela "venda" - agora doações)
+                    // Função para doar o ativo (transferir para a tabela "venda" - agora doações)
                     function sellAsset(assetId) {
-                        if (confirm("<?php echo __('Tem certeza que deseja doar este ativo?'); ?>")) {
-                            fetch('doar_ativo.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ id_asset: assetId }) // Envia o id do ativo como JSON
-                            })
+                        Swal.fire({
+                            title: '<?php echo __('Confirmar Doação?'); ?>',
+                            text: "<?php echo __('Tem certeza que deseja doar este ativo? O registro será movido do inventário ativo.'); ?>",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#2c404a',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: '<?php echo __('Sim, doar'); ?>',
+                            cancelButtonText: '<?php echo __('Cancelar'); ?>'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fetch('doar_ativo.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ id_asset: assetId })
+                                })
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.success) {
-                                        alert("<?php echo __('Ativo doado com sucesso!'); ?>");
-                                        location.reload(); // Recarrega a página para refletir as mudanças
+                                        Swal.fire({
+                                            title: '<?php echo __('Sucesso!'); ?>',
+                                            text: '<?php echo __('Ativo doado com sucesso!'); ?>',
+                                            icon: 'success',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        }).then(() => location.reload());
                                     } else {
-                                        alert("<?php echo __('Ativo doado com sucesso!'); ?>");
-                                        location.reload();
+                                        Swal.fire('<?php echo __('Erro'); ?>', data.message || '<?php echo __('Erro ao processar doação!'); ?>', 'error');
                                     }
                                 })
                                 .catch(error => {
-                                    alert("<?php echo __('Erro ao processar doação!'); ?>");
-                                    location.reload();
+                                    Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Falha na comunicação com o servidor.'); ?>', 'error');
                                 });
-                        }
+                            }
+                        });
                     }
 
 

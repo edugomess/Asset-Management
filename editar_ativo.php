@@ -122,12 +122,68 @@ if (!$asset) {
                                     </div>
                                 </div>
 
-                                <!-- Row 3: Financeiro e Organização -->
+                                <!-- Row 3: Atribuição e Localização -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Atribuição e Localização'); ?></h5>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
-                                            <input class="form-control" name="valor" id="valor" type="number" step="0.01" value="<?php echo $asset['valor']; ?>" required="">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Atribuição'); ?></label>
+                                            <select class="form-control" name="assigned_type" id="assigned_type">
+                                                <option value="Usuario" <?php echo ($asset['assigned_type'] == 'Usuario') ? 'selected' : ''; ?>><?php echo __('Responsabilidade Individual (Usuário)'); ?></option>
+                                                <option value="Local" <?php echo ($asset['assigned_type'] == 'Local') ? 'selected' : ''; ?>><?php echo __('Responsabilidade Coletiva (Infraestrutura)'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="user_assignment" <?php echo ($asset['assigned_type'] == 'Local') ? 'style="display: none;"' : ''; ?>>
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="assigned_to"><?php echo __('Atribuído a'); ?></label>
+                                            <select class="form-control" name="assigned_to" id="assigned_to">
+                                                <option value=""><?php echo __('Ninguém (Disponível)'); ?></option>
+                                                <?php
+                                                $sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios WHERE status = 'Ativo' ORDER BY nome ASC";
+                                                $res_users = $conn->query($sql_users);
+                                                while($u = $res_users->fetch_assoc()) {
+                                                    $sel_u = ($asset['assigned_to'] == $u['id_usuarios']) ? 'selected' : '';
+                                                    echo "<option value='{$u['id_usuarios']}' $sel_u>{$u['nome']} {$u['sobrenome']}</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="location_assignment" <?php echo ($asset['assigned_type'] == 'Usuario') ? 'style="display: none;"' : ''; ?>>
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="id_local"><?php echo __('Local de Instalação'); ?></label>
+                                            <select class="form-control" name="id_local" id="id_local">
+                                                <option value=""><?php echo __('Selecione o Local...'); ?></option>
+                                                <?php
+                                                function listLocaisEdit($conn, $parentId = null, $prefix = '', $currentVal = null) {
+                                                    $sql = $parentId === null ? "SELECT * FROM locais WHERE id_parent_local IS NULL" : "SELECT * FROM locais WHERE id_parent_local = $parentId";
+                                                    $res = $conn->query($sql);
+                                                    while($l = $res->fetch_assoc()) {
+                                                        $sel_l = ($currentVal == $l['id_local']) ? 'selected' : '';
+                                                        echo "<option value='{$l['id_local']}' $sel_l>$prefix {$l['nome_local']} ({$l['tipo_local']})</option>";
+                                                        listLocaisEdit($conn, $l['id_local'], $prefix . '— ', $currentVal);
+                                                    }
+                                                }
+                                                listLocaisEdit($conn, null, '', $asset['id_local']);
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="parent_asset_id"><?php echo __('Vincular a Ativo Pai'); ?></label>
+                                            <select class="form-control" name="parent_asset_id" id="parent_asset_id">
+                                                <option value=""><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_assets = "SELECT id_asset, tag, modelo FROM ativos WHERE categoria IN ('Notebook', 'Desktop', 'Servidores', 'Workstation', 'Firewalls', 'Switches') AND id_asset != {$asset['id_asset']} ORDER BY tag ASC";
+                                                $res_assets = $conn->query($sql_assets);
+                                                while($a = $res_assets->fetch_assoc()) {
+                                                    $sel_a = ($asset['parent_asset_id'] == $a['id_asset']) ? 'selected' : '';
+                                                    echo "<option value='{$a['id_asset']}' $sel_a>{$a['tag']} - {$a['modelo']}</option>";
+                                                }
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -148,13 +204,29 @@ if (!$asset) {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                </div>
+
+                                <!-- Row 4: Financeiro e Organização -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados Financeiros e Status'); ?></h5>
+                                <div class="row">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor Destinado'); ?></label>
-                                            <input class="form-control" name="setor" id="setor" type="text" value="<?php echo htmlspecialchars($asset['setor'] ?? ''); ?>" placeholder="<?php echo __('Ex: Marketing, RH, TI'); ?>">
+                                            <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
+                                            <input class="form-control" name="valor" id="valor" type="number" step="0.01" value="<?php echo $asset['valor']; ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="status_new"><?php echo __('Status do Ativo'); ?></label>
+                                            <select class="form-control" name="status_new" id="status_new">
+                                                <option value="Disponível" <?php echo ($asset['status'] == 'Disponível') ? 'selected' : ''; ?>><?php echo __('Disponível'); ?></option>
+                                                <option value="Em uso" <?php echo ($asset['status'] == 'Em uso') ? 'selected' : ''; ?>><?php echo __('Em uso'); ?></option>
+                                                <option value="Em manutenção" <?php echo ($asset['status'] == 'Em manutenção') ? 'selected' : ''; ?>><?php echo __('Em manutenção'); ?></option>
+                                                <option value="Descartado/Leilão" <?php echo ($asset['status'] == 'Descartado/Leilão') ? 'selected' : ''; ?>><?php echo __('Descartado/Leilão'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
                                             <select class="form-control" name="fornecedor" id="fornecedor">
@@ -232,6 +304,40 @@ if (!$asset) {
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mt-3" id="gpu_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="gpu"><?php echo __('Placa Gráfica (GPU)'); ?></label>
+                                                <input class="form-control" name="gpu" id="gpu" type="text" value="<?php echo htmlspecialchars($asset['gpu'] ?? ''); ?>" placeholder="Ex: NVIDIA RTX 4090 24GB">
+                                            </div>
+                                        </div>
+                                        <!-- Polegadas (Monitor) -->
+                                        <div class="col-md-12 mt-3" id="inches_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="polegadas"><?php echo __('Polegadas (Monitor)'); ?></label>
+                                                <select class="form-control" name="polegadas" id="polegadas">
+                                                    <option value="">Selecione...</option>
+                                                    <?php 
+                                                    $pols = ["15\"", "17\"", "18.5\"", "19\"", "20\"", "21\"", "21.5\"", "22\"", "23\"", "23.8\"", "24\"", "27\"", "29\"", "32\"", "34\""];
+                                                    foreach($pols as $p) {
+                                                        $sel = (($asset['polegadas'] ?? '') == $p) ? 'selected' : '';
+                                                        echo "<option value=\"$p\" $sel>$p</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Scanner (Impressora) -->
+                                        <div class="col-md-12 mt-3" id="scanner_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="is_scanner"><?php echo __('Possui Scanner? (Multifuncional)'); ?></label>
+                                                <select class="form-control" name="is_scanner" id="is_scanner">
+                                                    <option value="Não" <?php echo (($asset['is_scanner'] ?? '') == 'Não') ? 'selected' : ''; ?>>Não (Impressora Simples)</option>
+                                                    <option value="Sim" <?php echo (($asset['is_scanner'] ?? '') == 'Sim') ? 'selected' : ''; ?>>Sim (Multifuncional)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Row 5: Visual, Datas e Status -->
@@ -253,11 +359,8 @@ if (!$asset) {
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="custom-control custom-switch" style="margin-top: 32px;">
-                                            <input type="hidden" name="status" value="Inativo">
-                                            <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" <?php echo ($asset['status'] == 'Ativo') ? 'checked' : ''; ?>>
-                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
-                                        </div>
+                                        <!-- Campo oculto para compatibilidade -->
+                                        <input type="hidden" name="status_old" value="<?php echo htmlspecialchars($asset['status']); ?>">
                                     </div>
                                 </div>
 
@@ -299,18 +402,82 @@ if (!$asset) {
     <script src="/assets/js/global_search.js"></script>
     <script>
         $(document).ready(function() {
+            // Atribuição Toggle
+            $('#assigned_type').change(function() {
+                if ($(this).val() === 'Usuario') {
+                    $('#user_assignment').show();
+                    $('#location_assignment').hide();
+                    $('#id_local').val('');
+                } else {
+                    $('#user_assignment').hide();
+                    $('#location_assignment').show();
+                    $('#assigned_to').val('');
+                }
+            });
+
             function toggleFields() {
                 var cat = $('#categoria').val();
                 
-                // Hardware Section (CPU, RAM, Disk)
-                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') {
+                // Hardware standard (Notebook, Desktop, Servidor, Workstation)
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores' || cat === 'Workstation') {
                     $('#hardwareSection').slideDown();
-                } else {
+                    $('#setor_container').hide();
+                    $('#tier_container').show();
+
+                    // GPU só para Workstation
+                    if (cat === 'Workstation') {
+                        $('#gpu_container').show();
+                    } else {
+                        $('#gpu_container').hide();
+                        $('#gpu').val('');
+                    }
+
+                    // Reset outros condicionais
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
+                    
+                    // Mostrar campos de hardware padrão
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
+                } 
+                // Monitor (Monitores)
+                else if (cat === 'Monitores') {
+                    $('#hardwareSection').slideDown();
+                    // Oculta campos de hardware não aplicáveis
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
+                    
+                    $('#inches_container').show();
+                    $('#gpu_container').hide();
+                    $('#scanner_container').hide();
+                    
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                }
+                // Impressora (Impressoras)
+                else if (cat === 'Impressoras') {
+                    $('#hardwareSection').slideDown();
+                    // Oculta campos de hardware não aplicáveis
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
+                    
+                    $('#scanner_container').show();
+                    $('#inches_container').hide();
+                    $('#gpu_container').hide();
+                    
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                }
+                else {
                     $('#hardwareSection').slideUp();
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                    
+                    // Reset
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
+                    $('#gpu_container').hide();
                 }
 
                 // Host Name visibility
-                if (cat === 'Monitor' || cat === 'Periféricos') {
+                if (cat === 'Monitor' || cat === 'Periféricos' || cat === 'Impressora') {
                     $('#hostnameContainer').slideUp();
                     $('#hostName').removeAttr('required');
                 } else {

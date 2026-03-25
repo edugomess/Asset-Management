@@ -9,19 +9,12 @@ include_once 'auth.php'; // Proteção de sessão
 <html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title><?php echo __('Cadastro de Equipamentos'); ?> - Asset MGT</title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
-    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=3265483e434712d72c41db9eebc4c8bb">
-    <link rel="stylesheet" href="/assets/css/Montserrat.css?h=d6a29779d310462e7fcdde7b9a80e0db">
-    <link rel="stylesheet" href="/assets/css/Nunito.css?h=5f41e73f827c7b56616237a1da13b6e2">
-    <link rel="stylesheet" href="/assets/css/Raleway.css?h=19488c1c6619bc9bd5c02de5f7ffbfd4">
-    <link rel="stylesheet" href="/assets/css/Roboto.css?h=193916adb9d7af47fe74d9a2270caac3">
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
-    <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
+    <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css">
+    <link rel="stylesheet" href="/assets/css/Footer-Dark.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
 </head>
@@ -104,12 +97,66 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
-                                <!-- Row 3: Financeiro e Organização -->
+                                <!-- Row 3: Atribuição e Localização -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Atribuição e Localização'); ?></h5>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
-                                            <input class="form-control" name="valor" id="valor" type="number" step="0.01" placeholder="<?php echo __('Ex: 4500.00'); ?>" required="">
+                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Atribuição'); ?></label>
+                                            <select class="form-control" name="assigned_type" id="assigned_type">
+                                                <option value="Usuario"><?php echo __('Responsabilidade Individual (Usuário)'); ?></option>
+                                                <option value="Local"><?php echo __('Responsabilidade Coletiva (Infraestrutura)'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="user_assignment">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="assigned_to"><?php echo __('Atribuído a'); ?></label>
+                                            <select class="form-control" name="assigned_to" id="assigned_to">
+                                                <option value=""><?php echo __('Ninguém (Disponível)'); ?></option>
+                                                <?php
+                                                $sql_users = "SELECT id_usuarios, nome, sobrenome FROM usuarios WHERE status = 'Ativo' ORDER BY nome ASC";
+                                                $res_users = $conn->query($sql_users);
+                                                while($u = $res_users->fetch_assoc()) {
+                                                    echo "<option value='{$u['id_usuarios']}'>{$u['nome']} {$u['sobrenome']}</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="location_assignment" style="display: none;">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="id_local"><?php echo __('Local de Instalação'); ?></label>
+                                            <select class="form-control" name="id_local" id="id_local">
+                                                <option value=""><?php echo __('Selecione o Local...'); ?></option>
+                                                <?php
+                                                function listLocais($conn, $parentId = null, $prefix = '') {
+                                                    $sql = $parentId === null ? "SELECT * FROM locais WHERE id_parent_local IS NULL" : "SELECT * FROM locais WHERE id_parent_local = $parentId";
+                                                    $res = $conn->query($sql);
+                                                    while($l = $res->fetch_assoc()) {
+                                                        echo "<option value='{$l['id_local']}'>$prefix {$l['nome_local']} ({$l['tipo_local']})</option>";
+                                                        listLocais($conn, $l['id_local'], $prefix . '— ');
+                                                    }
+                                                }
+                                                listLocais($conn);
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="parent_asset_id"><?php echo __('Vincular a Ativo Pai'); ?></label>
+                                            <select class="form-control" name="parent_asset_id" id="parent_asset_id">
+                                                <option value=""><?php echo __('Nenhum'); ?></option>
+                                                <?php
+                                                $sql_assets = "SELECT id_asset, tag, modelo FROM ativos WHERE categoria IN ('Notebook', 'Desktop', 'Servidores', 'Workstation') ORDER BY tag ASC";
+                                                $res_assets = $conn->query($sql_assets);
+                                                while($a = $res_assets->fetch_assoc()) {
+                                                    echo "<option value='{$a['id_asset']}'>{$a['tag']} - {$a['modelo']}</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            <small class="text-muted"><?php echo __('Ex: Monitor vinculado a um Desktop.'); ?></small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -129,13 +176,29 @@ include_once 'auth.php'; // Proteção de sessão
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                </div>
+
+                                <!-- Row 4: Financeiro e Organização -->
+                                <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados Financeiros e Status'); ?></h5>
+                                <div class="row">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor Destinado'); ?></label>
-                                            <input class="form-control" name="setor" id="setor" type="text" placeholder="<?php echo __('Ex: Marketing, RH, TI'); ?>">
+                                            <label class="text-gray-600 small font-weight-bold" for="valor"><?php echo __('Valor do Ativo (R$)'); ?></label>
+                                            <input class="form-control" name="valor" id="valor" type="number" step="0.01" placeholder="<?php echo __('Ex: 4500.00'); ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="status_new"><?php echo __('Status do Ativo'); ?></label>
+                                            <select class="form-control" name="status" id="status_new">
+                                                <option value="Disponível"><?php echo __('Disponível'); ?></option>
+                                                <option value="Em uso" selected><?php echo __('Em uso'); ?></option>
+                                                <option value="Em manutenção"><?php echo __('Em manutenção'); ?></option>
+                                                <option value="Descartado/Leilão"><?php echo __('Descartado/Leilão'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="fornecedor"><?php echo __('Fornecedor'); ?></label>
                                             <select class="form-control" name="fornecedor" id="fornecedor">
@@ -204,6 +267,48 @@ include_once 'auth.php'; // Proteção de sessão
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mt-3" id="gpu_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="gpu"><?php echo __('Placa Gráfica (GPU)'); ?></label>
+                                                <input class="form-control" name="gpu" id="gpu" type="text" placeholder="Ex: NVIDIA RTX 4090 24GB">
+                                            </div>
+                                        </div>
+                                        <!-- Polegadas (Monitor) -->
+                                        <div class="col-md-12 mt-3" id="inches_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="polegadas"><?php echo __('Polegadas (Monitor)'); ?></label>
+                                                <select class="form-control" name="polegadas" id="polegadas">
+                                                    <option value="">Selecione...</option>
+                                                    <option value="15\"">15"</option>
+                                                    <option value="17\"">17"</option>
+                                                    <option value="18.5\"">18.5"</option>
+                                                    <option value="19\"">19"</option>
+                                                    <option value="20\"">20"</option>
+                                                    <option value="21\"">21"</option>
+                                                    <option value="21.5\"">21.5"</option>
+                                                    <option value="22\"">22"</option>
+                                                    <option value="23\"">23"</option>
+                                                    <option value="23.8\"">23.8"</option>
+                                                    <option value="24\"">24"</option>
+                                                    <option value="27\"">27"</option>
+                                                    <option value="29\"">29" (UltraWide)</option>
+                                                    <option value="32\"">32"</option>
+                                                    <option value="34\"">34" (UltraWide)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Scanner (Impressora) -->
+                                        <div class="col-md-12 mt-3" id="scanner_container" style="display: none;">
+                                            <div class="form-group mb-0">
+                                                <label class="text-gray-600 small font-weight-bold" for="is_scanner"><?php echo __('Possui Scanner? (Multifuncional)'); ?></label>
+                                                <select class="form-control" name="is_scanner" id="is_scanner">
+                                                    <option value="Não">Não (Impressora Simples)</option>
+                                                    <option value="Sim">Sim (Multifuncional)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Outros Dados -->
@@ -221,11 +326,8 @@ include_once 'auth.php'; // Proteção de sessão
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="custom-control custom-switch" style="margin-top: 32px;">
-                                            <input type="hidden" name="status" value="Inativo">
-                                            <input type="checkbox" class="custom-control-input" id="statusSwitch" name="status" value="Ativo" checked>
-                                            <label class="custom-control-label" for="statusSwitch"><?php echo __('Ativo'); ?></label>
-                                        </div>
+                                        <!-- Campo oculto para compatibilidade com lógica antiga -->
+                                        <input type="hidden" name="status_old" value="Ativo">
                                     </div>
                                 </div>
 
@@ -285,12 +387,93 @@ include_once 'auth.php'; // Proteção de sessão
     <script>
         let currentAssetData = null;
         $(document).ready(function() {
+            // Lógica de Atribuição (Usuário vs Local)
+            $('#assigned_type').change(function() {
+                if ($(this).val() === 'Usuario') {
+                    $('#user_assignment').show();
+                    $('#location_assignment').hide();
+                    $('#id_local').val('');
+                } else {
+                    $('#user_assignment').hide();
+                    $('#location_assignment').show();
+                    $('#assigned_to').val('');
+                }
+            });
+
             function toggleFields() {
-                var cat = $('#categoria').val();
-                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores') { $('#hardwareSection').slideDown(); } else { $('#hardwareSection').slideUp(); }
-                if (cat === 'Monitor' || cat === 'Periféricos') { $('#hostnameContainer').slideUp(); $('#hostName').removeAttr('required'); } else { $('#hostnameContainer').slideDown(); $('#hostName').attr('required', 'required'); }
-            }
-            $('#categoria').change(toggleFields);
+                   // Lógica de Tiers vs Setores
+            $('#categoria').change(function() {
+                const cat = $(this).val();
+                
+                // Hardware standard (Notebook, Desktop, Servidor, Workstation)
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores' || cat === 'Workstation') {
+                    $('#hardwareSection').slideDown();
+                    $('#hostnameContainer').show();
+                    $('#hostName').prop('required', true);
+                    $('#setor_container').hide();
+                    $('#tier_container').show();
+
+                    // GPU só para Workstation
+                    if (cat === 'Workstation') {
+                        $('#gpu_container').show();
+                    } else {
+                        $('#gpu_container').hide();
+                        $('#gpu').val('');
+                    }
+                    
+                    // Reset outros condicionais
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
+                } 
+                // Monitor (Monitores)
+                else if (cat === 'Monitores') {
+                    $('#hardwareSection').slideDown();
+                    // Oculta campos de hardware não aplicáveis a monitor
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
+                    
+                    $('#inches_container').show();
+                    $('#gpu_container').hide();
+                    $('#scanner_container').hide();
+                    
+                    $('#hostnameContainer').hide();
+                    $('#hostName').prop('required', false);
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                }
+                // Impressora (Impressoras)
+                else if (cat === 'Impressoras') {
+                    $('#hardwareSection').slideDown();
+                    // Oculta campos de hardware não aplicáveis a impressora
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
+                    
+                    $('#scanner_container').show();
+                    $('#inches_container').hide();
+                    $('#gpu_container').hide();
+                    
+                    $('#hostnameContainer').hide();
+                    $('#hostName').prop('required', false);
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                }
+                else {
+                    $('#hardwareSection').slideUp();
+                    $('#hostnameContainer').hide();
+                    $('#hostName').prop('required', false);
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                    
+                    // Reset
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
+                    $('#gpu_container').hide();
+                }
+
+                // Garantir visibilidade dos campos de hardware se NÃO for monitor/impressora mas estiver na seção
+                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores' || cat === 'Workstation') {
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
+                }
+            }).trigger('change');
+}
             toggleFields();
 
             $('#assetForm').on('submit', function(e) {
@@ -334,24 +517,66 @@ include_once 'auth.php'; // Proteção de sessão
                 });
             });
 
-            $('#btn-print-reg').on('click', function() {
-                const qrImg = document.querySelector('#qrcode_reg img').src;
-                const printWindow = window.open('', '_blank', 'width=400,height=500');
-                printWindow.document.write(`
-                    <html><head><style>
-                        body { margin: 0; padding: 20px; text-align: center; font-family: sans-serif; }
-                        .label-container { width: 220px; padding: 10px; }
-                        img { width: 180px; height: 180px; }
-                        .tag { font-size: 1.4rem; font-weight: bold; border-top: 2px solid #000; margin-top: 10px; padding-top: 5px; }
-                        .model { font-size: 0.8rem; color: #666; margin-bottom: 5px; text-transform: uppercase; }
-                    </style></head>
-                    <body onload="window.print(); window.close();">
-                        <div class="model">${currentAssetData.modelo}</div>
-                        <img src="${qrImg}">
-                        <div class="tag">${currentAssetData.tag}</div>
-                    </body></html>
-                `);
-                printWindow.document.close();
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Lógica para alternar campos de atribuição
+            $('#assigned_type').on('change', function() {
+                if ($(this).val() === 'Usuario') {
+                    $('#user_assignment').show();
+                    $('#location_assignment').hide();
+                    $('#id_local').val('');
+                } else {
+                    $('#user_assignment').hide();
+                    $('#location_assignment').show();
+                    $('#assigned_to').val('');
+                }
+            });
+
+            // AJAX para inserção
+            $('#assetForm').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                $.ajax({
+                    url: 'inserir_equipamento.php',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        try {
+                            const res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire({
+                                    title: 'Sucesso!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ver Perfil',
+                                    cancelButtonText: 'Novo Cadastro'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = 'perfil_ativo.php?id=' + res.id;
+                                    } else {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                Swal.fire('Erro', res.message, 'error');
+                            }
+                        } catch (e) {
+                            Swal.fire('Erro', 'Resposta inválida do servidor: ' + response, 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Erro', 'Falha na comunicação com o servidor.', 'error');
+                    }
+                });
             });
         });
     </script>

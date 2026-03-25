@@ -376,7 +376,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th scope="col"><?php echo __('HostName'); ?></th>
                                             <th scope="col"><?php echo __('Valor Atual'); ?></th>
                                             <th scope="col"><?php echo __('MAC'); ?></th>
-                                            <th scope="col"><?php echo __('Setor'); ?></th>
+                                            <th scope="col"><?php echo __('Nível de Atribuição'); ?></th>
                                             <th scope="col"><?php echo __('CC'); ?></th>
                                             <?php if ($status_filter !== 'Manutencao'): ?>
                                                 <th scope="col"><?php echo __('Usuário'); ?></th>
@@ -456,7 +456,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                    <td><strong><?php echo htmlspecialchars($row['setor'] ?: '-'); ?></strong></td>
+                                                    <td><strong><?php echo htmlspecialchars(($row['tier'] ?: $row['setor']) ?: '-'); ?></strong></td>
                                                     <td>
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
@@ -499,13 +499,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <?php if (!$row['em_manutencao']): ?>
                                                                 <?php if ($assigned_to): ?>
                                                                     <button class='btn btn-dark btn-tamanho-fixo mr-2'
+                                                                        style="background: #5a5c69; border: none;"
                                                                         title="<?php echo __('Liberar'); ?>"
                                                                         onclick='event.stopPropagation(); unassignUser(<?php echo $row["id_asset"]; ?>)'><?php echo __('Liberar'); ?>
-                                                                        <i class='fas fa-user-minus'></i></button>
+                                                                        <i class='fas fa-user-minus ml-1'></i></button>
                                                                 <?php else: ?>
-                                                                    <button class='btn btn-info btn-tamanho-fixo mr-2' title="<?php echo __('Atribuir'); ?>"
+                                                                    <button class='btn btn-primary btn-tamanho-fixo mr-2' 
+                                                                        style="background: #2c404a; border: none;"
+                                                                        title="<?php echo __('Atribuir'); ?>"
                                                                         onclick='event.stopPropagation(); openAssignModal(<?php echo $row["id_asset"]; ?>)'><?php echo __('Atribuir'); ?>
-                                                                        <i class='fas fa-user-plus'></i></button>
+                                                                        <i class='fas fa-user-plus ml-1'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
@@ -568,40 +571,71 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </div>
     </div>
 
-    <!-- Modal para Atribuir Ativo a um Usuário -->
+    <!-- Modal para Atribuir Ativo a um Usuário (Live Search) -->
     <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
-                <div class="modal-header" style="background: #2c404a; color: white;">
-                    <h5 class="modal-title" id="assignModalLabel"><?php echo __('Atribuir Ativo'); ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" style="color: white;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-plus text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-0" id="assignModalLabel"><?php echo __('Atribuir Responsável'); ?></h5>
+                            <small class="text-white-50"><?php echo __('Vincular este ativo a um colaborador'); ?></small>
+                        </div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="assignForm">
-                    <div class="modal-body">
-                        <input type="hidden" id="assign_asset_id" name="id_asset">
-                        <div class="form-group">
-                            <label for="select_user_assign"><?php echo __('Selecionar Usuário'); ?></label>
-                            <select class="form-control" id="select_user_assign" name="id_usuario" required
-                                aria-label="Selecionar usuário para atribuição">
-                                <option value=""><?php echo __('Selecione...'); ?></option>
-                                <?php
-                                // Busca apenas usuários ativos para atribuição
-                                $users_res = mysqli_query($conn, "SELECT id_usuarios, nome FROM usuarios WHERE status = 'Ativo' ORDER BY nome");
-                                while ($u = mysqli_fetch_assoc($users_res)) {
-                                    echo "<option value='" . $u['id_usuarios'] . "'>" . htmlspecialchars($u['nome']) . "</option>";
-                                }
-                                ?>
-                            </select>
+                <div class="modal-body p-4 bg-light">
+                    <input type="hidden" id="assign_asset_id">
+                    
+                    <div class="search-container mb-4">
+                        <label class="text-gray-600 small font-weight-bold text-uppercase tracking-wider mb-2">
+                            <?php echo __('Buscar Colaborador'); ?>
+                        </label>
+                        <div class="input-group input-group-lg shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white border-right-0" style="border-radius: 0;">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                            </div>
+                            <input type="text" id="userInput" class="form-control border-left-0 pl-0 font-weight-bold" 
+                                   placeholder="<?php echo __('Nome, e-mail ou CPF...'); ?>" 
+                                   style="font-size: 1rem; height: 55px; border-radius: 0;">
                         </div>
                     </div>
-                    <div class="modal-footer" style="background: #f8f9fc;">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
-                        <button type="submit" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Atribuir'); ?></button>
+
+                    <div id="userResults" class="list-group shadow-sm mb-3" 
+                         style="max-height: 280px; overflow-y: auto; border-radius: 12px; display: none;">
+                        <!-- Resultados AJAX via JS -->
                     </div>
-                </form>
+
+                    <div id="noResults" class="text-center py-4 px-2" style="display: none;">
+                        <i class="fas fa-user-slash fa-3x text-gray-300 mb-3"></i>
+                        <p class="text-muted mb-0"><?php echo __('Nenhum usuário encontrado.'); ?></p>
+                        <small><?php echo __('Tente outros termos de busca.'); ?></small>
+                    </div>
+
+                    <div id="startTyping" class="text-center py-4 px-2">
+                        <i class="fas fa-keyboard fa-3x text-gray-200 mb-3"></i>
+                        <p class="text-muted mb-0"><?php echo __('Digite para iniciar a busca...'); ?></p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal">
+                        <?php echo __('Cancelar'); ?>
+                    </button>
+                    <div class="text-right">
+                        <small class="text-muted d-block" style="font-size: 0.7rem; line-height: 1;">
+                            <?php echo __('Sistema de Atribuição'); ?>
+                        </small>
+                        <span class="font-weight-bold text-dark" style="font-size: 0.8rem;">Asset Mgt v2</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -770,24 +804,85 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         // Abre o modal de atribuição definindo o ID do ativo
         function openAssignModal(id) {
             $('#assign_asset_id').val(id);
+            $('#userInput').val('').focus();
+            $('#userResults').hide().empty();
+            $('#startTyping').show();
+            $('#noResults').hide();
             $('#assignModal').modal('show');
         }
 
-        // Envia os dados para atribuir o usuário
-        $('#assignForm').on('submit', function (e) {
-            e.preventDefault();
-            $.post('ajax_ativos.php', {
-                action: 'assign',
-                id_asset: $('#assign_asset_id').val(),
-                id_usuario: $('#select_user_assign').val()
-            }, function (res) {
-                if (res.success) {
-                    location.reload();
+        // Busca de usuários em tempo real no modal
+        $('#userInput').on('keyup', function() {
+            const query = $(this).val();
+            if (query.length < 2) {
+                $('#userResults').hide().empty();
+                $('#startTyping').show();
+                $('#noResults').hide();
+                return;
+            }
+
+            $.getJSON('ajax_buscar_usuario.php', { q: query }, function(data) {
+                $('#startTyping').hide();
+                $('#userResults').empty();
+                
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        const avatar = user.foto_perfil ? user.foto_perfil : '/assets/img/avatars/avatar1.jpeg';
+                        const item = $(`
+                            <button class="list-group-item list-group-item-action border-0 d-flex align-items-center p-3" 
+                                    style="transition: all 0.2s;" onclick="confirmAssignment(${user.id_usuarios}, '${user.nome} ${user.sobrenome}')">
+                                <img src="${avatar}" class="rounded-circle mr-3" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #e3e6f0;">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 font-weight-bold text-dark">${user.nome} ${user.sobrenome}</h6>
+                                    <small class="text-muted"><i class="fas fa-id-badge mr-1"></i>${user.funcao || 'Funcional'} | <i class="fas fa-layer-group mr-1"></i>${user.setor || '-'}</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-300"></i>
+                            </button>
+                        `);
+                        $('#userResults').append(item);
+                    });
+                    $('#userResults').show();
+                    $('#noResults').hide();
                 } else {
-                    Swal.fire('Erro', res.message || 'Erro ao atribuir', 'error');
+                    $('#userResults').hide();
+                    $('#noResults').show();
                 }
-            }, 'json');
+            });
         });
+
+        // Efetua a atribuição após seleção
+        function confirmAssignment(userId, userName) {
+            const assetId = $('#assign_asset_id').val();
+            
+            Swal.fire({
+                title: '<?php echo __('Confirmar Atribuição?'); ?>',
+                text: '<?php echo __('Vincular este ativo a:'); ?> ' + userName,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '<?php echo __('Sim, atribuir'); ?>',
+                cancelButtonText: '<?php echo __('Cancelar'); ?>'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('ajax_ativos.php', {
+                        action: 'assign',
+                        id_asset: assetId,
+                        id_usuario: userId
+                    }, function(res) {
+                        if (res.success) {
+                            Swal.fire({
+                                title: '<?php echo __('Sucesso!'); ?>',
+                                text: '<?php echo __('Ativo atribuído corretamente.'); ?>',
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao atribuir'); ?>', 'error');
+                        }
+                    }, 'json');
+                }
+            });
+        }
 
         // Libera um ativo (remove a atribuição atual)
         function unassignUser(id) {
@@ -882,7 +977,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
             }
 
             if (!data.observacoes && type !== 'Insumo') {
-                Swal.fire('Aviso', 'Por favor, preencha as observações.', 'warning');
+                Swal.fire('<?php echo __('Aviso'); ?>', '<?php echo __('Por favor, preencha as observações.'); ?>', 'warning');
                 return;
             }
 
@@ -890,7 +985,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 if (res.success) {
                     location.reload();
                 } else {
-                    Swal.fire('Erro', res.message || 'Erro ao processar manutenção', 'error');
+                    Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao processar manutenção'); ?>', 'error');
                 }
             }, 'json');
         });
@@ -1001,42 +1096,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         if (res.success) {
                             location.reload();
                         } else {
-                            Swal.fire('Erro', res.message || 'Erro ao liberar manutenção', 'error');
+                            Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar manutenção'); ?>', 'error');
                         }
                     }, 'json');
                 }
             });
         }
 
-        function searchUsers() {
-            const q = document.getElementById('userSearch').value;
-            fetch(`search_users.php?query=${q}`)
-                .then(r => r.json())
-                .then(users => {
-                    const list = document.getElementById('userList');
-                    list.innerHTML = '';
-                    users.forEach(u => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item list-group-item-action';
-                        li.textContent = u.name;
-                        li.onclick = () => assignUser(u.id);
-                        list.appendChild(li);
-                    });
-                });
-        }
-
-        function assignUser(uid) {
-            fetch('assign_asset.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id_asset: currentAssetId,
-                    assigned_to: uid
-                })
-            }).then(() => location.reload());
-        }
     </script>
 </body>
 

@@ -5,7 +5,7 @@ include 'conexao.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Método inválido.']);
+    echo json_encode(['success' => false, 'message' => __('Método inválido.')]);
     exit;
 }
 
@@ -14,7 +14,7 @@ $id_asset = isset($_POST['id_asset']) ? (int) $_POST['id_asset'] : 0;
 $admin_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : NULL;
 
 if ($id_asset <= 0) {
-    echo json_encode(['success' => false, 'message' => 'ID do ativo inválido.']);
+    echo json_encode(['success' => false, 'message' => __('ID do ativo inválido.')]);
     exit;
 }
 
@@ -47,7 +47,7 @@ switch ($action) {
     case 'assign':
         $id_usuario = isset($_POST['id_usuario']) ? (int) $_POST['id_usuario'] : 0;
         if ($id_usuario <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Usuário inválido.']);
+            echo json_encode(['success' => false, 'message' => __('Usuário inválido.')]);
             exit;
         }
 
@@ -86,7 +86,7 @@ switch ($action) {
         $val_upgrade = isset($_POST['valor_upgrade']) ? (float)$_POST['valor_upgrade'] : 0.00;
 
         if (empty($observacoes) && $tipo === 'Reparo') {
-            echo json_encode(['success' => false, 'message' => 'Observações são obrigatórias para reparo.']);
+            echo json_encode(['success' => false, 'message' => __('Observações são obrigatórias para reparo.')]);
             exit;
         }
 
@@ -199,7 +199,7 @@ switch ($action) {
         break;
 
     default:
-        echo json_encode(['success' => false, 'message' => 'Ação desconhecida.']);
+        echo json_encode(['success' => false, 'message' => __('Ação desconhecida.')]);
         break;
 }
 

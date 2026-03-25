@@ -55,6 +55,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'locais') !== false) ? 'active' : ''; ?>"
+                href="locais.php">
+                <i class="fas fa-map-marked-alt"></i><span><?php echo __('Locais & Infra'); ?></span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'fornecedor') !== false) ? 'active' : ''; ?>"
                 href="fornecedores.php">
                 <i class="fas fa-handshake"></i><span><?php echo __('Fornecedores'); ?></span>

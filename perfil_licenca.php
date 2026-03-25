@@ -197,8 +197,12 @@ $excedente = ($uso > $total);
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="detail-label"><?php echo __('Investimento Unitário'); ?></div>
-                                        <div class="detail-value text-success font-weight-bold">R$ <?php echo number_format($licenca['valor_unitario'], 2, ',', '.'); ?></div>
+                                        <div class="detail-value text-success font-weight-bold">
+                                            <?php 
+                                            $curr_lang = $_SESSION['language'] ?? 'pt-BR';
+                                            echo __('R$') . ' ' . (($curr_lang == 'en-US') ? number_format($licenca['valor_unitario'], 2, '.', ',') : number_format($licenca['valor_unitario'], 2, ',', '.')); 
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -43,6 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $status = mysqli_real_escape_string($conn, $_POST['status']);
     }
 
+    // Auto-derive status based on assignments, unless it's in maintenance
+    if ($status !== 'Em manutenção' && $status !== 'Descartado/Leilão') {
+        if ($assigned_to !== 'NULL' || $id_local !== 'NULL') {
+            $status = 'Em uso';
+        } else {
+            $status = 'Disponível';
+        }
+    }
+
     // Novos campos (Hardware e Nota Fiscal)
     $memoria = isset($_POST['memoria']) ? mysqli_real_escape_string($conn, $_POST['memoria']) : null;
     $processador = isset($_POST['processador']) ? mysqli_real_escape_string($conn, $_POST['processador']) : null;

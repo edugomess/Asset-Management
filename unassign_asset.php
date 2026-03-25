@@ -18,8 +18,8 @@ if ($result_check && mysqli_num_rows($result_check) > 0) {
     $nome_usuario_anterior = $row_check['nome'] . ' ' . $row_check['sobrenome'];
 }
 
-// Atualiza a tabela de ativos, removendo a atribuição do usuário
-$sql = "UPDATE ativos SET assigned_to = NULL WHERE id_asset = $assetId";
+// Atualiza a tabela de ativos, removendo a atribuição do usuário e voltando para Disponível
+$sql = "UPDATE ativos SET assigned_to = NULL, id_local = NULL, status = 'Disponível' WHERE id_asset = $assetId";
 
 if (mysqli_query($conn, $sql)) {
     $usuario_id = isset($_SESSION['id_usuarios']) ? $_SESSION['id_usuarios'] : 'NULL';

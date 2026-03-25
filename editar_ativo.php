@@ -206,6 +206,29 @@ if (!$asset) {
                                     </div>
                                 </div>
 
+                                <!-- Row 3.5: Organização (Tier/Setor) -->
+                                <div class="row">
+                                    <div class="col-md-6" id="tier_container">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
+                                            <select class="form-control" name="tier" id="tier">
+                                                <option value="" <?php echo empty($asset['tier']) ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
+                                                <option value="Tier 1" <?php echo ($asset['tier'] == 'Tier 1') ? 'selected' : ''; ?>>Tier 1</option>
+                                                <option value="Tier 2" <?php echo ($asset['tier'] == 'Tier 2') ? 'selected' : ''; ?>>Tier 2</option>
+                                                <option value="Tier 3" <?php echo ($asset['tier'] == 'Tier 3') ? 'selected' : ''; ?>>Tier 3</option>
+                                                <option value="Tier 4" <?php echo ($asset['tier'] == 'Tier 4') ? 'selected' : ''; ?>>Tier 4</option>
+                                                <option value="Infraestrutura" <?php echo ($asset['tier'] == 'Infraestrutura') ? 'selected' : ''; ?>>Infraestrutura</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="setor_container">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor / Departamento'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" value="<?php echo htmlspecialchars($asset['setor']); ?>" placeholder="<?php echo __('Ex: Financeiro'); ?>">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Row 4: Financeiro e Organização -->
                                 <h5 class="text-primary font-weight-bold mt-4 mb-3"><?php echo __('Dados Financeiros e Status'); ?></h5>
                                 <div class="row">
@@ -449,7 +472,7 @@ if (!$asset) {
                     $('#gpu_container').hide();
                     $('#scanner_container').hide();
                     
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
                 }
                 // Impressora (Impressoras)
@@ -462,12 +485,12 @@ if (!$asset) {
                     $('#inches_container').hide();
                     $('#gpu_container').hide();
                     
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
                 }
                 else {
                     $('#hardwareSection').slideUp();
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
                     
                     // Reset

@@ -15,6 +15,7 @@ include_once 'auth.php'; // Proteção de sessão
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css">
+    <title><?php echo __('Cadastro de Ativo'); ?> - Asset MGT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
 </head>
@@ -102,7 +103,7 @@ include_once 'auth.php'; // Proteção de sessão
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Atribuição'); ?></label>
+                                            <label class="text-gray-600 small font-weight-bold" for="assigned_type"><?php echo __('Tipo de Atribuição'); ?></label>
                                             <select class="form-control" name="assigned_type" id="assigned_type">
                                                 <option value="Usuario"><?php echo __('Responsabilidade Individual (Usuário)'); ?></option>
                                                 <option value="Local"><?php echo __('Responsabilidade Coletiva (Infraestrutura)'); ?></option>
@@ -174,6 +175,28 @@ include_once 'auth.php'; // Proteção de sessão
                                                 }
                                                 ?>
                                             </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3.5: Organização (Tier/Setor) -->
+                                <div class="row">
+                                    <div class="col-md-6" id="tier_container" style="display: none;">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
+                                            <select class="form-control" name="tier" id="tier">
+                                                <option value=""><?php echo __('Nenhum'); ?></option>
+                                                <option value="Tier 1">Tier 1 (Infraestrutura Crítica)</option>
+                                                <option value="Tier 2">Tier 2 (Infraestrutura Setorial)</option>
+                                                <option value="Tier 3">Tier 3 (Equipamentos de Uso Final)</option>
+                                                <option value="Tier 4">Tier 4 (Acessórios e Periféricos)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="setor_container">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="setor"><?php echo __('Setor / Departamento'); ?></label>
+                                            <input class="form-control" name="setor" id="setor" type="text" placeholder="<?php echo __('Ex: Financeiro'); ?>">
                                         </div>
                                     </div>
                                 </div>

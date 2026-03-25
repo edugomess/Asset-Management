@@ -51,7 +51,7 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = ?, status = 'Ativo' WHERE id_asset = ?");
+        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = ?, id_local = NULL, status = 'Em uso' WHERE id_asset = ?");
         $stmt->bind_param('ii', $id_usuario, $id_asset);
 
         if ($stmt->execute()) {
@@ -64,8 +64,27 @@ switch ($action) {
         $stmt->close();
         break;
 
+    case 'assign_local':
+        $id_local = isset($_POST['id_local']) ? (int) $_POST['id_local'] : 0;
+        if ($id_local <= 0) {
+            echo json_encode(['success' => false, 'message' => __('Local inválido.')]);
+            exit;
+        }
+        
+        $stmt = $conn->prepare("UPDATE ativos SET id_local = ?, assigned_to = NULL, status = 'Em uso' WHERE id_asset = ?");
+        $stmt->bind_param('ii', $id_local, $id_asset);
+        
+        if ($stmt->execute()) {
+            recordHistory($conn, $id_asset, $admin_id, 'Atribuição', "Ativo atribuído a um Local (ID $id_local)");
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => $conn->error]);
+        }
+        $stmt->close();
+        break;
+
     case 'unassign':
-        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = NULL, status = 'Ativo' WHERE id_asset = ?");
+        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = NULL, id_local = NULL, status = 'Disponível' WHERE id_asset = ?");
         $stmt->bind_param('i', $id_asset);
 
         if ($stmt->execute()) {

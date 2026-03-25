@@ -20,6 +20,13 @@ $assigned_to = !empty($_POST['assigned_to']) ? intval($_POST['assigned_to']) : '
 $id_local = !empty($_POST['id_local']) ? intval($_POST['id_local']) : 'NULL';
 $parent_asset_id = !empty($_POST['parent_asset_id']) ? intval($_POST['parent_asset_id']) : 'NULL';
 
+// Auto-derive status based on assignments
+if ($assigned_to !== 'NULL' || $id_local !== 'NULL') {
+    $status = 'Em uso';
+} else {
+    $status = 'Disponível';
+}
+
 // Novos campos
 $memoria = isset($_POST['memoria']) ? mysqli_real_escape_string($conn, $_POST['memoria']) : null;
 $processador = isset($_POST['processador']) ? mysqli_real_escape_string($conn, $_POST['processador']) : null;

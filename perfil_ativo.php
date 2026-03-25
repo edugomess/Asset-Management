@@ -120,7 +120,17 @@ $sql_filhos = "SELECT id_asset, tag, modelo, categoria, status FROM ativos WHERE
 $res_filhos = $conn->query($sql_filhos);
 
 // 3. UI Helpers
-$status_class = ($ativo['status'] === 'Ativo') ? 'success' : (($ativo['status'] === 'Manutencao' || $ativo['status'] === 'Manutenção') ? 'warning' : 'danger');
+$raw_status = ucfirst(strtolower($ativo['status']));
+$status_class = 'secondary';
+if (in_array($raw_status, ['Disponível', 'Disponivel', 'Ativo'])) {
+    $status_class = 'success';
+} elseif (in_array($raw_status, ['Em uso'])) {
+    $status_class = 'primary';
+} elseif (in_array($raw_status, ['Em manutenção', 'Manutenção', 'Manutencao'])) {
+    $status_class = 'warning';
+} else {
+    $status_class = 'danger';
+}
 $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>
@@ -194,9 +204,13 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 <div class="card-body bg-light">
                                     <div class="detail-label text-center"><?php echo __('Atribuído a'); ?></div>
                                     <div class="detail-value text-center mb-0">
-                                        <?php if ($ativo['assigned_to']): ?>
+                                        <?php if (!empty($ativo['assigned_to'])): ?>
                                                 <a href="perfil_usuario.php?id=<?php echo $ativo['assigned_to']; ?>" class="font-weight-bold text-primary">
-                                                    <?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?>
+                                                    <i class="fas fa-user mr-1"></i><?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?>
+                                                </a>
+                                        <?php elseif (!empty($ativo['id_local'])): ?>
+                                                <a href="locais.php" class="font-weight-bold text-success">
+                                                    <i class="fas fa-map-marker-alt mr-1"></i><?php echo htmlspecialchars($ativo['nome_local']); ?>
                                                 </a>
                                         <?php else: ?>
                                                 <span class="badge badge-secondary"><?php echo __('Disponível'); ?></span>
@@ -239,13 +253,13 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         <i class="fas fa-edit mr-2"></i><?php echo __('Editar Ativo'); ?>
                                     </a>
                                     
-                                    <?php if ($ativo['assigned_to']): ?>
+                                    <?php if (!empty($ativo['assigned_to']) || !empty($ativo['id_local'])): ?>
                                         <button class="btn btn-danger btn-action" onclick="unassignAsset(<?php echo $id; ?>)">
-                                            <i class="fas fa-user-minus mr-2"></i><?php echo __('Liberar Ativo'); ?>
+                                            <i class="fas fa-minus-circle mr-2"></i><?php echo __('Liberar Ativo'); ?>
                                         </button>
                                     <?php else: ?>
                                         <button class="btn btn-success btn-action" onclick="openAssignModal()">
-                                            <i class="fas fa-user-plus mr-2"></i><?php echo __('Atribuir Responsável'); ?>
+                                            <i class="fas fa-plus-circle mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?>
                                         </button>
                                     <?php endif; ?>
 
@@ -825,10 +839,12 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
         // --- ATRIBUIÇÃO ---
         function openAssignModal() {
-            $('#userSearchInput').val('');
-            $('#userSearchResults').hide().empty();
-            $('#selectedUserInfo').hide();
+            $('#assignSearchInput').val('');
+            $('#assignSearchResults').hide().empty();
+            $('#selectedAssignInfo').hide();
             $('#btnConfirmAssign').prop('disabled', true);
+            $('#assignTypeSelect').val('user');
+            $('#assignSearchLabel').text("<?php echo __('Buscar Usuário'); ?>");
             $('#assignModal').modal('show');
         }
 
@@ -913,57 +929,90 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                 }, 500);
             }
 
-            // --- Lógica de Busca de Usuário ---
+            // --- Lógica de Busca de Atribuição ---
+            $('#assignTypeSelect').on('change', function() {
+                const type = $(this).val();
+                if (type === 'user') {
+                    $('#assignSearchLabel').text("<?php echo __('Buscar Usuário'); ?>");
+                    $('#assignSearchInput').attr('placeholder', "<?php echo __('Digite nome, sobrenome ou email...'); ?>");
+                } else {
+                    $('#assignSearchLabel').text("<?php echo __('Buscar Local'); ?>");
+                    $('#assignSearchInput').attr('placeholder', "<?php echo __('Digite o nome ou tipo do local...'); ?>");
+                }
+                $('#assignSearchInput').val('');
+                $('#assignSearchResults').hide().empty();
+                $('#selectedAssignInfo').hide();
+                $('#btnConfirmAssign').prop('disabled', true);
+            });
+
             var searchTimeout;
-            $('#userSearchInput').on('input', function() {
+            $('#assignSearchInput').on('input', function() {
                 var query = $(this).val();
+                var searchType = $('#assignTypeSelect').val();
                 clearTimeout(searchTimeout);
-                if (query.length < 2) { $('#userSearchResults').hide().empty(); return; }
+                if (query.length < 2) { $('#assignSearchResults').hide().empty(); return; }
 
                 searchTimeout = setTimeout(function() {
-                    $.get('ajax_buscar_usuario.php', { query: query }, function(users) {
+                    const endpoint = searchType === 'user' ? 'ajax_buscar_usuario.php' : 'ajax_buscar_local.php';
+                    $.get(endpoint, { query: query }, function(results) {
                         var html = '';
-                        if (users.length > 0) {
-                            users.forEach(function(user) {
-                                html += `<a href="#" class="list-group-item list-group-item-action select-user" 
-                                            data-id="${user.id}" data-name="${user.nome_completo}" data-email="${user.email}">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1 font-weight-bold">${user.nome_completo}</h6>
-                                                <small class="text-primary font-weight-bold">${user.funcao || ''}</small>
-                                            </div>
-                                            <p class="mb-1 small text-muted">${user.email}</p>
-                                        </a>`;
+                        if (results.length > 0) {
+                            results.forEach(function(item) {
+                                if (searchType === 'user') {
+                                    html += `<a href="#" class="list-group-item list-group-item-action select-assign" 
+                                                data-id="${item.id}" data-type="user" data-name="${item.nome_completo}" data-sub="${item.email}">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1 font-weight-bold">${item.nome_completo}</h6>
+                                                    <small class="text-primary font-weight-bold">${item.funcao || ''}</small>
+                                                </div>
+                                                <p class="mb-1 small text-muted">${item.email}</p>
+                                            </a>`;
+                                } else {
+                                    html += `<a href="#" class="list-group-item list-group-item-action select-assign" 
+                                                data-id="${item.id_local}" data-type="location" data-name="${item.nome_local}" data-sub="${item.tipo_local}">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1 font-weight-bold">${item.nome_local}</h6>
+                                                    <small class="text-success font-weight-bold">${item.tipo_local || ''}</small>
+                                                </div>
+                                            </a>`;
+                                }
                             });
                         } else {
-                            html = `<div class="list-group-item text-center text-muted"><?php echo __('Nenhum usuário encontrado.'); ?></div>`;
+                            html = `<div class="list-group-item text-center text-muted"><?php echo __('Nenhum resultado encontrado.'); ?></div>`;
                         }
-                        $('#userSearchResults').show().html(html);
+                        $('#assignSearchResults').show().html(html);
                     }, 'json');
                 }, 300);
             });
 
-            $(document).on('click', '.select-user', function(e) {
+            $(document).on('click', '.select-assign', function(e) {
                 e.preventDefault();
-                $('#selectedUserId').val($(this).data('id'));
-                $('#selectedUserName').text($(this).data('name'));
-                $('#selectedUserEmail').text($(this).data('email'));
-                $('#selectedUserInfo').fadeIn();
-                $('#userSearchResults').fadeOut();
+                $('#selectedAssignId').val($(this).data('id'));
+                $('#selectedAssignType').val($(this).data('type'));
+                $('#selectedAssignName').text($(this).data('name'));
+                $('#selectedAssignSub').text($(this).data('sub'));
+                $('#selectedAssignInfo').fadeIn();
+                $('#assignSearchResults').fadeOut();
                 $('#btnConfirmAssign').prop('disabled', false);
             });
 
             $('#btnConfirmAssign').on('click', function() {
-                const id_user = $('#selectedUserId').val();
+                const id_assign = $('#selectedAssignId').val();
+                const assign_type = $('#selectedAssignType').val();
                 const $btn = $(this);
-                if (!id_user) return;
+                if (!id_assign) return;
 
                 $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Processando...'); ?>');
 
-                $.post('ajax_ativos.php', {
-                    action: 'assign',
-                    id_asset: <?php echo $id; ?>,
-                    id_usuario: id_user
-                }, function(res) {
+                let actionName = assign_type === 'user' ? 'assign' : 'assign_local';
+                let payload = { action: actionName, id_asset: <?php echo $id; ?> };
+                if (assign_type === 'user') {
+                    payload.id_usuario = id_assign;
+                } else {
+                    payload.id_local = id_assign;
+                }
+
+                $.post('ajax_ativos.php', payload, function(res) {
                     if (res.success) {
                         location.reload();
                     } else {
@@ -1044,23 +1093,31 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
                 <div class="modal-header" style="background: #2c404a; color: white; border-radius: 15px 15px 0 0;">
-                    <h5 class="modal-title font-weight-bold"><i class="fas fa-user-plus mr-2"></i><?php echo __('Atribuir Responsável'); ?></h5>
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-sitemap mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?></h5>
                     <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
                 </div>
                 <div class="modal-body p-4">
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold text-gray-700 small mb-2"><?php echo __('Tipo de Atribuição'); ?></label>
+                        <select id="assignTypeSelect" class="form-control mb-3" style="border-radius: 10px;">
+                            <option value="user"><?php echo __('Usuário'); ?></option>
+                            <option value="location"><?php echo __('Local / Infraestrutura'); ?></option>
+                        </select>
+                    </div>
                     <div class="form-group mb-4">
-                        <label class="font-weight-bold text-gray-700 small mb-2"><?php echo __('Buscar Usuário'); ?></label>
+                        <label id="assignSearchLabel" class="font-weight-bold text-gray-700 small mb-2"><?php echo __('Buscar Usuário'); ?></label>
                         <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
                             <div class="input-group-prepend"><span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted"></i></span></div>
-                            <input type="text" id="userSearchInput" class="form-control border-left-0" style="height: 45px;" placeholder="<?php echo __('Digite nome, sobrenome ou email...'); ?>">
+                            <input type="text" id="assignSearchInput" class="form-control border-left-0" style="height: 45px;" placeholder="<?php echo __('Digite o nome...'); ?>">
                         </div>
                     </div>
-                    <div id="userSearchResults" class="list-group list-group-flush shadow-sm rounded" style="max-height: 250px; overflow-y: auto; display: none; border: 1px solid #e3e6f0;"></div>
-                    <div id="selectedUserInfo" class="mt-4 p-3 border rounded bg-light" style="display: none;">
-                        <input type="hidden" id="selectedUserId">
-                        <div class="detail-label small text-uppercase font-weight-bold mb-1"><?php echo __('Usuário Selecionado'); ?></div>
-                        <div class="font-weight-bold text-primary mb-1" id="selectedUserName"></div>
-                        <div class="small text-muted" id="selectedUserEmail"></div>
+                    <div id="assignSearchResults" class="list-group list-group-flush shadow-sm rounded" style="max-height: 250px; overflow-y: auto; display: none; border: 1px solid #e3e6f0;"></div>
+                    <div id="selectedAssignInfo" class="mt-4 p-3 border rounded bg-light" style="display: none;">
+                        <input type="hidden" id="selectedAssignId">
+                        <input type="hidden" id="selectedAssignType">
+                        <div class="detail-label small text-uppercase font-weight-bold mb-1" id="selectedAssignLabel"><?php echo __('Selecionado'); ?></div>
+                        <div class="font-weight-bold text-primary mb-1" id="selectedAssignName"></div>
+                        <div class="small text-muted" id="selectedAssignSub"></div>
                     </div>
                 </div>
                 <div class="modal-footer">

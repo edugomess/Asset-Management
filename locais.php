@@ -39,11 +39,9 @@ if (isset($_GET['msg'])) {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <?php include_once 'sidebar_style.php'; ?>
     <style>
-        .tree-level-1 { padding-left: 0; font-weight: bold; color: #2c404a; }
-        .tree-level-2 { padding-left: 20px; }
-        .tree-level-3 { padding-left: 40px; }
-        .tree-level-4 { padding-left: 60px; }
-        .tree-level-5 { padding-left: 80px; }
+        .tree-level-1 { font-weight: bold; color: #2c404a; }
+        
+        .tree-branch { color: #a0aec0; margin-right: 5px; opacity: 0.7; }
         
         .btn-system {
             border-radius: 10px;
@@ -232,13 +230,22 @@ if (isset($_GET['msg'])) {
                                                             if ($row['tipo_local'] == 'Rack') { $icon = 'fa-server'; $badgeClass = 'badge-dark'; }
                                                             if ($row['tipo_local'] == 'Sala') { $icon = 'fa-door-open'; $badgeClass = 'badge-info'; }
                                                             
+                                                            $indentHtml = '';
+                                                            $branchIcon = '';
+                                                            if ($level > 1) {
+                                                                $indentHtml = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $level - 1);
+                                                                $branchIcon = "<i class='fas fa-level-up-alt fa-rotate-90 tree-branch'></i>";
+                                                            }
+                                                            
                                                             echo "<tr>
                                                                 <td class='tree-level-$level'>
+                                                                    $indentHtml $branchIcon
                                                                     <i class='fas $icon mr-2' style='color: #4e73df;'></i> " . htmlspecialchars($row['nome_local']) . "
                                                                 </td>
                                                                 <td><span class='dot-badge $badgeClass'>" . __($row['tipo_local']) . "</span></td>
                                                                 <td class='text-right'>
-                                                                    <a href='apagar_local.php?id={$row['id_local']}' class='btn btn-danger btn-sm' style='border-radius: 8px;' onclick=\"return confirm('Tem certeza que deseja apagar este local? Isso pode afetar equipamentos vinculados.');\"><i class='fas fa-trash'></i></a>
+                                                                    <a href='editar_local.php?id={$row['id_local']}' class='btn btn-primary btn-sm mr-1' style='border-radius: 8px; background: #2c404a; border: none;' title='" . __('Editar') . "'><i class='fas fa-pencil-alt'></i></a>
+                                                                    <button type='button' class='btn btn-danger btn-sm btn-delete-local' data-id='{$row['id_local']}' data-name='" . htmlspecialchars($row['nome_local']) . "' style='border-radius: 8px;' title='" . __('Excluir') . "'><i class='fas fa-trash'></i></button>
                                                                 </td>
                                                             </tr>";
                                                             renderLocais($conn, $row['id_local'], $level + 1);
@@ -258,6 +265,54 @@ if (isset($_GET['msg'])) {
                     </div>
                 </div>
             </div>
+
+            <!-- Modal de Confirmação de Exclusão com AJAX -->
+            <div class="modal fade" id="modalDeleteLocal" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLocalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" style="border-radius: 15px; border: none;">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title font-weight-bold text-dark" id="modalDeleteLocalLabel"><?php echo __('Confirmar Exclusão'); ?></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body py-4">
+                            <div id="deleteLoading" class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>
+                            </div>
+                            <div id="deleteContent" style="display: none;">
+                                <div class="text-center mb-4" id="deleteIconArea">
+                                    <i class="fas fa-exclamation-circle fa-4x text-warning mb-3"></i>
+                                    <h4 class="text-dark font-weight-bold"><?php echo __('Tem certeza?'); ?></h4>
+                                    <p class="text-muted" id="deleteTargetName"></p>
+                                </div>
+
+                                <div id="dependenciesArea" style="display: none;">
+                                    <div class="alert alert-danger border-0 shadow-sm" style="border-radius: 12px;">
+                                        <i class="fas fa-times-circle mr-2"></i>
+                                        <strong><?php echo __('Exclusão Bloqueada!'); ?></strong><br>
+                                        <?php echo __('Existem itens vinculados a este local que impedem a exclusão.'); ?>
+                                    </div>
+                                    <div id="dependencyList" class="mt-3" style="max-height: 200px; overflow-y: auto; background: #f8f9fc; border-radius: 10px; padding: 15px;">
+                                        <!-- Populado via JS -->
+                                    </div>
+                                    <p class="text-muted small mt-3">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        <?php echo __('Mova todos os itens acima para outro local antes de tentar excluir.'); ?>
+                                    </p>
+                                </div>
+
+                                <p id="noDependenciesMsg" class="text-muted text-center"><?php echo __('Este local será removido permanentemente.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-0 d-flex justify-content-center pb-4">
+                            <button type="button" class="btn btn-secondary px-4 mr-2" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
+                            <a href="#" id="confirmDeleteBtn" class="btn btn-danger px-4" style="border-radius: 10px; display: none;"><?php echo __('Excluir Local'); ?></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
                     <div class="text-center my-auto copyright"><span>Copyright © Asset Mgt 2024</span></div>
@@ -269,5 +324,63 @@ if (isset($_GET['msg'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/theme.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.btn-delete-local').on('click', function() {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                
+                $('#modalDeleteLocal').modal('show');
+                $('#deleteLoading').show();
+                $('#deleteContent').hide();
+                $('#confirmDeleteBtn').hide();
+                $('#deleteTargetName').text(name);
+                $('#dependencyList').empty();
+                $('#dependenciesArea').hide();
+                $('#noDependenciesMsg').show();
+                $('#deleteIconArea i').removeClass('text-danger').addClass('text-warning').removeClass('fa-times-circle').addClass('fa-exclamation-circle');
+
+                $.ajax({
+                    url: 'check_local_dependencies.php',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function(response) {
+                        $('#deleteLoading').hide();
+                        $('#deleteContent').show();
+
+                        if (response.has_dependencies) {
+                            $('#dependenciesArea').show();
+                            $('#noDependenciesMsg').hide();
+                            $('#confirmDeleteBtn').hide();
+                            $('#deleteIconArea i').removeClass('text-warning').addClass('text-danger').removeClass('fa-exclamation-circle').addClass('fa-times-circle');
+
+                            var listHtml = '<ul class="list-unstyled mb-0">';
+                            if (response.assets.length > 0) {
+                                listHtml += '<li class="font-weight-bold mb-2 text-dark"><i class="fas fa-microchip mr-2 text-primary"></i>' + <?php echo json_encode(__('Ativos')); ?> + ' (' + response.assets.length + ')</li>';
+                                $.each(response.assets, function(i, asset) {
+                                    listHtml += '<li class="ml-4 small mb-1"><span class="badge badge-primary mr-2">' + asset.tag + '</span> ' + asset.modelo + '</li>';
+                                });
+                            }
+                            if (response.children.length > 0) {
+                                if (response.assets.length > 0) listHtml += '<hr class="my-2">';
+                                listHtml += '<li class="font-weight-bold mb-2 text-dark"><i class="fas fa-sitemap mr-2 text-info"></i>' + <?php echo json_encode(__('Sub-locais')); ?> + ' (' + response.children.length + ')</li>';
+                                $.each(response.children, function(i, child) {
+                                    listHtml += '<li class="ml-4 small mb-1"><i class="fas fa-angle-right mr-2"></i>' + child.nome + '</li>';
+                                });
+                            }
+                            listHtml += '</ul>';
+                            $('#dependencyList').html(listHtml);
+                        } else {
+                            $('#confirmDeleteBtn').attr('href', 'apagar_local.php?id=' + id).show();
+                        }
+                    },
+                    error: function() {
+                        $('#deleteLoading').hide();
+                        alert('Erro ao verificar dependências.');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

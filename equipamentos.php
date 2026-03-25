@@ -356,10 +356,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     $order_by = "a.modelo ASC";
                                 }
 
-                                // Busca os dados dos ativos com JOIN em usuários e status de manutenção
-                                $sql = "SELECT a.*, u.nome AS user_nome, m_info.id_manutencao as em_manutencao, m_info.observacoes as manutencao_motivo 
+                                // Busca os dados dos ativos com JOIN em usuários, locais e status de manutenção
+                                $sql = "SELECT a.*, u.nome AS user_nome, l.nome_local, m_info.id_manutencao as em_manutencao, m_info.observacoes as manutencao_motivo 
                                         FROM ativos a 
                                         LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
+                                        LEFT JOIN locais l ON a.id_local = l.id_local
                                         LEFT JOIN manutencao m_info ON a.id_asset = m_info.id_asset AND m_info.status_manutencao = 'Em Manutenção'
                                         $maintenance_join $where_clause 
                                         ORDER BY $order_by LIMIT $start_from, $results_per_page";
@@ -379,7 +380,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                             <th scope="col"><?php echo __('Nível de Atribuição'); ?></th>
                                             <th scope="col"><?php echo __('CC'); ?></th>
                                             <?php if ($status_filter !== 'Manutencao'): ?>
-                                                <th scope="col"><?php echo __('Usuário'); ?></th>
+                                                <th scope="col"><?php echo __('Atribuído a'); ?></th>
                                             <?php else: ?>
                                                 <th scope="col"><?php echo __('Motivo Manut.'); ?></th>
                                             <?php endif; ?>
@@ -470,7 +471,15 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                                                     <?php if ($status_filter !== 'Manutencao'): ?>
                                                         <td>
-                                                            <?php echo ($assigned_to && !empty($row['user_nome'])) ? htmlspecialchars($row['user_nome']) : __('Disponível'); ?>
+                                                            <?php 
+                                                            if (!empty($row['assigned_to']) && !empty($row['user_nome'])) {
+                                                                echo htmlspecialchars($row['user_nome']);
+                                                            } elseif (!empty($row['id_local']) && !empty($row['nome_local'])) {
+                                                                echo htmlspecialchars($row['nome_local']);
+                                                            } else {
+                                                                echo __('Disponível');
+                                                            }
+                                                            ?>
                                                         </td>
                                                     <?php else: ?>
                                                         <td>
@@ -488,27 +497,48 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <?php endif; ?>
 
                                                     <td>
-                                                        <span
-                                                            class="status-badge <?php echo ($row['status'] === 'Ativo') ? 'badge-success' : (($row['status'] === 'Manutencao' || $row['status'] === 'Manutenção') ? 'badge-warning' : 'badge-danger'); ?>">
-                                                            <?php echo __(ucfirst($row['status'])); ?>
+                                                        <?php
+                                                        $raw_status = ucfirst(strtolower($row['status']));
+                                                        
+                                                        // Override the raw DB string visually if assignment is present 
+                                                        $is_assigned = (!empty($row['user_nome']) || !empty($row['nome_local']));
+                                                        if ($is_assigned) {
+                                                            $raw_status = 'Em uso';
+                                                        } elseif (!$row['em_manutencao'] && in_array($raw_status, ['Ativo', 'Disponivel', 'Disponível'])) {
+                                                            $raw_status = 'Disponível';
+                                                        }
+
+                                                        $badge_class = 'badge-secondary';
+                                                        if (in_array($raw_status, ['Disponível'])) {
+                                                            $badge_class = 'badge-success';
+                                                        } elseif ($raw_status === 'Em uso') {
+                                                            $badge_class = 'badge-primary';
+                                                        } elseif (in_array($raw_status, ['Em manutenção', 'Manutenção', 'Manutencao'])) {
+                                                            $badge_class = 'badge-warning';
+                                                        } else {
+                                                            $badge_class = 'badge-danger';
+                                                        }
+                                                        ?>
+                                                        <span class="status-badge <?php echo $badge_class; ?>">
+                                                            <?php echo __($raw_status); ?>
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <!-- Ações rápidas: Atribuir, Editar e Manutenção -->
                                                         <div class="d-flex align-items-center">
                                                             <?php if (!$row['em_manutencao']): ?>
-                                                                <?php if ($assigned_to): ?>
+                                                                <?php if ($is_assigned): ?>
                                                                     <button class='btn btn-dark btn-tamanho-fixo mr-2'
                                                                         style="background: #5a5c69; border: none;"
                                                                         title="<?php echo __('Liberar'); ?>"
                                                                         onclick='event.stopPropagation(); unassignUser(<?php echo $row["id_asset"]; ?>)'><?php echo __('Liberar'); ?>
-                                                                        <i class='fas fa-user-minus ml-1'></i></button>
+                                                                        <i class='fas fa-minus-circle ml-1'></i></button>
                                                                 <?php else: ?>
                                                                     <button class='btn btn-primary btn-tamanho-fixo mr-2' 
                                                                         style="background: #2c404a; border: none;"
                                                                         title="<?php echo __('Atribuir'); ?>"
                                                                         onclick='event.stopPropagation(); openAssignModal(<?php echo $row["id_asset"]; ?>)'><?php echo __('Atribuir'); ?>
-                                                                        <i class='fas fa-user-plus ml-1'></i></button>
+                                                                        <i class='fas fa-plus-circle ml-1'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
@@ -989,6 +1019,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 }
             }, 'json');
         });
+    </script>
 
     <!-- Modal Sucesso Cadastro com Etiqueta -->
     <div class="modal fade" id="successTagModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1011,7 +1042,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     
                     <div class="mt-2">
                         <span class="badge badge-dark p-2" id="tag_badge_success" style="font-size: 1.2rem; border-radius: 10px; letter-spacing: 1px;">
-                            <?php echo $new_asset ? htmlspecialchars($new_asset['tag']) : ''; ?>
+                            <?php echo (isset($new_asset) && $new_asset) ? htmlspecialchars($new_asset['tag']) : ''; ?>
                         </span>
                     </div>
                 </div>
@@ -1029,7 +1060,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script>
         // Lógica de Impressão e Modal de Sucesso
         document.addEventListener("DOMContentLoaded", function() {
-            <?php if ($new_asset): ?>
+            <?php if (isset($new_asset) && $new_asset): ?>
                 const qrContainer = document.getElementById("qrcode_success");
                 if (qrContainer) {
                     const qrData = <?php echo json_encode("ID: " . $new_asset['id_asset'] . "\nTag: " . $new_asset['tag'] . "\nModelo: " . $new_asset['modelo']); ?>;
@@ -1049,7 +1080,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         function printAssetTagSuccess() {
             const qrImg = document.querySelector('#qrcode_success img').src;
             const tagText = document.getElementById('tag_badge_success').innerText;
-            const assetModel = <?php echo $new_asset ? json_encode($new_asset['modelo']) : "''"; ?>;
+            const assetModel = <?php echo (isset($new_asset) && $new_asset) ? json_encode($new_asset['modelo']) : "''"; ?>;
             
             const printWindow = window.open('', '_blank', 'width=400,height=500');
             printWindow.document.write(`

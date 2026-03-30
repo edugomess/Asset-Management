@@ -272,8 +272,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/global_search.js"></script>
     <script>
         $(document).ready(function() {
-            $(".clickable-row td:not(.action-cell)").click(function() {
-                window.location = $(this).closest(".clickable-row").data("href");
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
             });
         });
     </script>

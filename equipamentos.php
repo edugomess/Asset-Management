@@ -1,3 +1,4 @@
+<?php include 'performance_header.php'; ?>
 <?php
 /**
  * INVENTÁRIO DE ATIVOS: equipamentos.php
@@ -139,11 +140,29 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <link rel="stylesheet" href="/assets/css/Raleway.css?h=f3d9abe8d5aa7831c01bfaa2a1563712">
     <link rel="stylesheet" href="/assets/css/Roboto.css?h=41e93b37bc495fd67938799bb3a6adaf">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <script>
+        // --- FUNÇÃO DE IMPRESSÃO (DEFINIDA NO TOPO PARA SEGURANÇA) ---
+        function printAssetTagSuccess() {
+            const assetId = <?php echo (isset($new_asset) && $new_asset) ? $new_asset['id_asset'] : "0"; ?>;
+            if (assetId === 0) return;
+            
+            const printUrl = `imprimir_etiqueta.php?id=${assetId}`;
+            let printFrame = document.getElementById('print_iframe');
+            if (!printFrame) {
+                printFrame = document.createElement('iframe');
+                printFrame.id = 'print_iframe';
+                printFrame.style.display = 'none';
+                document.body.appendChild(printFrame);
+            }
+            printFrame.src = printUrl;
+        }
+    </script>
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.js/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <?php renderPerformanceHints(); ?>
+    <?php include_once 'sidebar_style.php'; ?>
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <?php include 'sidebar_style.php'; ?>
     <style>
         .card.shadow {
             transition: all 0.3s ease-in-out;
@@ -158,6 +177,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 </head>
 
 <body id="page-top">
+    <?php startNProgress(); ?>
     <div id="wrapper">
         <!-- Barra Lateral (Sidebar) -->
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -167,7 +187,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
+        <div class="d-flex flex-column premium-page-fade" id="content-wrapper">
             <div id="content">
                 <!-- Barra Superior (Topbar) -->
                 <?php include 'topbar.php'; ?>
@@ -427,7 +447,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 }
                                                 ?>
                                                 <tr class="clickable-row"
-                                                    onclick="window.location='perfil_ativo.php?id=<?php echo $row['id_asset']; ?>'">
+                                                    data-href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>">
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         // Exibe miniatura da foto do ativo ou ícone padrão
@@ -502,9 +522,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         
                                                         // Override the raw DB string visually if assignment is present 
                                                         $is_assigned = (!empty($row['user_nome']) || !empty($row['nome_local']));
-                                                        if ($is_assigned) {
+                                                        if (!empty($row['em_manutencao'])) {
+                                                            $raw_status = 'Em manutenção';
+                                                        } elseif ($is_assigned) {
                                                             $raw_status = 'Em uso';
-                                                        } elseif (!$row['em_manutencao'] && in_array($raw_status, ['Ativo', 'Disponivel', 'Disponível'])) {
+                                                        } else {
                                                             $raw_status = 'Disponível';
                                                         }
 
@@ -531,31 +553,36 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                                     <button class='btn btn-dark btn-tamanho-fixo mr-2'
                                                                         style="background: #5a5c69; border: none;"
                                                                         title="<?php echo __('Liberar'); ?>"
-                                                                        onclick='event.stopPropagation(); unassignUser(<?php echo $row["id_asset"]; ?>)'><?php echo __('Liberar'); ?>
+                                                                        onclick='unassignUser(<?php echo $row["id_asset"]; ?>)'><?php echo __('Liberar'); ?>
                                                                         <i class='fas fa-minus-circle ml-1'></i></button>
                                                                 <?php else: ?>
                                                                     <button class='btn btn-primary btn-tamanho-fixo mr-2' 
                                                                         style="background: #2c404a; border: none;"
+                                                                        data-toggle="modal" data-target="#assignModal"
                                                                         title="<?php echo __('Atribuir'); ?>"
-                                                                        onclick='event.stopPropagation(); openAssignModal(<?php echo $row["id_asset"]; ?>)'><?php echo __('Atribuir'); ?>
+                                                                        onclick='openAssignModal(<?php echo $row["id_asset"]; ?>)'><?php echo __('Atribuir'); ?>
                                                                         <i class='fas fa-plus-circle ml-1'></i></button>
                                                                 <?php endif; ?>
                                                             <?php endif; ?>
 
                                                             <a class='btn btn-warning btn-edit mr-2'
                                                                 href='editar_ativo.php?id=<?php echo $row["id_asset"]; ?>'
-                                                                title="<?php echo __('Editar'); ?>" onclick="event.stopPropagation();"><i
+                                                                title="<?php echo __('Editar'); ?>"><i
                                                                     class='fas fa-edit'></i></a>
 
                                                             <?php if ($row['em_manutencao']): ?>
-                                                                <button class="btn btn-success btn-edit" title="<?php echo __('Liberar Manutenção'); ?>"
-                                                                    onclick="event.stopPropagation(); releaseFromMaintenance(<?php echo $row["id_asset"]; ?>)"><i
-                                                                        class="fas fa-check-circle"></i></button>
+                                                                <button class='btn btn-success btn-tamanho-fixo mr-2' 
+                                                                        title="<?php echo __('Liberar da Manutenção'); ?>"
+                                                                        onclick="releaseFromMaintenance(<?php echo $row['id_asset']; ?>)">
+                                                                    <i class='fas fa-check-circle mr-1'></i><?php echo __('Liberar'); ?>
+                                                                </button>
                                                             <?php else: ?>
-                                                                <button class="btn btn-maintenance-system btn-edit"
-                                                                    title="<?php echo __('Enviar para Manutenção'); ?>"
-                                                                    onclick="event.stopPropagation(); sendToMaintenance(<?php echo $row["id_asset"]; ?>)"><i
-                                                                        class="fas fa-tools"></i></button>
+                                                                <button class='btn btn-maintenance-system btn-edit mr-2' 
+                                                                        data-toggle="modal" data-target="#maintenanceModal"
+                                                                        title="<?php echo __('Enviar para Manutenção'); ?>"
+                                                                        onclick="sendToMaintenance(<?php echo $row['id_asset']; ?>)">
+                                                                    <i class='fas fa-tools'></i>
+                                                                </button>
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
@@ -594,14 +621,74 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     ?>
                                 </ul>
                             </div>
+                        </div> <!-- card-body -->
+                    </div> <!-- card shadow -->
+                </div> <!-- container-fluid -->
+            </div> <!-- content -->
+
+        </div> <!-- content-wrapper -->
+    <!-- performance_footer.php is now at the very end -->
+    </div> <!-- wrapper -->
+
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+    <!-- Bibliotecas JavaScript (Sincronizadas e Locais para Resiliência) -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <!-- SweetAlert2 para notificações elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <script src="assets/js/global_search.js" defer></script>
+
+
+    <!-- Modal Sucesso Cadastro com Etiqueta -->
+    <div class="modal fade" id="successTagModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-0" id="successTagModalLabel"><?php echo __('Ativo Cadastrado!'); ?></h5>
+                            <small class="text-white-50"><?php echo __('A identificação visual já está pronta para identificação física.'); ?></small>
                         </div>
                     </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-4 bg-light">
+                    <div class="p-3 bg-white d-inline-block rounded shadow-sm mb-3" style="border: 1px dashed #ddd;">
+                        <div id="qrcode_success"></div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <span class="badge badge-dark p-2" id="tag_badge_success" style="font-size: 1.2rem; border-radius: 10px; letter-spacing: 1px;">
+                            <?php echo (isset($new_asset) && $new_asset) ? htmlspecialchars($new_asset['tag']) : ''; ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-white d-flex flex-column">
+                    <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold shadow-sm mb-2" onclick="printAssetTagSuccess()" style="border-radius: 12px; background: #2c404a; border: none;">
+                        <i class="fas fa-print mr-2"></i><?php echo __('Imprimir Etiqueta Agora'); ?>
+                    </button>
+                    <button type="button" class="btn btn-link text-muted font-weight-bold btn-block m-0" data-dismiss="modal">
+                        <?php echo __('Ignorar e Continuar'); ?>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Atribuir Ativo a um Usuário (Live Search) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- Modals (Posicionados no fim do body para evitar problemas de z-index/backdrop) -->
+    
+    <!-- Modal para Atribuir Ativo -->
     <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -623,30 +710,53 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <div class="modal-body p-4 bg-light">
                     <input type="hidden" id="assign_asset_id">
                     
+                    <div class="form-group mb-3">
+                        <label class="text-gray-600 small font-weight-bold text-uppercase tracking-wider mb-2"><?php echo __('Tipo de Atribuição'); ?></label>
+                        <select id="assignTypeSelect" class="form-control" style="border-radius: 12px; height: 50px; font-weight: bold;">
+                            <option value="user"><?php echo __('Usuário'); ?></option>
+                            <option value="location"><?php echo __('Local / Infraestrutura'); ?></option>
+                        </select>
+                    </div>
+
                     <div class="search-container mb-4">
-                        <label class="text-gray-600 small font-weight-bold text-uppercase tracking-wider mb-2">
+                        <label id="assignSearchLabel" class="text-gray-600 small font-weight-bold text-uppercase tracking-wider mb-2">
                             <?php echo __('Buscar Colaborador'); ?>
                         </label>
-                        <div class="input-group input-group-lg shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                        <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white border-right-0" style="border-radius: 0;">
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
                             </div>
                             <input type="text" id="userInput" class="form-control border-left-0 pl-0 font-weight-bold" 
-                                   placeholder="<?php echo __('Nome, e-mail ou CPF...'); ?>" 
+                                   placeholder="<?php echo __('Digite para buscar...'); ?>" 
                                    style="font-size: 1rem; height: 55px; border-radius: 0;">
                         </div>
                     </div>
 
                     <div id="userResults" class="list-group shadow-sm mb-3" 
                          style="max-height: 280px; overflow-y: auto; border-radius: 12px; display: none;">
-                        <!-- Resultados AJAX via JS -->
+                    </div>
+
+                    <div id="selectedAssignInfo" class="mt-3 p-3 border rounded bg-white shadow-sm" style="display: none; border-radius: 15px !important; border: 2px solid #e3e6f0 !important;">
+                        <input type="hidden" id="selectedAssignId">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary text-white mr-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="detail-label small text-uppercase font-weight-bold text-muted mb-0"><?php echo __('Selecionado'); ?></div>
+                                <div class="font-weight-bold text-dark" id="selectedAssignName" style="font-size: 1.1rem;"></div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-light rounded-circle" onclick="clearAssignmentSelection()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div id="noResults" class="text-center py-4 px-2" style="display: none;">
-                        <i class="fas fa-user-slash fa-3x text-gray-300 mb-3"></i>
-                        <p class="text-muted mb-0"><?php echo __('Nenhum usuário encontrado.'); ?></p>
+                        <i class="fas fa-search-minus fa-3x text-gray-300 mb-3"></i>
+                        <p class="text-muted mb-0"><?php echo __('Nenhum resultado encontrado.'); ?></p>
                         <small><?php echo __('Tente outros termos de busca.'); ?></small>
                     </div>
 
@@ -659,32 +769,36 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal">
                         <?php echo __('Cancelar'); ?>
                     </button>
-                    <div class="text-right">
-                        <small class="text-muted d-block" style="font-size: 0.7rem; line-height: 1;">
-                            <?php echo __('Sistema de Atribuição'); ?>
-                        </small>
-                        <span class="font-weight-bold text-dark" style="font-size: 0.8rem;">Asset Mgt v2</span>
-                    </div>
+                    <button type="button" id="btnConfirmAssign" class="btn btn-success px-4 font-weight-bold shadow-sm" disabled style="border-radius: 12px; background: #2c404a; border: none;">
+                        <?php echo __('Confirmar Atribuição'); ?>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Enviar Ativo para Manutenção -->
+    <!-- Modal para Solicitar Manutenção -->
     <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden;">
-                <div class="modal-header" style="background: #2c404a; color: white;">
-                    <h5 class="modal-title" id="maintenanceModalLabel"><?php echo __('Solicitar Manutenção'); ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-wrench text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-0" id="maintenanceModalLabel"><?php echo __('Solicitar Manutenção'); ?></h5>
+                            <small class="text-white-50 d-block"><?php echo __('Registro de reparos, suprimentos ou upgrades.'); ?></small>
+                        </div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4 bg-light">
                     <input type="hidden" id="maintenance_asset_id">
-                    <p class="text-muted small mb-4"><?php echo __('Selecione o fluxo técnico para registro da manutenção.'); ?></p>
+                    <p class="text-muted small mb-3"><?php echo __('Selecione o fluxo técnico para registro da manutenção.'); ?></p>
                     
-                    <!-- Seleção de Tipo -->
                     <div class="row text-center mb-4">
                         <div class="col-4 px-1">
                             <div class="custom-control custom-radio">
@@ -712,34 +826,31 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         </div>
                     </div>
 
-                    <!-- Fluxo de REPARO -->
                     <div id="repairFields" style="display: none;">
                         <div class="form-group mb-3">
                             <label class="text-gray-600 small font-weight-bold" for="maintenanceReason"><?php echo __('Motivo / Problema'); ?></label>
-                            <textarea id="maintenanceReason" class="form-control" rows="3" placeholder="<?php echo __('Ex: Teclado falhando, carregador com defeito...'); ?>" style="border-radius: 10px;"></textarea>
+                            <textarea id="maintenanceReason" class="form-control" rows="3" placeholder="<?php echo __('Ex: Teclado falhando, carregador com defeito...'); ?>" style="border-radius: 12px;"></textarea>
                         </div>
                         <div class="form-group mb-0">
                             <label class="text-gray-600 small font-weight-bold" for="itemTrocado"><?php echo __('Peças Trocadas (opcional)'); ?></label>
-                            <textarea id="itemTrocado" class="form-control" rows="2" placeholder="<?php echo __('Liste os componentes substituídos...'); ?>" style="border-radius: 10px;"></textarea>
+                            <textarea id="itemTrocado" class="form-control" rows="2" placeholder="<?php echo __('Liste os componentes substituídos...'); ?>" style="border-radius: 12px;"></textarea>
                         </div>
                     </div>
 
-                    <!-- Fluxo de UPGRADE -->
                     <div id="upgradeFields" style="display: none;">
                         <div class="form-group mb-3">
                             <label class="text-gray-600 small font-weight-bold" for="upgradeCategory"><?php echo __('Categoria do Upgrade'); ?></label>
-                            <select id="upgradeCategory" class="form-control" style="border-radius: 10px;">
+                            <select id="upgradeCategory" class="form-control" style="border-radius: 12px;">
                                 <option value=""><?php echo __('Selecione uma categoria...'); ?></option>
                                 <option value="Memória"><?php echo __('Memória RAM'); ?></option>
                                 <option value="Armazenamento"><?php echo __('Armazenamento (Disco)'); ?></option>
                                 <option value="Outro"><?php echo __('Outro'); ?></option>
                             </select>
                         </div>
-
                         <div id="ramFields" style="display: none;">
                             <div class="form-group mb-3">
                                 <label class="text-gray-600 small font-weight-bold" for="ramModule"><?php echo __('Módulo Selecionado'); ?></label>
-                                <select id="ramModule" class="form-control" style="border-radius: 10px;">
+                                <select id="ramModule" class="form-control" style="border-radius: 12px;">
                                     <option value="4GB DDR4">4GB DDR4</option>
                                     <option value="8GB DDR4">8GB DDR4</option>
                                     <option value="16GB DDR4">16GB DDR4</option>
@@ -750,23 +861,22 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </select>
                             </div>
                         </div>
-
                         <div id="storageFields" style="display: none;">
                             <div class="row">
-                                <div id="divDiskType" class="col-md-7">
+                                <div class="col-md-7">
                                     <div class="form-group mb-3">
                                         <label class="text-gray-600 small font-weight-bold" for="diskType"><?php echo __('Tecnologia de Disco'); ?></label>
-                                        <select id="diskType" class="form-control" style="border-radius: 10px;">
+                                        <select id="diskType" class="form-control" style="border-radius: 12px;">
                                             <option value="SSD SATA">SSD SATA</option>
                                             <option value="SSD NVMe">SSD NVMe</option>
                                             <option value="HDD">HDD</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div id="divUpgradeValue" class="col-md-5">
+                                <div class="col-md-5">
                                     <div class="form-group mb-3">
                                         <label class="text-gray-600 small font-weight-bold" for="upgradeValue"><?php echo __('Capacidade'); ?></label>
-                                        <select id="upgradeValue" class="form-control" style="border-radius: 10px;">
+                                        <select id="upgradeValue" class="form-control" style="border-radius: 12px;">
                                             <option value="120GB">120GB</option>
                                             <option value="240GB">240GB</option>
                                             <option value="480GB">480GB</option>
@@ -780,18 +890,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group mb-0">
                             <label class="text-gray-600 small font-weight-bold" for="upgradeDescription"><?php echo __('Observações do Upgrade'); ?></label>
-                            <textarea id="upgradeDescription" class="form-control" rows="2" placeholder="<?php echo __('Detalhes adicionais do upgrade...'); ?>" style="border-radius: 10px;"></textarea>
+                            <textarea id="upgradeDescription" class="form-control" rows="2" placeholder="<?php echo __('Detalhes adicionais do upgrade...'); ?>" style="border-radius: 12px;"></textarea>
                         </div>
                     </div>
 
-                    <!-- Fluxo de INSUMO -->
-                    <div id="supplyFields">
+                    <div id="supplyFields" style="display: none;">
                         <div class="form-group mb-3">
                             <label class="text-gray-600 small font-weight-bold" for="supplyType"><?php echo __('Tipo de Insumo'); ?></label>
-                            <select id="supplyType" class="form-control" style="border-radius: 10px;">
+                            <select id="supplyType" class="form-control" style="border-radius: 12px;">
                                 <option value=""><?php echo __('Selecione o insumo...'); ?></option>
                                 <option value="Toner">Toner</option>
                                 <option value="Difusor"><?php echo __('Difusor'); ?></option>
@@ -804,262 +912,25 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         </div>
                         <div class="form-group mb-0">
                             <label class="text-gray-600 small font-weight-bold" for="supplyDescription"><?php echo __('Observações'); ?></label>
-                            <textarea id="supplyDescription" class="form-control" rows="2" placeholder="<?php echo __('Ex: Troca do Toner Preto - Unidade A'); ?>" style="border-radius: 10px;"></textarea>
+                            <textarea id="supplyDescription" class="form-control" rows="2" placeholder="<?php echo __('Ex: Troca do Toner Preto - Unidade A'); ?>" style="border-radius: 12px;"></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="background: #f8f9fc;">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
-                    <button type="button" id="confirmMaintenance" class="btn btn-primary" style="background: #2c404a; border: none; border-radius: 10px;"><?php echo __('Confirmar'); ?></button>
+                <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal">
+                        <?php echo __('Cancelar'); ?>
+                    </button>
+                    <button type="button" id="confirmMaintenance" class="btn btn-primary px-4 font-weight-bold shadow-sm" style="border-radius: 12px; background: #2c404a; border: none;">
+                        <?php echo __('Confirmar'); ?>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-        </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    </div>
-
-    <!-- Bibliotecas JavaScript (jQuery, Bootstrap, Easing) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="/assets/js/theme.js?h=7ad6447a09c485202611e51240369c73"></script>
-    <!-- SweetAlert2 para notificações elegantes -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <?php include 'performance_footer.php'; ?>
     <script>
-        // Funções para gerenciar o estado dos ativos via AJAX
-
-        // Abre o modal de atribuição definindo o ID do ativo
-        function openAssignModal(id) {
-            $('#assign_asset_id').val(id);
-            $('#userInput').val('').focus();
-            $('#userResults').hide().empty();
-            $('#startTyping').show();
-            $('#noResults').hide();
-            $('#assignModal').modal('show');
-        }
-
-        // Busca de usuários em tempo real no modal
-        $('#userInput').on('keyup', function() {
-            const query = $(this).val();
-            if (query.length < 2) {
-                $('#userResults').hide().empty();
-                $('#startTyping').show();
-                $('#noResults').hide();
-                return;
-            }
-
-            $.getJSON('ajax_buscar_usuario.php', { q: query }, function(data) {
-                $('#startTyping').hide();
-                $('#userResults').empty();
-                
-                if (data.length > 0) {
-                    data.forEach(user => {
-                        const avatar = user.foto_perfil ? user.foto_perfil : '/assets/img/avatars/avatar1.jpeg';
-                        const item = $(`
-                            <button class="list-group-item list-group-item-action border-0 d-flex align-items-center p-3" 
-                                    style="transition: all 0.2s;" onclick="confirmAssignment(${user.id_usuarios}, '${user.nome} ${user.sobrenome}')">
-                                <img src="${avatar}" class="rounded-circle mr-3" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #e3e6f0;">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 font-weight-bold text-dark">${user.nome} ${user.sobrenome}</h6>
-                                    <small class="text-muted"><i class="fas fa-id-badge mr-1"></i>${user.funcao || 'Funcional'} | <i class="fas fa-layer-group mr-1"></i>${user.setor || '-'}</small>
-                                </div>
-                                <i class="fas fa-chevron-right text-gray-300"></i>
-                            </button>
-                        `);
-                        $('#userResults').append(item);
-                    });
-                    $('#userResults').show();
-                    $('#noResults').hide();
-                } else {
-                    $('#userResults').hide();
-                    $('#noResults').show();
-                }
-            });
-        });
-
-        // Efetua a atribuição após seleção
-        function confirmAssignment(userId, userName) {
-            const assetId = $('#assign_asset_id').val();
-            
-            Swal.fire({
-                title: '<?php echo __('Confirmar Atribuição?'); ?>',
-                text: '<?php echo __('Vincular este ativo a:'); ?> ' + userName,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '<?php echo __('Sim, atribuir'); ?>',
-                cancelButtonText: '<?php echo __('Cancelar'); ?>'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', {
-                        action: 'assign',
-                        id_asset: assetId,
-                        id_usuario: userId
-                    }, function(res) {
-                        if (res.success) {
-                            Swal.fire({
-                                title: '<?php echo __('Sucesso!'); ?>',
-                                text: '<?php echo __('Ativo atribuído corretamente.'); ?>',
-                                icon: 'success',
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(() => location.reload());
-                        } else {
-                            Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao atribuir'); ?>', 'error');
-                        }
-                    }, 'json');
-                }
-            });
-        }
-
-        // Libera um ativo (remove a atribuição atual)
-        function unassignUser(id) {
-            Swal.fire({
-                title: '<?php echo __('Confirmar Liberação?'); ?>',
-                text: "<?php echo __('O ativo voltará a ficar disponível.'); ?>",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '<?php echo __('Sim, liberar'); ?>',
-                cancelButtonText: '<?php echo __('Cancelar'); ?>'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function (res) {
-                        if (res.success) location.reload();
-                    }, 'json');
-                }
-            });
-        }
-
-        // Abre o modal de manutenção definindo o ID do ativo
-        function sendToMaintenance(id) {
-            $('#maintenance_asset_id').val(id);
-            // Reset fields
-            $('#maintenanceReason, #itemTrocado, #upgradeDescription, #supplyDescription, #upgradeValue').val('');
-            $('#upgradeCategory, #ramModule, #diskType, #supplyType').val('');
-            $('#ramFields, #storageFields').hide();
-            
-            // Set default view (Supply/Insumo)
-            $('#typeInsumo').prop('checked', true);
-            $('#repairFields, #upgradeFields').hide();
-            $('#supplyFields').show();
-            
-            $('#maintenanceModal').modal('show');
-        }
-
-        // Lógica dinâmica para alternar fluxos no modal
-        $(document).on('change', 'input[name="maintenanceType"]', function() {
-            const type = $(this).val();
-            $('#repairFields, #upgradeFields, #supplyFields').hide();
-            
-            if (type === 'Reparo') {
-                $('#repairFields').slideDown();
-            } else if (type === 'Upgrade') {
-                $('#upgradeFields').slideDown();
-            } else if (type === 'Insumo') {
-                $('#supplyFields').slideDown();
-            }
-        });
-
-        $(document).on('change', '#upgradeCategory', function() {
-            const cat = $(this).val();
-            $('#ramFields, #storageFields').hide();
-            if (cat === 'Memória') {
-                $('#ramFields').slideDown();
-            }
-            if (cat === 'Armazenamento') {
-                $('#storageFields').slideDown();
-                // Mostrar ambos os campos conforme nova solicitação (Tecnologia e Capacidade)
-                $('#divUpgradeValue').show();
-                $('#divDiskType').removeClass('col-md-12').addClass('col-md-7');
-            } else {
-                $('#divUpgradeValue').show();
-                $('#divDiskType').removeClass('col-md-12').addClass('col-md-7');
-            }
-        });
-
-        // Envia os dados para manutenção via AJAX
-        $(document).on('click', '#confirmMaintenance', function() {
-            const type = $('input[name="maintenanceType"]:checked').val();
-            let data = {
-                action: 'send_to_maintenance',
-                id_asset: $('#maintenance_asset_id').val(),
-                tipo_manutencao: type
-            };
-
-            if (type === 'Reparo') {
-                data.observacoes = $('#maintenanceReason').val();
-                data.item_trocado = $('#itemTrocado').val();
-            } else if (type === 'Upgrade') {
-                data.categoria_upgrade = $('#upgradeCategory').val();
-                data.observacoes = $('#upgradeDescription').val();
-                data.valor_upgrade = $('#upgradeValue').val();
-                if (data.categoria_upgrade === 'Memória') data.item_trocado = $('#ramModule').val();
-                if (data.categoria_upgrade === 'Armazenamento') {
-                    data.item_trocado = $('#diskType').val(); // Tecnologia (SSD NVMe)
-                    data.detalhes_update = $('#upgradeValue').val(); // Capacidade (1TB)
-                    data.valor_upgrade = 0; // Resetar valor financeiro
-                }
-            } else if (type === 'Insumo') {
-                data.item_trocado = $('#supplyType').val();
-                data.observacoes = $('#supplyDescription').val();
-            }
-
-            if (!data.observacoes && type !== 'Insumo') {
-                Swal.fire('<?php echo __('Aviso'); ?>', '<?php echo __('Por favor, preencha as observações.'); ?>', 'warning');
-                return;
-            }
-
-            $.post('ajax_ativos.php', data, function(res) {
-                if (res.success) {
-                    location.reload();
-                } else {
-                    Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao processar manutenção'); ?>', 'error');
-                }
-            }, 'json');
-        });
-    </script>
-
-    <!-- Modal Sucesso Cadastro com Etiqueta -->
-    <div class="modal fade" id="successTagModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="modal-header border-0 bg-light" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
-                    <h5 class="modal-title font-weight-bold text-success">
-                        <i class="fas fa-check-circle mr-2"></i><?php echo __('Ativo Cadastrado!'); ?>
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <p class="mb-4 text-muted"><?php echo __('A identificação visual já está pronta para identificação física.'); ?></p>
-                    
-                    <div class="p-3 bg-white d-inline-block rounded shadow-sm mb-3" style="border: 1px dashed #ddd;">
-                        <div id="qrcode_success"></div>
-                    </div>
-                    
-                    <div class="mt-2">
-                        <span class="badge badge-dark p-2" id="tag_badge_success" style="font-size: 1.2rem; border-radius: 10px; letter-spacing: 1px;">
-                            <?php echo (isset($new_asset) && $new_asset) ? htmlspecialchars($new_asset['tag']) : ''; ?>
-                        </span>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 p-4">
-                    <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold" onclick="printAssetTagSuccess()" style="border-radius: 12px;">
-                        <i class="fas fa-print mr-2"></i><?php echo __('Imprimir Etiqueta Agora'); ?>
-                    </button>
-                    <button type="button" class="btn btn-link text-muted btn-block" data-dismiss="modal"><?php echo __('Ignorar e Continuar'); ?></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        // Lógica de Impressão e Modal de Sucesso
-        document.addEventListener("DOMContentLoaded", function() {
+        $(document).ready(function() {
+            // Lógica de Impressão e Modal de Sucesso (QRCode)
             <?php if (isset($new_asset) && $new_asset): ?>
                 const qrContainer = document.getElementById("qrcode_success");
                 if (qrContainer) {
@@ -1075,42 +946,254 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     setTimeout(() => { $('#successTagModal').modal('show'); }, 500);
                 }
             <?php endif; ?>
+
+            // Inicialização de comportamentos específicos do modal de atribuição
+            $('#assignTypeSelect').on('change', function() {
+                updateAssignUI();
+                clearAssignmentSelection();
+            });
+
+            $('#userInput').on('keyup', function() {
+                const query = $(this).val();
+                const type = $('#assignTypeSelect').val();
+                if (query.length < 2) {
+                    $('#userResults').hide().empty();
+                    $('#startTyping').show();
+                    $('#noResults').hide();
+                    return;
+                }
+
+                const endpoint = type === 'user' ? 'ajax_buscar_usuario.php' : 'ajax_buscar_local.php';
+                
+                // Indicador de busca
+                $('#userResults').show().html('<div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-primary mb-2"></i><p class="text-muted small mb-0"><?php echo __('Buscando...'); ?></p></div>');
+                $('#startTyping, #noResults').hide();
+
+                $.getJSON(endpoint, { query: query }, function(data) {
+                    $('#startTyping').hide();
+                    $('#userResults').empty();
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            let id, name, sub;
+                            if (type === 'user') {
+                                id = item.id;
+                                name = item.nome_completo;
+                                sub = `${item.funcao || 'Funcional'} | ${item.email}`;
+                            } else {
+                                id = item.id_local;
+                                name = item.nome_local;
+                                sub = item.tipo_local;
+                            }
+
+                            const row = $(`
+                                <button class="list-group-item list-group-item-action border-0 d-flex align-items-center p-3" 
+                                        style="transition: all 0.2s;" onclick="selectAssignItem(${id}, '${name}', '${type}')">
+                                    <div class="bg-light rounded-circle mr-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas ${type === 'user' ? 'fa-user' : 'fa-building'} text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0 font-weight-bold text-dark">${name}</h6>
+                                        <small class="text-muted"><i class="fas fa-info-circle mr-1"></i>${sub}</small>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-300"></i>
+                                </button>
+                            `);
+                            $('#userResults').append(row);
+                        });
+                        $('#userResults').show();
+                        $('#noResults').hide();
+                    } else {
+                        $('#userResults').hide();
+                        $('#noResults').show();
+                    }
+                })
+                .fail(function() {
+                    $('#userResults').hide();
+                    Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Erro ao processar busca.'); ?>', 'error');
+                });
+            });
+            // Lógica para clique na linha (delegando para evitar navegação ao clicar em botões)
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Funções globais disparadas por onclick na tabela ou no modal
+        window.openAssignModal = function(id) {
+            $('#assign_asset_id').val(id);
+            $('#assignTypeSelect').val('user');
+            updateAssignUI();
+            clearAssignmentSelection();
+            $('#assignModal').modal('show');
+        };
+
+        window.updateAssignUI = function() {
+            const type = $('#assignTypeSelect').val();
+            const label = type === 'user' ? '<?php echo __('Buscar Colaborador'); ?>' : '<?php echo __('Buscar Local / Infraestrutura'); ?>';
+            const placeholder = type === 'user' ? '<?php echo __('Nome, e-mail ou CPF...'); ?>' : '<?php echo __('Nome do local ou tipo...'); ?>';
+            $('#assignSearchLabel').text(label);
+            $('#userInput').attr('placeholder', placeholder).val('').focus();
+            $('#userResults').hide().empty();
+            $('#startTyping').show();
+            $('#noResults').hide();
+        };
+
+        window.clearAssignmentSelection = function() {
+            $('#selectedAssignId').val('');
+            $('#selectedAssignName').text('');
+            $('#selectedAssignInfo').hide();
+            $('#btnConfirmAssign').prop('disabled', true);
+            $('#userInput').val('').parent().parent().show();
+            $('#assignSearchLabel').show();
+            $('#startTyping').show();
+        };
+
+        window.selectAssignItem = function(id, name, type) {
+            $('#selectedAssignId').val(id);
+            $('#selectedAssignName').text(name);
+            $('#selectedAssignInfo').show();
+            $('#btnConfirmAssign').prop('disabled', false);
+            $('#userInput').parent().parent().hide();
+            $('#assignSearchLabel').hide();
+            $('#userResults').hide();
+            $('#startTyping').hide();
+            $('#noResults').hide();
+        };
+
+        $(document).on('click', '#btnConfirmAssign', function() {
+            const assetId = $('#assign_asset_id').val();
+            const idTarget = $('#selectedAssignId').val();
+            const type = $('#assignTypeSelect').val();
+            if (!idTarget) return;
+
+            $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Processando...'); ?>');
+            const action = type === 'user' ? 'assign' : 'assign_local';
+            const payload = { action: action, id_asset: assetId };
+            if (type === 'user') payload.id_usuario = idTarget;
+            else payload.id_local = idTarget;
+
+            $.post('ajax_ativos.php', payload, function(res) {
+                if (res.success) {
+                    Swal.fire({
+                        title: '<?php echo __('Sucesso!'); ?>',
+                        text: '<?php echo __('Ativo atribuído corretamente.'); ?>',
+                        icon: 'success',
+                        timer: 1000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao atribuir'); ?>', 'error');
+                    $('#btnConfirmAssign').prop('disabled', false).text('<?php echo __('Confirmar Atribuição'); ?>');
+                }
+            }, 'json').fail(function() {
+                Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Erro de comunicação com o servidor'); ?>', 'error');
+                $('#btnConfirmAssign').prop('disabled', false).text('<?php echo __('Confirmar Atribuição'); ?>');
+            });
         });
 
-        function printAssetTagSuccess() {
-            const qrImg = document.querySelector('#qrcode_success img').src;
-            const tagText = document.getElementById('tag_badge_success').innerText;
-            const assetModel = <?php echo (isset($new_asset) && $new_asset) ? json_encode($new_asset['modelo']) : "''"; ?>;
-            
-            const printWindow = window.open('', '_blank', 'width=400,height=500');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Imprimir Etiqueta - ${tagText}</title>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-                        body { margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; background: white; }
-                        .label-container { text-align: center; width: 220px; padding: 10px; border: 1px dashed #ccc; border-radius: 10px; }
-                        img { width: 180px; height: 180px; }
-                        .tag-text { font-size: 1.4rem; font-weight: 800; color: #000; margin-top: 5px; border-top: 2px solid #000; padding-top: 5px; }
-                        .asset-info { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-                        @media print { .label-container { border: none; } body { padding: 0; } }
-                    </style>
-                </head>
-                <body onload="setTimeout(function(){ window.print(); window.close(); }, 500);">
-                    <div class="label-container">
-                        <div class="asset-info">${assetModel}</div>
-                        <img src="${qrImg}">
-                        <div class="tag-text">${tagText}</div>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
+        window.unassignUser = function(id) {
+            Swal.fire({
+                title: '<?php echo __('Confirmar Liberação?'); ?>',
+                text: "<?php echo __('O ativo voltará a ficar disponível.'); ?>",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2c404a',
+                cancelButtonColor: '#858796',
+                confirmButtonText: '<?php echo __('Sim, liberar'); ?>',
+                cancelButtonText: '<?php echo __('Cancelar'); ?>'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                title: '<?php echo __('Liberado!'); ?>',
+                                text: '<?php echo __('O ativo está disponível no estoque.'); ?>',
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar'); ?>', 'error');
+                        }
+                    }, 'json').fail(function() {
+                        Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Erro de comunicação com o servidor'); ?>', 'error');
+                    });
+                }
+            });
+        };
 
-        // Finaliza o status de manutenção
-        function releaseFromMaintenance(id) {
+        window.sendToMaintenance = function(id) {
+            $('#maintenance_asset_id').val(id);
+            $('#maintenanceReason, #itemTrocado, #upgradeDescription, #supplyDescription, #upgradeValue').val('');
+            $('#upgradeCategory, #ramModule, #diskType, #supplyType').val('');
+            $('#ramFields, #storageFields').hide();
+            
+            // Define o tipo inicial como Insumo (Suprimento)
+            $('#typeInsumo').prop('checked', true);
+            toggleMaintenanceUI('Insumo');
+            
+            $('#maintenanceModal').modal('show');
+        };
+
+        window.toggleMaintenanceUI = function(type) {
+            $('#repairFields, #upgradeFields, #supplyFields').hide();
+            if (type === 'Reparo') $('#repairFields').show();
+            else if (type === 'Upgrade') $('#upgradeFields').show();
+            else if (type === 'Insumo') $('#supplyFields').show();
+        };
+
+        $(document).on('change', 'input[name="maintenanceType"]', function() {
+            toggleMaintenanceUI($(this).val());
+        });
+
+        $(document).on('change', '#upgradeCategory', function() {
+            const cat = $(this).val();
+            $('#ramFields, #storageFields').hide();
+            if (cat === 'Memória') $('#ramFields').show();
+            if (cat === 'Armazenamento') $('#storageFields').show();
+        });
+
+        $(document).on('click', '#confirmMaintenance', function() {
+            const type = $('input[name="maintenanceType"]:checked').val();
+            let data = { action: 'send_to_maintenance', id_asset: $('#maintenance_asset_id').val(), tipo_manutencao: type };
+
+            if (type === 'Reparo') {
+                data.observacoes = $('#maintenanceReason').val();
+                data.item_trocado = $('#itemTrocado').val();
+            } else if (type === 'Upgrade') {
+                data.categoria_upgrade = $('#upgradeCategory').val();
+                data.observacoes = $('#upgradeDescription').val();
+                if (data.categoria_upgrade === 'Memória') data.item_trocado = $('#ramModule').val();
+                if (data.categoria_upgrade === 'Armazenamento') {
+                    data.item_trocado = $('#diskType').val();
+                    data.detalhes_update = $('#upgradeValue').val();
+                }
+            } else if (type === 'Insumo') {
+                data.item_trocado = $('#supplyType').val();
+                data.observacoes = $('#supplyDescription').val();
+            }
+
+            if (!data.observacoes && type !== 'Insumo') {
+                Swal.fire('<?php echo __('Aviso'); ?>', '<?php echo __('Por favor, preencha as observações.'); ?>', 'warning');
+                return;
+            }
+
+            $.post('ajax_ativos.php', data, function(res) {
+                if (res.success) location.reload();
+                else Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao processar manutenção'); ?>', 'error');
+            }, 'json').fail(function() {
+                Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Erro de comunicação com o servidor'); ?>', 'error');
+            });
+        });
+
+        window.releaseFromMaintenance = function(id) {
             Swal.fire({
                 title: '<?php echo __('Finalizar Manutenção?'); ?>',
                 text: "<?php echo __('O ativo voltará a ficar disponível e o registro de manutenção será encerrado.'); ?>",
@@ -1120,21 +1203,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 cancelButtonText: '<?php echo __('Cancelar'); ?>'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', {
-                        action: 'release_maintenance',
-                        id_asset: id
-                    }, function (res) {
-                        if (res.success) {
-                            location.reload();
-                        } else {
-                            Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar manutenção'); ?>', 'error');
-                        }
-                    }, 'json');
+                    $.post('ajax_ativos.php', { action: 'release_maintenance', id_asset: id }, function (res) {
+                        if (res.success) location.reload();
+                        else Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar manutenção'); ?>', 'error');
+                    }, 'json').fail(function() {
+                        Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Erro de comunicação com o servidor'); ?>', 'error');
+                    });
                 }
             });
-        }
-
+        };
     </script>
+    <?php include 'performance_footer.php'; ?>
 </body>
-
 </html>

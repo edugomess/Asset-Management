@@ -1,3 +1,4 @@
+<?php include 'performance_header.php'; ?>
 <?php
 include 'conexao.php';
 /**
@@ -29,7 +30,9 @@ include 'conexao.php';
         href="/assets/css/Form-Select---Full-Date---Month-Day-Year.css?h=7b6a3c2cb7894fdb77bae43c70b92224">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/css/lightpick.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <?php renderPerformanceHints(); ?>
+    <?php include_once 'sidebar_style.php'; ?>
     <link rel="stylesheet" href="/assets/css/Map-Clean.css?h=bdd15207233b27ebc7c6fc928c71b34c">
     <link rel="stylesheet" href="/assets/css/Modern-Contact-Form.css?h=af67b929d317df499a992472a9bb8fcc">
     <link rel="stylesheet"
@@ -168,8 +171,9 @@ include 'conexao.php';
     </style>
 </head>
 
-<body>
-    <div class="main-content">
+<body id="page-top">
+    <?php startNProgress(); ?>
+    <div class="main-content premium-page-fade">
         <div class="container d-flex justify-content-center align-items-center" style="min-width: 100%;">
             <div class="row justify-content-center w-100">
                 <div class="col-xl-12 col-lg-12 col-md-11 d-flex justify-content-center">
@@ -258,7 +262,8 @@ include 'conexao.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
     <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
+    </script>
+    <?php include 'performance_footer.php'; ?>
 </body>
 
 </html>

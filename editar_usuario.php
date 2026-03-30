@@ -277,35 +277,47 @@ $can_edit_all = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuari
     <!-- Modal Alterar Senha -->
     <div class="modal fade" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                <div class="modal-header" style="background: #2c404a; color: white; border-radius: 15px 15px 0 0;">
-                    <h5 class="modal-title" id="modalAlterarSenhaLabel"><i class="fas fa-key mr-2"></i><?php echo __('Alterar Senha'); ?></h5>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-key text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-0" id="modalAlterarSenhaLabel"><?php echo __('Alterar Senha'); ?></h5>
+                            <small class="text-white-50"><?php echo __('Mantenha sua conta segura com uma senha forte.'); ?></small>
+                        </div>
+                    </div>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body p-4">
+                <div class="modal-body p-4 bg-light">
                     <form id="formAlterarSenha">
                         <input type="hidden" name="id_usuario_senha" value="<?php echo $user['id_usuarios']; ?>">
                         <div class="form-group">
                             <label class="text-gray-600 small font-weight-bold" for="senha_atual"><?php echo __('Senha Atual'); ?></label>
                             <input type="password" class="form-control" id="senha_atual" name="senha_atual" required style="border-radius: 8px;">
                         </div>
-                        <hr>
-                        <div class="form-group">
+                        <div class="alert alert-info border-0 small mb-3" style="border-radius: 10px; background: rgba(78, 115, 223, 0.1); color: #4e73df;">
+                            <i class="fas fa-info-circle mr-2"></i><?php echo __('A nova senha deve ter pelo menos 4 caracteres.'); ?>
+                        </div>
+                        <div class="form-group mb-3">
                             <label class="text-gray-600 small font-weight-bold" for="nova_senha"><?php echo __('Nova Senha'); ?></label>
-                            <input type="password" class="form-control" id="nova_senha" name="nova_senha" required style="border-radius: 8px;">
+                            <input type="password" class="form-control" id="nova_senha" name="nova_senha" required style="border-radius: 12px; height: 45px;">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-0">
                             <label class="text-gray-600 small font-weight-bold" for="confirmar_senha"><?php echo __('Confirmar Nova Senha'); ?></label>
-                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required style="border-radius: 8px;">
+                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required style="border-radius: 12px; height: 45px;">
                         </div>
-                        <div id="password-error" class="alert alert-danger d-none mt-3" style="border-radius: 8px;"></div>
+                        <div id="password-error" class="alert alert-danger d-none mt-3" style="border-radius: 10px;"></div>
                     </form>
                 </div>
-                <div class="modal-footer" style="border-top: none;">
-                    <button type="button" class="btn btn-light" data-dismiss="modal" style="border-radius: 8px; font-weight: 600;"><?php echo __('Cancelar'); ?></button>
-                    <button type="button" class="btn btn-primary" id="btnSalvarSenha" style="background: #2c404a; border: none; border-radius: 8px; font-weight: 600; padding: 10px 25px;">
+                <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal">
+                        <?php echo __('Cancelar'); ?>
+                    </button>
+                    <button type="button" class="btn btn-primary px-4 font-weight-bold shadow-sm" id="btnSalvarSenha" style="border-radius: 12px; background: #2c404a; border: none;">
                         <i class="fas fa-check mr-2"></i><?php echo __('Atualizar Senha'); ?>
                     </button>
                 </div>

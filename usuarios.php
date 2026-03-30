@@ -1,3 +1,4 @@
+<?php include 'performance_header.php'; ?>
 <?php
 /**
  * GESTÃO DE USUÁRIOS: usuarios.php
@@ -30,8 +31,8 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
     <link rel="stylesheet" href="/assets/css/Nunito.css?h=3532322f32770367812050c1dddc256c">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
     <?php include_once 'pagination_style.php'; ?>
     <style>
@@ -44,6 +45,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
 </head>
 
 <body id="page-top">
+    <?php startNProgress(); ?>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
@@ -52,7 +54,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                 <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
+        <div class="d-flex flex-column premium-page-fade" id="content-wrapper">
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
@@ -111,7 +113,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                 $foto = !empty($row['foto_perfil']) ? htmlspecialchars($row['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg';
                                                 ?>
                                                 <tr class="clickable-row"
-                                                    onclick="window.location='perfil_usuario.php?id=<?php echo $row['id_usuarios']; ?>'">
+                                                    data-href="perfil_usuario.php?id=<?php echo $row['id_usuarios']; ?>">
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             <img src="<?php echo $foto; ?>" class="user-thumbnail"
@@ -126,7 +128,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
                                                         if (isset($cc_map[$cc_nome])) {
-                                                            echo "<a href='perfil_centro_de_custo.php?id=" . $cc_map[$cc_nome] . "' onclick='event.stopPropagation();' class='cc-link'>" . htmlspecialchars($cc_nome) . "</a>";
+                                                            echo "<a href='perfil_centro_de_custo.php?id=" . $cc_map[$cc_nome] . "' class='cc-link'>" . htmlspecialchars($cc_nome) . "</a>";
                                                         } else {
                                                             echo htmlspecialchars($cc_nome);
                                                         }
@@ -158,13 +160,12 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                         <!-- Ações de Edição e Exclusão -->
                                                         <a class="btn btn-warning"
                                                             href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
-                                                            title="<?php echo __('Editar Usuário'); ?>"
-                                                            onclick="event.stopPropagation();">
+                                                            title="<?php echo __('Editar Usuário'); ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <button class="btn btn-danger"
                                                             title="<?php echo __('Excluir Usuário'); ?>"
-                                                            onclick="event.stopPropagation(); deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
+                                                            onclick="deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </td>
@@ -249,8 +250,21 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                 }
             });
         }
+
+        // Lógica para clique na linha (delegando para evitar navegação ao clicar em botões)
+        $(document).ready(function() {
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
+            });
+        });
     </script>
-    <script src="/assets/js/global_search.js"></script>
+    <script src="/assets/js/global_search.js" defer></script>
+    <?php include 'performance_footer.php'; ?>
 </body>
 
 </html>

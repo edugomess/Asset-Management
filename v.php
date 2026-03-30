@@ -12,13 +12,26 @@ if ($id <= 0) {
     die("Ativo não encontrado.");
 }
 
-// Buscar detalhes do ativo
-$sql_ativo = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome 
+// Buscar detalhes do ativo com joins para Usuário e Local de Instalação
+$sql_ativo = "SELECT a.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, l.nome_local 
              FROM ativos a 
              LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios
+             LEFT JOIN locais l ON a.id_local = l.id_local
              WHERE a.id_asset = '$id'";
 $result_ativo = mysqli_query($conn, $sql_ativo);
 $ativo = mysqli_fetch_assoc($result_ativo);
+
+// Função para buscar o path do local de forma recursiva
+function getLocalPath($conn, $id_local) {
+    if (!$id_local) return '';
+    $sql = "SELECT id_local, nome_local, id_parent_local FROM locais WHERE id_local = $id_local";
+    $res = $conn->query($sql);
+    if ($res && $row = $res->fetch_assoc()) {
+        $parent = $row['id_parent_local'] ? getLocalPath($conn, $row['id_parent_local']) . ' > ' : '';
+        return $parent . $row['nome_local'];
+    }
+    return '';
+}
 
 if (!$ativo) {
     echo '<style>body { background: #f0f2f5; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #666; }</style>';
@@ -70,6 +83,12 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             </div>
         </div>
         
+        <?php if ($ativo['status'] == 'Manutencao' || $ativo['status'] == 'Manutenção' || $ativo['status'] == 'Em manutenção'): ?>
+        <div style="background: #ffc107; color: #000; padding: 15px 25px; border-radius: 0 0 12px 12px; margin-bottom: 0; text-align: center; font-weight: bold; border-top: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <i class="fas fa-tools mr-2"></i> <?php echo __('ESTE ATIVO ESTÁ EM MANUTENÇÃO'); ?>
+        </div>
+        <?php endif; ?>
+
         <div class="detail-list">
             <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-fingerprint"></i></div>
@@ -78,6 +97,28 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     <div class="detail-value"><?php echo htmlspecialchars($ativo['tag']); ?></div>
                 </div>
             </div>
+
+            <?php if(!empty($ativo['fabricante'])): ?>
+            <div class="detail-row">
+                <div class="detail-icon"><i class="fas fa-industry"></i></div>
+                <div class="detail-info">
+                    <div class="detail-label"><?php echo __('Fabricante'); ?></div>
+                    <div class="detail-value"><?php echo htmlspecialchars($ativo['fabricante']); ?></div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if(!empty($ativo['id_local'])): ?>
+            <div class="detail-row">
+                <div class="detail-icon" style="color: #e74a3b;"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="detail-info">
+                    <div class="detail-label"><?php echo __('Endereço Completo'); ?></div>
+                    <div class="detail-value text-danger" style="font-size: 0.95rem;">
+                        <?php echo htmlspecialchars(getLocalPath($conn, $ativo['id_local'])); ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <?php if(!empty($ativo['hostName'])): ?>
             <div class="detail-row">
@@ -140,15 +181,17 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             </div>
             <?php endif; ?>
 
+            <?php if(empty($ativo['id_local'])): ?>
             <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-user-check"></i></div>
                 <div class="detail-info">
                     <div class="detail-label"><?php echo __('Responsável'); ?></div>
-                    <div class="detail-value">
+                    <div class="detail-value text-primary font-weight-bold">
                         <?php echo $ativo['assigned_to'] ? htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']) : '<span class="text-muted">' . __('Livre / Disponível') . '</span>'; ?>
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
 
             <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-layer-group"></i></div>
@@ -164,6 +207,16 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     </div>
                 </div>
             </div>
+
+            <?php if(!empty($ativo['centroDeCusto']) && $ativo['centroDeCusto'] !== 'Nenhum'): ?>
+            <div class="detail-row">
+                <div class="detail-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <div class="detail-info">
+                    <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
+                    <div class="detail-value"><?php echo htmlspecialchars($ativo['centroDeCusto']); ?></div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-calendar-alt"></i></div>

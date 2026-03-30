@@ -201,7 +201,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     $status_badge = 'badge-secondary';
                                                 }
                                                 ?>
-                                                <tr class="clickable-row" onclick="window.location='perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>'">
+                                                <tr class="clickable-row" data-href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>">
                                                     <td>
                                                         <a href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>" class="font-weight-bold">
                                                             <?php echo htmlspecialchars($row['software']); ?>
@@ -536,18 +536,30 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 id_licenca: currentLicenseId
                             })
                         })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert('<?php echo __('Todas as atribuições foram removidas!'); ?>');
-                                    location.reload(); // Recarrega para atualizar os contadores na tabela principal
-                                } else {
-                                    alert('<?php echo __('Erro:'); ?> ' + data.message);
-                                }
-                            })
-                            .catch(error => console.error('Erro ao zerar:', error));
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('<?php echo __('Todas as atribuições foram removidas!'); ?>');
+                                location.reload(); // Recarrega para atualizar os contadores na tabela principal
+                            } else {
+                                alert('<?php echo __('Erro:'); ?> ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Erro ao zerar:', error));
                     }
                 }
+
+                // Lógica para clique na linha (delegando para evitar navegação ao clicar em botões)
+                $(document).ready(function() {
+                    $('.clickable-row').on('click', function(e) {
+                        if (!$(e.target).closest('button, a, .btn, .badge-action').length) {
+                            const href = $(this).data('href');
+                            if (href) {
+                                window.location = href;
+                            }
+                        }
+                    });
+                });
             </script>
             </div>
         </div>

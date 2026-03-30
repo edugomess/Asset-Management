@@ -125,16 +125,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
-                                                echo "<tr class='clickable-row' onclick=\"window.location='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'\">
-                                           <td><strong><a href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'>" . htmlspecialchars($row['nomeSetor']) . "</a></strong></td>
+                                                echo "<tr class='clickable-row' data-href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'>
+                                           <td><strong><a href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'>" . htmlspecialchars($row['nomeSetor']) . "</a></strong></td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
                     <td>" . htmlspecialchars($row['unidade']) . "</td>
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>
-                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation();'><i class='fas fa-trash'></i></a>
+                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-edit'></i></a>
+                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
                                             }
@@ -210,6 +210,18 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

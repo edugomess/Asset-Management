@@ -129,6 +129,16 @@ $result = mysqli_query($conn, $sql);
             transition: background-color 0.2s;
         }
     </style>
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
 </head>
 <body id="page-top">
     <div id="wrapper">
@@ -359,7 +369,7 @@ $result = mysqli_query($conn, $sql);
                                                         <i class='fas fa-times-circle'></i>
                                                     </button>" : "";
 
-                                                echo "<tr onclick=\"window.location='editar_chamado.php?id=" . $row['id'] . "'\" style='cursor: pointer;'>
+                                                echo "<tr class='clickable-row' data-href='editar_chamado.php?id=" . $row['id'] . "'>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
                 <td class='font-weight-bold text-dark'>" . __($row['categoria']) . "</td>
@@ -435,6 +445,19 @@ $result = mysqli_query($conn, $sql);
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
+            });
+        });
+    </script>
 
     <script>
     function updateSLATimers() {

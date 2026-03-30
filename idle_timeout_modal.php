@@ -35,18 +35,23 @@ if ($idle_limit < 0)
     aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-            <div class="modal-header border-0 pt-4 pb-0 justify-content-center">
-                <div style="width: 70px; height: 70px; background: rgba(246, 194, 62, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-hourglass-half text-warning fa-2x animate__animated animate__pulse animate__infinite"></i>
+            <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-hourglass-half text-warning animate__animated animate__pulse animate__infinite"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title font-weight-bold mb-0" id="idleTimeoutModalLabel"><?php echo __('Sessão Expirando'); ?></h5>
+                        <small class="text-white-50"><?php echo __('Você está inativo há algum tempo.'); ?></small>
+                    </div>
                 </div>
             </div>
-            <div class="modal-body text-center py-4 px-5">
-                <h4 class="font-weight-bold text-dark mb-3">Sessão Expirando</h4>
-                <p class="text-muted mb-4">Você está inativo. Por segurança, sua sessão será encerrada em breve.</p>
+            <div class="modal-body text-center p-4 bg-light">
+                <p class="text-muted mb-4">Por segurança, sua sessão será encerrada automaticamente.</p>
                 
                 <div class="position-relative d-inline-block mb-4">
                     <svg width="100" height="100" viewbox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="8" />
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e0e0" stroke-width="8" />
                         <circle id="idleProgressCircle" cx="50" cy="50" r="45" fill="none" stroke="#e74a3b" stroke-width="8" 
                             stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition: stroke-dashoffset 1s linear;" />
                     </svg>
@@ -57,12 +62,12 @@ if ($idle_limit < 0)
 
                 <p class="text-secondary small mb-0">Deseja continuar seu trabalho?</p>
             </div>
-            <div class="modal-footer border-0 pb-5 justify-content-center px-5">
-                <button type="button" class="btn btn-primary btn-block py-3 shadow-sm" id="stayConnectedBtn"
-                    style="background: linear-gradient(135deg, #2c404a 0%, #1a2930 100%); border: none; border-radius: 12px; font-weight: 600;">
+            <div class="modal-footer border-0 p-4 bg-white d-flex flex-column">
+                <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold shadow-sm mb-2" id="stayConnectedBtn"
+                    style="background: #2c404a; border: none; border-radius: 12px;">
                     <i class="fas fa-check-circle mr-2"></i>SIM, CONTINUAR CONECTADO
                 </button>
-                <a href="logout.php?timeout=true" class="btn btn-link text-muted mt-2 small text-decoration-none">Sair agora</a>
+                <a href="logout.php?timeout=true" class="btn btn-link text-muted font-weight-bold btn-block m-0">Sair agora</a>
             </div>
         </div>
     </div>

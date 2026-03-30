@@ -51,7 +51,7 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = ?, id_local = NULL, status = 'Em uso' WHERE id_asset = ?");
+        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = ?, id_local = NULL, assigned_type = 'Usuario', status = 'Em uso' WHERE id_asset = ?");
         $stmt->bind_param('ii', $id_usuario, $id_asset);
 
         if ($stmt->execute()) {
@@ -71,7 +71,7 @@ switch ($action) {
             exit;
         }
         
-        $stmt = $conn->prepare("UPDATE ativos SET id_local = ?, assigned_to = NULL, status = 'Em uso' WHERE id_asset = ?");
+        $stmt = $conn->prepare("UPDATE ativos SET id_local = ?, assigned_to = NULL, assigned_type = 'Local', status = 'Em uso' WHERE id_asset = ?");
         $stmt->bind_param('ii', $id_local, $id_asset);
         
         if ($stmt->execute()) {
@@ -84,7 +84,7 @@ switch ($action) {
         break;
 
     case 'unassign':
-        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = NULL, id_local = NULL, status = 'Disponível' WHERE id_asset = ?");
+        $stmt = $conn->prepare("UPDATE ativos SET assigned_to = NULL, id_local = NULL, assigned_type = NULL, status = 'Disponível' WHERE id_asset = ?");
         $stmt->bind_param('i', $id_asset);
 
         if ($stmt->execute()) {
@@ -112,7 +112,7 @@ switch ($action) {
         $conn->begin_transaction();
         try {
             // Update asset status
-            $stmt = $conn->prepare("UPDATE ativos SET status = 'Inativo' WHERE id_asset = ?");
+            $stmt = $conn->prepare("UPDATE ativos SET status = 'Em manutenção' WHERE id_asset = ?");
             $stmt->bind_param('i', $id_asset);
             $stmt->execute();
 
@@ -200,8 +200,9 @@ switch ($action) {
             $stmt_m->execute();
 
             if ($stmt_m->affected_rows > 0 && $id_a > 0) {
-                // Update asset status to Ativo
-                $stmt = $conn->prepare("UPDATE ativos SET status = 'Ativo' WHERE id_asset = ?");
+                // Update asset status to Disponível (or keep previous assignment logic, but usually returning from maintenance makes it available)
+                // If it was in use, we might want to return to 'Em uso'? But usually it goes to stock.
+                $stmt = $conn->prepare("UPDATE ativos SET status = 'Disponível' WHERE id_asset = ?");
                 $stmt->bind_param('i', $id_a);
                 $stmt->execute();
 

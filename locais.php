@@ -1,3 +1,4 @@
+<?php include 'performance_header.php'; ?>
 <?php
 /**
  * GESTÃO DE LOCAIS: locais.php
@@ -37,6 +38,8 @@ if (isset($_GET['msg'])) {
     <link rel="stylesheet" href="/assets/css/Raleway.css?h=f3d9abe8d5aa7831c01bfaa2a1563712">
     <link rel="stylesheet" href="/assets/css/Roboto.css?h=41e93b37bc495fd67938799bb3a6adaf">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
     <style>
         .tree-level-1 { font-weight: bold; color: #2c404a; }
@@ -60,9 +63,20 @@ if (isset($_GET['msg'])) {
             color: white;
         }
     </style>
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">
+    <?php startNProgress(); ?>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
@@ -71,7 +85,7 @@ if (isset($_GET['msg'])) {
                 <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
+        <div class="d-flex flex-column premium-page-fade" id="content-wrapper">
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
@@ -237,7 +251,7 @@ if (isset($_GET['msg'])) {
                                                                 $branchIcon = "<i class='fas fa-level-up-alt fa-rotate-90 tree-branch'></i>";
                                                             }
                                                             
-                                                            echo "<tr>
+                                                            echo "<tr class='clickable-row' data-href='editar_local.php?id={$row['id_local']}'>
                                                                 <td class='tree-level-$level'>
                                                                     $indentHtml $branchIcon
                                                                     <i class='fas $icon mr-2' style='color: #4e73df;'></i> " . htmlspecialchars($row['nome_local']) . "
@@ -266,52 +280,6 @@ if (isset($_GET['msg'])) {
                 </div>
             </div>
 
-            <!-- Modal de Confirmação de Exclusão com AJAX -->
-            <div class="modal fade" id="modalDeleteLocal" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLocalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content" style="border-radius: 15px; border: none;">
-                        <div class="modal-header border-0 pb-0">
-                            <h5 class="modal-title font-weight-bold text-dark" id="modalDeleteLocalLabel"><?php echo __('Confirmar Exclusão'); ?></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body py-4">
-                            <div id="deleteLoading" class="text-center py-3">
-                                <div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>
-                            </div>
-                            <div id="deleteContent" style="display: none;">
-                                <div class="text-center mb-4" id="deleteIconArea">
-                                    <i class="fas fa-exclamation-circle fa-4x text-warning mb-3"></i>
-                                    <h4 class="text-dark font-weight-bold"><?php echo __('Tem certeza?'); ?></h4>
-                                    <p class="text-muted" id="deleteTargetName"></p>
-                                </div>
-
-                                <div id="dependenciesArea" style="display: none;">
-                                    <div class="alert alert-danger border-0 shadow-sm" style="border-radius: 12px;">
-                                        <i class="fas fa-times-circle mr-2"></i>
-                                        <strong><?php echo __('Exclusão Bloqueada!'); ?></strong><br>
-                                        <?php echo __('Existem itens vinculados a este local que impedem a exclusão.'); ?>
-                                    </div>
-                                    <div id="dependencyList" class="mt-3" style="max-height: 200px; overflow-y: auto; background: #f8f9fc; border-radius: 10px; padding: 15px;">
-                                        <!-- Populado via JS -->
-                                    </div>
-                                    <p class="text-muted small mt-3">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        <?php echo __('Mova todos os itens acima para outro local antes de tentar excluir.'); ?>
-                                    </p>
-                                </div>
-
-                                <p id="noDependenciesMsg" class="text-muted text-center"><?php echo __('Este local será removido permanentemente.'); ?></p>
-                            </div>
-                        </div>
-                        <div class="modal-footer border-0 pt-0 d-flex justify-content-center pb-4">
-                            <button type="button" class="btn btn-secondary px-4 mr-2" data-dismiss="modal" style="border-radius: 10px;"><?php echo __('Cancelar'); ?></button>
-                            <a href="#" id="confirmDeleteBtn" class="btn btn-danger px-4" style="border-radius: 10px; display: none;"><?php echo __('Excluir Local'); ?></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
@@ -319,7 +287,66 @@ if (isset($_GET['msg'])) {
                 </div>
             </footer>
         </div>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+    <!-- Modal de Confirmação de Exclusão com AJAX -->
+    <div class="modal fade" id="modalDeleteLocal" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLocalLabel" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; pointer-events: auto !important;">
+                <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-trash-alt text-danger"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-0" id="modalDeleteLocalLabel"><?php echo __('Confirmar Exclusão'); ?></h5>
+                            <small class="text-white-50"><?php echo __('Verifique as dependências antes de confirmar a remoção.'); ?></small>
+                        </div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    <div id="deleteLoading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>
+                    </div>
+                    <div id="deleteContent" style="display: none;">
+                        <div class="text-center mb-4" id="deleteIconArea">
+                            <i class="fas fa-exclamation-circle fa-4x text-warning mb-3"></i>
+                            <h4 class="text-dark font-weight-bold"><?php echo __('Tem certeza?'); ?></h4>
+                            <p class="text-muted" id="deleteTargetName"></p>
+                        </div>
+
+                        <div id="dependenciesArea" style="display: none;">
+                            <div class="alert alert-danger border-0 shadow-sm" style="border-radius: 12px;">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <strong><?php echo __('Exclusão Bloqueada!'); ?></strong><br>
+                                <?php echo __('Existem itens vinculados a este local que impedem a exclusão.'); ?>
+                            </div>
+                            <div id="dependencyList" class="mt-3" style="max-height: 200px; overflow-y: auto; background: #fff; border-radius: 12px; padding: 15px; border: 1px solid #e3e6f0;">
+                                <!-- Populado via JS -->
+                            </div>
+                            <p class="text-muted small mt-3">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                <?php echo __('Mova todos os itens acima para outro local antes de tentar excluir.'); ?>
+                            </p>
+                        </div>
+
+                        <p id="noDependenciesMsg" class="text-muted text-center"><?php echo __('Este local será removido permanentemente.'); ?></p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-link text-muted font-weight-bold" data-dismiss="modal">
+                        <?php echo __('Cancelar'); ?>
+                    </button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger px-4 font-weight-bold shadow-sm" style="border-radius: 12px; display: none;">
+                        <?php echo __('Excluir Local'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
@@ -382,5 +409,19 @@ if (isset($_GET['msg'])) {
             });
         });
     </script>
+    <?php include 'performance_footer.php'; ?>
+    <script>
+        $(document).ready(function() {
+            $('.clickable-row').on('click', function(e) {
+                if (!$(e.target).closest('button, a, .btn').length) {
+                    const href = $(this).data('href');
+                    if (href) {
+                        window.location = href;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

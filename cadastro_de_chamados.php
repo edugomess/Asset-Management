@@ -199,21 +199,31 @@ include_once 'auth.php'; // Proteção de sessão
                 </div>
 
                 <!-- Success Modal -->
-                <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="successModalLabel"><?php echo __('Sucesso!'); ?></h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                            <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-white rounded-circle p-2 mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="modal-title font-weight-bold mb-0" id="successModalLabel"><?php echo __('Chamado Criado!'); ?></h5>
+                                        <small class="text-white-50"><?php echo __('Sua solicitação foi registrada no sistema.'); ?></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-body text-center p-4 bg-light">
+                                <div class="mb-3">
+                                    <i class="fas fa-ticket-alt fa-3x text-primary mb-3"></i>
+                                    <h4 class="text-dark font-weight-bold" id="modal-chamado-id"></h4>
+                                    <p class="text-muted"><?php echo __('Acompanhe o status na lista de chamados.'); ?></p>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 p-4 bg-white">
+                                <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold shadow-sm" id="btn-redirect-chamados" style="border-radius: 12px; background: #2c404a; border: none;">
+                                    <?php echo __('IR PARA MEUS CHAMADOS'); ?>
                                 </button>
-                            </div>
-                            <div class="modal-body">
-                                <p><?php echo __('Chamado criado com sucesso!'); ?></p>
-                                <strong><?php echo __('Número do Chamado:'); ?> <span id="modal-chamado-id"></span></strong>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" id="btn-redirect-chamados"><?php echo __('OK'); ?></button>
                             </div>
                         </div>
                     </div>

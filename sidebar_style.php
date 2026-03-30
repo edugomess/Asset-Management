@@ -1,5 +1,21 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
 <style>
+    /* NProgress Premium Colorization */
+    #nprogress .bar { background: #1cc88a !important; height: 3px !important; }
+    #nprogress .peg { box-shadow: 0 0 10px #1cc88a, 0 0 5px #1cc88a !important; }
+    #nprogress .spinner-icon { border-top-color: #1cc88a !important; border-left-color: #1cc88a !important; }
+
+    /* Global Page Fade-In */
+    @keyframes premiumFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .premium-page-fade {
+        animation: premiumFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
     /* Global Animation Speedup */
     .animate__animated {
         --animate-duration: 0.5s !important;

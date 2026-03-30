@@ -18,6 +18,22 @@ include_once 'auth.php'; // Proteção de sessão
     <title><?php echo __('Cadastro de Ativo'); ?> - Asset MGT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <script>
+        // --- FUNÇÃO DE IMPRESSÃO (DEFINIDA NO TOPO PARA SEGURANÇA) ---
+        function printCreatedAsset() {
+            if (typeof currentAssetData !== 'undefined' && currentAssetData && currentAssetData.id_asset) {
+                const printUrl = `imprimir_etiqueta.php?id=${currentAssetData.id_asset}`;
+                let printFrame = document.getElementById('print_iframe');
+                if (!printFrame) {
+                    printFrame = document.createElement('iframe');
+                    printFrame.id = 'print_iframe';
+                    printFrame.style.display = 'none';
+                    document.body.appendChild(printFrame);
+                }
+                printFrame.src = printUrl;
+            }
+        }
+    </script>
 </head>
 
 <body id="page-top">
@@ -537,6 +553,10 @@ include_once 'auth.php'; // Proteção de sessão
                         console.error("DEBUG - Erro de Rede:", xhr.status, xhr.responseText);
                         Swal.fire('Erro de Rede', `Falha no servidor (Status ${xhr.status}).<br>${xhr.responseText.substring(0, 100)}`, 'error');
                     }
+                });
+
+                $('#btn-print-reg').on('click', function() {
+                    printCreatedAsset();
                 });
             });
 

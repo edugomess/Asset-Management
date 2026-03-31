@@ -396,7 +396,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             <i class="fas fa-minus-circle mr-2"></i><?php echo __('Liberar Ativo'); ?>
                                         </button>
                                     <?php else: ?>
-                                        <button class="btn btn-success btn-action" onclick="openAssignModal()">
+                                        <button class="btn btn-success btn-action" onclick="openAssignModal(<?php echo $id; ?>)">
                                             <i
                                                 class="fas fa-plus-circle mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?>
                                         </button>
@@ -409,10 +409,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                         </button>
                                     <?php else: ?>
                                         <button class="btn btn-success btn-action"
-                                            onclick="releaseMaintenance(<?php echo $id; ?>)">
+                                            onclick="releaseFromMaintenance(<?php echo $id; ?>)">
                                             <i class="fas fa-check-circle mr-2"></i><?php echo __('Liberar Manutenção'); ?>
                                         </button>
                                     <?php endif; ?>
+
                                 </div>
                             </div>
                         </div>
@@ -1020,77 +1021,9 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             html2pdf().set(opt).from(body).save();
         }
 
-        // --- MANUTENÇÃO ---
-        function sendToMaintenance(id) {
-            $('#maintenance_asset_id').val(id);
-            $('#maintenanceReason, #itemTrocado, #upgradeDescription, #supplyDescription, #upgradeValue').val('');
-            $('#upgradeCategory, #ramModule, #diskType, #supplyType').val('');
-            $('#ramFields, #storageFields').hide();
-            $('#typeInsumo').prop('checked', true);
-            $('#repairFields, #upgradeFields').hide();
-            $('#supplyFields').show();
-            $('#maintenanceModal').modal('show');
-        }
+        // --- ATIVOS ACTIONS REPLACEMENT ---
+        // Funções de manutenção e atribuição movidas para modals_ativos_shared.php
 
-        function releaseMaintenance(assetId) {
-            Swal.fire({
-                title: "<?php echo __('Deseja liberar este ativo?'); ?>",
-                text: "<?php echo __('O ativo retornará ao status Disponível.'); ?>",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#2c404a',
-                cancelButtonColor: '#d33',
-                confirmButtonText: "<?php echo __('Sim, finalizar'); ?>",
-                cancelButtonText: "<?php echo __('Cancelar'); ?>",
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', { action: 'release_maintenance', id_asset: assetId }, function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: "<?php echo __('Concluído!'); ?>",
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => location.reload());
-                        } else {
-                            Swal.fire('Error', res.message || "<?php echo __('Erro ao liberar.'); ?>", 'error');
-                        }
-                    }, 'json');
-                }
-            });
-        }
-
-        // --- ATRIBUIÇÃO ---
-        function openAssignModal() {
-            $('#assignSearchInput').val('');
-            $('#assignSearchResults').hide().empty();
-            $('#selectedAssignInfo').hide();
-            $('#btnConfirmAssign').prop('disabled', true);
-            $('#assignTypeSelect').val('user');
-            $('#assignSearchLabel').text("<?php echo __('Buscar Usuário'); ?>");
-            $('#assignModal').modal('show');
-        }
-
-        function unassignUser(id) {
-            Swal.fire({
-                title: '<?php echo __('Confirmar Liberação?'); ?>',
-                text: "<?php echo __('O ativo voltará a ficar disponível.'); ?>",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#2c404a',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '<?php echo __('Sim, liberar'); ?>',
-                cancelButtonText: '<?php echo __('Cancelar'); ?>'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('ajax_ativos.php', { action: 'unassign', id_asset: id }, function (res) {
-                        if (res.success) location.reload();
-                        else Swal.fire('Error', res.message, 'error');
-                    }, 'json');
-                }
-            });
-        }
 
         function sellAsset(assetId) {
             Swal.fire({
@@ -1122,300 +1055,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             });
         }
 
-        $(document).ready(function () {
-            // --- Lógica de Busca ---
-            $('#assignTypeSelect').on('change', function () {
-                const type = $(this).val();
-                const label = type === 'user' ? "<?php echo __('BUSCAR COLABORADOR'); ?>" : "<?php echo __('BUSCAR LOCAL / INFRAESTRUTURA'); ?>";
-                const placeholder = type === 'user' ? "<?php echo __('Nome, e-mail ou CPF...'); ?>" : "<?php echo __('Nome do local, andar, sala...'); ?>";
-                $('#assignSearchLabel').text(label);
-                $('#assignSearchInput').attr('placeholder', placeholder).val('');
-                $('#assignSearchResults').hide().empty();
-                $('#selectedAssignInfo').hide();
-                $('#btnConfirmAssign').prop('disabled', true);
-            });
 
-            var searchTimeout;
-            $('#assignSearchInput').on('input', function () {
-                var query = $(this).val();
-                var searchType = $('#assignTypeSelect').val();
-                clearTimeout(searchTimeout);
-                if (query.length < 2) { $('#assignSearchResults').hide().empty(); return; }
-
-                searchTimeout = setTimeout(function () {
-                    const endpoint = searchType === 'user' ? 'ajax_buscar_usuario.php' : 'ajax_buscar_local.php';
-                    $.get(endpoint, { query: query }, function (results) {
-                        var html = '';
-                        if (results.length > 0) {
-                            results.forEach(function (item) {
-                                if (searchType === 'user') {
-                                    html += `<a href="#" class="list-group-item list-group-item-action select-assign" 
-                                                data-id="${item.id}" data-type="user" data-name="${item.nome_completo}" data-sub="${item.email}">
-                                                <div class="d-flex w-100 justify-content-between">
-                                                    <h6 class="mb-1 font-weight-bold font-size-sm">${item.nome_completo}</h6>
-                                                    <small class="text-primary font-weight-bold">${item.funcao || ''}</small>
-                                                </div>
-                                                <p class="mb-1 small text-muted">${item.email}</p>
-                                            </a>`;
-                                } else {
-                                    html += `<a href="#" class="list-group-item list-group-item-action select-assign" 
-                                                data-id="${item.id_local}" data-type="location" data-name="${item.nome_local}" data-sub="${item.tipo_local}">
-                                                <div class="d-flex w-100 justify-content-between">
-                                                    <h6 class="mb-1 font-weight-bold font-size-sm">${item.nome_local}</h6>
-                                                    <small class="text-success font-weight-bold">${item.tipo_local || ''}</small>
-                                                </div>
-                                            </a>`;
-                                }
-                            });
-                        } else {
-                            html = `<div class="list-group-item text-center text-muted small"><?php echo __('Nenhum resultado encontrado.'); ?></div>`;
-                        }
-                        $('#assignSearchResults').show().html(html);
-                    }, 'json');
-                }, 300);
-            });
-
-            $(document).on('click', '.select-assign', function (e) {
-                e.preventDefault();
-                $('#selectedAssignId').val($(this).data('id'));
-                $('#selectedAssignType').val($(this).data('type'));
-                $('#selectedAssignName').text($(this).data('name'));
-                $('#selectedAssignSub').text($(this).data('sub'));
-                $('#selectedAssignInfo').fadeIn();
-                $('#assignSearchResults').fadeOut();
-                $('#btnConfirmAssign').prop('disabled', false);
-            });
-
-            $('#btnConfirmAssign').on('click', function () {
-                const id_assign = $('#selectedAssignId').val();
-                const assign_type = $('#selectedAssignType').val();
-                const $btn = $(this);
-                if (!id_assign) return;
-
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Processando...'); ?>');
-
-                let actionName = assign_type === 'user' ? 'assign' : 'assign_local';
-                let payload = { action: actionName, id_asset: <?php echo $id; ?> };
-                if (assign_type === 'user') payload.id_usuario = id_assign;
-                else payload.id_local = id_assign;
-
-                $.post('ajax_ativos.php', payload, function (res) {
-                    if (res.success) location.reload();
-                    else {
-                        Swal.fire('Error', res.message, 'error');
-                        $btn.prop('disabled', false).text("<?php echo __('Confirmar Atribuição'); ?>");
-                    }
-                }, 'json');
-            });
-
-            // --- Lógica Manutenção (Modal Swapping) ---
-            $(document).on('change', 'input[name="maintenanceType"]', function () {
-                const type = $(this).val();
-                $('#repairFields, #upgradeFields, #supplyFields').hide();
-                if (type === 'Reparo') $('#repairFields').slideDown();
-                else if (type === 'Upgrade') $('#upgradeFields').slideDown();
-                else if (type === 'Insumo') $('#supplyFields').slideDown();
-            });
-
-            $(document).on('change', '#upgradeCategory', function () {
-                const category = $(this).val();
-                if (category === 'Memória') { $('#ramFields').slideDown(); $('#storageFields').slideUp(); }
-                else if (category === 'Armazenamento') { $('#ramFields').slideUp(); $('#storageFields').slideDown(); }
-                else { $('#ramFields, #storageFields').slideUp(); }
-            });
-
-            $('#confirmMaintenance').on('click', function () {
-                const type = $('input[name="maintenanceType"]:checked').val();
-                const assetId = $('#maintenance_asset_id').val();
-                let reason = '', item = '', update = '', cat_upgrade = '', val_upgrade = 0;
-
-                if (type === 'Reparo') {
-                    reason = $('#maintenanceReason').val().trim();
-                    item = $('#itemTrocado').val().trim();
-                    if (!reason) { Swal.fire('Atenção', "<?php echo __('Por favor, informe o motivo do reparo.'); ?>", 'warning'); return; }
-                } else if (type === 'Upgrade') {
-                    cat_upgrade = $('#upgradeCategory').val();
-                    reason = $('#upgradeDescription').val().trim();
-                    if (!cat_upgrade) { Swal.fire('Atenção', "<?php echo __('Por favor, selecione a categoria do upgrade.'); ?>", 'warning'); return; }
-                    if (cat_upgrade === 'Memória') item = $('#ramModule').val();
-                    else if (cat_upgrade === 'Armazenamento') { item = $('#diskType').val(); update = $('#upgradeValue').val(); }
-                } else if (type === 'Insumo') {
-                    reason = $('#supplyDescription').val().trim();
-                    item = $('#supplyType').val();
-                    if (!item) { Swal.fire('Atenção', "<?php echo __('Por favor, selecione o tipo de insumo.'); ?>", 'warning'); return; }
-                }
-
-                const $btn = $(this);
-                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i><?php echo __('Enviando...'); ?>');
-
-                const formData = new FormData();
-                formData.append('action', 'send_to_maintenance');
-                formData.append('id_asset', assetId);
-                formData.append('tipo_manutencao', type);
-                formData.append('observacoes', reason);
-                formData.append('item_trocado', item);
-                formData.append('detalhes_update', update);
-                formData.append('categoria_upgrade', cat_upgrade);
-                formData.append('valor_upgrade', val_upgrade);
-
-                fetch('ajax_ativos.php', { method: 'POST', body: formData })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) location.reload();
-                        else {
-                            Swal.fire('Error', data.message || "<?php echo __('Erro ao processar requisição.'); ?>", 'error');
-                            $btn.prop('disabled', false).html("<?php echo __('Confirmar'); ?>");
-                        }
-                    })
-                    .catch(e => {
-                        Swal.fire('Error', "<?php echo __('Erro de rede.'); ?>", 'error');
-                        $btn.prop('disabled', false).html("<?php echo __('Confirmar'); ?>");
-                    });
-            });
-        });
     </script>
 
-    <!-- MODAL: ATRIBUIÇÃO -->
-    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                <div class="modal-header" style="background: #2c404a; color: white; border-radius: 15px 15px 0 0;">
-                    <h5 class="modal-title font-weight-bold"><i class="fas fa-sitemap mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?></h5>
-                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="form-group mb-3">
-                        <label class="font-weight-bold text-gray-700 small mb-2"><?php echo __('Tipo de Atribuição'); ?></label>
-                        <select id="assignTypeSelect" class="form-control mb-3" style="border-radius: 10px;">
-                            <option value="user"><?php echo __('Usuário'); ?></option>
-                            <option value="location"><?php echo __('Local / Infraestrutura'); ?></option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-4">
-                        <label id="assignSearchLabel" class="font-weight-bold text-gray-700 small mb-2 text-uppercase"><?php echo __('BUSCAR COLABORADOR'); ?></label>
-                        <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
-                            <div class="input-group-prepend"><span class="input-group-text bg-white border-right-0"><i class="fas fa-search text-muted"></i></span></div>
-                            <input type="text" id="assignSearchInput" class="form-control border-left-0" style="height: 45px;" placeholder="<?php echo __('Nome, e-mail ou CPF...'); ?>">
-                        </div>
-                    </div>
-                    <div id="assignSearchResults" class="list-group list-group-flush shadow-sm rounded" style="max-height: 250px; overflow-y: auto; display: none; border: 1px solid #e3e6f0;"></div>
-                    <div id="selectedAssignInfo" class="mt-4 p-3 border rounded bg-light" style="display: none;">
-                        <input type="hidden" id="selectedAssignId">
-                        <input type="hidden" id="selectedAssignType">
-                        <div class="detail-label small text-uppercase font-weight-bold mb-1"><?php echo __('Selecionado'); ?></div>
-                        <div class="font-weight-bold text-primary mb-1" id="selectedAssignName"></div>
-                        <div class="small text-muted" id="selectedAssignSub"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
-                    <button type="button" class="btn btn-success px-4" id="btnConfirmAssign" disabled style="background: #2c404a; border: none;"><?php echo __('Confirmar Atribuição'); ?></button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include 'modals_ativos_shared.php'; ?>
 
-    <!-- MODAL: MANUTENÇÃO -->
-    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden;">
-                <input type="hidden" id="maintenance_asset_id">
-                <div class="modal-header" style="background: #2c404a; color: white;">
-                    <h5 class="modal-title font-weight-bold"><?php echo __('Solicitar Manutenção'); ?></h5>
-                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="text-muted small mb-4"><?php echo __('Selecione o fluxo técnico para registro da manutenção.'); ?></p>
-                    <div class="row text-center mb-4">
-                        <?php $types = [['id' => 'Insumo', 'icon' => 'fa-fill-drip', 'color' => 'text-success', 'label' => __('Suprimento')], ['id' => 'Reparo', 'icon' => 'fa-wrench', 'color' => 'text-warning', 'label' => __('Reparo')], ['id' => 'Upgrade', 'icon' => 'fa-arrow-up', 'color' => 'text-primary', 'label' => __('Upgrade')]];
-                        foreach ($types as $t): ?>
-                            <div class="col-4 px-1">
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="type<?php echo $t['id']; ?>" name="maintenanceType" class="custom-control-input" value="<?php echo $t['id']; ?>" <?php echo $t['id'] == 'Insumo' ? 'checked' : ''; ?>>
-                                    <label class="custom-control-label font-weight-bold text-dark" for="type<?php echo $t['id']; ?>" style="cursor: pointer; font-size: 0.85rem;">
-                                        <i class="fas <?php echo $t['icon']; ?> d-block mb-1 <?php echo $t['color']; ?>"></i>
-                                        <?php echo $t['label']; ?>
-                                    </label>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div id="repairFields" style="display: none;">
-                        <div class="form-group mb-3">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Motivo / Problema'); ?></label>
-                            <textarea id="maintenanceReason" class="form-control" rows="3" placeholder="<?php echo __('Ex: Teclado falhando, carregador com defeito...'); ?>"></textarea>
-                        </div>
-                        <div class="form-group mb-0">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Peças Trocadas (opcional)'); ?></label>
-                            <textarea id="itemTrocado" class="form-control" rows="2" placeholder="<?php echo __('Liste os componentes substituídos...'); ?>"></textarea>
-                        </div>
-                    </div>
-                    <div id="upgradeFields" style="display: none;">
-                        <div class="form-group mb-3">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Categoria do Upgrade'); ?></label>
-                            <select id="upgradeCategory" class="form-control">
-                                <option value=""><?php echo __('Selecione uma categoria...'); ?></option>
-                                <option value="Memória"><?php echo __('Memória RAM'); ?></option>
-                                <option value="Armazenamento"><?php echo __('Armazenamento (Disco)'); ?></option>
-                                <option value="Outro"><?php echo __('Outros'); ?></option>
-                            </select>
-                        </div>
-                        <div id="ramFields" style="display: none;">
-                            <div class="form-group mb-3">
-                                <label class="text-gray-600 small font-weight-bold"><?php echo __('Módulo Selecionado'); ?></label>
-                                <select id="ramModule" class="form-control">
-                                    <?php foreach (['4GB DDR4', '8GB DDR4', '16GB DDR4', '32GB DDR4', '8GB DDR5', '16GB DDR5', '32GB DDR5'] as $ram) echo "<option value='$ram'>$ram</option>"; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="storageFields" style="display: none;">
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <div class="form-group mb-3">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Tecnologia de Disco'); ?></label>
-                                        <select id="diskType" class="form-control">
-                                            <option value="SSD SATA">SSD SATA</option>
-                                            <option value="SSD NVMe">SSD NVMe</option>
-                                            <option value="HDD">HDD</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="form-group mb-3">
-                                        <label class="text-gray-600 small font-weight-bold"><?php echo __('Capacidade'); ?></label>
-                                        <select id="upgradeValue" class="form-control">
-                                            <?php foreach (['120GB', '240GB', '480GB', '960GB', '256GB', '512GB', '1TB', '2TB'] as $cap) echo "<option value='$cap'>$cap</option>"; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-0">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Observações do Upgrade'); ?></label>
-                            <textarea id="upgradeDescription" class="form-control" rows="2" placeholder="<?php echo __('Detalhes adicionais do upgrade...'); ?>"></textarea>
-                        </div>
-                    </div>
-                    <div id="supplyFields">
-                        <div class="form-group mb-3">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Tipo de Insumo'); ?></label>
-                            <select id="supplyType" class="form-control">
-                                <option value=""><?php echo __('Selecione o insumo...'); ?></option>
-                                <?php foreach (['Toner', 'Difusor', 'Cartucho de Tinta', 'Cilindro / Drum', 'Fita de Impressão', 'Kit Fusor', 'Outro'] as $ins) echo "<option value='$ins'>" . __($ins) . "</option>"; ?>
-                            </select>
-                        </div>
-                        <div class="form-group mb-0">
-                            <label class="text-gray-600 small font-weight-bold"><?php echo __('Observações'); ?></label>
-                            <textarea id="supplyDescription" class="form-control" rows="2" placeholder="<?php echo __('Ex: Troca do Toner Preto - Unidade A'); ?>"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" style="background: #f8f9fc;">
-                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
-                    <button type="button" id="confirmMaintenance" class="btn btn-primary px-4" style="background: #2c404a; border: none;"><?php echo __('Confirmar'); ?></button>
-                </div>
-            </div>
-        </div>
-    </div>
     <?php include 'performance_footer.php'; ?>
 </body>
 </html>

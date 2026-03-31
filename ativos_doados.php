@@ -10,8 +10,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= (isset($_SESSION['language']) && $_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
@@ -63,6 +63,14 @@ include 'conexao.php';
         justify-content: center;
         margin-right: 10px;
         color: #b7b9cc;
+    }
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .clickable-row:hover {
+        background-color: rgba(0, 0, 0, 0.05) !important;
     }
 </style>
 
@@ -215,7 +223,7 @@ include 'conexao.php';
                                                 $data_venda = date('d/m/Y H:i', strtotime($row['data_venda']));
                                                 $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
                                                 ?>
-                                                <tr>
+                                                <tr class="clickable-row" data-href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>">
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
@@ -295,6 +303,18 @@ include 'conexao.php';
         <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
         <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
         <script src="/assets/js/global_search.js"></script>
+        <script>
+            $(document).ready(function() {
+                $(document).on('click', '.clickable-row', function(e) {
+                    if (!$(e.target).closest('button, a, .btn').length) {
+                        const href = $(this).data('href');
+                        if (href) {
+                            window.location = href;
+                        }
+                    }
+                });
+            });
+        </script>
 </body>
 
 </html>

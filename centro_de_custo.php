@@ -133,8 +133,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>
-                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'><i class='fas fa-trash'></i></a>
+                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()'><i class='fas fa-edit'></i></a>
+                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
                                             }
@@ -212,7 +212,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/global_search.js"></script>
     <script>
         $(document).ready(function() {
-            $('.clickable-row').on('click', function(e) {
+            $(document).on('click', '.clickable-row', function(e) {
                 if (!$(e.target).closest('button, a, .btn').length) {
                     const href = $(this).data('href');
                     if (href) {

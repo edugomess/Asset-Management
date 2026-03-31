@@ -43,7 +43,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
-    <?php include 'sidebar_style.php'; ?>
+    <?php include_once 'sidebar_style.php'; ?>
 
 </head>
 
@@ -52,13 +52,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4"><?php echo __('Relatórios'); ?></h3>
                     <div class="card shadow">
@@ -147,11 +147,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 </optgroup>
 
                                                 <optgroup label="<?php echo __('Manutenção'); ?>">
-                                                    <option value="relatorio_manutencao_atual.php"><?php echo __('Manutenções Ativas'); ?>
-                                                    </option>
+                                                    <option value="relatorio_manutencao_atual.php"><?php echo __('Manutenções Ativas'); ?></option>
                                                     <option value="relatorio_manutencao_historico.php" data-periodo="true"><?php echo __('Histórico de Manutenções'); ?></option>
-                                                    <option value="relatorio_manutencao_estatistico.php"><?php echo __('Resumo Estatístico'); ?>
-                                                    </option>
+                                                    <option value="relatorio_manutencao_por_tipo.php"><?php echo __('Por Tipo de Intervenção'); ?></option>
+                                                    <option value="relatorio_manutencao_estatistico.php"><?php echo __('Resumo Estatístico'); ?></option>
                                                 </optgroup>
 
                                                 <optgroup label="<?php echo __('Fornecedores'); ?>">
@@ -162,13 +161,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <option value="relatorio_compras_fornecedor.php" data-periodo="true"><?php echo __('Investimento por Fornecedor'); ?></option>
                                                 </optgroup>
 
+                                                <optgroup label="<?php echo __('Infraestrutura e Locais'); ?>">
+                                                    <option value="relatorio_ativos_localizacao.php"><?php echo __('Ativos por Localização (Full)'); ?></option>
+                                                    <option value="relatorio_ocupacao_local.php"><?php echo __('Taxa de Ocupação por Local'); ?></option>
+                                                    <option value="relatorio_distribuicao_tipos_local.php"><?php echo __('Distribuição por Tipo de Local'); ?></option>
+                                                </optgroup>
+
                                                 <optgroup label="<?php echo __('Outros'); ?>">
-                                                    <option value="relatorio_centro_de_custo.php"><?php echo __('Centros de Custo (Lista)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_cc_detalhado.php"><?php echo __('Centros de Custo (Detalhado)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_resumo_geral.php"><?php echo __('Resumo Geral do Sistema'); ?>
-                                                    </option>
+                                                    <option value="relatorio_centro_de_custo.php"><?php echo __('Centros de Custo (Lista)'); ?></option>
+                                                    <option value="relatorio_cc_detalhado.php"><?php echo __('Centros de Custo (Detalhado)'); ?></option>
+                                                    <option value="relatorio_resumo_geral.php"><?php echo __('Resumo Geral do Sistema'); ?></option>
                                                 </optgroup>
                                             <?php endif; ?>
                                         </select>

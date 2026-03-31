@@ -3,8 +3,8 @@
  * GESTÃO DE LICENÇAS: licencas.php
  * Inventário de softwares, chaves de ativação e controle de vencimentos de assinaturas.
  */
-include 'auth.php';    // Proteção de sessão
-include 'conexao.php'; // Vínculo com banco
+include_once 'auth.php';    // Proteção de sessão
+include_once 'conexao.php'; // Vínculo com banco
 
 // SEGURANÇA: Apenas perfis 'Admin' ou 'Suporte' podem gerenciar o licenciamento corporativo
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
@@ -12,8 +12,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8">
@@ -30,8 +29,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
-    <?php include 'sidebar_style.php'; ?>
-    <?php include 'pagination_style.php'; ?>
+    <?php include_once 'sidebar_style.php'; ?>
+    <?php include_once 'pagination_style.php'; ?>
 
     <style>
         .clickable-row {
@@ -121,13 +120,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
             style="background: rgb(44,64,74);">
             <div class="container-fluid d-flex flex-column p-0">
-                <?php include 'sidebar_brand.php'; ?>
-                <?php include 'sidebar_menu.php'; ?>
+                <?php include_once 'sidebar_brand.php'; ?>
+                <?php include_once 'sidebar_menu.php'; ?>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4"><?php echo __('Gestão de Licenças'); ?></h3>
                     <div class="card shadow">
@@ -152,8 +151,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table mt-2" id="dataTable" role="grid">
-                                <table class="table my-0" id="dataTable">
+                            <div class="table-responsive table mt-2" id="licencasWrapper" role="grid">
+                                <table class="table my-0" id="licencasTable">
                                     <thead>
                                         <tr>
                                             <th><?php echo __('Software'); ?></th>
@@ -203,7 +202,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 ?>
                                                 <tr class="clickable-row" data-href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>">
                                                     <td>
-                                                        <a href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>" class="font-weight-bold">
+                                                        <a href="perfil_licenca.php?id=<?php echo $row['id_licenca']; ?>" class="font-weight-bold" onclick="event.stopPropagation()">
                                                             <?php echo htmlspecialchars($row['software']); ?>
                                                         </a>
                                                     </td>
@@ -215,7 +214,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                                 data-key="<?php echo htmlspecialchars($row['chave']); ?>"
                                                                 class="mr-2">********</code>
                                                             <button class="btn btn-link btn-sm p-0 text-muted"
-                                                                onclick="toggleKey(<?php echo $row['id_licenca']; ?>)">
+                                                                onclick="event.stopPropagation(); toggleKey(<?php echo $row['id_licenca']; ?>)">
                                                                 <i class="fas fa-eye"
                                                                     id="eye-<?php echo $row['id_licenca']; ?>"></i>
                                                             </button>
@@ -243,30 +242,31 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             <!-- Botão de Atribuir ou Desatribuir (Dinâmico) -->
                                                             <?php if ($row['quantidade_uso'] >= $row['quantidade_total']): ?>
                                                                 <button class="btn btn-dark-system btn-system btn-tamanho-fixo mr-2"
-                                                                    onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')">
+                                                                    onclick="event.stopPropagation(); openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')">
                                                                     <?php echo __('Desatribuir'); ?> <i class="fas fa-user-minus"></i>
                                                                 </button>
                                                             <?php else: ?>
                                                                 <button class="btn btn-info-system btn-system btn-tamanho-fixo mr-2"
-                                                                    onclick="openAssignModal(<?php echo $row['id_licenca']; ?>)">
+                                                                    onclick="event.stopPropagation(); openAssignModal(<?php echo $row['id_licenca']; ?>)">
                                                                     <?php echo __('Atribuir'); ?> <i class="fas fa-address-card"></i>
                                                                 </button>
                                                             <?php endif; ?>
-
+ 
                                                             <!-- Botão de Editar -->
                                                             <a class="btn btn-warning-system btn-system btn-edit mr-2"
-                                                                href="editar_licenca.php?id=<?php echo $row['id_licenca']; ?>">
+                                                                href="editar_licenca.php?id=<?php echo $row['id_licenca']; ?>"
+                                                                onclick="event.stopPropagation()">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
-
+ 
                                                             <!-- Botão de Detalhes -->
                                                             <button class="btn btn-secondary-system btn-system btn-edit mr-2"
-                                                                onclick="openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')"
+                                                                onclick="event.stopPropagation(); openDetailsModal(<?php echo $row['id_licenca']; ?>, '<?php echo addslashes($row['software']); ?>')"
                                                                 title="<?php echo __('Detalhes de Atribuição'); ?>">
                                                                 <i class="fas fa-info-circle"></i>
                                                             </button>
                                                         </div>
-                                                    </td>
+                                                    </td>                                </td>
                                                 </tr>
                                                 <?php
                                             }
@@ -551,7 +551,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                 // Lógica para clique na linha (delegando para evitar navegação ao clicar em botões)
                 $(document).ready(function() {
-                    $('.clickable-row').on('click', function(e) {
+                    $(document).on('click', '.clickable-row', function(e) {
                         if (!$(e.target).closest('button, a, .btn, .badge-action').length) {
                             const href = $(this).data('href');
                             if (href) {

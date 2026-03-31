@@ -3,8 +3,8 @@
  * GESTÃO DE CHAMADOS: chamados.php
  * Interface central de suporte para usuários e técnicos, com lógica de SLA em tempo real.
  */
-include 'auth.php';    // Autenticação de sessão
-include 'conexao.php'; // Banco de dados
+include_once 'auth.php';    // Autenticação de sessão
+include_once 'conexao.php'; // Banco de dados
 date_default_timezone_set('America/Sao_Paulo'); // Alinha o tempo com o fuso local
 
 // === CONFIGURAÇÃO DE PAGINAÇÃO ===
@@ -371,7 +371,7 @@ $result = mysqli_query($conn, $sql);
 
                                                 echo "<tr class='clickable-row' data-href='editar_chamado.php?id=" . $row['id'] . "'>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($row['id']) . "</td>
-                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark'>" . htmlspecialchars($row['titulo']) . "</a></td>
+                <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark' onclick='event.stopPropagation()'>" . htmlspecialchars($row['titulo']) . "</a></td>
                 <td class='font-weight-bold text-dark'>" . __($row['categoria']) . "</td>
                 <td><span class='status-badge " . $prioridade_class . " font-weight-bold'>" . __($prioridade) . "</span></td>
                 <td class='font-weight-bold text-dark'>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
@@ -445,10 +445,11 @@ $result = mysqli_query($conn, $sql);
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
-
+    
     <script>
         $(document).ready(function() {
-            $('.clickable-row').on('click', function(e) {
+            // Lógica para clique na linha da tabela (delegação)
+            $(document).on('click', '.clickable-row', function(e) {
                 if (!$(e.target).closest('button, a, .btn').length) {
                     const href = $(this).data('href');
                     if (href) {
@@ -458,6 +459,8 @@ $result = mysqli_query($conn, $sql);
             });
         });
     </script>
+
+
 
     <script>
     function updateSLATimers() {

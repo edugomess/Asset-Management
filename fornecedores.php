@@ -4,8 +4,8 @@
  * Cadastro e manutenção de parceiros comerciais e prestadores de suporte técnico.
  */
 // Inclui os arquivos de autenticação e conexão com o banco de dados
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 
 // Restrição de acesso: Verifica se o usuário tem nível 'Admin' ou 'Suporte'
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
@@ -196,8 +196,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>" . htmlspecialchars($row['cnpj']) . "</td>
                                                     <td><span class='status-badge badge-$status_label'>" . __($row['status'] ?? 'Inativo') . "</span></td>
                                                     <td class='action-cell'>
-                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "'><i class='fas fa-edit'></i></a>
-                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "'><i class='fas fa-trash'></i></a>
+                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "' onclick='event.stopPropagation()'><i class='fas fa-edit'></i></a>
+                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></a>
                                                     </td>
                                                 </tr>";
                                             }
@@ -272,7 +272,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/global_search.js"></script>
     <script>
         $(document).ready(function() {
-            $('.clickable-row').on('click', function(e) {
+            $(document).on('click', '.clickable-row', function(e) {
                 if (!$(e.target).closest('button, a, .btn').length) {
                     const href = $(this).data('href');
                     if (href) {

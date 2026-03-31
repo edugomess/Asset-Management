@@ -1,11 +1,11 @@
-<?php include 'performance_header.php'; ?>
+<?php include_once 'performance_header.php'; ?>
 <?php
 /**
  * GESTÃO DE USUÁRIOS: usuarios.php
  * Visualização e administração de todos os usuários cadastrados no sistema.
  */
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 
 // Verificação de permissão: Apenas Admins e Suporte acessam esta lista completa
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
@@ -128,7 +128,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
                                                         if (isset($cc_map[$cc_nome])) {
-                                                            echo "<a href='perfil_centro_de_custo.php?id=" . $cc_map[$cc_nome] . "' class='cc-link'>" . htmlspecialchars($cc_nome) . "</a>";
+                                                            echo "<a href='perfil_centro_de_custo.php?id=" . $cc_map[$cc_nome] . "' class='cc-link' onclick='event.stopPropagation()'>" . htmlspecialchars($cc_nome) . "</a>";
                                                         } else {
                                                             echo htmlspecialchars($cc_nome);
                                                         }
@@ -160,12 +160,13 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                         <!-- Ações de Edição e Exclusão -->
                                                         <a class="btn btn-warning"
                                                             href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
+                                                            onclick="event.stopPropagation()"
                                                             title="<?php echo __('Editar Usuário'); ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <button class="btn btn-danger"
                                                             title="<?php echo __('Excluir Usuário'); ?>"
-                                                            onclick="deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
+                                                            onclick="event.stopPropagation(); deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </td>
@@ -251,9 +252,9 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
             });
         }
 
-        // Lógica para clique na linha (delegando para evitar navegação ao clicar em botões)
+        // Lógica para clique na linha (delegando para o documento para maior confiabilidade)
         $(document).ready(function() {
-            $('.clickable-row').on('click', function(e) {
+            $(document).on('click', '.clickable-row', function(e) {
                 if (!$(e.target).closest('button, a, .btn').length) {
                     const href = $(this).data('href');
                     if (href) {
@@ -264,7 +265,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
         });
     </script>
     <script src="/assets/js/global_search.js" defer></script>
-    <?php include 'performance_footer.php'; ?>
+    <?php include_once 'performance_footer.php'; ?>
 </body>
 
 </html>

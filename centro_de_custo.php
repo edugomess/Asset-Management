@@ -3,8 +3,8 @@
  * GESTÃO DE CENTROS DE CUSTO: centro_de_custo.php
  * Visualização e administração das unidades de negócio e setores da organização.
  */
-include 'auth.php';
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 
 // Restrição de acesso: Usuário comum não acessa centros de custo
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
@@ -13,7 +13,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8">
@@ -47,11 +47,30 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         href="/assets/css/Password-Strenght-Checker---Ambrodu.css?h=5818638767f362b9d58a96550bd9a9a3">
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
-    <?php include 'sidebar_style.php'; ?>
-    <?php include 'pagination_style.php'; ?>
+    <?php include_once 'sidebar_style.php'; ?>
+    <?php include_once 'pagination_style.php'; ?>
     <style>
         .clickable-row { cursor: pointer; transition: all 0.2s; }
-        .clickable-row:hover { background-color: rgba(0,0,0,0.05) !important; transform: scale(1.002); }
+        .clickable-row:hover {
+            background-color: rgba(44, 64, 74, 0.05) !important;
+        }
+        
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 
@@ -66,7 +85,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
-                <?php include 'topbar.php'; ?>
+                <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <h3 class="text-dark mb-4"><?php echo __('Centro de Custo'); ?></h3>
                     <div class="card shadow">
@@ -133,8 +152,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>
-                        <a class='btn btn-warning' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()'><i class='fas fa-edit'></i></a>
-                        <a class='btn btn-danger' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></a>
+                        <a class='btn btn-warning btn-action' href='editar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()' title='" . __('Editar') . "'><i class='fas fa-edit'></i></a>
+                        <a class='btn btn-danger btn-action' href='apagar_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "' onclick='event.stopPropagation()' title='" . __('Excluir') . "'><i class='fas fa-trash'></i></a>
                     </td>
                 </tr>";
                                             }

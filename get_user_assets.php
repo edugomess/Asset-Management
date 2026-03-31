@@ -1,7 +1,8 @@
 <?php
-include 'conexao.php';
+include_once 'auth.php';
+include_once 'conexao.php';
 
-ifb (isset($_GET['userId'])) {
+if (isset($_GET['userId'])) {
     $userId = intval($_GET['userId']);
 
     // Consulta para obter os ativos atribuídos ao usuário

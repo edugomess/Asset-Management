@@ -132,7 +132,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                             <!-- Tabela de Dados -->
                             <div class="table-responsive table mt-2" id="dataTable" role="grid"
                                 aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
+                                <table class="table my-0" id="fornecedoresDataTable">
                                     <thead>
                                         <tr>
                                             <th><?php echo __('Fornecedor'); ?></th>
@@ -196,8 +196,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>" . htmlspecialchars($row['cnpj']) . "</td>
                                                     <td><span class='status-badge badge-$status_label'>" . __($row['status'] ?? 'Inativo') . "</span></td>
                                                     <td class='action-cell'>
-                                                        <a class='btn btn-warning' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "' onclick='event.stopPropagation()'><i class='fas fa-edit'></i></a>
-                                                        <a class='btn btn-danger' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></a>
+                                                        <a class='btn btn-warning btn-action' href='editar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Editar') . "' onclick='event.stopPropagation()'><i class='fas fa-edit'></i></a>
+                                                        <a class='btn btn-danger btn-action' href='apagar_fornecedor.php?id=" . $row['id_fornecedor'] . "' title='" . __('Excluir') . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></a>
                                                     </td>
                                                 </tr>";
                                             }

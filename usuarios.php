@@ -21,7 +21,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8">
@@ -32,6 +32,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
     <link rel="stylesheet" href="/assets/css/Nunito.css?h=3532322f32770367812050c1dddc256c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
     <?php include_once 'pagination_style.php'; ?>
@@ -41,6 +42,23 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
         .cc-link { color: #000 !important; font-weight: 800 !important; }
         .cc-link:hover { text-decoration: underline; color: #2c404a !important; }
         .user-thumbnail { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid #e3e6f0; }
+        
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 
@@ -158,13 +176,13 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                     </td>
                                                     <td style="text-align: center;">
                                                         <!-- Ações de Edição e Exclusão -->
-                                                        <a class="btn btn-warning"
+                                                        <a class="btn btn-warning btn-action"
                                                             href="editar_usuario.php?id=<?php echo $row['id_usuarios']; ?>"
                                                             onclick="event.stopPropagation()"
                                                             title="<?php echo __('Editar Usuário'); ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <button class="btn btn-danger"
+                                                        <button class="btn btn-danger btn-action"
                                                             title="<?php echo __('Excluir Usuário'); ?>"
                                                             onclick="event.stopPropagation(); deleteUser(<?php echo $row['id_usuarios']; ?>, '<?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?>')">
                                                             <i class="fas fa-trash"></i>

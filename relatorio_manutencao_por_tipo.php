@@ -14,5 +14,5 @@ $sql = "SELECT m.tipo_manutencao, m.data_inicio, m.data_fim, m.status_manutencao
         JOIN ativos a ON m.id_asset = a.id_asset 
         ORDER BY m.tipo_manutencao ASC, m.data_inicio DESC";
 
-$pdf = new ReportGenerator('Taxa de Ocupação por Local', $columns, $conn);
+$pdf = new ReportGenerator('Manutenção por Tipo', $columns, $conn);
 $pdf->generate($sql, 'm.data_inicio');

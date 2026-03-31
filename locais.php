@@ -72,6 +72,23 @@ if (isset($_GET['msg'])) {
         .clickable-row:hover {
             background-color: rgba(0, 0, 0, 0.05) !important;
         }
+        
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 
@@ -257,11 +274,11 @@ if (isset($_GET['msg'])) {
                                                                     <i class='fas $icon mr-2' style='color: #4e73df;'></i> " . htmlspecialchars($row['nome_local']) . "
                                                                 </td>
                                                                 <td><span class='dot-badge $badgeClass'>" . __($row['tipo_local']) . "</span></td>
-                                                                <td class='text-right'>
-                                                                    <a href='editar_local.php?id={$row['id_local']}' class='btn btn-primary btn-sm mr-1' style='border-radius: 8px; background: #2c404a; border: none;' title='" . __('Editar') . "' onclick='event.stopPropagation()'><i class='fas fa-pencil-alt'></i></a>
-                                                                    <button type='button' class='btn btn-danger btn-sm btn-delete-local' data-id='{$row['id_local']}' data-name='" . htmlspecialchars($row['nome_local']) . "' style='border-radius: 8px;' title='" . __('Excluir') . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></button>
-                                                                </td>
-                                                            </tr>";
+                                                            <td class='text-right'>
+                                                                <a href='editar_local.php?id={$row['id_local']}' class='btn btn-primary btn-action mr-1' style='background: #2c404a; border: none;' title='" . __('Editar') . "' onclick='event.stopPropagation()'><i class='fas fa-pencil-alt'></i></a>
+                                                                <button type='button' class='btn btn-danger btn-action btn-delete-local' data-id='{$row['id_local']}' data-name='" . htmlspecialchars($row['nome_local']) . "' title='" . __('Excluir') . "' onclick='event.stopPropagation()'><i class='fas fa-trash'></i></button>
+                                                            </td>
+                                                        </tr>";
                                                             renderLocais($conn, $row['id_local'], $level + 1);
                                                         }
                                                     } elseif ($parentId === null && $level == 1) {

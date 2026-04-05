@@ -56,10 +56,13 @@ $count_andamento = 0;
             cursor: pointer;
         }
 
-        .card-shadow { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card-shadow:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important; 
+        .card-shadow {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
         }
     </style>
 </head>
@@ -506,7 +509,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center"
                                     style="background: rgb(248, 249, 252);">
-                                    <h6 class="text-primary font-weight-bold m-0"><?php echo __('Chamados Finalizados (Mês)'); ?></h6>
+                                    <h6 class="text-primary font-weight-bold m-0">
+                                        <?php echo __('Chamados Finalizados (Mês)'); ?></h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
@@ -526,7 +530,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                         <div class="col-lg-5 col-xl-4">
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="text-primary font-weight-bold m-0"><?php echo __('Status dos Chamados'); ?></h6>
+                                    <h6 class="text-primary font-weight-bold m-0">
+                                        <?php echo __('Status dos Chamados'); ?></h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
@@ -546,9 +551,12 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
-                                                class="fas fa-circle text-primary"></i> <?php echo __('Aberto'); ?></span><span
-                                            class="mr-2"><i class="fas fa-circle text-info"></i> <?php echo __('Em And.'); ?></span><span
-                                            class="mr-2"><i class="fas fa-circle text-warning"></i> <?php echo __('Pendente'); ?></span>
+                                                class="fas fa-circle text-primary"></i>
+                                            <?php echo __('Aberto'); ?></span><span class="mr-2"><i
+                                                class="fas fa-circle text-info"></i>
+                                            <?php echo __('Em And.'); ?></span><span class="mr-2"><i
+                                                class="fas fa-circle text-warning"></i>
+                                            <?php echo __('Pendente'); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -560,7 +568,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="col-lg-12">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="m-0 font-weight-bold text-primary"><?php echo __('Ranking de SLA - Melhores Técnicos'); ?>
+                                        <h6 class="m-0 font-weight-bold text-primary">
+                                            <?php echo __('Ranking de SLA - Melhores Técnicos'); ?>
                                         </h6>
                                         <form method="GET" class="form-inline">
                                             <!-- Preservar filtro de recorrência ao filtrar SLA -->
@@ -641,7 +650,9 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                     endforeach; ?>
                                                     <?php if (empty($ranking_data)): ?>
                                                         <tr>
-                                                            <td colspan="4" class="text-center"><?php echo __('Nenhum chamado finalizado neste período.'); ?></td>
+                                                            <td colspan="4" class="text-center">
+                                                                <?php echo __('Nenhum chamado finalizado neste período.'); ?>
+                                                            </td>
                                                         </tr>
                                                         <?php
                                                     endif; ?>
@@ -659,7 +670,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                             <div class="col-lg-12 mb-4">
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="text-primary font-weight-bold m-0"><?php echo __('Ranking de Chamados por Recorrência'); ?>
+                                        <h6 class="text-primary font-weight-bold m-0">
+                                            <?php echo __('Ranking de Chamados por Recorrência'); ?>
                                         </h6>
                                         <form method="GET" class="form-inline">
                                             <!-- Preservar filtro de SLA al filtrar Recorrência -->
@@ -703,7 +715,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                 $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
                                                 ?>
                                                 <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
-                                                        class="float-right"><?php echo $rec['total']; ?> <?php echo __('chamado(s)'); ?></span></h4>
+                                                        class="float-right"><?php echo $rec['total']; ?>
+                                                        <?php echo __('chamado(s)'); ?></span></h4>
                                                 <div class="progress mb-4">
                                                     <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
                                                         aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
@@ -729,7 +742,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"
+        defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" defer></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6" defer></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30" defer></script>

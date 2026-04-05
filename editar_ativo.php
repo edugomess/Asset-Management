@@ -102,19 +102,25 @@ if (!$asset) {
 
                                 <!-- Row 2: Rastreabilidade -->
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag / Service Tag'); ?></label>
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_serie"><?php echo __('Número de Série'); ?></label>
+                                            <input class="form-control" name="numero_serie" id="numero_serie" type="text" value="<?php echo htmlspecialchars($asset['numero_serie'] ?? ''); ?>" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag de Serviço'); ?></label>
                                             <input class="form-control" name="tag" id="tag" type="text" value="<?php echo htmlspecialchars($asset['tag']); ?>" readonly title="<?php echo __('A Tag/Patrimônio não pode ser alterada.'); ?>">
                                         </div>
                                     </div>
-                                    <div class="col-md-4" id="hostnameContainer">
+                                    <div class="col-md-3" id="hostnameContainer">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="hostName"><?php echo __('Host Name'); ?></label>
                                             <input class="form-control" name="hostName" id="hostName" type="text" value="<?php echo htmlspecialchars($asset['hostName']); ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="macAdress"><?php echo __('Endereço MAC'); ?></label>
                                             <input class="form-control" name="macAdress" id="macAdress" type="text" value="<?php echo htmlspecialchars($asset['macAdress']); ?>" required="">
@@ -184,6 +190,7 @@ if (!$asset) {
                                                 }
                                                 ?>
                                             </select>
+                                            <small class="text-muted"><?php echo __('Ex: Monitor vinculado a um Desktop.'); ?></small>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -363,6 +370,25 @@ if (!$asset) {
                                     </div>
                                 </div>
 
+                                <!-- Smartphone Section -->
+                                <div id="smartphoneSection" style="display: none; border-left: 4px solid #007bff; padding-left: 15px; margin-bottom: 25px; background: #f0f7ff; border-radius: 5px; padding-top: 10px; padding-bottom: 5px;">
+                                    <h5 class="text-primary font-weight-bold mb-3"><?php echo __('Dados do Smartphone'); ?></h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="imei"><?php echo __('IMEI'); ?></label>
+                                                <input class="form-control" name="imei" id="imei" type="text" value="<?php echo htmlspecialchars($asset['imei'] ?? ''); ?>" placeholder="Ex: 351234567890123">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="sim_card"><?php echo __('SIM Card (Número/ICCID)'); ?></label>
+                                                <input class="form-control" name="sim_card" id="sim_card" type="text" value="<?php echo htmlspecialchars($asset['sim_card'] ?? ''); ?>" placeholder="Ex: 89551234567890123456">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Row 5: Visual, Datas e Status -->
                                 <div class="row">
                                     <div class="col-md-4">
@@ -488,7 +514,17 @@ if (!$asset) {
                     $('#tier_container').show();
                     $('#setor_container').show();
                 }
+                // Smartphone
+                else if (cat === 'Smartphone') {
+                    $('#smartphoneSection').slideDown();
+                    $('#hardwareSection').slideUp();
+                    $('#hostnameContainer').hide();
+                    $('#hostName').prop('required', false);
+                    $('#tier_container').hide();
+                    $('#setor_container').show();
+                }
                 else {
+                    $('#smartphoneSection').slideUp();
                     $('#hardwareSection').slideUp();
                     $('#tier_container').show();
                     $('#setor_container').show();

@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fabricante = mysqli_real_escape_string($conn, $_POST['fabricante']);
     $modelo = mysqli_real_escape_string($conn, $_POST['modelo']);
     $hostName = mysqli_real_escape_string($conn, $_POST['hostName']);
+    $numero_serie = mysqli_real_escape_string($conn, $_POST['numero_serie']);
     $valor = mysqli_real_escape_string($conn, $_POST['valor']);
     $setor = mysqli_real_escape_string($conn, $_POST['setor']);
     $fornecedor = mysqli_real_escape_string($conn, $_POST['fornecedor']);
@@ -62,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gpu = isset($_POST['gpu']) ? mysqli_real_escape_string($conn, $_POST['gpu']) : null;
     $polegadas = isset($_POST['polegadas']) ? mysqli_real_escape_string($conn, $_POST['polegadas']) : null;
     $is_scanner = isset($_POST['is_scanner']) ? mysqli_real_escape_string($conn, $_POST['is_scanner']) : null;
+    $imei = isset($_POST['imei']) ? mysqli_real_escape_string($conn, $_POST['imei']) : null;
+    $sim_card = isset($_POST['sim_card']) ? mysqli_real_escape_string($conn, $_POST['sim_card']) : null;
 
     // Validação rigorosa de Chave de Acesso NF-e
     if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
@@ -110,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         categoria='$categoria',
         fabricante='$fabricante',
         modelo='$modelo',
+        numero_serie='$numero_serie',
         hostName='$hostName',
         valor='$valor',
         status='$status',
@@ -128,6 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         gpu=" . ($gpu ? "'$gpu'" : "NULL") . ",
         polegadas=" . ($polegadas ? "'$polegadas'" : "NULL") . ",
         is_scanner=" . ($is_scanner ? "'$is_scanner'" : "NULL") . ",
+        imei=" . ($imei ? "'$imei'" : "NULL") . ",
+        sim_card=" . ($sim_card ? "'$sim_card'" : "NULL") . ",
         assigned_type='$assigned_type',
         assigned_to=$assigned_to,
         id_local=$id_local,
@@ -147,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($old_data['categoria'] != $categoria) { $changes[] = "Categoria: {$old_data['categoria']} -> $categoria"; }
         if ($old_data['fabricante'] != $fabricante) { $changes[] = "Fabricante: {$old_data['fabricante']} -> $fabricante"; }
         if ($old_data['modelo'] != $modelo) { $changes[] = "Modelo: {$old_data['modelo']} -> $modelo"; }
+        if (($old_data['numero_serie'] ?? '') != $numero_serie) { $changes[] = "Número de Série: " . ($old_data['numero_serie'] ?: 'N/A') . " -> $numero_serie"; }
         if ($old_data['hostName'] != $hostName) { $changes[] = "HostName: {$old_data['hostName']} -> $hostName"; }
         if ($old_data['valor'] != $valor) { $changes[] = "Valor: {$old_data['valor']} -> $valor"; }
         if ($old_data['status'] != $status) { $changes[] = "Status: {$old_data['status']} -> $status"; }
@@ -163,6 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (($old_data['gpu'] ?? '') != $gpu) { $changes[] = "Placa Gráfica alterada"; }
         if (($old_data['polegadas'] ?? '') != $polegadas) { $changes[] = "Polegadas alteradas"; }
         if (($old_data['is_scanner'] ?? '') != $is_scanner) { $changes[] = "Status Scanner alterado"; }
+        if (($old_data['imei'] ?? '') != $imei) { $changes[] = "IMEI alterado"; }
+        if (($old_data['sim_card'] ?? '') != $sim_card) { $changes[] = "SIM Card alterado"; }
         if (($old_data['tier'] ?? '') != $tier) { $changes[] = "Tier: " . ($old_data['tier'] ?? 'N/A') . " -> " . ($tier ?: 'Nenhum'); }
         if ($old_data['assigned_type'] != $assigned_type) { $changes[] = "Tipo de Atribuição: {$old_data['assigned_type']} -> $assigned_type"; }
         if ($old_data['assigned_to'] != ($assigned_to == 'NULL' ? null : $assigned_to)) { $changes[] = "Usuário Responsável alterado"; }

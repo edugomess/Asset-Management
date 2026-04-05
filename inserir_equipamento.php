@@ -13,6 +13,7 @@ $tag = mysqli_real_escape_string($conn, $_POST['tag']);
 $hostName = mysqli_real_escape_string($conn, $_POST['hostName']);
 $valor = mysqli_real_escape_string($conn, $_POST['valor']);
 $macAdress = mysqli_real_escape_string($conn, $_POST['macAdress']);
+$numero_serie = mysqli_real_escape_string($conn, $_POST['numero_serie']);
 $setor = mysqli_real_escape_string($conn, $_POST['setor']);
 $tier = isset($_POST['tier']) ? mysqli_real_escape_string($conn, $_POST['tier']) : null;
 $assigned_type = isset($_POST['assigned_type']) ? mysqli_real_escape_string($conn, $_POST['assigned_type']) : 'Usuario';
@@ -36,6 +37,8 @@ $numero_nota_fiscal = isset($_POST['numero_nota_fiscal']) ? mysqli_real_escape_s
 $gpu = isset($_POST['gpu']) ? mysqli_real_escape_string($conn, $_POST['gpu']) : null;
 $polegadas = isset($_POST['polegadas']) ? mysqli_real_escape_string($conn, $_POST['polegadas']) : null;
 $is_scanner = isset($_POST['is_scanner']) ? mysqli_real_escape_string($conn, $_POST['is_scanner']) : null;
+$imei = isset($_POST['imei']) ? mysqli_real_escape_string($conn, $_POST['imei']) : null;
+$sim_card = isset($_POST['sim_card']) ? mysqli_real_escape_string($conn, $_POST['sim_card']) : null;
 
 // Validação rigorosa de Chave de Acesso NF-e
 if (empty($numero_nota_fiscal) || strlen($numero_nota_fiscal) !== 44 || !ctype_digit($numero_nota_fiscal)) {
@@ -79,13 +82,14 @@ if (isset($_FILES['anexo_nota_fiscal']) && $_FILES['anexo_nota_fiscal']['error']
 }
 
 $sql = "INSERT INTO ativos (
-            categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, 
+            categoria, fabricante, modelo, tag, numero_serie, hostName, valor, macAdress, status, 
             centroDeCusto, setor, fornecedor, descricao, imagem, dataAtivacao, 
             memoria, processador, armazenamento, tipo_armazenamento, 
             numero_nota_fiscal, anexo_nota_fiscal, tier, gpu, polegadas, is_scanner,
+            imei, sim_card,
             assigned_type, assigned_to, id_local, parent_asset_id
         ) VALUES (
-            '$categoria', '$fabricante', '$modelo', '$tag', '$hostName', '$valor', '$macAdress', '$status', 
+            '$categoria', '$fabricante', '$modelo', '$tag', '$numero_serie', '$hostName', '$valor', '$macAdress', '$status', 
             '$centroDeCusto', '$setor', '$fornecedor', '$descricao', '$imagem', '$dataAtivacao', 
             " . ($memoria ? "'$memoria'" : "NULL") . ", 
             " . ($processador ? "'$processador'" : "NULL") . ", 
@@ -97,6 +101,8 @@ $sql = "INSERT INTO ativos (
             " . ($gpu ? "'$gpu'" : "NULL") . ",
             " . ($polegadas ? "'$polegadas'" : "NULL") . ",
             " . ($is_scanner ? "'$is_scanner'" : "NULL") . ",
+            " . ($imei ? "'$imei'" : "NULL") . ",
+            " . ($sim_card ? "'$sim_card'" : "NULL") . ",
             '$assigned_type', 
             $assigned_to, 
             $id_local, 

@@ -130,17 +130,24 @@ $sql_filhos = "SELECT id_asset, tag, modelo, categoria, status FROM ativos WHERE
 $res_filhos = $conn->query($sql_filhos);
 
 // 3. UI Helpers
-$raw_status = ucfirst(strtolower($ativo['status']));
+$display_status = $ativo['status'];
+$is_assigned = (!empty($ativo['assigned_to']) || !empty($ativo['id_local']));
+
+if ($display_status !== 'Em manutenção' && $is_assigned) {
+    $display_status = 'Em uso';
+}
+
 $status_class = 'secondary';
-if (in_array($raw_status, ['Disponível', 'Disponivel', 'Ativo'])) {
+if (in_array($display_status, ['Ativo', 'Disponível', 'Disponivel'])) {
     $status_class = 'success';
-} elseif (in_array($raw_status, ['Em uso'])) {
+} elseif ($display_status === 'Em uso') {
     $status_class = 'primary';
-} elseif (in_array($raw_status, ['Em manutenção', 'Manutenção', 'Manutencao'])) {
+} elseif (in_array($display_status, ['Em manutenção', 'Manutenção', 'Manutencao'])) {
     $status_class = 'warning';
 } else {
     $status_class = 'danger';
 }
+$raw_status = $display_status; // Keep for backward compatibility if needed
 $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>
@@ -438,8 +445,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Hostname'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['hostName']); ?>
-                                        </div>
+                                        <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['hostName']); ?></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-label"><?php echo __('Número de Série'); ?></div>
+                                        <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['numero_serie'] ?: '-'); ?></div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="detail-label"><?php echo __('Endereço MAC'); ?></div>
@@ -508,7 +518,8 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                             $categorias_computacionais = ['Notebook', 'Desktop', 'Servidores', 'Workstation'];
                             $show_hardware = (in_array($ativo['categoria'], $categorias_computacionais) && (!empty($ativo['memoria']) || !empty($ativo['processador']) || !empty($ativo['armazenamento']) || !empty($ativo['gpu']))) ||
                                 ($ativo['categoria'] == 'Monitor' && !empty($ativo['polegadas'])) ||
-                                ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner']));
+                                ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner'])) ||
+                                ($ativo['categoria'] == 'Smartphone' && (!empty($ativo['imei']) || !empty($ativo['sim_card'])));
 
                             if ($show_hardware):
                                 ?>
@@ -569,6 +580,21 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                                 <div class="detail-value text-dark font-weight-bold">
                                                     <i
                                                         class="fas fa-print mr-2 text-primary"></i><?php echo ($ativo['is_scanner'] == 'Sim') ? __('Multifuncional (C/ Scanner)') : __('Impressora'); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($ativo['categoria'] == 'Smartphone'): ?>
+                                            <div class="col-md-6 mt-3">
+                                                <div class="detail-label"><?php echo __('IMEI'); ?></div>
+                                                <div class="detail-value text-dark font-weight-bold">
+                                                    <i class="fas fa-barcode mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['imei'] ?: '-'); ?>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mt-3">
+                                                <div class="detail-label"><?php echo __('SIM Card'); ?></div>
+                                                <div class="detail-value text-dark font-weight-bold">
+                                                    <i class="fas fa-sim-card mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['sim_card'] ?: '-'); ?>
                                                 </div>
                                             </div>
                                         <?php endif; ?>

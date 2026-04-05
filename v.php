@@ -91,10 +91,18 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
         <div class="detail-list">
             <div class="detail-row">
+                <div class="detail-icon"><i class="fas fa-barcode"></i></div>
+                <div class="detail-info">
+                    <div class="detail-label"><?php echo __('Modelo'); ?></div>
+                    <div class="detail-value"><?php echo htmlspecialchars($ativo['modelo']); ?></div>
+                </div>
+            </div>
+            
+            <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-fingerprint"></i></div>
                 <div class="detail-info">
-                    <div class="detail-label"><?php echo __('Identificação'); ?></div>
-                    <div class="detail-value"><?php echo htmlspecialchars($ativo['tag']); ?></div>
+                    <div class="detail-label"><?php echo __('Número de Série'); ?></div>
+                    <div class="detail-value font-weight-bold text-dark"><?php echo htmlspecialchars($ativo['numero_serie'] ?: '-'); ?></div>
                 </div>
             </div>
 
@@ -179,6 +187,28 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     <div class="detail-value text-success font-weight-bold"><?php echo ($ativo['is_scanner'] == 'Sim') ? __('Multifuncional (C/ Scanner)') : __('Impressora'); ?></div>
                 </div>
             </div>
+            <?php endif; ?>
+
+            <?php if ($ativo['categoria'] == 'Smartphone'): ?>
+                <?php if (!empty($ativo['imei'])): ?>
+                <div class="detail-row">
+                    <div class="detail-icon" style="color: #4e73df;"><i class="fas fa-barcode"></i></div>
+                    <div class="detail-info">
+                        <div class="detail-label"><?php echo __('IMEI'); ?></div>
+                        <div class="detail-value text-primary font-weight-bold"><?php echo htmlspecialchars($ativo['imei']); ?></div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <?php if (!empty($ativo['sim_card'])): ?>
+                <div class="detail-row">
+                    <div class="detail-icon" style="color: #1cc88a;"><i class="fas fa-sim-card"></i></div>
+                    <div class="detail-info">
+                        <div class="detail-label"><?php echo __('SIM Card'); ?></div>
+                        <div class="detail-value text-success font-weight-bold"><?php echo htmlspecialchars($ativo['sim_card']); ?></div>
+                    </div>
+                </div>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if(empty($ativo['id_local'])): ?>

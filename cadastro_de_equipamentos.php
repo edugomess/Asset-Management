@@ -90,7 +90,15 @@ include_once 'auth.php'; // Proteção de sessão
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag / Service Tag'); ?></label>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="numero_serie"><?php echo __('Número de Série'); ?></label>
+                                            <input class="form-control" name="numero_serie" id="numero_serie" type="text" placeholder="S/N: 123456789" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="tag"><?php echo __('Tag de Serviço'); ?></label>
                                             <?php
                                             $res_next = mysqli_query($conn, "SHOW TABLE STATUS LIKE 'ativos'");
                                             $row_next = mysqli_fetch_assoc($res_next);
@@ -100,13 +108,13 @@ include_once 'auth.php'; // Proteção de sessão
                                             <input class="form-control" name="tag" id="tag" type="text" value="<?php echo $preview_tag; ?>" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-4" id="hostnameContainer">
+                                    <div class="col-md-3" id="hostnameContainer">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="hostName"><?php echo __('Host Name'); ?></label>
                                             <input class="form-control" name="hostName" id="hostName" type="text" placeholder="<?php echo __('Ex: NOTE-001'); ?>" required="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="macAdress"><?php echo __('Endereço MAC'); ?></label>
                                             <input class="form-control" name="macAdress" id="macAdress" type="text" placeholder="<?php echo __('Ex: 00:00:00:00:00:00'); ?>" required="">
@@ -166,7 +174,7 @@ include_once 'auth.php'; // Proteção de sessão
                                             <select class="form-control" name="parent_asset_id" id="parent_asset_id">
                                                 <option value=""><?php echo __('Nenhum'); ?></option>
                                                 <?php
-                                                $sql_assets = "SELECT id_asset, tag, modelo FROM ativos WHERE categoria IN ('Notebook', 'Desktop', 'Servidores', 'Workstation') ORDER BY tag ASC";
+                                                $sql_assets = "SELECT id_asset, tag, modelo FROM ativos WHERE categoria IN ('Notebook', 'Desktop', 'Servidores', 'Workstation', 'Firewalls', 'Switches') ORDER BY tag ASC";
                                                 $res_assets = $conn->query($sql_assets);
                                                 while($a = $res_assets->fetch_assoc()) {
                                                     echo "<option value='{$a['id_asset']}'>{$a['tag']} - {$a['modelo']}</option>";
@@ -197,15 +205,16 @@ include_once 'auth.php'; // Proteção de sessão
 
                                 <!-- Row 3.5: Organização (Tier/Setor) -->
                                 <div class="row">
-                                    <div class="col-md-6" id="tier_container" style="display: none;">
+                                    <div class="col-md-6" id="tier_container">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
                                             <select class="form-control" name="tier" id="tier">
                                                 <option value=""><?php echo __('Nenhum'); ?></option>
-                                                <option value="Tier 1">Tier 1 (Infraestrutura Crítica)</option>
-                                                <option value="Tier 2">Tier 2 (Infraestrutura Setorial)</option>
-                                                <option value="Tier 3">Tier 3 (Equipamentos de Uso Final)</option>
-                                                <option value="Tier 4">Tier 4 (Acessórios e Periféricos)</option>
+                                                <option value="Tier 1">Tier 1</option>
+                                                <option value="Tier 2">Tier 2</option>
+                                                <option value="Tier 3">Tier 3</option>
+                                                <option value="Tier 4">Tier 4</option>
+                                                <option value="Infraestrutura">Infraestrutura</option>
                                             </select>
                                         </div>
                                     </div>
@@ -350,6 +359,25 @@ include_once 'auth.php'; // Proteção de sessão
                                     </div>
                                 </div>
 
+                                <!-- Smartphone Section -->
+                                <div id="smartphoneSection" style="display: none; border-left: 4px solid #007bff; padding-left: 15px; margin-bottom: 25px; background: #f0f7ff; border-radius: 5px;">
+                                    <h5 class="text-primary font-weight-bold mb-3"><?php echo __('Dados do Smartphone'); ?></h5>
+                                    <div class="row py-2">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="imei"><?php echo __('IMEI'); ?></label>
+                                                <input class="form-control" name="imei" id="imei" type="text" placeholder="Ex: 351234567890123">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="text-gray-600 small font-weight-bold" for="sim_card"><?php echo __('SIM Card (Número/ICCID)'); ?></label>
+                                                <input class="form-control" name="sim_card" id="sim_card" type="text" placeholder="Ex: 89551234567890123456">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Outros Dados -->
                                 <div class="row">
                                     <div class="col-md-4">
@@ -423,10 +451,11 @@ include_once 'auth.php'; // Proteção de sessão
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/assets/js/theme.js"></script>
     <script>
         let currentAssetData = null;
         $(document).ready(function() {
-            // Lógica de Atribuição (Usuário vs Local)
+            // Atribuição Toggle
             $('#assigned_type').change(function() {
                 if ($(this).val() === 'Usuario') {
                     $('#user_assignment').show();
@@ -440,88 +469,91 @@ include_once 'auth.php'; // Proteção de sessão
             });
 
             function toggleFields() {
-                   // Lógica de Tiers vs Setores
-            $('#categoria').change(function() {
-                const cat = $(this).val();
+                var cat = $('#categoria').val();
                 
                 // Hardware standard (Notebook, Desktop, Servidor, Workstation)
                 if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores' || cat === 'Workstation') {
                     $('#hardwareSection').slideDown();
-                    $('#hostnameContainer').show();
-                    $('#hostName').prop('required', true);
+                    $('#smartphoneSection').slideUp();
                     $('#setor_container').hide();
                     $('#tier_container').show();
 
-                    // GPU só para Workstation
                     if (cat === 'Workstation') {
                         $('#gpu_container').show();
                     } else {
                         $('#gpu_container').hide();
                         $('#gpu').val('');
                     }
-                    
-                    // Reset outros condicionais
+
                     $('#inches_container').hide();
                     $('#scanner_container').hide();
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
                 } 
-                // Monitor (Monitores)
                 else if (cat === 'Monitores') {
                     $('#hardwareSection').slideDown();
-                    // Oculta campos de hardware não aplicáveis a monitor
+                    $('#smartphoneSection').slideUp();
                     $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
-                    
                     $('#inches_container').show();
                     $('#gpu_container').hide();
                     $('#scanner_container').hide();
-                    
-                    $('#hostnameContainer').hide();
-                    $('#hostName').prop('required', false);
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
                 }
-                // Impressora (Impressoras)
                 else if (cat === 'Impressoras') {
                     $('#hardwareSection').slideDown();
-                    // Oculta campos de hardware não aplicáveis a impressora
+                    $('#smartphoneSection').slideUp();
                     $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').hide();
-                    
                     $('#scanner_container').show();
                     $('#inches_container').hide();
                     $('#gpu_container').hide();
-                    
+                    $('#tier_container').show();
+                    $('#setor_container').show();
+                }
+                else if (cat === 'Smartphone') {
+                    $('#smartphoneSection').slideDown();
+                    $('#hardwareSection').slideUp();
                     $('#hostnameContainer').hide();
                     $('#hostName').prop('required', false);
                     $('#tier_container').hide();
                     $('#setor_container').show();
                 }
                 else {
+                    $('#smartphoneSection').slideUp();
                     $('#hardwareSection').slideUp();
-                    $('#hostnameContainer').hide();
-                    $('#hostName').prop('required', false);
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
-                    
-                    // Reset
                     $('#inches_container').hide();
                     $('#scanner_container').hide();
                     $('#gpu_container').hide();
                 }
 
-                // Garantir visibilidade dos campos de hardware se NÃO for monitor/impressora mas estiver na seção
-                if (cat === 'Notebook' || cat === 'Desktop' || cat === 'Servidores' || cat === 'Workstation') {
-                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
+                // Host Name visibility logic refined
+                if (cat === 'Monitores' || cat === 'Periféricos' || cat === 'Impressoras' || cat === 'Smartphone') {
+                    $('#hostnameContainer').slideUp();
+                    $('#hostName').removeAttr('required');
+                } else {
+                    $('#hostnameContainer').slideDown();
+                    $('#hostName').attr('required', 'required');
                 }
-            }).trigger('change');
-}
+            }
+
+            $('#categoria').change(toggleFields);
             toggleFields();
 
+            // AJAX Submission with SweetAlert2
             $('#assetForm').on('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
                 formData.append('ajax', '1');
-                Swal.fire({ title: 'Salvando...', didOpen: () => { Swal.showLoading(); } });
+                
+                Swal.fire({ 
+                    title: '<?php echo __("Salvando..."); ?>', 
+                    didOpen: () => { Swal.showLoading(); },
+                    allowOutsideClick: false
+                });
+
                 $.ajax({
-                    url: 'inserir_equipamento.php?ts=' + new Date().getTime(),
+                    url: 'inserir_equipamento.php',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -534,78 +566,32 @@ include_once 'auth.php'; // Proteção de sessão
                                 currentAssetData = res;
                                 $('#tag_badge_reg').text(res.tag);
                                 $('#qrcode_reg').empty();
-                                new QRCode(document.getElementById("qrcode_reg"), { text: `ID: ${res.id_asset}\nTag: ${res.tag}\nModelo: ${res.modelo}`, width: 180, height: 180 });
+                                new QRCode(document.getElementById("qrcode_reg"), {
+                                    text: `ID: ${res.id_asset}\nTag: ${res.tag}\nModelo: ${res.modelo}`,
+                                    width: 180,
+                                    height: 180
+                                });
                                 $('#successTagModal').modal('show');
-                            } else { 
-                                Swal.fire('Erro de Negócio', res.message, 'error'); 
+                            } else {
+                                Swal.fire('<?php echo __("Erro de Negócio"); ?>', res.message, 'error');
                             }
-                        } catch (e) {
-                            console.error("DEBUG - Resposta bruta do servidor:", response);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Erro de Análise JSON',
-                                html: `O servidor retornou um formato inválido.<br><br><b>Conteúdo:</b><br><pre style="text-align:left; font-size:10px;">${response.substring(0, 200)}...</pre>`,
-                                footer: 'Dica: Verifique o console do navegador (F12) para o log completo.'
-                            });
+                        } catch (err) {
+                            Swal.fire('<?php echo __("Erro de Resposta"); ?>', '<?php echo __("O servidor retornou um formato inválido."); ?>', 'error');
                         }
                     },
                     error: function(xhr) {
-                        console.error("DEBUG - Erro de Rede:", xhr.status, xhr.responseText);
-                        Swal.fire('Erro de Rede', `Falha no servidor (Status ${xhr.status}).<br>${xhr.responseText.substring(0, 100)}`, 'error');
+                        Swal.fire('<?php echo __("Erro de Rede"); ?>', `<?php echo __("Falha no servidor"); ?> (Status ${xhr.status})`, 'error');
                     }
                 });
-
-                $('#btn-print-reg').on('click', function() {
-                    printCreatedAsset();
-                });
             });
 
-    <script src="/assets/js/jquery.min.js"></script>
-    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="/assets/js/theme.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(document).ready(function() {
-            // Lógica para alternar campos de atribuição
-            $('#assigned_type').on('change', function() {
-                if ($(this).val() === 'Usuario') {
-                    $('#user_assignment').show();
-                    $('#location_assignment').hide();
-                    $('#id_local').val('');
-                } else {
-                    $('#user_assignment').hide();
-                    $('#location_assignment').show();
-                    $('#assigned_to').val('');
-                }
+            $('#btn-print-reg').on('click', function() {
+                printCreatedAsset();
             });
-
-            // AJAX para inserção
-            $('#assetForm').on('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                
-                $.ajax({
-                    url: 'inserir_equipamento.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        try {
-                            const res = JSON.parse(response);
-                            if (res.status === 'success') {
-                                Swal.fire({
-                                    title: 'Sucesso!',
-                                    text: res.message,
-                                    icon: 'success',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Ver Perfil',
-                                    cancelButtonText: 'Novo Cadastro'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = 'perfil_ativo.php?id=' + res.id;
-                                    } else {
+        });
+    </script>
+</body>
+</html>
                                         location.reload();
                                     }
                                 });

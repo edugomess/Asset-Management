@@ -263,8 +263,28 @@ $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <span class="status-badge <?php echo ($asset['status'] === 'Ativo') ? 'badge-success' : 'badge-danger'; ?>">
-                                                            <?php echo __($asset['status']); ?>
+                                                        <?php
+                                                        // Lógica padronizada de status (Inspirada em equipamentos.php)
+                                                        $display_status = $asset['status'];
+                                                        $is_assigned = (!empty($asset['assigned_to']) || !empty($asset['id_local']));
+                                                        
+                                                        if ($display_status !== 'Em manutenção' && $is_assigned) {
+                                                            $display_status = 'Em uso';
+                                                        }
+
+                                                        $badge_class = 'badge-secondary';
+                                                        if (in_array($display_status, ['Ativo', 'Disponível'])) {
+                                                            $badge_class = 'badge-success';
+                                                        } elseif ($display_status === 'Em uso') {
+                                                            $badge_class = 'badge-primary';
+                                                        } elseif (in_array($display_status, ['Em manutenção', 'Manutenção', 'Manutencao'])) {
+                                                            $badge_class = 'badge-warning';
+                                                        } else {
+                                                            $badge_class = 'badge-danger';
+                                                        }
+                                                        ?>
+                                                        <span class="status-badge <?php echo $badge_class; ?>">
+                                                            <?php echo __($display_status); ?>
                                                         </span>
                                                     </td>
                                                 </tr>

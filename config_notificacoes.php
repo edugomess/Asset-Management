@@ -9,7 +9,7 @@
 $_smtp_defaults = [
     'smtp_host'      => 'smtp.gmail.com',
     'smtp_user'      => 'david.eduardo.du@gmail.com',
-    'smtp_pass'      => 'tbvykrebrdjvssqs',
+    'smtp_pass'      => '',
     'smtp_port'      => 587,
     'smtp_from_name' => 'ASSET MGT - ALERTA',
     'smtp_secure'    => 'tls',

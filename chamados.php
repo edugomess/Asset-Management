@@ -369,10 +369,15 @@ $result = mysqli_query($conn, $sql);
                                                         <i class='fas fa-times-circle'></i>
                                                     </button>" : "";
 
+                                                $categoria_display = __($row['categoria']);
+                                                if (!empty($row['tipo_servico'])) {
+                                                    $categoria_display .= " <small class='text-muted'>(" . __($row['tipo_servico']) . ")</small>";
+                                                }
+
                                                 echo "<tr class='clickable-row' data-href='editar_chamado.php?id=" . $row['id'] . "'>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($row['id']) . "</td>
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark' onclick='event.stopPropagation()'>" . htmlspecialchars($row['titulo']) . "</a></td>
-                <td class='font-weight-bold text-dark'>" . __($row['categoria']) . "</td>
+                <td class='font-weight-bold text-dark'>" . $categoria_display . "</td>
                 <td><span class='status-badge " . $prioridade_class . " font-weight-bold'>" . __($prioridade) . "</span></td>
                 <td class='font-weight-bold text-dark'>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($solicitante) . "</td>

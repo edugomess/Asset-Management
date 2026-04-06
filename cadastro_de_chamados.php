@@ -57,8 +57,21 @@ include_once 'auth.php'; // Proteção de sessão
                                             <label class="text-gray-600 small font-weight-bold" for="categoria"><?php echo __('Tipo de Atendimento'); ?></label>
                                             <select class="form-control" name="categoria" id="categoria" required="">
                                                 <option value="Incidente"><?php echo __('Incidente (Falha/Erro)'); ?></option>
-                                                <option value="Mudança"><?php echo __('Mudança (Solicitação de Alteração)'); ?></option>
+                                                <option value="Mudança"><?php echo __('Mudança (Solicitação de Alteração / GMUD)'); ?></option>
                                                 <option value="Requisição"><?php echo __('Requisição (Pedido Novo)'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Row Natureza (Visible only for Requisição) -->
+                                <div class="row" id="row-natureza" style="display: none;">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="text-gray-600 small font-weight-bold" for="tipo_servico"><?php echo __('Natureza da Requisição'); ?></label>
+                                            <select class="form-control" name="tipo_servico" id="tipo_servico">
+                                                <option value="Simples"><?php echo __('Simples (Senha, Acesso, Configuração)'); ?></option>
+                                                <option value="Completa"><?php echo __('Novo Equipamento / Software / Serviço (Requer Aprovação)'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -237,26 +250,38 @@ include_once 'auth.php'; // Proteção de sessão
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
-        // Mostrar/Ocultar campo Service Tag baseado na categoria
+        // Mostrar/Ocultar campos baseados na categoria e natureza
         const selectCategoria = document.getElementById('categoria');
+        const selectTipoServico = document.getElementById('tipo_servico');
         const rowServiceTag = document.getElementById('row-service-tag');
         const rowGestor = document.getElementById('row-gestor');
+        const rowNatureza = document.getElementById('row-natureza');
         const inputServiceTag = document.getElementById('service_tag');
         const inputGestorSearch = document.getElementById('gestor_search');
 
-        function toggleServiceTag() {
+        function toggleFields() {
             const categoria = selectCategoria.value;
+            const tipoServico = selectTipoServico.value;
             
             // Reset visibility
             rowServiceTag.style.display = 'none';
             rowGestor.style.display = 'none';
+            rowNatureza.style.display = 'none';
             inputServiceTag.removeAttribute('required');
             inputGestorSearch.removeAttribute('required');
 
             if (categoria === 'Incidente') {
                 rowServiceTag.style.display = 'block';
                 inputServiceTag.setAttribute('required', 'required');
-            } else if (categoria === 'Requisição' || categoria === 'Mudança') {
+            } else if (categoria === 'Requisição') {
+                rowNatureza.style.display = 'block';
+                
+                // Só pede gestor se for requisição "Completa" (Equipamento/Serviço)
+                if (tipoServico === 'Completa') {
+                    rowGestor.style.display = 'block';
+                    inputGestorSearch.setAttribute('required', 'required');
+                }
+            } else if (categoria === 'Mudança') {
                 rowGestor.style.display = 'block';
                 inputGestorSearch.setAttribute('required', 'required');
             }
@@ -265,15 +290,16 @@ include_once 'auth.php'; // Proteção de sessão
             if (categoria !== 'Incidente') {
                 document.getElementById('asset-preview').style.display = 'none';
             }
-            if (categoria !== 'Requisição' && categoria !== 'Mudança') {
+            if (categoria !== 'Requisição' && categoria !== 'Mudança' || (categoria === 'Requisição' && tipoServico === 'Simples')) {
                 document.getElementById('gestor-preview').style.display = 'none';
             }
         }
 
-        selectCategoria.addEventListener('change', toggleServiceTag);
+        selectCategoria.addEventListener('change', toggleFields);
+        selectTipoServico.addEventListener('change', toggleFields);
         
         // Executar ao carregar para garantir o estado correto (caso venha pré-selecionado)
-        window.addEventListener('DOMContentLoaded', toggleServiceTag);
+        window.addEventListener('DOMContentLoaded', toggleFields);
 
         // BUSCA DE ATIVO EM TEMPO REAL
         let searchTimeout;

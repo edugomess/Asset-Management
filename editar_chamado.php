@@ -762,7 +762,12 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                         </div>
                                         <div class="mb-3">
                                             <div class="form-label-premium"><?php echo __('Categoria'); ?></div>
-                                            <div class="form-value"><?php echo htmlspecialchars($chamado['categoria']); ?></div>
+                                            <div class="form-value">
+                                                <?php echo htmlspecialchars($chamado['categoria']); ?>
+                                                <?php if (!empty($chamado['tipo_servico'])): ?>
+                                                    <span class="badge badge-pill badge-info ml-1" style="font-size: 0.65rem;"><?php echo htmlspecialchars($chamado['tipo_servico']); ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="form-label-premium"><?php echo __('Aberto em'); ?></div>

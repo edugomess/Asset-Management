@@ -27,7 +27,7 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https:
 $qr_url = $protocol . $_SERVER['HTTP_HOST'] . "/v.php?id=" . $id;
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 <head>
     <meta charset="utf-8">
     <title>ETIQUETA - <?php echo $ativo['tag']; ?></title>

@@ -31,7 +31,7 @@ $count_andamento = 0;
 // Apenas após processar tudo, começamos o HTML
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -76,7 +76,6 @@ $data = [];
 $total_ativos = 0;
 
 $where_chamados = "";
-// Filtro de Segurança: Usuários comuns veem apenas seus próprios chamados
 if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
     $where_chamados = " AND usuario_id = " . $_SESSION['id_usuarios'];
 }
@@ -100,7 +99,7 @@ $data_string = implode(",", [
     isset($data['Pendente']) ? $data['Pendente'] : 0
 ]);
 
-// === Chamados Fechados por Mês (QUERY UNICA) ===
+// === Chamados Fechados por Mês ===
 $closed_data = array_fill(1, 12, 0);
 $res_closed = mysqli_query($conn, "SELECT MONTH(data_fechamento) as month, COUNT(*) as count FROM chamados WHERE status IN ('Resolvido', 'Fechado', 'Cancelado') AND YEAR(data_fechamento) = YEAR(CURRENT_DATE()) $where_chamados GROUP BY MONTH(data_fechamento)");
 if ($res_closed) {
@@ -109,6 +108,103 @@ if ($res_closed) {
     }
 }
 $closed_string = implode(",", $closed_data);
+
+// === RANKING DE SLA ===
+$mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
+$ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
+
+$sql_ranking = "SELECT r.nome, r.sobrenome, r.foto_perfil, COUNT(*) as total,
+    SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
+        (CASE WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos WHEN c.categoria = 'Incidente' THEN 360 WHEN c.categoria = 'Mudança' THEN 1440 WHEN c.categoria = 'Requisição' THEN 2880 ELSE 1440 END * 
+         CASE WHEN c.prioridade = 'P1' THEN 1/6.0 WHEN c.prioridade = 'P2' OR c.prioridade = 'Alta' THEN 1/3.0 WHEN c.prioridade = 'P3' OR c.prioridade = 'Média' THEN 2/3.0 ELSE 1.0 END) THEN 1 ELSE 0 END) as met_sla
+    FROM chamados c
+    JOIN usuarios r ON c.responsavel_id = r.id_usuarios
+    LEFT JOIN configuracoes_sla s ON c.categoria = s.categoria
+    WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado') AND MONTH(c.data_fechamento) = $mes_filtro AND YEAR(c.data_fechamento) = $ano_filtro
+    GROUP BY r.id_usuarios
+    ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
+        (CASE WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos WHEN c.categoria = 'Incidente' THEN 360 WHEN c.categoria = 'Mudança' THEN 1440 WHEN c.categoria = 'Requisição' THEN 2880 ELSE 1440 END * 
+         CASE WHEN c.prioridade = 'P1' THEN 1/6.0 WHEN c.prioridade = 'P2' OR c.prioridade = 'Alta' THEN 1/3.0 WHEN c.prioridade = 'P3' OR c.prioridade = 'Média' THEN 2/3.0 ELSE 1.0 END) THEN 1 ELSE 0 END) / COUNT(*)) DESC LIMIT 5";
+
+$ranking_data = [];
+$res_rank = mysqli_query($conn, $sql_ranking);
+if ($res_rank && mysqli_num_rows($res_rank) > 0) {
+    while ($row = mysqli_fetch_assoc($res_rank)) {
+        $row['percentage'] = $row['total'] > 0 ? round(($row['met_sla'] / $row['total']) * 100) : 0;
+        $ranking_data[] = $row;
+    }
+}
+
+// === RANKING DE RECORRÊNCIA ===
+$mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
+$ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
+$sql_rec = "SELECT titulo, COUNT(*) as total FROM chamados WHERE MONTH(data_abertura) = $mes_rec_filtro AND YEAR(data_abertura) = $ano_rec_filtro GROUP BY titulo ORDER BY total DESC LIMIT 5";
+$recorrencia_data = [];
+$max_recorrencia = 0;
+$res_rec = mysqli_query($conn, $sql_rec);
+if ($res_rec) {
+    while ($row = mysqli_fetch_assoc($res_rec)) {
+        if ($row['total'] > $max_recorrencia) $max_recorrencia = $row['total'];
+        $recorrencia_data[] = $row;
+    }
+}
+
+// === ALERTAS (Licenças Expiradas ou perto de expirar) ===
+$res_exp = mysqli_query($conn, "SELECT COUNT(*) as total FROM licencas WHERE (data_expiracao < DATE_ADD(CURRENT_DATE(), INTERVAL 60 DAY) OR status = 'Expirada') AND status != 'Cancelada'");
+$count_exp = mysqli_fetch_assoc($res_exp)['total'] ?? 0;
+
+// === CONFIGURAÇÃO DOS CARDS DO DASHBOARD ===
+$res_config = mysqli_query($conn, "SELECT dashboard_cards FROM configuracoes_alertas WHERE id = 1");
+$row_config = mysqli_fetch_assoc($res_config);
+$selected_cards = !empty($row_config['dashboard_cards']) ? json_decode($row_config['dashboard_cards'], true) : ['cat:Desktop', 'cat:Notebook', 'cat:Monitor', 'cat:Impressoras'];
+
+$metrics = [];
+// Metrics: Categories
+$sql_cats = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN (assigned_to IS NULL OR assigned_to = 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção') THEN 1 ELSE 0 END) as disponiveis FROM ativos GROUP BY categoria";
+$res_cats = mysqli_query($conn, $sql_cats);
+if ($res_cats) { while ($row = mysqli_fetch_assoc($res_cats)) { $metrics["cat:" . $row['categoria']] = $row; } }
+
+// Metrics: Status
+$res_disp = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE (assigned_to IS NULL OR assigned_to = 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
+$metrics['st:Disponível'] = ['total' => mysqli_fetch_assoc($res_disp)['total'] ?? 0, 'disponiveis' => 0];
+$res_uso = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE (assigned_to IS NOT NULL AND assigned_to != 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
+$metrics['st:Em uso'] = ['total' => mysqli_fetch_assoc($res_uso)['total'] ?? 0, 'disponiveis' => 0];
+$res_manut = mysqli_query($conn, "SELECT COUNT(*) as total FROM manutencao WHERE status_manutencao = 'Em Manutenção'");
+$metrics['st:Em manutenção'] = ['total' => mysqli_fetch_assoc($res_manut)['total'] ?? 0, 'disponiveis' => 0];
+
+// Metrics: Licenses
+$sql_lics = "SELECT software, SUM(quantidade_total) as total, SUM(quantidade_total - quantidade_uso) as disponiveis FROM licencas GROUP BY software";
+$res_lics = mysqli_query($conn, $sql_lics);
+if ($res_lics) { while ($row = mysqli_fetch_assoc($res_lics)) { $metrics["lic:" . $row['software']] = $row; } }
+
+function getCardIcon($type, $name) {
+    if ($type === 'st') {
+        switch ($name) { case 'Disponível': return 'fa-check-circle'; case 'Em uso': return 'fa-user-check'; case 'Em manutenção': return 'fa-tools'; default: return 'fa-info-circle'; }
+    } elseif ($type === 'lic') {
+        $n = strtolower($name);
+        if (strpos($n, 'office') !== false || strpos($n, '365') !== false) return 'fa-file-word';
+        if (strpos($n, 'windows') !== false) return 'fa-windows';
+        if (strpos($n, 'adobe') !== false || strpos($n, 'photoshop') !== false) return 'fa-paint-brush';
+        if (strpos($n, 'antivirus') !== false || strpos($n, 'kaspersky') !== false || strpos($n, 'defender') !== false) return 'fa-shield-alt';
+        return 'fa-key';
+    } else {
+        $n = strtolower($name);
+        if (strpos($n, 'desktop') !== false) return 'fa-desktop';
+        if (strpos($n, 'notebook') !== false) return 'fa-laptop';
+        if (strpos($n, 'monitor') !== false) return 'fa-desktop';
+        if (strpos($n, 'impressora') !== false) return 'fa-print';
+        if (strpos($n, 'servidor') !== false) return 'fa-server';
+        if (strpos($n, 'roteador') !== false || strpos($n, 'switch') !== false) return 'fa-network-wired';
+        return 'fa-box';
+    }
+}
+
+function getCardColor($type, $name) {
+    if ($type === 'st') {
+        switch ($name) { case 'Disponível': return 'success'; case 'Em uso': return 'primary'; case 'Em manutenção': return 'warning'; default: return 'secondary'; }
+    } elseif ($type === 'lic') { return 'info'; }
+    else { $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary', 'dark']; $sum = array_sum(str_split(md5($name))); return $colors[$sum % count($colors)]; }
+}
 ?>
 
 <body id="page-top">
@@ -145,6 +241,7 @@ $closed_string = implode(",", $closed_data);
                             </div>
                             <a class="text-white px-2 py-1 rounded shadow-sm d-flex align-items-center text-decoration-none"
                                 role="button" href="relatorio_resumo_geral.php" target="_blank"
+                                onkeypress="if(event.key==='Enter')window.open('relatorio_resumo_geral.php', '_blank')"
                                 style="background: #e74a3b; font-size: 0.75rem; height: 31px;">
                                 <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i>
                                 <span class="font-weight-bold"><?php echo __('Gerar Relatório'); ?></span>
@@ -153,357 +250,41 @@ $closed_string = implode(",", $closed_data);
                     </div>
                     <div class="row px-2 flex-nowrap overflow-auto">
                         <?php
-                        // 1. GESTÃO DE ATIVOS: Coleta métricas de hardware por categoria
-                        $where_ativos = "";
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $where_ativos = " WHERE assigned_to = " . $_SESSION['id_usuarios'];
+                        // Render Cards
+                        foreach ($selected_cards as $idx => $card_key) {
+                            if (strpos($card_key, ':') === false) continue;
+                            list($type, $name) = explode(':', $card_key, 2);
+                            $data = $metrics[$card_key] ?? ['total' => 0, 'disponiveis' => 0];
+                            $icon = getCardIcon($type, $name);
+                            $color = getCardColor($type, $name);
+                            $delay = ($idx + 1) * 0.1;
+                            ?>
+                            <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
+                                 style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 155px; animation-delay: <?php echo $delay; ?>s;">
+                                <div class="card shadow card-shadow border-left-<?php echo $color; ?> py-2" style="height: 100%;">
+                                    <div class="card-body p-3">
+                                        <div class="row align-items-center no-gutters">
+                                            <div class="col mr-2">
+                                                <div class="text-uppercase text-<?php echo $color; ?> font-weight-bold text-xs mb-1">
+                                                    <span><?php echo __($name); ?></span>
+                                                </div>
+                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                    <span><?php echo $data['total']; ?></span>
+                                                    <div class="text-muted small mt-1" style="font-size: 0.65rem; line-height: 1;">
+                                                        <?php echo $data['disponiveis']; ?> <?php echo __('Disp.'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto"><i class="fas <?php echo $icon; ?> fa-lg text-gray-300"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
                         }
-
-                        // Busca quantidades totais e disponibilidade (ativos não atribuídos)
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $sql_ativos = "SELECT categoria, COUNT(*) as total, 0 as disponiveis 
-                                           FROM ativos WHERE assigned_to = " . $_SESSION['id_usuarios'] . " GROUP BY categoria";
-                        } else {
-                            $sql_ativos = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN assigned_to IS NULL OR assigned_to = 0 THEN 1 ELSE 0 END) as disponiveis 
-                                           FROM ativos GROUP BY categoria";
-                        }
-                        $res_ativos = mysqli_query($conn, $sql_ativos);
-                        $dados_ativos = [];
-                        if ($res_ativos) {
-                            while ($row = mysqli_fetch_assoc($res_ativos)) {
-                                $dados_ativos[$row['categoria']] = $row;
-                            }
-                        }
-
-                        // 2. RANKING DE EFICIÊNCIA (SLA): Melhores técnicos do período
-                        $mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
-                        $ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
-
-                        if ($_SESSION['nivelUsuario'] !== 'Usuário') {
-                            $sql_ranking = "SELECT 
-    r.nome, r.sobrenome, r.id_usuarios, r.foto_perfil,
-    COUNT(*) as total,
-    SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
-        (CASE 
-            WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
-            WHEN c.categoria = 'Incidente' THEN 360
-            WHEN c.categoria = 'Mudança' THEN 1440
-            WHEN c.categoria = 'Requisição' THEN 2880
-            ELSE 1440 
-        END * 
-        CASE 
-            WHEN c.prioridade = 'P1' THEN 1/6.0
-            WHEN c.prioridade = 'P2' OR c.prioridade = 'Alta' THEN 1/3.0
-            WHEN c.prioridade = 'P3' OR c.prioridade = 'Média' THEN 2/3.0
-            ELSE 1.0
-        END) THEN 1 ELSE 0 END) as met_sla
-FROM chamados c
-JOIN usuarios r ON c.responsavel_id = r.id_usuarios
-LEFT JOIN configuracoes_sla s ON c.categoria = s.categoria
-WHERE c.status IN ('Resolvido', 'Fechado', 'Cancelado')
-AND MONTH(c.data_fechamento) = $mes_filtro 
-AND YEAR(c.data_fechamento) = $ano_filtro
-GROUP BY r.id_usuarios
-ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
-    (CASE 
-        WHEN s.tempo_sla_minutos IS NOT NULL THEN s.tempo_sla_minutos
-        WHEN c.categoria = 'Incidente' THEN 360
-        WHEN c.categoria = 'Mudança' THEN 1440
-        WHEN c.categoria = 'Requisição' THEN 2880
-        ELSE 1440 
-    END * 
-    CASE 
-        WHEN c.prioridade = 'Alta' THEN 1/3.0
-        WHEN c.prioridade = 'Média' THEN 2/3.0
-        ELSE 1.0
-    END) THEN 1 ELSE 0 END) / COUNT(*)) DESC";
-                            $res_ranking = mysqli_query($conn, $sql_ranking);
-                            $ranking_data = [];
-                            if ($res_ranking) {
-                                while ($row = mysqli_fetch_assoc($res_ranking)) {
-                                    $total = (int) $row['total'];
-                                    $met_sla = (int) $row['met_sla'];
-                                    $row['percentage'] = ($total > 0) ? round(($met_sla / $total) * 100) : 0;
-                                    $ranking_data[] = $row;
-                                }
-                            }
-                        }
-                        // (Closed data already computed above, no duplicate query needed)
-                        
-                        if ($_SESSION['nivelUsuario'] !== 'Usuário') {
-                            // Ranking de Chamados por Recorrência (Top 5 títulos mais frequentes) - Filtro de período INDEPENDENTE
-                            $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
-                            $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
-
-                            $sql_recorrencia = "SELECT titulo, COUNT(*) as total 
-                                                FROM chamados 
-                                                WHERE MONTH(data_abertura) = $mes_rec_filtro 
-                                                AND YEAR(data_abertura) = $ano_rec_filtro
-                                                GROUP BY titulo 
-                                                ORDER BY total DESC LIMIT 5";
-                            $res_recorrencia = mysqli_query($conn, $sql_recorrencia);
-                            $recorrencia_data = [];
-                            $max_recorrencia = 0;
-                            if ($res_recorrencia) {
-                                while ($row = mysqli_fetch_assoc($res_recorrencia)) {
-                                    $recorrencia_data[] = $row;
-                                    if ($row['total'] > $max_recorrencia) {
-                                        $max_recorrencia = $row['total'];
-                                    }
-                                }
-                            }
-                        }
-
-
-                        // 4. Licenças - Métricas Específicas
-                        $where_lic = "";
-                        $join_lic = "";
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $join_lic = " JOIN atribuicoes_licencas al ON l.id_licenca = al.id_licenca ";
-                            $where_lic = " AND al.id_usuario = " . $_SESSION['id_usuarios'];
-                        }
-
-                        // M365
-                        $sql_m365 = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%365%' $where_lic";
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $sql_m365 = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%365%' $where_lic";
-                        }
-                        $res_m365 = mysqli_query($conn, $sql_m365);
-                        $data_m365 = mysqli_fetch_assoc($res_m365);
-                        $total_m365 = $data_m365['total'] ?? 0;
-                        $disp_m365 = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_m365 - ($data_m365['em_uso'] ?? 0));
-
-                        // Adobe
-                        $sql_adobe = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE (l.software LIKE '%Adobe%' OR l.fabricante LIKE '%Adobe%') $where_lic";
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $sql_adobe = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE (l.software LIKE '%Adobe%' OR l.fabricante LIKE '%Adobe%') $where_lic";
-                        }
-                        $res_adobe = mysqli_query($conn, $sql_adobe);
-                        $data_adobe = mysqli_fetch_assoc($res_adobe);
-                        $total_adobe = $data_adobe['total'] ?? 0;
-                        $disp_adobe = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_adobe - ($data_adobe['em_uso'] ?? 0));
-
-                        // Windows
-                        $sql_win = "SELECT SUM(l.quantidade_total) as total, SUM(l.quantidade_uso) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%Windows%' $where_lic";
-                        if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') {
-                            $sql_win = "SELECT COUNT(*) as total, COUNT(*) as em_uso FROM licencas l $join_lic WHERE l.software LIKE '%Windows%' $where_lic";
-                        }
-                        $res_win = mysqli_query($conn, $sql_win);
-                        $data_win = mysqli_fetch_assoc($res_win);
-                        $total_win = $data_win['total'] ?? 0;
-                        $disp_win = ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte') ? 0 : ($total_win - ($data_win['em_uso'] ?? 0));
-
-                        // Expiradas ou prestes a vencer (60 dias)
-                        $sql_exp = "SELECT COUNT(*) as total FROM licencas l $join_lic WHERE (l.status = 'Expirada' OR (l.data_expiracao IS NOT NULL AND l.data_expiracao <= DATE_ADD(CURDATE(), INTERVAL 60 DAY))) $where_lic";
-                        $res_exp = mysqli_query($conn, $sql_exp);
-                        $count_exp = mysqli_fetch_assoc($res_exp)['total'] ?? 0;
-
-                        // Mapeamento manual para os cards (ajuste as chaves conforme o banco de dados)
-                        // Exemplo: 'Computadores' no banco pode mapear para o card 'Computadores'
-                        // Se não houver correspondencia exata, você pode criar cards genéricos ou ajustar o array $categorias_interesse
-                        
-                        // Para simplificar e atender o pedido, vamos criar cards dinâmicos baseados no que tem no banco, 
-                        // ou manter o layout fixo e preencher com o que encontrar.
-                        // Vamos tentar preencher os 4 cards fixos com os dados mais prováveis.
-                        
-                        // Card 1: Desktops
-                        $total_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['total'] : 0;
-                        $disp_pc = isset($dados_ativos['Desktop']) ? $dados_ativos['Desktop']['disponiveis'] : 0;
-
-                        // Card 2: Notebooks
-                        $total_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['total'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['total'] : 0);
-                        $disp_note = isset($dados_ativos['Notebook']) ? $dados_ativos['Notebook']['disponiveis'] : (isset($dados_ativos['Notebooks']) ? $dados_ativos['Notebooks']['disponiveis'] : 0);
-
-                        // Card 3: Monitores (Monitor, Monitores)
-                        $total_mon = (isset($dados_ativos['Monitor']) ? $dados_ativos['Monitor']['total'] : 0) +
-                            (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['total'] : 0);
-                        $disp_mon = (isset($dados_ativos['Monitor']) ? $dados_ativos['Monitor']['disponiveis'] : 0) +
-                            (isset($dados_ativos['Monitores']) ? $dados_ativos['Monitores']['disponiveis'] : 0);
-
-                        // Card 4: Impressoras
-                        $total_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['total'] : 0;
-                        $disp_imp = isset($dados_ativos['Impressoras']) ? $dados_ativos['Impressoras']['disponiveis'] : 0;
-
-                        // Se os totais forem 0, exibir pelo menos um placeholder ou buscar tudo
-                        // Vamos exibir todos:
                         ?>
-
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.1s;">
-                            <div class="card shadow card-shadow border-left-primary py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-primary font-weight-bold text-sm mb-1">
-                                                <span><?php echo __('Desktops'); ?></span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_pc; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_pc; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.2s;">
-                            <div class="card shadow card-shadow border-left-success py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-success font-weight-bold text-sm mb-1">
-                                                <span><?php echo __('Notebooks'); ?></span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_note; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_note; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-laptop fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.3s;">
-                            <div class="card shadow card-shadow border-left-info py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-info font-weight-bold text-sm mb-1">
-                                                <span><?php echo __('Monitores'); ?></span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_mon; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_mon; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-desktop fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.4s;">
-                            <div class="card shadow card-shadow border-left-warning py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
-                                                <span><?php echo __('Impressoras'); ?></span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_imp; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_imp; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-print fa-lg text-gray-600"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Novas Licenças na mesma fileira -->
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.5s;">
-                            <div class="card shadow card-shadow border-left-secondary py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-secondary font-weight-bold text-sm mb-1">
-                                                <span>Office 365</span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_m365; ?></span>
-                                                <span class="text-muted small ml-1" style="font-size: 0.85rem;">(
-                                                    <?php echo $disp_m365; ?> <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-cloud fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.6s;">
-                            <div class="card shadow card-shadow border-left-danger py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-danger font-weight-bold text-sm mb-1">
-                                                <span>Adobe CC</span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_adobe; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_adobe; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-palette fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.7s;">
-                            <div class="card shadow card-shadow border-left-dark py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-dark font-weight-bold text-sm mb-1">
-                                                <span>Windows 11</span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $total_win; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;">(<?php echo $disp_win; ?>
-                                                    <?php echo __('Disponíveis'); ?>)</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fab fa-windows fa-lg text-gray-600"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                            style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 140px; animation-delay: 0.8s;">
-                            <div class="card shadow card-shadow border-left-warning py-2"
-                                style="border-left-color: #f6c23e !important;">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col mr-2">
-                                            <div class="text-uppercase text-warning font-weight-bold text-sm mb-1">
-                                                <span><?php echo __('Alertas'); ?></span>
-                                            </div>
-                                            <div class="text-dark font-weight-bold h5 mb-0">
-                                                <span><?php echo $count_exp; ?></span>
-                                                <span class="text-muted small ml-1"
-                                                    style="font-size: 0.85rem;"><?php echo __('Expirando'); ?></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i
-                                                class="fas fa-exclamation-circle fa-lg text-gray-600"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
+
                     <div class="row mb-5">
                         <div class="col-lg-7 col-xl-8">
                             <div class="card shadow mb-4 h-100">
@@ -607,7 +388,7 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                            <table class="table table-bordered">
                                                 <thead>
                                                     <tr>
                                                         <th><?php echo __('Responsável'); ?></th>
@@ -622,7 +403,8 @@ ORDER BY (SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechament
                                                             <td class="align-middle">
                                                                 <img class="img-profile rounded-circle"
                                                                     style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;"
-                                                                    src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>">
+                                                                    src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
+                                                                    alt="<?php echo htmlspecialchars($rank['nome']); ?>">
                                                                 <?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?>
                                                             </td>
                                                             <td class="align-middle"><?php echo $rank['total']; ?></td>

@@ -6,7 +6,7 @@
 include_once 'auth.php'; // Proteção de sessão
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
@@ -93,7 +93,7 @@ include_once 'auth.php'; // Proteção de sessão
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="numero_serie"><?php echo __('Número de Série'); ?></label>
-                                            <input class="form-control" name="numero_serie" id="numero_serie" type="text" placeholder="S/N: 123456789" required="">
+                                            <input class="form-control" name="numero_serie" id="numero_serie" type="text" placeholder="<?php echo __('Ex: 123456789'); ?>" required="">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -210,11 +210,11 @@ include_once 'auth.php'; // Proteção de sessão
                                             <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
                                             <select class="form-control" name="tier" id="tier">
                                                 <option value=""><?php echo __('Nenhum'); ?></option>
-                                                <option value="Tier 1">Tier 1</option>
-                                                <option value="Tier 2">Tier 2</option>
-                                                <option value="Tier 3">Tier 3</option>
-                                                <option value="Tier 4">Tier 4</option>
-                                                <option value="Infraestrutura">Infraestrutura</option>
+                                                <option value="Tier 1"><?php echo __('Tier 1'); ?></option>
+                                                <option value="Tier 2"><?php echo __('Tier 2'); ?></option>
+                                                <option value="Tier 3"><?php echo __('Tier 3'); ?></option>
+                                                <option value="Tier 4"><?php echo __('Tier 4'); ?></option>
+                                                <option value="Infraestrutura"><?php echo __('Infraestrutura'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -271,7 +271,7 @@ include_once 'auth.php'; // Proteção de sessão
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></label>
-                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}">
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" placeholder="<?php echo __('Ex: 352603...'); ?>" required pattern="\d{44}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -289,19 +289,19 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="memoria"><?php echo __('Memória RAM'); ?></label>
-                                                <input class="form-control" name="memoria" id="memoria" type="text" placeholder="Ex: 16GB DDR4">
+                                                <input class="form-control" name="memoria" id="memoria" type="text" placeholder="<?php echo __('Ex: 16GB DDR4'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="processador"><?php echo __('Processador'); ?></label>
-                                                <input class="form-control" name="processador" id="processador" type="text" placeholder="Ex: Intel i7">
+                                                <input class="form-control" name="processador" id="processador" type="text" placeholder="<?php echo __('Ex: Intel i7'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="armazenamento"><?php echo __('Capacidade Armazenamento'); ?></label>
-                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" placeholder="Ex: 512GB">
+                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" placeholder="<?php echo __('Ex: 512GB'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -319,7 +319,7 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="col-md-12 mt-3" id="gpu_container" style="display: none;">
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="gpu"><?php echo __('Placa Gráfica (GPU)'); ?></label>
-                                                <input class="form-control" name="gpu" id="gpu" type="text" placeholder="Ex: NVIDIA RTX 4090 24GB">
+                                                <input class="form-control" name="gpu" id="gpu" type="text" placeholder="<?php echo __('Ex: NVIDIA RTX 4090 24GB'); ?>">
                                             </div>
                                         </div>
                                         <!-- Polegadas (Monitor) -->
@@ -327,7 +327,7 @@ include_once 'auth.php'; // Proteção de sessão
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="polegadas"><?php echo __('Polegadas (Monitor)'); ?></label>
                                                 <select class="form-control" name="polegadas" id="polegadas">
-                                                    <option value="">Selecione...</option>
+                                                    <option value=""><?php echo __('Selecione...'); ?></option>
                                                     <option value="15\"">15"</option>
                                                     <option value="17\"">17"</option>
                                                     <option value="18.5\"">18.5"</option>
@@ -351,8 +351,8 @@ include_once 'auth.php'; // Proteção de sessão
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="is_scanner"><?php echo __('Possui Scanner? (Multifuncional)'); ?></label>
                                                 <select class="form-control" name="is_scanner" id="is_scanner">
-                                                    <option value="Não">Não (Impressora Simples)</option>
-                                                    <option value="Sim">Sim (Multifuncional)</option>
+                                                    <option value="Não"><?php echo __('Não (Impressora Simples)'); ?></option>
+                                                    <option value="Sim"><?php echo __('Sim (Multifuncional)'); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -366,13 +366,13 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="imei"><?php echo __('IMEI'); ?></label>
-                                                <input class="form-control" name="imei" id="imei" type="text" placeholder="Ex: 351234567890123">
+                                                <input class="form-control" name="imei" id="imei" type="text" placeholder="<?php echo __('Ex: 351234567890123'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="sim_card"><?php echo __('SIM Card (Número/ICCID)'); ?></label>
-                                                <input class="form-control" name="sim_card" id="sim_card" type="text" placeholder="Ex: 89551234567890123456">
+                                                <input class="form-control" name="sim_card" id="sim_card" type="text" placeholder="<?php echo __('Ex: 89551234567890123456'); ?>">
                                             </div>
                                         </div>
                                     </div>

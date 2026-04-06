@@ -44,7 +44,7 @@ $total_assets = mysqli_num_rows($result_assets);
 $total_lic = mysqli_num_rows($result_lic);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">

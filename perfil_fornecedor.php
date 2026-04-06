@@ -26,7 +26,7 @@ $status_label = ($fornecedor['status'] == 'Ativo') ? 'success' : 'danger';
 $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">

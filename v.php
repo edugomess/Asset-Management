@@ -9,7 +9,7 @@ include_once 'language.php'; // Para a função __()
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($id <= 0) {
-    die("Ativo não encontrado.");
+    die(__('Ativo não encontrado.'));
 }
 
 // Buscar detalhes do ativo com joins para Usuário e Local de Instalação
@@ -23,10 +23,9 @@ $ativo = mysqli_fetch_assoc($result_ativo);
 
 // Função para buscar o path do local de forma recursiva
 function getLocalPath($conn, $id_local) {
-    if (!$id_local) return '';
-    $sql = "SELECT id_local, nome_local, id_parent_local FROM locais WHERE id_local = $id_local";
-    $res = $conn->query($sql);
-    if ($res && $row = $res->fetch_assoc()) {
+    $id_local = intval($id_local);
+    $res = mysqli_query($conn, "SELECT id_parent_local, nome_local FROM locais WHERE id_local = $id_local");
+    if ($res && $row = mysqli_fetch_assoc($res)) {
         $parent = $row['id_parent_local'] ? getLocalPath($conn, $row['id_parent_local']) . ' > ' : '';
         return $parent . $row['nome_local'];
     }
@@ -35,7 +34,7 @@ function getLocalPath($conn, $id_local) {
 
 if (!$ativo) {
     echo '<style>body { background: #f0f2f5; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #666; }</style>';
-    echo '<div><h2 style="margin-bottom: 5px;">Ops!</h2><p>Este ativo não foi encontrado em nossa base de dados.</p></div>';
+    echo '<div><h2 style="margin-bottom: 5px;">' . __('Ops!') . '</h2><p>' . __('Este ativo não foi encontrado em nossa base de dados.') . '</p></div>';
     exit();
 }
 
@@ -44,10 +43,10 @@ $status_class = ($ativo['status'] === 'Ativo') ? 'success' : (($ativo['status'] 
 $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title><?php echo htmlspecialchars($ativo['modelo']); ?> - Digital Twin</title>
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
@@ -76,7 +75,9 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             <div class="twin-img-container">
                 <img src="<?php echo $foto; ?>" class="twin-img" alt="Asset Image">
             </div>
-            <h4 class="font-weight-bold mb-1"><?php echo htmlspecialchars($ativo['modelo']); ?></h4>
+            <h4 class="font-weight-bold mb-1">
+                <img src="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90" alt="Logo" style="width: 32px; height: 32px; margin-right: 10px;"><?php echo htmlspecialchars($ativo['modelo']); ?>
+            </h4>
             <div class="opacity-75 small font-weight-bold"><?php echo htmlspecialchars($ativo['tag']); ?></div>
             <div class="status-badge bg-<?php echo $status_class; ?>">
                 <?php echo __(ucfirst($ativo['status'])); ?>
@@ -132,7 +133,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             <div class="detail-row">
                 <div class="detail-icon"><i class="fas fa-network-wired"></i></div>
                 <div class="detail-info">
-                    <div class="detail-label">Hostname / Rede</div>
+                    <div class="detail-label"><?php echo __('Hostname / Rede'); ?></div>
                     <div class="detail-value"><?php echo htmlspecialchars($ativo['hostName']); ?></div>
                 </div>
             </div>
@@ -147,11 +148,17 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                 <div class="detail-info">
                     <div class="detail-label"><?php echo __('Hardware / Specs'); ?></div>
                     <div class="detail-value">
-                        <?php 
+                        <?php
                         $specs = [];
-                        if(!empty($ativo['processador'])) $specs[] = $ativo['processador'];
-                        if(!empty($ativo['memoria'])) $specs[] = $ativo['memoria'];
-                        if(!empty($ativo['armazenamento'])) $specs[] = $ativo['armazenamento'] . " " . ($ativo['tipo_armazenamento'] ?? '');
+                        if (!empty($ativo['processador'])) {
+                            $specs[] = $ativo['processador'];
+                        }
+                        if (!empty($ativo['memoria'])) {
+                            $specs[] = $ativo['memoria'];
+                        }
+                        if (!empty($ativo['armazenamento'])) {
+                            $specs[] = $ativo['armazenamento'] . " " . ($ativo['tipo_armazenamento'] ?? '');
+                        }
                         echo !empty($specs) ? implode(" • ", $specs) : "-";
                         ?>
                     </div>

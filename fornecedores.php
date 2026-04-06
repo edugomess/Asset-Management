@@ -15,7 +15,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -227,7 +227,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
                                     // Botão Anterior
                                     if ($current_page > 1) {
-                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>" . __('« Anterior') . "</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« " . __('Anterior') . "</a></li>";
                                     }
                                     // Números das Páginas
                                     for ($page = 1; $page <= $total_pages; $page++) {
@@ -239,7 +239,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     }
                                     // Botão Próximo
                                     if ($current_page < $total_pages) {
-                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo »') . "</a></li>";
+                                        echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo') . " »</a></li>";
                                     }
                                     // Fecha a conexão com o banco
                                     mysqli_close($conn);

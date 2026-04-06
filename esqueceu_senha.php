@@ -1,6 +1,6 @@
 <?php include 'conexao.php'; ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">

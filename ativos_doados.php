@@ -14,7 +14,7 @@ include_once 'auth.php';
 include_once 'conexao.php';
 ?>
 <!DOCTYPE html>
-<html lang="<?= (isset($_SESSION['language']) && $_SESSION['language'] == 'en-US') ? 'en' : 'pt-br'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 <style>
     .btn-tamanho-fixo {
         width: 130px;

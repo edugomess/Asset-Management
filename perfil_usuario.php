@@ -27,7 +27,7 @@ $foto = !empty($usuario['foto_perfil']) ? htmlspecialchars($usuario['foto_perfil
 $nome_completo = htmlspecialchars($usuario['nome'] . ' ' . $usuario['sobrenome']);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">

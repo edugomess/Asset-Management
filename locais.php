@@ -16,16 +16,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 $msg = '';
 if (isset($_GET['msg'])) {
     if ($_GET['msg'] == 'success') {
-        $msg = '<div class="alert alert-success">Local cadastrado com sucesso!</div>';
+        $msg = '<div class="alert alert-success">' . __('Local cadastrado com sucesso!') . '</div>';
     } elseif ($_GET['msg'] == 'deleted') {
-        $msg = '<div class="alert alert-warning">Local excluído com sucesso!</div>';
+        $msg = '<div class="alert alert-warning">' . __('Local excluído com sucesso!') . '</div>';
     } elseif ($_GET['msg'] == 'error') {
-        $msg = '<div class="alert alert-danger">Erro ao processar operação.</div>';
+        $msg = '<div class="alert alert-danger">' . __('Erro ao processar operação.') . '</div>';
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $_SESSION['language'] ?? 'pt-br'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -325,7 +325,7 @@ if (isset($_GET['msg'])) {
                 </div>
                 <div class="modal-body p-4 bg-light">
                     <div id="deleteLoading" class="text-center py-3">
-                        <div class="spinner-border text-primary" role="status"><span class="sr-only">Carregando...</span></div>
+                        <div class="spinner-border text-primary" role="status"><span class="sr-only"><?php echo __('Carregando...'); ?></span></div>
                     </div>
                     <div id="deleteContent" style="display: none;">
                         <div class="text-center mb-4" id="deleteIconArea">

@@ -24,7 +24,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br"> <!-- Define o idioma da página como português do Brasil -->
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>"> <!-- Define o idioma da página conforme a sessão -->
 <style>
     /* Estilos customizados para botões e elementos da interface */
     .btn-tamanho-fixo {

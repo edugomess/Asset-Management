@@ -296,6 +296,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['logo_upload'])) {
     exit();
 }
 
+// === PROCESSAMENTO DO DASHBOARD: Configura quais cards aparecerão na página inicial ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dashboard_config'])) {
+    $cards = $_POST['selected_cards'] ?? [];
+    // Limite de 8 cards
+    if (count($cards) > 8) {
+        $cards = array_slice($cards, 0, 8);
+    }
+    $cards_json = mysqli_real_escape_string($conn, json_encode($cards));
+
+    $sql = "UPDATE configuracoes_alertas SET dashboard_cards = '$cards_json' WHERE id = 1";
+    $success = mysqli_query($conn, $sql);
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "dashboard_success" : "error"));
+    }
+    exit();
+}
+
 
 // === COLETA DE DADOS ATUAIS: Busca as configurações salvas para preencher o formulário ===
 $configs = [];
@@ -333,6 +354,31 @@ $alert_config = ['whatsapp_ativo' => 1, 'email_ativo' => 1];
 $result_alert = mysqli_query($conn, "SELECT * FROM configuracoes_alertas LIMIT 1");
 if ($result_alert && mysqli_num_rows($result_alert) > 0) {
     $alert_config = mysqli_fetch_assoc($result_alert);
+}
+
+// Fetch dashboard card settings
+$dashboard_cards = [];
+if (!empty($alert_config['dashboard_cards'])) {
+    $dashboard_cards = json_decode($alert_config['dashboard_cards'], true) ?: [];
+}
+
+// Fetch categories for dashboard selection
+$all_categories = [];
+$res_cat = mysqli_query($conn, "SELECT categoria FROM categoria ORDER BY categoria ASC");
+if ($res_cat) {
+    while($row = mysqli_fetch_assoc($res_cat)) {
+        $all_categories[] = $row['categoria'];
+    }
+}
+$all_statuses = ['Disponível', 'Em uso', 'Em manutenção'];
+
+// Fetch available software licenses for dashboard selection
+$all_licenses = [];
+$res_lic = mysqli_query($conn, "SELECT DISTINCT software FROM licencas WHERE software IS NOT NULL AND software != '' ORDER BY software ASC");
+if ($res_lic) {
+    while($row = mysqli_fetch_assoc($res_lic)) {
+        $all_licenses[] = $row['software'];
+    }
 }
 
 // Fetch per-category donation eligibility
@@ -1351,6 +1397,85 @@ function getHoursAndMinutes($total_minutes)
                         </div>
                     </div>
 
+                    <!-- CONFIGURAÇÃO DO DASHBOARD -->
+                    <div class="card shadow mt-4">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 font-weight-bold"><i class="fas fa-th-large mr-2"></i><?php echo __('Configuração do Dashboard (Cards)'); ?></p>
+                        </div>
+                        <div class="card-body">
+                            <form id="formDashboard" method="POST">
+                                <input type="hidden" name="dashboard_config" value="1">
+                                <p class="text-muted small mb-4"><?php echo __('Selecione até 8 categorias, status ou licenças para exibir como cards de resumo na página inicial.'); ?></p>
+                                
+                                <div class="row">
+                                    <div class="col-md-5 border-right">
+                                        <h6 class="font-weight-bold mb-3 text-primary"><?php echo __('Categorias de Ativos'); ?></h6>
+                                        <div class="row">
+                                            <?php foreach ($all_categories as $cat): ?>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
+                                                               id="db_cat_<?php echo md5($cat); ?>" name="selected_cards[]" 
+                                                               value="cat:<?php echo htmlspecialchars($cat); ?>"
+                                                               <?php echo in_array("cat:$cat", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                        <label class="custom-control-label small" for="db_cat_<?php echo md5($cat); ?>">
+                                                            <?php echo htmlspecialchars($cat); ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 border-right">
+                                        <h6 class="font-weight-bold mb-3 text-success"><?php echo __('Status'); ?></h6>
+                                        <div class="row">
+                                            <?php foreach ($all_statuses as $st): ?>
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
+                                                               id="db_st_<?php echo md5($st); ?>" name="selected_cards[]" 
+                                                               value="st:<?php echo htmlspecialchars($st); ?>"
+                                                               <?php echo in_array("st:$st", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                        <label class="custom-control-label small" for="db_st_<?php echo md5($st); ?>">
+                                                            <?php echo __($st); ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="font-weight-bold mb-3 text-info"><?php echo __('Licenças'); ?></h6>
+                                        <div class="row">
+                                            <?php foreach ($all_licenses as $lic): ?>
+                                                <div class="col-sm-12 mb-2">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
+                                                               id="db_lic_<?php echo md5($lic); ?>" name="selected_cards[]" 
+                                                               value="lic:<?php echo htmlspecialchars($lic); ?>"
+                                                               <?php echo in_array("lic:$lic", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                        <label class="custom-control-label small" for="db_lic_<?php echo md5($lic); ?>">
+                                                            <?php echo htmlspecialchars($lic); ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-right mt-4 border-top pt-3">
+                                    <span id="cardCountInfo" class="mr-3 small text-muted">
+                                        <?php echo __('Selecionados:'); ?> <span id="currentCardCount">0</span>/8
+                                    </span>
+                                    <button type="submit" class="btn btn-primary btn-save-ajax" style="background: rgb(44,64,74);">
+                                        <i class="fas fa-save mr-2"></i><?php echo __('Salvar Configuração do Dashboard'); ?>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                     <!-- IDIOMA DO SISTEMA -->
                     <div class="card shadow mt-4">
                         <div class="card-header py-3">
@@ -1616,6 +1741,36 @@ function getHoursAndMinutes($total_minutes)
                 e.preventDefault();
                 handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('Sessão e Segurança salvas!'); ?>");
             });
+
+            $('#formDashboard').on('submit', function (e) {
+                e.preventDefault();
+                handleAjaxSave($(this), $(this).find('button[type="submit"]'), $(this).find('button[type="submit"]').html(), "<?php echo __('Configuração do Dashboard salva!'); ?>");
+            });
+
+            function updateCardCount() {
+                var count = $('.dashboard-card-checkbox:checked').length;
+                $('#currentCardCount').text(count);
+                if (count > 8) {
+                    $('#cardCountInfo').addClass('text-danger').removeClass('text-muted');
+                } else {
+                    $('#cardCountInfo').removeClass('text-danger').addClass('text-muted');
+                }
+            }
+
+            $('.dashboard-card-checkbox').on('change', function() {
+                if ($('.dashboard-card-checkbox:checked').length > 8) {
+                    $(this).prop('checked', false);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: "<?php echo __('Limite Atingido'); ?>",
+                        text: "<?php echo __('Você pode selecionar no máximo 8 cards para o dashboard.'); ?>",
+                        confirmButtonColor: '#2c404a'
+                    });
+                }
+                updateCardCount();
+            });
+
+            updateCardCount(); // Initial count
 
             $('#formIA').on('submit', function (e) {
                 e.preventDefault();

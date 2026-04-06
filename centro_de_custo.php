@@ -13,7 +13,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -180,7 +180,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <?php
                                         $search_param = !empty($search) ? "&search=" . urlencode($search) : "";
                                         if ($current_page > 1) {
-                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>" . __('« Anterior') . "</a></li>";
+                                            echo "<li><a href='?page=" . ($current_page - 1) . "$search_param'>« " . __('Anterior') . "</a></li>";
                                         }
 
                                         for ($page = 1; $page <= $total_pages; $page++) {
@@ -192,7 +192,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         }
 
                                         if ($current_page < $total_pages) {
-                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo »') . "</a></li>";
+                                            echo "<li><a href='?page=" . ($current_page + 1) . "$search_param'>" . __('Próximo') . " »</a></li>";
                                         }
                                         ?>
                                     </ul>

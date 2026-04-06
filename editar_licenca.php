@@ -27,7 +27,7 @@ $sql_cc = "SELECT id_centro_de_custo, nomeSetor FROM centro_de_custo ORDER BY no
 $result_cc = $conn->query($sql_cc);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">

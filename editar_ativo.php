@@ -29,7 +29,7 @@ if (!$asset) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -220,11 +220,11 @@ if (!$asset) {
                                             <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
                                             <select class="form-control" name="tier" id="tier">
                                                 <option value="" <?php echo empty($asset['tier']) ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
-                                                <option value="Tier 1" <?php echo ($asset['tier'] == 'Tier 1') ? 'selected' : ''; ?>>Tier 1</option>
-                                                <option value="Tier 2" <?php echo ($asset['tier'] == 'Tier 2') ? 'selected' : ''; ?>>Tier 2</option>
-                                                <option value="Tier 3" <?php echo ($asset['tier'] == 'Tier 3') ? 'selected' : ''; ?>>Tier 3</option>
-                                                <option value="Tier 4" <?php echo ($asset['tier'] == 'Tier 4') ? 'selected' : ''; ?>>Tier 4</option>
-                                                <option value="Infraestrutura" <?php echo ($asset['tier'] == 'Infraestrutura') ? 'selected' : ''; ?>>Infraestrutura</option>
+                                                <option value="Tier 1" <?php echo ($asset['tier'] == 'Tier 1') ? 'selected' : ''; ?>><?php echo __('Tier 1'); ?></option>
+                                                <option value="Tier 2" <?php echo ($asset['tier'] == 'Tier 2') ? 'selected' : ''; ?>><?php echo __('Tier 2'); ?></option>
+                                                <option value="Tier 3" <?php echo ($asset['tier'] == 'Tier 3') ? 'selected' : ''; ?>><?php echo __('Tier 3'); ?></option>
+                                                <option value="Tier 4" <?php echo ($asset['tier'] == 'Tier 4') ? 'selected' : ''; ?>><?php echo __('Tier 4'); ?></option>
+                                                <option value="Infraestrutura" <?php echo ($asset['tier'] == 'Infraestrutura') ? 'selected' : ''; ?>><?php echo __('Infraestrutura'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -282,7 +282,7 @@ if (!$asset) {
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="numero_nota_fiscal"><?php echo __('Nota Fiscal/Chave de Acesso'); ?></label>
-                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" value="<?php echo htmlspecialchars($asset['numero_nota_fiscal']); ?>" placeholder="Ex: 35260312345678000190550010000458921876543210" required pattern="\d{44}" title="A chave de acesso deve ter exatamente 44 dígitos numéricos">
+                                            <input class="form-control" name="numero_nota_fiscal" id="numero_nota_fiscal" type="text" value="<?php echo htmlspecialchars($asset['numero_nota_fiscal']); ?>" placeholder="<?php echo __('Ex: 352603...'); ?>" required pattern="\d{44}" title="<?php echo __('A chave de acesso deve ter exatamente 44 dígitos numéricos'); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-8">
@@ -307,29 +307,29 @@ if (!$asset) {
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="memoria"><?php echo __('Memória RAM'); ?></label>
-                                                <input class="form-control" name="memoria" id="memoria" type="text" value="<?php echo htmlspecialchars($asset['memoria']); ?>" placeholder="Ex: 16GB DDR4">
+                                                <input class="form-control" name="memoria" id="memoria" type="text" value="<?php echo htmlspecialchars($asset['memoria']); ?>" placeholder="<?php echo __('Ex: 16GB DDR4'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="processador"><?php echo __('Processador'); ?></label>
-                                                <input class="form-control" name="processador" id="processador" type="text" value="<?php echo htmlspecialchars($asset['processador']); ?>" placeholder="Ex: Intel i7-1185G7">
+                                                <input class="form-control" name="processador" id="processador" type="text" value="<?php echo htmlspecialchars($asset['processador']); ?>" placeholder="<?php echo __('Ex: Intel i7-1185G7'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="armazenamento"><?php echo __('Capacidade Armazenamento'); ?></label>
-                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" value="<?php echo htmlspecialchars($asset['armazenamento']); ?>" placeholder="Ex: 512GB">
+                                                <input class="form-control" name="armazenamento" id="armazenamento" type="text" value="<?php echo htmlspecialchars($asset['armazenamento']); ?>" placeholder="<?php echo __('Ex: 512GB'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="tipo_armazenamento"><?php echo __('Tipo de Armazenamento'); ?></label>
                                                 <select class="form-control" name="tipo_armazenamento" id="tipo_armazenamento">
-                                                    <option value="SSD" <?php echo ($asset['tipo_armazenamento'] == 'SSD') ? 'selected' : ''; ?>>SSD</option>
-                                                    <option value="HD" <?php echo ($asset['tipo_armazenamento'] == 'HD') ? 'selected' : ''; ?>>HD</option>
-                                                    <option value="NVMe" <?php echo ($asset['tipo_armazenamento'] == 'NVMe') ? 'selected' : ''; ?>>NVMe</option>
-                                                    <option value="Híbrido" <?php echo ($asset['tipo_armazenamento'] == 'Híbrido') ? 'selected' : ''; ?>>Híbrido</option>
+                                                    <option value="SSD" <?php echo ($asset['tipo_armazenamento'] == 'SSD') ? 'selected' : ''; ?>><?php echo __('SSD'); ?></option>
+                                                    <option value="HD" <?php echo ($asset['tipo_armazenamento'] == 'HD') ? 'selected' : ''; ?>><?php echo __('HD'); ?></option>
+                                                    <option value="NVMe" <?php echo ($asset['tipo_armazenamento'] == 'NVMe') ? 'selected' : ''; ?>><?php echo __('NVMe'); ?></option>
+                                                    <option value="Híbrido" <?php echo ($asset['tipo_armazenamento'] == 'Híbrido') ? 'selected' : ''; ?>><?php echo __('Híbrido'); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -338,7 +338,7 @@ if (!$asset) {
                                         <div class="col-md-12 mt-3" id="gpu_container" style="display: none;">
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="gpu"><?php echo __('Placa Gráfica (GPU)'); ?></label>
-                                                <input class="form-control" name="gpu" id="gpu" type="text" value="<?php echo htmlspecialchars($asset['gpu'] ?? ''); ?>" placeholder="Ex: NVIDIA RTX 4090 24GB">
+                                                <input class="form-control" name="gpu" id="gpu" type="text" value="<?php echo htmlspecialchars($asset['gpu'] ?? ''); ?>" placeholder="<?php echo __('Ex: NVIDIA RTX 4090 24GB'); ?>">
                                             </div>
                                         </div>
                                         <!-- Polegadas (Monitor) -->
@@ -346,7 +346,7 @@ if (!$asset) {
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="polegadas"><?php echo __('Polegadas (Monitor)'); ?></label>
                                                 <select class="form-control" name="polegadas" id="polegadas">
-                                                    <option value="">Selecione...</option>
+                                                    <option value=""><?php echo __('Selecione...'); ?></option>
                                                     <?php 
                                                     $pols = ["15\"", "17\"", "18.5\"", "19\"", "20\"", "21\"", "21.5\"", "22\"", "23\"", "23.8\"", "24\"", "27\"", "29\"", "32\"", "34\""];
                                                     foreach($pols as $p) {
@@ -362,8 +362,8 @@ if (!$asset) {
                                             <div class="form-group mb-0">
                                                 <label class="text-gray-600 small font-weight-bold" for="is_scanner"><?php echo __('Possui Scanner? (Multifuncional)'); ?></label>
                                                 <select class="form-control" name="is_scanner" id="is_scanner">
-                                                    <option value="Não" <?php echo (($asset['is_scanner'] ?? '') == 'Não') ? 'selected' : ''; ?>>Não (Impressora Simples)</option>
-                                                    <option value="Sim" <?php echo (($asset['is_scanner'] ?? '') == 'Sim') ? 'selected' : ''; ?>>Sim (Multifuncional)</option>
+                                                    <option value="Não" <?php echo (($asset['is_scanner'] ?? '') == 'Não') ? 'selected' : ''; ?>><?php echo __('Não (Impressora Simples)'); ?></option>
+                                                    <option value="Sim" <?php echo (($asset['is_scanner'] ?? '') == 'Sim') ? 'selected' : ''; ?>><?php echo __('Sim (Multifuncional)'); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -377,13 +377,13 @@ if (!$asset) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="imei"><?php echo __('IMEI'); ?></label>
-                                                <input class="form-control" name="imei" id="imei" type="text" value="<?php echo htmlspecialchars($asset['imei'] ?? ''); ?>" placeholder="Ex: 351234567890123">
+                                                <input class="form-control" name="imei" id="imei" type="text" value="<?php echo htmlspecialchars($asset['imei'] ?? ''); ?>" placeholder="<?php echo __('Ex: 351234567890123'); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="text-gray-600 small font-weight-bold" for="sim_card"><?php echo __('SIM Card (Número/ICCID)'); ?></label>
-                                                <input class="form-control" name="sim_card" id="sim_card" type="text" value="<?php echo htmlspecialchars($asset['sim_card'] ?? ''); ?>" placeholder="Ex: 89551234567890123456">
+                                                <input class="form-control" name="sim_card" id="sim_card" type="text" value="<?php echo htmlspecialchars($asset['sim_card'] ?? ''); ?>" placeholder="<?php echo __('Ex: 89551234567890123456'); ?>">
                                             </div>
                                         </div>
                                     </div>

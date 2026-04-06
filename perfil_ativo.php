@@ -151,7 +151,7 @@ $raw_status = $display_status; // Keep for backward compatibility if needed
 $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo (isset($_SESSION['language']) && $_SESSION['language'] == 'pt-BR') ? 'pt-br' : 'en'; ?>">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -184,7 +184,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
             if (btn) {
                 const originalHtml = btn.innerHTML;
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Generando...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> ' + <?php echo json_encode(__('Gerando...')); ?>;
                 setTimeout(() => {
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;

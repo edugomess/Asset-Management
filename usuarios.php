@@ -21,7 +21,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">

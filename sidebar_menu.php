@@ -97,6 +97,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <!-- Outros -->
     <div class="sidebar-heading"><?php echo __('Inteligência & Ajuda'); ?></div>
+    <li class="nav-item">
+        <a class="nav-link <?php echo (strpos($current_page, 'kb') !== false) ? 'active' : ''; ?>" href="gerenciar_kb.php">
+            <i class="fas fa-book-open"></i><span><?php echo __('Base de Conhecimento'); ?></span>
+        </a>
+    </li>
     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo ($current_page == 'insights.php') ? 'active' : ''; ?>" href="insights.php">

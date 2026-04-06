@@ -24,6 +24,30 @@ include_once 'auth.php'; // Proteção de sessão
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <!-- Summernote Rich Text Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <style>
+        .note-editor.note-frame {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e3e6f0;
+            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 120, 0.075);
+        }
+        .note-toolbar {
+            background-color: #f8f9fc !important;
+            border-bottom: 1px solid #e3e6f0 !important;
+            padding: 10px !important;
+        }
+        .note-btn {
+            background-color: #fff !important;
+            border: 1px solid #d1d3e2 !important;
+            color: #4e73df !important;
+            margin-right: 2px !important;
+        }
+        .note-btn:hover {
+            background-color: #eaecf4 !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -50,6 +74,16 @@ include_once 'auth.php'; // Proteção de sessão
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="titulo"><?php echo __('Assunto / Título do Chamado'); ?></label>
                                             <input class="form-control" name="titulo" id="titulo" type="text" placeholder="<?php echo __('Ex: Problema com impressora no RH'); ?>" required="">
+                                        </div>
+                                        <!-- Knowledge Base Suggestions -->
+                                        <div id="kb-suggestions" style="display: none; margin-top: -10px; margin-bottom: 20px;">
+                                            <div class="alert alert-light border-left-success shadow-sm p-3 mb-0" style="background: #f8fff9;">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-lightbulb text-success mr-2 fa-lg"></i>
+                                                    <h6 class="font-weight-bold text-success mb-0" style="font-size: 0.9rem;"><?php echo __('Artigos Relacionados (Poupe tempo!)'); ?></h6>
+                                                </div>
+                                                <div id="kb-results-list" class="mt-2"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -247,6 +281,31 @@ include_once 'auth.php'; // Proteção de sessão
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#descricao').summernote({
+                placeholder: '<?php echo __('Descreva o problema ou solicitação com o máximo de detalhes possível...'); ?>',
+                tabsize: 2,
+                height: 250,
+                lang: '<?php echo ($_SESSION['idioma'] ?? 'pt-BR') == 'pt-BR' ? 'pt-BR' : 'en-US'; ?>',
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onInit: function() {
+                        $('.note-editor').addClass('animate__animated animate__fadeIn');
+                    }
+                }
+            });
+        });
+    </script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script>
@@ -347,6 +406,49 @@ include_once 'auth.php'; // Proteção de sessão
         });
 
         // BUSCA DE GESTOR EM TEMPO REAL
+        // KNOWLEDGE BASE (KB) REAL-TIME SEARCH
+        const inputTitulo = document.getElementById('titulo');
+        const kbContainer = document.getElementById('kb-suggestions');
+        const kbResultsList = document.getElementById('kb-results-list');
+        let kbTimeout;
+
+        inputTitulo.addEventListener('input', function() {
+            const query = this.value.trim();
+            clearTimeout(kbTimeout);
+
+            if (query.length < 4) {
+                kbContainer.style.display = 'none';
+                return;
+            }
+
+            kbTimeout = setTimeout(() => {
+                fetch(`ajax_buscar_kb.php?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            kbResultsList.innerHTML = '';
+                            data.forEach(article => {
+                                const div = document.createElement('div');
+                                div.className = 'mb-2 pb-2 border-bottom';
+                                div.style.lastChildBorder = 'none';
+                                div.innerHTML = `
+                                    <a href="visualizar_kb.php?id=${article.id}" target="_blank" class="font-weight-bold text-dark d-block" style="font-size: 0.95rem;">
+                                        <i class="fas fa-book-open mr-1 text-muted"></i>${article.titulo}
+                                    </a>
+                                    <div class="small text-muted mt-1">${article.conteudo}</div>
+                                `;
+                                kbResultsList.appendChild(div);
+                            });
+                            kbContainer.style.display = 'block';
+                            $(kbContainer).addClass('animated fadeIn');
+                        } else {
+                            kbContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('KB Search Error:', error));
+            }, 500);
+        });
+
         let gestorTimeout;
         inputGestorSearch.addEventListener('input', function() {
             const query = this.value.trim();
@@ -419,6 +521,9 @@ include_once 'auth.php'; // Proteção de sessão
 
         // AI PRIORITY CLASSIFICATION
         document.getElementById('btn-ai-priority').addEventListener('click', function() {
+            // Sincroniza o conteúdo do Summernote com o textarea antes de ler
+            $('#descricao').val($('#descricao').summernote('code'));
+            
             const titulo = document.getElementById('titulo').value.trim();
             const descricao = document.getElementById('descricao').value.trim();
             const btn = this;
@@ -466,6 +571,10 @@ include_once 'auth.php'; // Proteção de sessão
         // ENVIO VIA AJAX: Processa o formulário sem recarregar a página
         document.getElementById('form-novo-chamado').addEventListener('submit', function (e) {
             e.preventDefault();
+            
+            // Sincroniza o conteúdo do Summernote com o textarea antes do envio
+            $('#descricao').val($('#descricao').summernote('code'));
+            
             const formData = new FormData(this);
 
             fetch('inserir_chamado.php', {
@@ -494,7 +603,34 @@ include_once 'auth.php'; // Proteção de sessão
                 });
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#descricao').summernote({
+                placeholder: '<?php echo __('Descreva o problema ou solicitação com o máximo de detalhes possível...'); ?>',
+                tabsize: 2,
+                height: 250,
+                lang: '<?php echo ($_SESSION['idioma'] ?? 'pt-BR') == 'pt-BR' ? 'pt-BR' : 'en-US'; ?>',
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onInit: function() {
+                        $('.note-editor').addClass('animate__animated animate__fadeIn');
+                    }
+                }
+            });
+        });
+    </script>
+    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
+    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
 </body>
-
 </html>

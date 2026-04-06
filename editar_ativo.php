@@ -426,11 +426,11 @@ if (!$asset) {
                                 <!-- Row 6: Action Buttons -->
                                 <div class="row mt-4 mb-3">
                                     <div class="col-12 d-flex justify-content-end align-items-center" style="gap: 15px;">
-                                        <a class="btn btn-secondary" href="equipamentos.php" 
+                                        <a class="btn btn-secondary shadow-sm" href="equipamentos.php" 
                                             style="border-radius: 10px; padding: 10px 30px; border: none; background: #858796; font-weight: 600;">
                                             <?php echo __('Voltar'); ?>
                                         </a>
-                                        <button class="btn btn-success active pulse animated" type="submit" 
+                                        <button class="btn btn-primary active pulse animated shadow-sm" type="submit" 
                                             style="background: #2c404a; border-radius: 10px; padding: 10px 30px; border: none; font-weight: 600;">
                                             <i class="fas fa-save mr-2"></i><?php echo __('Salvar Alterações'); ?>
                                         </button>
@@ -520,7 +520,7 @@ if (!$asset) {
                     $('#hardwareSection').slideUp();
                     $('#hostnameContainer').hide();
                     $('#hostName').prop('required', false);
-                    $('#tier_container').hide();
+                    $('#tier_container').show(); // Fix: Smartphone needs Tier
                     $('#setor_container').show();
                 }
                 else {

@@ -403,7 +403,8 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             <i class="fas fa-minus-circle mr-2"></i><?php echo __('Liberar Ativo'); ?>
                                         </button>
                                     <?php else: ?>
-                                        <button class="btn btn-success btn-action" onclick="openAssignModal(<?php echo $id; ?>)">
+                                        <button class="btn btn-success btn-action"
+                                            onclick="openAssignModal(<?php echo $id; ?>)">
                                             <i
                                                 class="fas fa-plus-circle mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?>
                                         </button>
@@ -433,33 +434,80 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <i class="fas fa-microchip mr-2"></i><?php echo __('Especificações Técnicas'); ?>
                                 </h6>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Fabricante'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['fabricante']); ?>
-                                        </div>
+                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['fabricante'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Categoria'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['categoria']); ?>
-                                        </div>
+                                        <div class="detail-value"><span class="badge badge-light border px-2 py-1" style="background: #eef2f7; color: #2c404a; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;"><?php echo htmlspecialchars($ativo['categoria']); ?></span></div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Hostname'); ?></div>
-                                        <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['hostName']); ?></div>
+                                        <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['hostName'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Número de Série'); ?></div>
                                         <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['numero_serie'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Endereço MAC'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['macAdress']); ?>
-                                        </div>
+                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['macAdress'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Service Tag / Certificado'); ?></div>
-                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['tag']); ?></div>
+                                        <div class="detail-value"><?php echo htmlspecialchars($ativo['tag'] ?: '-'); ?></div>
                                     </div>
+                                    
+                                    <?php if (!empty($ativo['processador'])): ?>
+                                    <div class="col-md-4">
+                                        <div class="detail-label"><?php echo __('Processador'); ?></div>
+                                        <div class="detail-value text-dark"><i class="fas fa-microchip mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['processador']); ?></div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($ativo['memoria'])): ?>
+                                    <div class="col-md-4">
+                                        <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
+                                        <div class="detail-value text-dark"><i class="fas fa-memory mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['memoria']); ?></div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($ativo['armazenamento'])): ?>
+                                    <div class="col-md-4">
+                                        <div class="detail-label"><?php echo __('Armazenamento'); ?></div>
+                                        <div class="detail-value text-dark"><i class="fas fa-hdd mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['armazenamento']); ?> (<?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: 'SSD'); ?>)</div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if ($ativo['categoria'] == 'Monitor' && !empty($ativo['polegadas'])): ?>
+                                    <div class="col-md-4">
+                                        <div class="detail-label"><?php echo __('Tamanho da Tela'); ?></div>
+                                        <div class="detail-value text-dark"><i class="fas fa-desktop mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['polegadas']); ?></div>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if ($ativo['categoria'] == 'Smartphone'): ?>
+                                        <?php if (!empty($ativo['imei'])): ?>
+                                        <div class="col-md-4">
+                                            <div class="detail-label"><?php echo __('IMEI'); ?></div>
+                                            <div class="detail-value text-dark"><i class="fas fa-barcode mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['imei']); ?></div>
+                                        </div>
+                                        <?php endif; ?>
+                                        <?php if (!empty($ativo['sim_card'])): ?>
+                                        <div class="col-md-4">
+                                            <div class="detail-label"><?php echo __('SIM Card'); ?></div>
+                                            <div class="detail-value text-dark"><i class="fas fa-sim-card mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['sim_card']); ?></div>
+                                        </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+
+                                    <?php if ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner'])): ?>
+                                    <div class="col-md-4">
+                                        <div class="detail-label"><?php echo __('Tipo de Impressora'); ?></div>
+                                        <div class="detail-value text-dark"><i class="fas fa-print mr-1 small text-muted"></i><?php echo ($ativo['is_scanner'] == 'Sim') ? __('Multifuncional') : __('Simples'); ?></div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -471,136 +519,49 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                 </h6>
                                 <div class="p-3 bg-light rounded border">
                                     <?php if (!empty($ativo['user_nome']) || !empty($ativo['id_local'])): ?>
-                                        <?php if (!empty($ativo['user_nome'])): ?>
-                                            <p class="mb-1"><strong><?php echo __('Tipo:'); ?></strong> <span
-                                                    class="badge badge-primary"><?php echo __('Responsabilidade Individual'); ?></span>
-                                            </p>
-                                            <p class="<?php echo !empty($ativo['id_local']) ? 'mb-2' : 'mb-0'; ?>">
-                                                <strong><?php echo __('Usuário:'); ?></strong>
-                                                <a
-                                                    href="perfil_usuario.php?id=<?php echo $ativo['assigned_to']; ?>"><?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?></a>
-                                            </p>
-                                        <?php endif; ?>
+                                            <?php if (!empty($ativo['user_nome'])): ?>
+                                                    <p class="mb-1"><strong><?php echo __('Tipo:'); ?></strong> <span
+                                                            class="badge badge-primary"><?php echo __('Responsabilidade Individual'); ?></span>
+                                                    </p>
+                                                    <p class="<?php echo !empty($ativo['id_local']) ? 'mb-2' : 'mb-0'; ?>">
+                                                        <strong><?php echo __('Usuário:'); ?></strong>
+                                                        <a
+                                                            href="perfil_usuario.php?id=<?php echo $ativo['assigned_to']; ?>"><?php echo htmlspecialchars($ativo['user_nome'] . ' ' . $ativo['user_sobrenome']); ?></a>
+                                                    </p>
+                                            <?php endif; ?>
 
-                                        <?php if (!empty($ativo['id_local'])): ?>
-                                            <?php if (!empty($ativo['user_nome']))
-                                                echo '<hr class="my-2">'; ?>
-                                            <p class="mb-1"><strong><?php echo __('Tipo:'); ?></strong> <span
-                                                    class="badge badge-success"><?php echo __('Responsabilidade Coletiva / Local'); ?></span>
-                                            </p>
-                                            <p class="mb-0"><strong><?php echo __('Local:'); ?></strong>
-                                                <span
-                                                    class="text-dark"><?php echo getLocalPath($conn, $ativo['id_local']); ?></span>
-                                            </p>
-                                        <?php endif; ?>
+                                            <?php if (!empty($ativo['id_local'])): ?>
+                                                    <?php if (!empty($ativo['user_nome']))
+                                                        echo '<hr class="my-2">'; ?>
+                                                    <p class="mb-1"><strong><?php echo __('Tipo:'); ?></strong> <span
+                                                            class="badge badge-success"><?php echo __('Responsabilidade Coletiva / Local'); ?></span>
+                                                    </p>
+                                                    <p class="mb-0"><strong><?php echo __('Local:'); ?></strong>
+                                                        <span
+                                                            class="text-dark"><?php echo getLocalPath($conn, $ativo['id_local']); ?></span>
+                                                    </p>
+                                            <?php endif; ?>
                                     <?php else: ?>
-                                        <p class="mb-0 text-center py-2">
-                                            <span
-                                                class="badge badge-secondary"><?php echo __('Disponível / Estoque'); ?></span>
-                                        </p>
+                                            <p class="mb-0 text-center py-2">
+                                                <span
+                                                    class="badge badge-secondary"><?php echo __('Disponível / Estoque'); ?></span>
+                                            </p>
                                     <?php endif; ?>
 
                                     <?php if (!empty($ativo['parent_asset_id'])): ?>
-                                        <hr class="my-2">
-                                        <p class="mb-0"><strong><?php echo __('Vínculo:'); ?></strong>
-                                            <?php echo __('Este ativo faz parte de '); ?>
-                                            <a href="perfil_ativo.php?id=<?php echo $ativo['parent_asset_id']; ?>">
-                                                <strong><?php echo $ativo['parent_tag']; ?></strong>
-                                                (<?php echo $ativo['parent_modelo']; ?>)
-                                            </a>
-                                        </p>
+                                            <hr class="my-2">
+                                            <p class="mb-0"><strong><?php echo __('Vínculo:'); ?></strong>
+                                                <?php echo __('Este ativo faz parte de '); ?>
+                                                <a href="perfil_ativo.php?id=<?php echo $ativo['parent_asset_id']; ?>">
+                                                    <strong><?php echo $ativo['parent_tag']; ?></strong>
+                                                    (<?php echo $ativo['parent_modelo']; ?>)
+                                                </a>
+                                            </p>
                                     <?php endif; ?>
                                 </div>
                             </div>
 
-                            <!-- Hardware Specifications (Conditional) -->
-                            <?php
-                            $categorias_computacionais = ['Notebook', 'Desktop', 'Servidores', 'Workstation'];
-                            $show_hardware = (in_array($ativo['categoria'], $categorias_computacionais) && (!empty($ativo['memoria']) || !empty($ativo['processador']) || !empty($ativo['armazenamento']) || !empty($ativo['gpu']))) ||
-                                ($ativo['categoria'] == 'Monitor' && !empty($ativo['polegadas'])) ||
-                                ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner'])) ||
-                                ($ativo['categoria'] == 'Smartphone' && (!empty($ativo['imei']) || !empty($ativo['sim_card'])));
 
-                            if ($show_hardware):
-                                ?>
-                                <div class="info-card shadow card-shadow animate__animated animate__fadeInRight"
-                                    style="animation-delay: 0.25s; border-left: 4px solid #2c404a;">
-                                    <h6 class="font-weight-bold text-primary mb-4">
-                                        <i class="fas fa-server mr-2"></i><?php echo __('Especificações de Hardware'); ?>
-                                    </h6>
-                                    <div class="row">
-                                        <?php if (in_array($ativo['categoria'], $categorias_computacionais)): ?>
-                                            <div class="col-md-3">
-                                                <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
-                                                <div class="detail-value text-dark">
-                                                    <?php echo htmlspecialchars($ativo['memoria'] ?: '-'); ?></div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="detail-label"><?php echo __('Processador'); ?></div>
-                                                <div class="detail-value text-dark">
-                                                    <?php echo htmlspecialchars($ativo['processador'] ?: '-'); ?></div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="detail-label"><?php echo __('Capacidade'); ?></div>
-                                                <div class="detail-value text-dark">
-                                                    <?php echo htmlspecialchars($ativo['armazenamento'] ?: '-'); ?></div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="detail-label"><?php echo __('Tipo Disco'); ?></div>
-                                                <div class="detail-value text-dark">
-                                                    <?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: '-'); ?></div>
-                                            <?php endif; ?>
-                                        </div>
-                                        <?php if (in_array($ativo['categoria'], $categorias_computacionais) && !empty($ativo['gpu'])): ?>
-                                            <div class="col-md-12 mt-3">
-                                                <div class="divider mb-2"></div>
-                                                <div class="detail-label"><?php echo __('Placa Gráfica (GPU)'); ?></div>
-                                                <div class="detail-value text-dark font-weight-bold">
-                                                    <i
-                                                        class="fas fa-video mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['gpu']); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if ($ativo['categoria'] == 'Monitor' && !empty($ativo['polegadas'])): ?>
-                                            <div class="col-md-12 mt-3">
-                                                <div class="divider mb-2"></div>
-                                                <div class="detail-label"><?php echo __('Polegadas (Tamanho da Tela)'); ?></div>
-                                                <div class="detail-value text-dark font-weight-bold" style="font-size: 1.1rem;">
-                                                    <i
-                                                        class="fas fa-desktop mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['polegadas']); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner'])): ?>
-                                            <div class="col-md-12 mt-3">
-                                                <div class="divider mb-2"></div>
-                                                <div class="detail-label"><?php echo __('Funcionalidade'); ?></div>
-                                                <div class="detail-value text-dark font-weight-bold">
-                                                    <i
-                                                        class="fas fa-print mr-2 text-primary"></i><?php echo ($ativo['is_scanner'] == 'Sim') ? __('Multifuncional (C/ Scanner)') : __('Impressora'); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if ($ativo['categoria'] == 'Smartphone'): ?>
-                                            <div class="col-md-6 mt-3">
-                                                <div class="detail-label"><?php echo __('IMEI'); ?></div>
-                                                <div class="detail-value text-dark font-weight-bold">
-                                                    <i class="fas fa-barcode mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['imei'] ?: '-'); ?>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <div class="detail-label"><?php echo __('SIM Card'); ?></div>
-                                                <div class="detail-value text-dark font-weight-bold">
-                                                    <i class="fas fa-sim-card mr-2 text-primary"></i><?php echo htmlspecialchars($ativo['sim_card'] ?: '-'); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
 
                             <!-- Financeiro e Vida Útil (Values and Status) -->
                             <div class="info-card shadow card-shadow animate__animated animate__fadeInRight"
@@ -609,12 +570,21 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <i class="fas fa-chart-line mr-2"></i><?php echo __('Valores e Status'); ?>
                                 </h6>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Data de Cadastro'); ?></div>
                                         <div class="detail-value">
-                                            <?php echo date('d/m/Y', strtotime($ativo['dataAtivacao'])); ?></div>
+                                            <?php 
+                                            // Prevenção de erro 30/11/-0001
+                                            $data_cad = $ativo['dataAtivacao'];
+                                            if ($data_cad && $data_cad != '0000-00-00' && $data_cad != '1970-01-01' && strtotime($data_cad) > 0) {
+                                                echo date('d/m/Y', strtotime($data_cad)); 
+                                            } else {
+                                                echo '<span class="text-muted italic small">' . __('Não informada') . '</span>';
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Centro de Custo'); ?></div>
                                         <div class="detail-value text-primary font-weight-bold">
                                             <?php
@@ -632,7 +602,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             ?>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="detail-label"><?php echo __('Nível de Atribuição'); ?></div>
                                         <div class="detail-value font-weight-bold">
                                             <?php
@@ -693,17 +663,17 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             <span
                                                 id="nfNumber"><?php echo htmlspecialchars($ativo['numero_nota_fiscal'] ?? '-'); ?></span>
                                             <?php if (!empty($ativo['numero_nota_fiscal'])): ?>
-                                                <button onclick="copyNF('<?php echo $ativo['numero_nota_fiscal']; ?>')"
-                                                    class="btn btn-sm btn-link text-primary p-0 ml-2"
-                                                    title="<?php echo __('Copiar Chave'); ?>">
-                                                    <i id="copyIcon" class="fas fa-copy"></i>
-                                                </button>
+                                                    <button onclick="copyNF('<?php echo $ativo['numero_nota_fiscal']; ?>')"
+                                                        class="btn btn-sm btn-link text-primary p-0 ml-2"
+                                                        title="<?php echo __('Copiar Chave'); ?>">
+                                                        <i id="copyIcon" class="fas fa-copy"></i>
+                                                    </button>
                                             <?php endif; ?>
                                             <?php if (!empty($ativo['anexo_nota_fiscal'])): ?>
-                                                <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>"
-                                                    target="_blank" class="badge badge-primary ml-2">
-                                                    <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
-                                                </a>
+                                                    <a href="<?php echo htmlspecialchars($ativo['anexo_nota_fiscal']); ?>"
+                                                        target="_blank" class="badge badge-primary ml-2">
+                                                        <i class="fas fa-download mr-1"></i><?php echo __('Anexo'); ?>
+                                                    </a>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -722,11 +692,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                             <span
                                                 class="font-weight-bold <?php echo $cor_doacao; ?>"><?php echo $status_doacao; ?></span>
                                             <?php if ($status_doacao === __('Elegível para Doação')): ?>
-                                                <button class="btn btn-success btn-sm px-3"
-                                                    onclick="sellAsset(<?php echo $id; ?>)"
-                                                    style="border-radius: 20px; font-weight: 600;">
-                                                    <i class="fas fa-hand-holding-heart mr-1"></i><?php echo __('Doar'); ?>
-                                                </button>
+                                                    <button class="btn btn-success btn-sm px-3"
+                                                        onclick="sellAsset(<?php echo $id; ?>)"
+                                                        style="border-radius: 20px; font-weight: 600;">
+                                                        <i class="fas fa-hand-holding-heart mr-1"></i><?php echo __('Doar'); ?>
+                                                    </button>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -735,14 +705,14 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                             <!-- Observações Adicionais -->
                             <?php if (!empty($ativo['descricao'])): ?>
-                                <div class="info-card shadow card-shadow">
-                                    <h6 class="font-weight-bold text-primary mb-3">
-                                        <i class="fas fa-sticky-note mr-2"></i><?php echo __('Observações Adicionais'); ?>
-                                    </h6>
-                                    <div class="p-3 bg-light rounded shadow-sm">
-                                        <?php echo nl2br(htmlspecialchars($ativo['descricao'])); ?>
+                                    <div class="info-card shadow card-shadow">
+                                        <h6 class="font-weight-bold text-primary mb-3">
+                                            <i class="fas fa-sticky-note mr-2"></i><?php echo __('Observações Adicionais'); ?>
+                                        </h6>
+                                        <div class="p-3 bg-light rounded shadow-sm">
+                                            <?php echo nl2br(htmlspecialchars($ativo['descricao'])); ?>
+                                        </div>
                                     </div>
-                                </div>
                             <?php endif; ?>
 
                             <!-- Linha do Tempo Técnica (Upgrades e Reparos Concluídos) -->
@@ -758,150 +728,150 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                             if ($res_tec->num_rows > 0):
                                 ?>
-                                <div class="info-card shadow card-shadow border-left-primary">
-                                    <h6 class="font-weight-bold text-primary mb-3">
-                                        <i class="fas fa-history mr-2"></i><?php echo __('Linha do Tempo Técnica'); ?>
-                                    </h6>
-                                    <div class="row">
-                                        <?php while ($tec = $res_tec->fetch_assoc()):
-                                            $is_upgrade = ($tec['tipo_manutencao'] === 'Upgrade');
-                                            $badge_class = $is_upgrade ? 'badge-primary' : 'badge-warning';
-                                            $border_inner = $is_upgrade ? 'border-left-primary' : 'border-left-warning';
-                                            $icon_inner = $is_upgrade ? 'fa-arrow-up' : 'fa-wrench';
-                                            $title_text = $is_upgrade ? $tec['categoria_upgrade'] : __('Reparo Finalizado');
-                                            $main_info = $is_upgrade ? $tec['item_trocado'] : $tec['observacoes'];
-                                            ?>
-                                            <div class="col-md-6 mb-3">
-                                                <div class="p-3 bg-light rounded shadow-sm <?php echo $border_inner; ?>"
-                                                    style="border-left-width: 4px; transition: all 0.3s ease;">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="badge <?php echo $badge_class; ?> px-2 py-1"
-                                                            style="border-radius: 6px; font-size: 0.75rem;">
-                                                            <i
-                                                                class="fas <?php echo $icon_inner; ?> mr-1"></i><?php echo htmlspecialchars($title_text); ?>
-                                                        </span>
-                                                        <small class="text-muted font-weight-bold">
-                                                            <i
-                                                                class="far fa-calendar-alt mr-1"></i><?php echo date('d/m/Y', strtotime($tec['data_fim'])); ?>
-                                                        </small>
-                                                    </div>
-                                                    <div class="text-dark font-weight-bold" style="font-size: 0.9rem;">
-                                                        <?php echo htmlspecialchars($main_info); ?>
-                                                        <?php if ($is_upgrade && !empty($tec['detalhes_update'])): ?>
-                                                            <span class="text-muted font-weight-normal small"> -
-                                                                <?php echo htmlspecialchars($tec['detalhes_update']); ?></span>
-                                                        <?php endif; ?>
-                                                        <?php if (!$is_upgrade && !empty($tec['item_trocado'])): ?>
-                                                            <div class="text-muted font-weight-normal smallest mt-1">
-                                                                <i class="fas fa-microchip mr-1"></i><?php echo __('Peças'); ?>:
-                                                                <?php echo htmlspecialchars($tec['item_trocado']); ?>
+                                    <div class="info-card shadow card-shadow border-left-primary">
+                                        <h6 class="font-weight-bold text-primary mb-3">
+                                            <i class="fas fa-history mr-2"></i><?php echo __('Linha do Tempo Técnica'); ?>
+                                        </h6>
+                                        <div class="row">
+                                            <?php while ($tec = $res_tec->fetch_assoc()):
+                                                $is_upgrade = ($tec['tipo_manutencao'] === 'Upgrade');
+                                                $badge_class = $is_upgrade ? 'badge-primary' : 'badge-warning';
+                                                $border_inner = $is_upgrade ? 'border-left-primary' : 'border-left-warning';
+                                                $icon_inner = $is_upgrade ? 'fa-arrow-up' : 'fa-wrench';
+                                                $title_text = $is_upgrade ? $tec['categoria_upgrade'] : __('Reparo Finalizado');
+                                                $main_info = $is_upgrade ? $tec['item_trocado'] : $tec['observacoes'];
+                                                ?>
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="p-3 bg-light rounded shadow-sm <?php echo $border_inner; ?>"
+                                                            style="border-left-width: 4px; transition: all 0.3s ease;">
+                                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                <span class="badge <?php echo $badge_class; ?> px-2 py-1"
+                                                                    style="border-radius: 6px; font-size: 0.75rem;">
+                                                                    <i
+                                                                        class="fas <?php echo $icon_inner; ?> mr-1"></i><?php echo htmlspecialchars($title_text); ?>
+                                                                </span>
+                                                                <small class="text-muted font-weight-bold">
+                                                                    <i
+                                                                        class="far fa-calendar-alt mr-1"></i><?php echo date('d/m/Y', strtotime($tec['data_fim'])); ?>
+                                                                </small>
                                                             </div>
-                                                        <?php endif; ?>
+                                                            <div class="text-dark font-weight-bold" style="font-size: 0.9rem;">
+                                                                <?php echo htmlspecialchars($main_info); ?>
+                                                                <?php if ($is_upgrade && !empty($tec['detalhes_update'])): ?>
+                                                                        <span class="text-muted font-weight-normal small"> -
+                                                                            <?php echo htmlspecialchars($tec['detalhes_update']); ?></span>
+                                                                <?php endif; ?>
+                                                                <?php if (!$is_upgrade && !empty($tec['item_trocado'])): ?>
+                                                                        <div class="text-muted font-weight-normal smallest mt-1">
+                                                                            <i class="fas fa-microchip mr-1"></i><?php echo __('Peças'); ?>:
+                                                                            <?php echo htmlspecialchars($tec['item_trocado']); ?>
+                                                                        </div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        <?php endwhile; ?>
+                                            <?php endwhile; ?>
+                                        </div>
                                     </div>
-                                </div>
                             <?php endif;
                             $stmt_tec->close(); ?>
 
                             <!-- Manutenção (Se houver) -->
                             <?php if ($ativo['manutencao_desc'] || isset($ativo['tipo_manutencao'])): ?>
-                                <div class="info-card shadow card-shadow border-left-warning">
-                                    <h6 class="font-weight-bold text-warning mb-3">
-                                        <i class="fas fa-tools mr-2"></i><?php echo __('Detalhes da Manutenção'); ?>
-                                    </h6>
-                                    <p class="mb-2 text-muted small"><?php echo __('Início em'); ?>:
-                                        <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
+                                    <div class="info-card shadow card-shadow border-left-warning">
+                                        <h6 class="font-weight-bold text-warning mb-3">
+                                            <i class="fas fa-tools mr-2"></i><?php echo __('Detalhes da Manutenção'); ?>
+                                        </h6>
+                                        <p class="mb-2 text-muted small"><?php echo __('Início em'); ?>:
+                                            <?php echo date('d/m/Y H:i', strtotime($ativo['manutencao_data'])); ?></p>
 
-                                    <?php
-                                    // Buscar dados estendidos da manutenção
-                                    $stmt_ext = $conn->prepare("SELECT tipo_manutencao, categoria_upgrade, item_trocado, detalhes_update, valor_upgrade, observacoes FROM manutencao WHERE id_asset = ? AND status_manutencao = 'Em Manutenção' LIMIT 1");
-                                    $stmt_ext->bind_param('i', $id);
-                                    $stmt_ext->execute();
-                                    $res_ext = $stmt_ext->get_result();
-                                    if ($row_ext = $res_ext->fetch_assoc()):
-                                        $is_upgrade = ($row_ext['tipo_manutencao'] === 'Upgrade');
-                                        ?>
-                                        <div class="mb-3">
-                                            <?php
-                                            $badge_class = 'badge-warning';
-                                            $icon = 'fa-wrench';
-                                            if ($row_ext['tipo_manutencao'] === 'Upgrade') {
-                                                $badge_class = 'badge-primary';
-                                                $icon = 'fa-arrow-up';
-                                            } elseif ($row_ext['tipo_manutencao'] === 'Insumo') {
-                                                $badge_class = 'badge-success';
-                                                $icon = 'fa-fill-drip';
-                                            }
+                                        <?php
+                                        // Buscar dados estendidos da manutenção
+                                        $stmt_ext = $conn->prepare("SELECT tipo_manutencao, categoria_upgrade, item_trocado, detalhes_update, valor_upgrade, observacoes FROM manutencao WHERE id_asset = ? AND status_manutencao = 'Em Manutenção' LIMIT 1");
+                                        $stmt_ext->bind_param('i', $id);
+                                        $stmt_ext->execute();
+                                        $res_ext = $stmt_ext->get_result();
+                                        if ($row_ext = $res_ext->fetch_assoc()):
+                                            $is_upgrade = ($row_ext['tipo_manutencao'] === 'Upgrade');
                                             ?>
-                                            <span class="badge <?php echo $badge_class; ?> p-2" style="border-radius: 6px;">
-                                                <i class="fas <?php echo $icon; ?> mr-1"></i>
-                                                <?php echo __($row_ext['tipo_manutencao']); ?>
-                                            </span>
-                                        </div>
+                                                <div class="mb-3">
+                                                    <?php
+                                                    $badge_class = 'badge-warning';
+                                                    $icon = 'fa-wrench';
+                                                    if ($row_ext['tipo_manutencao'] === 'Upgrade') {
+                                                        $badge_class = 'badge-primary';
+                                                        $icon = 'fa-arrow-up';
+                                                    } elseif ($row_ext['tipo_manutencao'] === 'Insumo') {
+                                                        $badge_class = 'badge-success';
+                                                        $icon = 'fa-fill-drip';
+                                                    }
+                                                    ?>
+                                                    <span class="badge <?php echo $badge_class; ?> p-2" style="border-radius: 6px;">
+                                                        <i class="fas <?php echo $icon; ?> mr-1"></i>
+                                                        <?php echo __($row_ext['tipo_manutencao']); ?>
+                                                    </span>
+                                                </div>
 
-                                        <?php if (!empty($row_ext['observacoes'])): ?>
-                                            <div class="detail-label small"><?php echo __('Descrição'); ?></div>
-                                            <div class="p-2 bg-light rounded small mb-2">
-                                                <?php echo nl2br(htmlspecialchars($row_ext['observacoes'])); ?></div>
+                                                <?php if (!empty($row_ext['observacoes'])): ?>
+                                                        <div class="detail-label small"><?php echo __('Descrição'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2">
+                                                            <?php echo nl2br(htmlspecialchars($row_ext['observacoes'])); ?></div>
+                                                <?php endif; ?>
+
+                                                <?php if ($row_ext['tipo_manutencao'] === 'Upgrade'): ?>
+                                                        <div class="detail-label small"><?php echo __('Categoria'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2 font-weight-bold">
+                                                            <?php echo htmlspecialchars($row_ext['categoria_upgrade']); ?></div>
+
+                                                        <?php if ($row_ext['categoria_upgrade'] === 'Memória'): ?>
+                                                                <div class="detail-label small"><?php echo __('Módulo Instalado'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-primary">
+                                                                    <?php echo htmlspecialchars($row_ext['item_trocado']); ?></div>
+                                                        <?php elseif ($row_ext['categoria_upgrade'] === 'Armazenamento'): ?>
+                                                                <div class="detail-label small"><?php echo __('Tipo de Disco'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-primary">
+                                                                    <?php echo htmlspecialchars($row_ext['detalhes_update']); ?></div>
+                                                        <?php endif; ?>
+
+                                                        <?php if ($row_ext['valor_upgrade'] > 0): ?>
+                                                                <div class="detail-label small"><?php echo __('Investimento'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">R$
+                                                                    <?php echo number_format($row_ext['valor_upgrade'], 2, ',', '.'); ?></div>
+                                                        <?php endif; ?>
+                                                <?php elseif ($row_ext['tipo_manutencao'] === 'Insumo'): ?>
+                                                        <div class="detail-label small"><?php echo __('Suprimento'); ?></div>
+                                                        <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">
+                                                            <i
+                                                                class="fas fa-box-open mr-1"></i><?php echo htmlspecialchars($row_ext['item_trocado']); ?>
+                                                        </div>
+                                                <?php else: ?>
+                                                        <?php if (!empty($row_ext['item_trocado'])): ?>
+                                                                <div class="detail-label small"><?php echo __('Itens Trocados'); ?></div>
+                                                                <div class="p-2 bg-light rounded small mb-2 border-left-info">
+                                                                    <?php echo nl2br(htmlspecialchars($row_ext['item_trocado'])); ?></div>
+                                                        <?php endif; ?>
+                                                <?php endif; ?>
+
+                                                <!-- Botão de Conclusão Dinâmico -->
+                                                <div class="mt-4 pt-3 border-top">
+                                                    <button class="btn btn-success btn-block font-weight-bold"
+                                                        onclick="releaseMaintenance(<?php echo $id; ?>)"
+                                                        style="border-radius: 12px; padding: 12px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);">
+                                                        <i class="fas fa-check-double mr-2"></i>
+                                                        <?php
+                                                        $btn_label = __('Concluir Manutenção');
+                                                        if ($row_ext['tipo_manutencao'] === 'Reparo')
+                                                            $btn_label = __('Concluir Reparo');
+                                                        elseif ($row_ext['tipo_manutencao'] === 'Upgrade')
+                                                            $btn_label = __('Concluir Upgrade');
+                                                        elseif ($row_ext['tipo_manutencao'] === 'Insumo')
+                                                            $btn_label = __('Concluir Insumo');
+                                                        echo $btn_label;
+                                                        ?>
+                                                    </button>
+                                                </div>
                                         <?php endif; ?>
-
-                                        <?php if ($row_ext['tipo_manutencao'] === 'Upgrade'): ?>
-                                            <div class="detail-label small"><?php echo __('Categoria'); ?></div>
-                                            <div class="p-2 bg-light rounded small mb-2 font-weight-bold">
-                                                <?php echo htmlspecialchars($row_ext['categoria_upgrade']); ?></div>
-
-                                            <?php if ($row_ext['categoria_upgrade'] === 'Memória'): ?>
-                                                <div class="detail-label small"><?php echo __('Módulo Instalado'); ?></div>
-                                                <div class="p-2 bg-light rounded small mb-2 text-primary">
-                                                    <?php echo htmlspecialchars($row_ext['item_trocado']); ?></div>
-                                            <?php elseif ($row_ext['categoria_upgrade'] === 'Armazenamento'): ?>
-                                                <div class="detail-label small"><?php echo __('Tipo de Disco'); ?></div>
-                                                <div class="p-2 bg-light rounded small mb-2 text-primary">
-                                                    <?php echo htmlspecialchars($row_ext['detalhes_update']); ?></div>
-                                            <?php endif; ?>
-
-                                            <?php if ($row_ext['valor_upgrade'] > 0): ?>
-                                                <div class="detail-label small"><?php echo __('Investimento'); ?></div>
-                                                <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">R$
-                                                    <?php echo number_format($row_ext['valor_upgrade'], 2, ',', '.'); ?></div>
-                                            <?php endif; ?>
-                                        <?php elseif ($row_ext['tipo_manutencao'] === 'Insumo'): ?>
-                                            <div class="detail-label small"><?php echo __('Suprimento'); ?></div>
-                                            <div class="p-2 bg-light rounded small mb-2 text-success font-weight-bold">
-                                                <i
-                                                    class="fas fa-box-open mr-1"></i><?php echo htmlspecialchars($row_ext['item_trocado']); ?>
-                                            </div>
-                                        <?php else: ?>
-                                            <?php if (!empty($row_ext['item_trocado'])): ?>
-                                                <div class="detail-label small"><?php echo __('Itens Trocados'); ?></div>
-                                                <div class="p-2 bg-light rounded small mb-2 border-left-info">
-                                                    <?php echo nl2br(htmlspecialchars($row_ext['item_trocado'])); ?></div>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-
-                                        <!-- Botão de Conclusão Dinâmico -->
-                                        <div class="mt-4 pt-3 border-top">
-                                            <button class="btn btn-success btn-block font-weight-bold"
-                                                onclick="releaseMaintenance(<?php echo $id; ?>)"
-                                                style="border-radius: 12px; padding: 12px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);">
-                                                <i class="fas fa-check-double mr-2"></i>
-                                                <?php
-                                                $btn_label = __('Concluir Manutenção');
-                                                if ($row_ext['tipo_manutencao'] === 'Reparo')
-                                                    $btn_label = __('Concluir Reparo');
-                                                elseif ($row_ext['tipo_manutencao'] === 'Upgrade')
-                                                    $btn_label = __('Concluir Upgrade');
-                                                elseif ($row_ext['tipo_manutencao'] === 'Insumo')
-                                                    $btn_label = __('Concluir Insumo');
-                                                echo $btn_label;
-                                                ?>
-                                            </button>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
+                                    </div>
                             <?php endif; ?>
 
                             <!-- Histórico -->
@@ -947,14 +917,14 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                                             foreach ($history_rows as $h):
                                                 ?>
-                                                <tr>
-                                                    <td class="text-nowrap">
-                                                        <?php echo date('d/m/Y H:i', strtotime($h['data_evento'])); ?></td>
-                                                    <td class="font-weight-bold"><?php echo __($h['acao']); ?></td>
-                                                    <td><?php echo __($h['detalhes']); ?></td>
-                                                    <td><?php echo htmlspecialchars(trim(($h['user_nome'] ?? '') . ' ' . ($h['user_sobrenome'] ?? '')) ?: __('Sistema')); ?>
-                                                    </td>
-                                                </tr>
+                                                    <tr>
+                                                        <td class="text-nowrap">
+                                                            <?php echo date('d/m/Y H:i', strtotime($h['data_evento'])); ?></td>
+                                                        <td class="font-weight-bold"><?php echo __($h['acao']); ?></td>
+                                                        <td><?php echo __($h['detalhes']); ?></td>
+                                                        <td><?php echo htmlspecialchars(trim(($h['user_nome'] ?? '') . ' ' . ($h['user_sobrenome'] ?? '')) ?: __('Sistema')); ?>
+                                                        </td>
+                                                    </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
@@ -966,42 +936,42 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                         <!-- Coluna Direita: Componentes Vinculados e Outros -->
                         <div class="col-lg-4 animate__animated animate__fadeInRight" style="animation-delay: 0.35s;">
                             <?php if ($res_filhos->num_rows > 0): ?>
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="text-primary font-weight-bold m-0">
-                                            <?php echo __('Componentes / Ativos Vinculados'); ?></h6>
-                                        <span class="badge badge-info"><?php echo $res_filhos->num_rows; ?></span>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover mb-0">
-                                                <thead class="bg-light small">
-                                                    <tr>
-                                                        <th><?php echo __('Ativo'); ?></th>
-                                                        <th><?php echo __('Status'); ?></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php while ($f = $res_filhos->fetch_assoc()): ?>
-                                                        <tr style="cursor: pointer;"
-                                                            onclick="window.location='perfil_ativo.php?id=<?php echo $f['id_asset']; ?>'">
-                                                            <td>
-                                                                <div class="font-weight-bold"><?php echo $f['tag']; ?></div>
-                                                                <div class="small text-muted"><?php echo $f['modelo']; ?></div>
-                                                            </td>
-                                                            <td>
-                                                                <span
-                                                                    class="badge badge-<?php echo ($f['status'] == 'Em uso') ? 'success' : 'warning'; ?> small">
-                                                                    <?php echo __($f['status']); ?>
-                                                                </span>
-                                                            </td>
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                            <h6 class="text-primary font-weight-bold m-0">
+                                                <?php echo __('Componentes / Ativos Vinculados'); ?></h6>
+                                            <span class="badge badge-info"><?php echo $res_filhos->num_rows; ?></span>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover mb-0">
+                                                    <thead class="bg-light small">
+                                                        <tr>
+                                                            <th><?php echo __('Ativo'); ?></th>
+                                                            <th><?php echo __('Status'); ?></th>
                                                         </tr>
-                                                    <?php endwhile; ?>
-                                                </tbody>
-                                            </table>
-                                        </div> <!-- table-responsive -->
-                                    </div> <!-- card-body -->
-                                </div> <!-- card -->
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php while ($f = $res_filhos->fetch_assoc()): ?>
+                                                                <tr style="cursor: pointer;"
+                                                                    onclick="window.location='perfil_ativo.php?id=<?php echo $f['id_asset']; ?>'">
+                                                                    <td>
+                                                                        <div class="font-weight-bold"><?php echo $f['tag']; ?></div>
+                                                                        <div class="small text-muted"><?php echo $f['modelo']; ?></div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span
+                                                                            class="badge badge-<?php echo ($f['status'] == 'Em uso') ? 'success' : 'warning'; ?> small">
+                                                                            <?php echo __($f['status']); ?>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                        <?php endwhile; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div> <!-- table-responsive -->
+                                        </div> <!-- card-body -->
+                                    </div> <!-- card -->
                             <?php endif; ?>
                         </div> <!-- col-lg-8 -->
                     </div> <!-- row -->

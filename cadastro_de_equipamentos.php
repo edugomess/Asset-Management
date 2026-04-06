@@ -88,8 +88,6 @@ include_once 'auth.php'; // Proteção de sessão
 
                                 <!-- Row 2: Rastreabilidade -->
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="numero_serie"><?php echo __('Número de Série'); ?></label>
@@ -514,7 +512,7 @@ include_once 'auth.php'; // Proteção de sessão
                     $('#hardwareSection').slideUp();
                     $('#hostnameContainer').hide();
                     $('#hostName').prop('required', false);
-                    $('#tier_container').hide();
+                    $('#tier_container').show();
                     $('#setor_container').show();
                 }
                 else {
@@ -587,25 +585,6 @@ include_once 'auth.php'; // Proteção de sessão
 
             $('#btn-print-reg').on('click', function() {
                 printCreatedAsset();
-            });
-        });
-    </script>
-</body>
-</html>
-                                        location.reload();
-                                    }
-                                });
-                            } else {
-                                Swal.fire('Erro', res.message, 'error');
-                            }
-                        } catch (e) {
-                            Swal.fire('Erro', 'Resposta inválida do servidor: ' + response, 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Erro', 'Falha na comunicação com o servidor.', 'error');
-                    }
-                });
             });
         });
     </script>

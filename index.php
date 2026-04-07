@@ -138,7 +138,7 @@ if ($res_rank && mysqli_num_rows($res_rank) > 0) {
 // === RANKING DE RECORRÊNCIA ===
 $mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
 $ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
-$sql_rec = "SELECT titulo, COUNT(*) as total FROM chamados WHERE MONTH(data_abertura) = $mes_rec_filtro AND YEAR(data_abertura) = $ano_rec_filtro GROUP BY titulo ORDER BY total DESC LIMIT 5";
+$sql_rec = "SELECT TRIM(titulo) as titulo, COUNT(*) as total FROM chamados WHERE MONTH(data_abertura) = $mes_rec_filtro AND YEAR(data_abertura) = $ano_rec_filtro GROUP BY TRIM(titulo) ORDER BY total DESC LIMIT 5";
 $recorrencia_data = [];
 $max_recorrencia = 0;
 $res_rec = mysqli_query($conn, $sql_rec);

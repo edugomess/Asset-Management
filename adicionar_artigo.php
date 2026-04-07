@@ -111,6 +111,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 placeholder: '<?php echo __('Escreva aqui o passo a passo, soluções e dicas...'); ?>',
                 tabsize: 2,
                 height: 400,
+                dialogsInBody: true,
+                dialogsFade: true,
                 toolbar: [
                     ['style', ['style']],
                     ['font', ['bold', 'underline', 'clear']],

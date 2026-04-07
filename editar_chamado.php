@@ -785,7 +785,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                         <i class="fas fa-plus-circle text-primary"></i> <?php echo __('Adicionar Comentário'); ?>
                                     </div>
                                     <div class="card-body">
-                                        <textarea id="comment_summernote" name="nova_nota" required></textarea>
+                                        <textarea id="comment_summernote" name="nova_nota"></textarea>
                                         <div class="text-right mt-3">
                                             <button type="submit" class="btn-premium btn-save">
                                                 <i class="fas fa-comment"></i> <?php echo __('Enviar Comentário'); ?>
@@ -1033,6 +1033,8 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                 displayDiv.summernote({
                     focus: true,
                     height: 150,
+                    dialogsInBody: true,
+                    dialogsFade: true,
                     toolbar: [
                         ['style', ['style']],
                         ['font', ['bold', 'underline', 'clear']],
@@ -1153,6 +1155,8 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                 placeholder: '<?php echo __("Descreva o que foi feito ou responda ao solicitante..."); ?>',
                 tabsize: 2,
                 height: 200,
+                dialogsInBody: true,
+                dialogsFade: true,
                 toolbar: [
                     ['style', ['style']],
                     ['font', ['bold', 'underline', 'clear']],

@@ -67,11 +67,11 @@ $pdf->SetTextColor(0, 0, 0);
 
 $pdf->SetFont('Arial', '', 10);
 
-$sql_recorrencia = "SELECT titulo, COUNT(*) as total 
+$sql_recorrencia = "SELECT TRIM(titulo) as titulo, COUNT(*) as total 
                     FROM chamados 
                     WHERE MONTH(data_abertura) = $mes 
                     AND YEAR(data_abertura) = $ano
-                    GROUP BY titulo 
+                    GROUP BY TRIM(titulo) 
                     ORDER BY total DESC LIMIT 10";
 
 $res = mysqli_query($conn, $sql_recorrencia);

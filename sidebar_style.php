@@ -584,5 +584,13 @@
         color: #fff !important;
         text-decoration: none !important;
     }
+
+    /* Correção Modais Summernote - Z-index e Estabilidade */
+    .note-modal {
+        z-index: 10050 !important;
+    }
+    .note-modal-backdrop {
+        z-index: 10040 !important;
+    }
 </style>
 <?php include_once 'pagination_style.php'; ?>

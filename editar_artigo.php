@@ -119,6 +119,8 @@ if (!$article) {
             $('#summernote').summernote({
                 tabsize: 2,
                 height: 400,
+                dialogsInBody: true,
+                dialogsFade: true,
                 toolbar: [
                     ['style', ['style']],
                     ['font', ['bold', 'underline', 'clear']],

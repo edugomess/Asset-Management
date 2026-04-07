@@ -96,6 +96,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <option value="relatorio_ativos_historico.php"><?php echo __('Trilha de Auditoria (Histórico)'); ?></option>
                                                      <option value="relatorio_ativos_incidentes.php"><?php echo __('Incidentes por Ativo'); ?></option>
                                                      <option value="ativos_doados.php"><?php echo __('Doações'); ?></option>
+                                                     <option value="relatorio_ativos_audit_seriais.php"><?php echo __('Auditoria de Seriais e Identificação'); ?></option>
+                                                     <option value="relatorio_ativos_smartphones.php"><?php echo __('Inventário de Smartphones/Mobile'); ?></option>
                                                 </optgroup>
                                             <?php else: ?>
                                                 <optgroup label="<?php echo __('Meus Ativos'); ?>">
@@ -123,6 +125,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                      <option value="relatorio_chamados_sem_atribuicao.php"><?php echo __('Sem Atribuição'); ?>
                                                      </option>
                                                      <option value="relatorio_chamados_aprovacoes.php"><?php echo __('Aprovações de Gestores'); ?></option>
+                                                     <option value="relatorio_chamados_sla_compliance.php"><?php echo __('Compliance de SLA (Dynamic)'); ?></option>
                                                 <?php endif; ?>
                                             </optgroup>
 

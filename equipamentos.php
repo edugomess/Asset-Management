@@ -412,7 +412,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <?php
                                         if (mysqli_num_rows($result) > 0) {
                                             // Busca configurações globais de depreciação
-                                            $dep_config = ['taxa_depreciacao' => 10.00, 'periodo_anos' => 1, 'periodo_meses' => 0];
+                                            $dep_config = ['taxa_depreciacao' => 10.00, 'taxa_tier1' => 10.00, 'taxa_tier2' => 10.00, 'taxa_tier3' => 10.00, 'taxa_tier4' => 10.00, 'taxa_infraestrutura' => 10.00, 'periodo_anos' => 1, 'periodo_meses' => 0];
                                             $res_dep_config = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
                                             if ($res_dep_config && mysqli_num_rows($res_dep_config) > 0) {
                                                 $dep_config = mysqli_fetch_assoc($res_dep_config);
@@ -434,7 +434,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 $data_atual = new DateTime();
                                                 $diff = $data_ativacao->diff($data_atual);
 
+                                                $tier_row = $row['tier'] ?? null;
                                                 $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                                                if ($tier_row === 'Tier 1') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier1']);
+                                                } elseif ($tier_row === 'Tier 2') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier2']);
+                                                } elseif ($tier_row === 'Tier 3') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier3']);
+                                                } elseif ($tier_row === 'Tier 4') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier4']);
+                                                } elseif ($tier_row === 'Infraestrutura') {
+                                                    $taxa_pct = floatval($dep_config['taxa_infraestrutura']);
+                                                }
                                                 $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
                                                 if ($periodo_total_meses > 0 && $valor_original > 0) {

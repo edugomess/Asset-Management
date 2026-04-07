@@ -218,8 +218,8 @@ if (!$asset) {
                                     <div class="col-md-6" id="tier_container">
                                         <div class="form-group">
                                             <label class="text-gray-600 small font-weight-bold" for="tier"><?php echo __('Tier / Nível de Atribuição'); ?></label>
-                                            <select class="form-control" name="tier" id="tier">
-                                                <option value="" <?php echo empty($asset['tier']) ? 'selected' : ''; ?>><?php echo __('Nenhum'); ?></option>
+                                            <select class="form-control" name="tier" id="tier" required="">
+                                                <option value="" <?php echo empty($asset['tier']) ? 'selected' : ''; ?>><?php echo __('Selecione um Tier...'); ?></option>
                                                 <option value="Tier 1" <?php echo ($asset['tier'] == 'Tier 1') ? 'selected' : ''; ?>><?php echo __('Tier 1'); ?></option>
                                                 <option value="Tier 2" <?php echo ($asset['tier'] == 'Tier 2') ? 'selected' : ''; ?>><?php echo __('Tier 2'); ?></option>
                                                 <option value="Tier 3" <?php echo ($asset['tier'] == 'Tier 3') ? 'selected' : ''; ?>><?php echo __('Tier 3'); ?></option>

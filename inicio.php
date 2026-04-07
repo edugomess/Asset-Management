@@ -102,6 +102,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     // Buscar configurações de depreciação/doação globais
                     $dep_config = [
                         'taxa_depreciacao' => 10.00,
+                        'taxa_tier1' => 10.00,
+                        'taxa_tier2' => 10.00,
+                        'taxa_tier3' => 10.00,
+                        'taxa_tier4' => 10.00,
+                        'taxa_infraestrutura' => 10.00,
                         'periodo_anos' => 1,
                         'periodo_meses' => 0,
                         'elegivel_doacao' => 1,
@@ -125,7 +130,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     }
 
                     // Métricas Agregadas (Para o Dashboard)
-                    $sql_metrics = "SELECT a.valor, a.dataAtivacao, a.categoria FROM ativos a WHERE a.assigned_to IS NOT NULL";
+                    $sql_metrics = "SELECT a.valor, a.dataAtivacao, a.categoria, a.tier FROM ativos a WHERE a.assigned_to IS NOT NULL";
                     $res_metrics = mysqli_query($conn, $sql_metrics);
 
                     $count_ativos_metrics = 0;
@@ -144,7 +149,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         $diff_atv = $dat_atv->diff($dat_cur);
                         $meses_atv = ($diff_atv->y * 12) + $diff_atv->m;
 
+                        $tier_m = $m['tier'] ?? null;
                         $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                        if ($tier_m === 'Tier 1') {
+                            $taxa_pct = floatval($dep_config['taxa_tier1']);
+                        } elseif ($tier_m === 'Tier 2') {
+                            $taxa_pct = floatval($dep_config['taxa_tier2']);
+                        } elseif ($tier_m === 'Tier 3') {
+                            $taxa_pct = floatval($dep_config['taxa_tier3']);
+                        } elseif ($tier_m === 'Tier 4') {
+                            $taxa_pct = floatval($dep_config['taxa_tier4']);
+                        } elseif ($tier_m === 'Infraestrutura') {
+                            $taxa_pct = floatval($dep_config['taxa_infraestrutura']);
+                        }
                         $periodo_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
                         if ($periodo_meses > 0 && $v_original > 0) {
@@ -289,7 +306,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 $data_atual = new DateTime();
                                                 $diff = $data_ativacao->diff($data_atual);
 
+                                                $tier_row = $row['tier'] ?? null;
                                                 $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                                                if ($tier_row === 'Tier 1') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier1']);
+                                                } elseif ($tier_row === 'Tier 2') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier2']);
+                                                } elseif ($tier_row === 'Tier 3') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier3']);
+                                                } elseif ($tier_row === 'Tier 4') {
+                                                    $taxa_pct = floatval($dep_config['taxa_tier4']);
+                                                } elseif ($tier_row === 'Infraestrutura') {
+                                                    $taxa_pct = floatval($dep_config['taxa_infraestrutura']);
+                                                }
                                                 $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
                                                 if ($periodo_total_meses > 0 && $valor_original > 0) {

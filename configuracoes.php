@@ -86,6 +86,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
 // === PROCESSAMENTO DE DEPRECIAÇÃO: Configura taxas financeiras e regras de doação de ativos ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $taxa = floatval($_POST['depreciacao']['taxa']);
+    $taxa_t1 = floatval($_POST['depreciacao']['taxa_t1'] ?? 10.00);
+    $taxa_t2 = floatval($_POST['depreciacao']['taxa_t2'] ?? 10.00);
+    $taxa_t3 = floatval($_POST['depreciacao']['taxa_t3'] ?? 10.00);
+    $taxa_t4 = floatval($_POST['depreciacao']['taxa_t4'] ?? 10.00);
+    $taxa_inf = floatval($_POST['depreciacao']['taxa_inf'] ?? 10.00);
     $periodo_anos = (int) $_POST['depreciacao']['periodo_anos'];
     $periodo_meses = (int) $_POST['depreciacao']['periodo_meses'];
     $elegivel = isset($_POST['depreciacao']['elegivel_doacao']) ? 1 : 0;
@@ -98,6 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
         $row_dep = mysqli_fetch_assoc($check);
         $sql_dep = "UPDATE configuracoes_depreciacao SET 
             taxa_depreciacao = $taxa, 
+            taxa_tier1 = $taxa_t1,
+            taxa_tier2 = $taxa_t2,
+            taxa_tier3 = $taxa_t3,
+            taxa_tier4 = $taxa_t4,
+            taxa_infraestrutura = $taxa_inf,
             periodo_anos = $periodo_anos, 
             periodo_meses = $periodo_meses, 
             elegivel_doacao = $elegivel, 
@@ -105,8 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
             tempo_doacao_meses = $doacao_meses 
             WHERE id = " . $row_dep['id'];
     } else {
-        $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
-            VALUES ($taxa, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
+        $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, taxa_tier1, taxa_tier2, taxa_tier3, taxa_tier4, taxa_infraestrutura, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
+            VALUES ($taxa, $taxa_t1, $taxa_t2, $taxa_t3, $taxa_t4, $taxa_inf, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
     }
 
     $success = mysqli_query($conn, $sql_dep);
@@ -338,6 +348,11 @@ foreach ($defaults as $cat => $val) {
 // Fetch depreciation settings
 $dep_config = [
     'taxa_depreciacao' => 10.00,
+    'taxa_tier1' => 10.00,
+    'taxa_tier2' => 10.00,
+    'taxa_tier3' => 10.00,
+    'taxa_tier4' => 10.00,
+    'taxa_infraestrutura' => 10.00,
     'periodo_anos' => 1,
     'periodo_meses' => 0,
     'elegivel_doacao' => 0,
@@ -1228,14 +1243,48 @@ function getHoursAndMinutes($total_minutes)
 
                                 <!-- Taxa de Depreciação -->
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Taxa de Depreciação (%)'); ?></label>
-                                    <div class="col-sm-3">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[taxa]"
-                                                value="<?php echo $dep_config['taxa_depreciacao']; ?>" required min="0"
-                                                max="100" step="0.01" placeholder="10.00">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">%</span>
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Taxas de Depreciação (%)'); ?></label>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control border-left-primary" name="depreciacao[taxa_t1]"
+                                                        value="<?php echo $dep_config['taxa_tier1']; ?>" required min="0" max="100" step="0.01">
+                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control border-left-info" name="depreciacao[taxa_t2]"
+                                                        value="<?php echo $dep_config['taxa_tier2']; ?>" required min="0" max="100" step="0.01">
+                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control border-left-success" name="depreciacao[taxa_t3]"
+                                                        value="<?php echo $dep_config['taxa_tier3']; ?>" required min="0" max="100" step="0.01">
+                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control border-left-warning" name="depreciacao[taxa_t4]"
+                                                        value="<?php echo $dep_config['taxa_tier4']; ?>" required min="0" max="100" step="0.01">
+                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control border-left-danger" name="depreciacao[taxa_inf]"
+                                                        value="<?php echo $dep_config['taxa_infraestrutura']; ?>" required min="0" max="100" step="0.01">
+                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -51,6 +51,11 @@ $qr_data = $base_url . "/v.php?id=" . $id;
 // 2. Lógica de Depreciação e Doação (Migrada de detalhes_do_equipamento.php)
 $dep_config = [
     'taxa_depreciacao' => 10.00,
+    'taxa_tier1' => 10.00,
+    'taxa_tier2' => 10.00,
+    'taxa_tier3' => 10.00,
+    'taxa_tier4' => 10.00,
+    'taxa_infraestrutura' => 10.00,
     'periodo_anos' => 1,
     'periodo_meses' => 0,
     'elegivel_doacao' => 0,
@@ -67,7 +72,19 @@ $data_atual = new DateTime();
 $diff = $data_ativacao->diff($data_atual);
 
 $valor_original = floatval($ativo['valor']);
+$tier_ativo = $ativo['tier'] ?? null;
 $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+if ($tier_ativo === 'Tier 1') {
+    $taxa_pct = floatval($dep_config['taxa_tier1']);
+} elseif ($tier_ativo === 'Tier 2') {
+    $taxa_pct = floatval($dep_config['taxa_tier2']);
+} elseif ($tier_ativo === 'Tier 3') {
+    $taxa_pct = floatval($dep_config['taxa_tier3']);
+} elseif ($tier_ativo === 'Tier 4') {
+    $taxa_pct = floatval($dep_config['taxa_tier4']);
+} elseif ($tier_ativo === 'Infraestrutura') {
+    $taxa_pct = floatval($dep_config['taxa_infraestrutura']);
+}
 $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
 if ($periodo_total_meses > 0 && $valor_original > 0) {

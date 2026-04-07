@@ -517,10 +517,14 @@ if (!$asset) {
                 // Smartphone
                 else if (cat === 'Smartphone') {
                     $('#smartphoneSection').slideDown();
-                    $('#hardwareSection').slideUp();
+                    $('#hardwareSection').slideDown();
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
+                    $('#gpu_container').hide();
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
                     $('#hostnameContainer').hide();
                     $('#hostName').prop('required', false);
-                    $('#tier_container').show(); // Fix: Smartphone needs Tier
+                    $('#tier_container').show();
                     $('#setor_container').show();
                 }
                 else {
@@ -535,8 +539,8 @@ if (!$asset) {
                     $('#gpu_container').hide();
                 }
 
-                // Host Name visibility
-                if (cat === 'Monitor' || cat === 'Periféricos' || cat === 'Impressora') {
+                // Host Name visibility refined
+                if (cat === 'Monitores' || cat === 'Periféricos' || cat === 'Impressoras' || cat === 'Smartphone') {
                     $('#hostnameContainer').slideUp();
                     $('#hostName').removeAttr('required');
                 } else {

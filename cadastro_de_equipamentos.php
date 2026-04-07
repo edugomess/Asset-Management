@@ -509,7 +509,11 @@ include_once 'auth.php'; // Proteção de sessão
                 }
                 else if (cat === 'Smartphone') {
                     $('#smartphoneSection').slideDown();
-                    $('#hardwareSection').slideUp();
+                    $('#hardwareSection').slideDown();
+                    $('#memoria, #processador, #armazenamento, #tipo_armazenamento').closest('.col-md-3').show();
+                    $('#gpu_container').hide();
+                    $('#inches_container').hide();
+                    $('#scanner_container').hide();
                     $('#hostnameContainer').hide();
                     $('#hostName').prop('required', false);
                     $('#tier_container').show();

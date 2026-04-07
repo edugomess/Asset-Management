@@ -77,8 +77,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         foreach ($_POST['notas_existentes'] as $i => $texto) {
             $i = intval($i);
             if (isset($notas_array[$i])) {
+                $texto_corrigido = trim($texto);
+                
+                // Permanent Repair: Detect and clean double-encoded JSON during save
+                if (is_string($texto_corrigido) && (strpos($texto_corrigido, '[{"') === 0 || strpos($texto_corrigido, '[[') === 0)) {
+                    $repair = json_decode($texto_corrigido, true);
+                    if (is_array($repair)) {
+                        // Recursively handle nested/incorrectly encoded text
+                        while (is_array($repair) && isset($repair[0]['texto'])) {
+                             $repair = $repair[0]['texto'];
+                             if (is_string($repair)) {
+                                 $inner = json_decode($repair, true);
+                                 if (json_last_error() === JSON_ERROR_NONE && is_array($inner)) $repair = $inner;
+                                 else break;
+                             }
+                        }
+                        if (is_string($repair)) $texto_corrigido = $repair;
+                    }
+                }
+
                 $texto_original = str_replace("\r\n", "\n", $notas_array[$i]['texto'] ?? '');
-                $novo_texto = str_replace("\r\n", "\n", trim($texto));
+                $novo_texto = str_replace("\r\n", "\n", $texto_corrigido);
 
                 // Só marca como editado se o texto realmente mudou
                 if ($texto_original !== $novo_texto) {
@@ -89,9 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
         }
     }
 
-    // Adicionar nova nota se preenchida
+    // Adicionar nova nota se preenchida (ignorar boilerplate do Summernote)
     $nova_nota_texto = isset($_POST['nova_nota']) ? trim($_POST['nova_nota']) : '';
-    if (!empty($nova_nota_texto)) {
+    // Advanced empty check: remove any tags and spaces to see if there is actual content
+    $corpo_limpo = trim(strip_tags($nova_nota_texto, '<img><iframe>')); // Allow images/videos
+    $ignorar_tags = ['<p><br></p>', '<br>', '<p>&nbsp;</p>', '<div><br></div>', '<p></p>', ''];
+    
+    if (!empty($corpo_limpo) && !in_array($nova_nota_texto, $ignorar_tags)) {
         $notas_array[] = [
             'texto' => $nova_nota_texto,
             'data' => date('d/m/Y H:i'),
@@ -205,8 +228,21 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
     <?php include_once 'sidebar_style.php'; ?>
     <style>
+        .note-editor { border-radius: 10px !important; border: 1px solid #e3e6f0 !important; overflow: hidden; margin-bottom: 10px; }
+        .note-toolbar { background: #f8f9fc !important; border-bottom: 1px solid #e3e6f0 !important; }
+        .timeline-text-rendered { padding: 15px 20px; background: #fff; border-radius: 12px; border: 1px solid #e3e6f0; font-size: 0.95rem; line-height: 1.7; color: #2c404a; word-break: break-word; min-height: 50px; position: relative; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .timeline-text-rendered:hover { border-color: #4e73df; }
+        .timeline-text-rendered img { max-width: 100%; height: auto; border-radius: 8px; margin: 15px 0; border: 1px solid #eee; display: block; }
+        .timeline-text-rendered iframe { max-width: 100%; width: 560px; height: 315px; border-radius: 12px; margin: 15px 0; border: 1px solid #eee; display: block; }
+        .timeline-text-rendered table { width: 100%; margin: 15px 0; border-collapse: collapse; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+        .timeline-text-rendered table td, .timeline-text-rendered table th { padding: 10px; border: 1px solid #eee; }
+        .timeline-text-rendered table th { background: #f8f9fc; font-weight: bold; }
+        .timeline-text-rendered blockquote { border-left: 4px solid #4e73df; padding-left: 15px; color: #858796; font-style: italic; margin: 15px 0; }
+        .info-card { border-radius: 15px; border: none; box-shadow: var(--card-shadow); transition: transform 0.3s ease; overflow: hidden; }
+        .info-card:hover { transform: translateY(-3px); }
         /* Estilos Premium para Detalhes do Chamado */
         :root {
             --primary-dark: #2c404a;
@@ -708,7 +744,20 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                                             </span>
                                                             <span class="timeline-date"><?php echo htmlspecialchars($nota['data'] ?? ''); ?></span>
                                                         </div>
-                                                        <textarea class="timeline-text form-control" name="notas_existentes[<?php echo $idx; ?>]" rows="1" readonly oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"><?php echo htmlspecialchars($nota['texto']); ?></textarea>
+                                                        <div class="timeline-text-rendered shadow-sm">
+                                                            <?php 
+                                                            $texto_limpo = $nota['texto'];
+                                                            // Data Repair: Detect and clean double-encoded JSON
+                                                            if (is_string($texto_limpo) && strpos($texto_limpo, '[{"') === 0) {
+                                                                $repair = json_decode($texto_limpo, true);
+                                                                if (is_array($repair) && isset($repair[0]['texto'])) {
+                                                                    $texto_limpo = $repair[0]['texto'];
+                                                                }
+                                                            }
+                                                            echo $texto_limpo; 
+                                                            ?>
+                                                        </div>
+                                                        <input type="hidden" name="notas_existentes[<?php echo $idx; ?>]" value="<?php echo htmlspecialchars($texto_limpo); ?>">
                                                         
                                                         <?php if (isset($nota['editado_em'])): ?>
                                                             <div class="timeline-edited">
@@ -736,8 +785,8 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                         <i class="fas fa-plus-circle text-primary"></i> <?php echo __('Adicionar Comentário'); ?>
                                     </div>
                                     <div class="card-body">
-                                        <textarea class="form-control form-control-premium mb-3" name="nova_nota" rows="3" placeholder="<?php echo __('Descreva o que foi feito ou responda ao solicitante...'); ?>"></textarea>
-                                        <div class="text-right">
+                                        <textarea id="comment_summernote" name="nova_nota" required></textarea>
+                                        <div class="text-right mt-3">
                                             <button type="submit" class="btn-premium btn-save">
                                                 <i class="fas fa-comment"></i> <?php echo __('Enviar Comentário'); ?>
                                             </button>
@@ -975,17 +1024,42 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
 
         function toggleEditNota(btn, idx) {
             const container = $(btn).closest('.timeline-bubble');
-            const area = container.find('textarea');
-            if (area.prop('readonly')) {
-                area.prop('readonly', false).removeClass('timeline-text').addClass('form-control-premium').focus();
-                // Trigger auto-resize to fit content
-                area[0].style.height = 'auto';
-                area[0].style.height = area[0].scrollHeight + 'px';
-                $(btn).html('<i class="fas fa-check"></i> <?php echo __('Pronto'); ?>').removeClass('text-warning').addClass('text-success font-weight-bold');
+            const displayDiv = container.find('.timeline-text-rendered');
+            const hiddenInput = container.find('input[type="hidden"]');
+            
+            if (!displayDiv.hasClass('editing-active')) {
+                // Initialize Summernote for editing
+                displayDiv.addClass('editing-active');
+                displayDiv.summernote({
+                    focus: true,
+                    height: 150,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['insert', ['link', 'video', 'picture']]
+                    ],
+                    callbacks: {
+                        onChange: function(contents) {
+                            hiddenInput.val(contents);
+                        },
+                        onImageUpload: function(files) {
+                            for (let i = 0; i < files.length; i++) {
+                                uploadImage(files[i], this);
+                            }
+                        }
+                    }
+                });
+                $(btn).html('<i class="fas fa-check"></i> <?php echo __("Pronto"); ?>').removeClass('text-warning').addClass('text-success font-weight-bold');
             } else {
-                area.prop('readonly', true).removeClass('form-control-premium').addClass('timeline-text');
-                $(btn).html('<i class="fas fa-edit"></i> <?php echo __('Editar'); ?>').removeClass('text-success font-weight-bold').addClass('text-warning');
-                // Automatically save and refresh the page
+                // Save and Submit
+                const contents = displayDiv.summernote('code');
+                hiddenInput.val(contents);
+                displayDiv.summernote('destroy');
+                displayDiv.removeClass('editing-active');
+                $(btn).html('<i class="fas fa-edit"></i> <?php echo __("Editar"); ?>').removeClass('text-success font-weight-bold').addClass('text-warning');
+                
+                // Submit form to persist changes
                 $('#form-editar-chamado').submit();
             }
         }
@@ -1071,6 +1145,55 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
 
         setInterval(updateHeaderSLATimer, 1000);
         updateHeaderSLATimer();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#comment_summernote').summernote({
+                placeholder: '<?php echo __("Descreva o que foi feito ou responda ao solicitante..."); ?>',
+                tabsize: 2,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'video', 'picture']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for (let i = 0; i < files.length; i++) {
+                            uploadImage(files[i], this);
+                        }
+                    }
+                }
+            });
+        });
+
+        function uploadImage(file, editor) {
+            let data = new FormData();
+            data.append("image", file);
+            $.ajax({
+                url: "ajax_upload_summernote.php",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: data,
+                type: "POST",
+                success: function(response) {
+                    if (response.success) {
+                        $(editor).summernote('insertImage', response.url);
+                    } else {
+                        alert("Erro no upload: " + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error(textStatus + " " + errorThrown);
+                }
+            });
+        }
     </script>
     <script src="/assets/js/global_search.js"></script>
 </body>

@@ -125,11 +125,41 @@ if (!$article) {
                     ['color', ['color']],
                     ['para', ['ul', 'ol', 'paragraph']],
                     ['table', ['table']],
-                    ['insert', ['link', 'video']],
+                    ['insert', ['link', 'video', 'picture']],
                     ['view', ['fullscreen', 'codeview', 'help']]
-                ]
+                ],
+                callbacks: {
+                    onImageUpload: function(files) {
+                        for (let i = 0; i < files.length; i++) {
+                            uploadImage(files[i], this);
+                        }
+                    }
+                }
             });
         });
+
+        function uploadImage(file, editor) {
+            let data = new FormData();
+            data.append("image", file);
+            $.ajax({
+                url: "ajax_upload_summernote.php",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: data,
+                type: "POST",
+                success: function(response) {
+                    if (response.success) {
+                        $(editor).summernote('insertImage', response.url);
+                    } else {
+                        alert("Erro no upload: " + response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error(textStatus + " " + errorThrown);
+                }
+            });
+        }
     </script>
 </body>
 

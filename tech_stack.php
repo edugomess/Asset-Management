@@ -37,11 +37,10 @@ $lang_code = (isset($_SESSION['language']) && $_SESSION['language'] == 'en') ? '
         .subtitle { font-size: 1.1rem; color: #718096; font-weight: 500; }
         .table-premium { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.04); }
         .table-premium thead th { background: #f8f9fc; border-bottom: 2px solid #edf2f7; color: #2d3748; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; padding: 20px; }
-        .table-premium tbody td { padding: 14px 20px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
-        .badge-pill-custom { padding: 5px 12px; font-weight: 700; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .tech-version { font-family: monospace; background: #f1f5f9; padding: 2px 7px; border-radius: 5px; font-size: 0.8rem; color: #475569; }
-        .btn-premium { background: linear-gradient(135deg, #4e73df, #224abe); color: #fff; border: none; padding: 14px 28px; border-radius: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(78, 115, 223, 0.4); }
-        .divider { height: 4px; width: 40px; background: var(--primary); border-radius: 2px; margin-bottom: 15px; }
+        .table-premium tbody tr:hover { background-color: #f8fafc; transform: scale(1.002); transition: all 0.2s; }
+        .btn-premium { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; border: none; padding: 14px 28px; border-radius: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); cursor: pointer; }
+        .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6); filter: brightness(1.1); }
+        .divider { height: 4px; width: 40px; background: #3b82f6; border-radius: 2px; margin-bottom: 15px; }
     </style>
 </head>
 <body>

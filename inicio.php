@@ -95,70 +95,168 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
 
-                    <!-- Start: 4-column form row -->
                     <?php
                     include 'conexao.php';
+                    require_once 'language.php';
 
-                    // Definir o número de resultados por página
+                    // Buscar configurações de depreciação/doação globais
+                    $dep_config = [
+                        'taxa_depreciacao' => 10.00,
+                        'periodo_anos' => 1,
+                        'periodo_meses' => 0,
+                        'elegivel_doacao' => 1,
+                        'tempo_doacao_anos' => 5,
+                        'tempo_doacao_meses' => 0
+                    ];
+                    $res_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
+                    if ($res_dep && mysqli_num_rows($res_dep) > 0) {
+                        $dep_config = mysqli_fetch_assoc($res_dep);
+                    }
+                    $doacao_global = intval($dep_config['elegivel_doacao']);
+                    $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
+
+                    // Categorias elegíveis
+                    $cat_doacao_map = [];
+                    $result_cat = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
+                    if ($result_cat) {
+                        while ($r = mysqli_fetch_assoc($result_cat)) {
+                            $cat_doacao_map[$r['categoria']] = intval($r['elegivel_doacao']);
+                        }
+                    }
+
+                    // Métricas Agregadas (Para o Dashboard)
+                    $sql_metrics = "SELECT a.valor, a.dataAtivacao, a.categoria FROM ativos a WHERE a.assigned_to IS NOT NULL";
+                    $res_metrics = mysqli_query($conn, $sql_metrics);
+
+                    $count_ativos_metrics = 0;
+                    $valor_patrimonial_atual = 0;
+                    $valor_original_total = 0;
+                    $count_elegiveis = 0;
+
+                    while ($m = mysqli_fetch_assoc($res_metrics)) {
+                        $count_ativos_metrics++;
+                        $v_original = floatval($m['valor']);
+                        $valor_original_total += $v_original;
+
+                        // Calc depreciação para métrica
+                        $dat_atv = new DateTime($m['dataAtivacao']);
+                        $dat_cur = new DateTime();
+                        $diff_atv = $dat_atv->diff($dat_cur);
+                        $meses_atv = ($diff_atv->y * 12) + $diff_atv->m;
+
+                        $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                        $periodo_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
+
+                        if ($periodo_meses > 0 && $v_original > 0) {
+                            $periodos_comp = floor($meses_atv / $periodo_meses);
+                            $dep_total = min($v_original, $v_original * ($taxa_pct / 100) * $periodos_comp);
+                            $v_atual = max(0, $v_original - $dep_total);
+                        } else {
+                            $v_atual = $v_original;
+                        }
+                        $valor_patrimonial_atual += $v_atual;
+
+                        // Elegibilidade
+                        $cat_el = isset($cat_doacao_map[$m['categoria']]) ? $cat_doacao_map[$m['categoria']] : 1;
+                        if ($doacao_global && $cat_el && ($meses_atv >= $tempo_min_doacao_meses)) {
+                            $count_elegiveis++;
+                        }
+                    }
+                    $perda_patrimonial_avg = ($valor_original_total > 0) ? (1 - ($valor_patrimonial_atual / $valor_original_total)) * 100 : 0;
+
+                    // Paginação
                     $results_per_page = 10;
-
-                    // Verificar o número de resultados atribuídos no banco de dados
-                    $sql = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
-                    $result = mysqli_query($conn, $sql);
-                    $row = mysqli_fetch_assoc($result);
-                    $total_results = $row['total'];
-
-                    // Determinar o número de páginas necessárias
+                    $sql_count = "SELECT COUNT(*) AS total FROM ativos WHERE assigned_to IS NOT NULL";
+                    $res_count = mysqli_query($conn, $sql_count);
+                    $row_count = mysqli_fetch_assoc($res_count);
+                    $total_results = $row_count['total'];
                     $total_pages = ceil($total_results / $results_per_page);
-
-                    // Determinar a página atual a partir da URL, se não definida, assume 1
                     $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-
-                    // Calcular o limite de registros para a consulta
                     $start_from = ($current_page - 1) * $results_per_page;
 
-                    // Consultar os ativos atribuídos com JOIN para evitar N+1
-                    $sql = "SELECT a.*, u.nome as nome_usuario 
+                    // Lista de Ativos
+                    $sql_list = "SELECT a.*, u.nome as nome_usuario 
                             FROM ativos a 
                             LEFT JOIN usuarios u ON a.assigned_to = u.id_usuarios 
                             WHERE a.assigned_to IS NOT NULL 
                             ORDER BY a.id_asset DESC 
                             LIMIT $start_from, $results_per_page";
-                    $result = mysqli_query($conn, $sql);
-
-                    // Buscar configurações de depreciação/doação globais
-                    $dep_config_ini = [
-                        'taxa_depreciacao' => 10.00,
-                        'periodo_anos' => 1,
-                        'periodo_meses' => 0,
-                        'elegivel_doacao' => 0,
-                        'tempo_doacao_anos' => 5,
-                        'tempo_doacao_meses' => 0
-                    ];
-                    $result_dep_ini = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
-                    if ($result_dep_ini && mysqli_num_rows($result_dep_ini) > 0) {
-                        $dep_config_ini = mysqli_fetch_assoc($result_dep_ini);
-                    }
-                    $doacao_global_ini = intval($dep_config_ini['elegivel_doacao']);
-                    $tempo_min_doacao_meses_ini = (intval($dep_config_ini['tempo_doacao_anos']) * 12) + intval($dep_config_ini['tempo_doacao_meses']);
-
-                    // Buscar elegibilidade por categoria
-                    $cat_doacao_map_ini = [];
-                    $result_cat_ini = mysqli_query($conn, "SELECT categoria, elegivel_doacao FROM categoria_doacao");
-                    if ($result_cat_ini) {
-                        while ($r = mysqli_fetch_assoc($result_cat_ini)) {
-                            $cat_doacao_map_ini[$r['categoria']] = intval($r['elegivel_doacao']);
-                        }
-                    }
+                    $result = mysqli_query($conn, $sql_list);
                     ?>
+
                     <h3 class="text-dark mb-4"><?php echo __('Operação'); ?></h3>
+
+                    <!-- METRICS GRID -->
+                    <div class="row mb-4 animate__animated animate__fadeInUp">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card shadow border-left-primary py-2 h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"><?php echo __('Ativos em Operação'); ?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $count_ativos_metrics; ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-desktop fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card shadow border-left-success py-2 h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo __('Patrimônio Atualizado'); ?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">R$ <?php echo number_format($valor_patrimonial_atual, 0, ',', '.'); ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card shadow border-left-warning py-2 h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo __('Elegíveis para Doação'); ?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $count_elegiveis; ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-hand-holding-heart fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card shadow border-left-danger py-2 h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo __('Desvalorização Média'); ?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($perda_patrimonial_avg, 1); ?>%</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card shadow">
                         <div class="col-md-6 col-xl-3 text-nowrap">
                             <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
                                 class="btn btn-success btn-block active text-white animate__animated animate__pulse btn-user"
                                 role="button"
                                 style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;"
-                                href="/ativos_doados.php"><?php echo __('Doações'); ?></a>
+                                href="/ativos_doados.php"><?php echo __('Ver Doações'); ?></a>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive mt-2">
@@ -191,8 +289,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                 $data_atual = new DateTime();
                                                 $diff = $data_ativacao->diff($data_atual);
 
-                                                $taxa_pct = floatval($dep_config_ini['taxa_depreciacao']);
-                                                $periodo_total_meses = (intval($dep_config_ini['periodo_anos']) * 12) + intval($dep_config_ini['periodo_meses']);
+                                                $taxa_pct = floatval($dep_config['taxa_depreciacao']);
+                                                $periodo_total_meses = (intval($dep_config['periodo_anos']) * 12) + intval($dep_config['periodo_meses']);
 
                                                 if ($periodo_total_meses > 0 && $valor_original > 0) {
                                                     $meses_ativos = ($diff->y * 12) + $diff->m;
@@ -239,35 +337,32 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td>
                                                         <?php
                                                         // Elegibilidade para doação baseada nas configurações
-                                                        $data_ativacao = new DateTime($row['dataAtivacao']);
-                                                        $data_atual = new DateTime();
-                                                        $diff = $data_ativacao->diff($data_atual);
-                                                        $meses_desde_cadastro_ini = ($diff->y * 12) + $diff->m;
-                                                        $cat_do_ativo_ini = $row['categoria'];
-                                                        $cat_elegivel_ini = isset($cat_doacao_map_ini[$cat_do_ativo_ini]) ? $cat_doacao_map_ini[$cat_do_ativo_ini] : 1;
+                                                        $cat_do_ativo = $row['categoria'];
+                                                        $cat_elegivel = isset($cat_doacao_map[$cat_do_ativo]) ? $cat_doacao_map[$cat_do_ativo] : 1;
+                                                        $meses_ativos = ($diff->y * 12) + $diff->m;
 
                                                         $btn_style = 'style="width:150px; font-size:12px; border-radius:10px;"';
 
-                                                        if (!$doacao_global_ini) {
+                                                        if (!$doacao_global) {
                                                             echo '<button class="btn btn-secondary btn-sm" disabled title="' . __('A doação está desativada globalmente nas configurações.') . '" ' . $btn_style . ' >' . __('Desativada') . '</button>';
-                                                        } elseif (!$cat_elegivel_ini) {
-                                                            echo '<button class="btn btn-secondary btn-sm" disabled title="' . __('A categoria') . ' &quot;' . htmlspecialchars($cat_do_ativo_ini) . '&quot; ' . __('não está habilitada para doação.') . '" ' . $btn_style . ' >' . __('Cat. não elegível') . '</button>';
-                                                        } elseif ($meses_desde_cadastro_ini >= $tempo_min_doacao_meses_ini) {
+                                                        } elseif (!$cat_elegivel) {
+                                                            echo '<button class="btn btn-secondary btn-sm" disabled title="' . __('A categoria') . ' &quot;' . htmlspecialchars($cat_do_ativo) . '&quot; ' . __('não está habilitada para doação.') . '" ' . $btn_style . ' >' . __('Cat. não elegível') . '</button>';
+                                                        } elseif ($meses_ativos >= $tempo_min_doacao_meses) {
                                                             echo '<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); sellAsset(' . $row['id_asset'] . ')" ' . $btn_style . ' >' . __('Doar') . '</button>';
                                                         } else {
-                                                            $restante_ini = $tempo_min_doacao_meses_ini - $meses_desde_cadastro_ini;
-                                                            $a_ini = floor($restante_ini / 12);
-                                                            $m_ini = $restante_ini % 12;
-                                                            $t_ini = '';
-                                                            if ($a_ini > 0)
-                                                                $t_ini .= $a_ini . ' ' . __('ano(s)');
-                                                            if ($a_ini > 0 && $m_ini > 0)
-                                                                $t_ini .= __(' e ');
-                                                            if ($m_ini > 0)
-                                                                $t_ini .= $m_ini . ' ' . __('mês(es)');
-                                                            if (empty($t_ini))
-                                                                $t_ini = __('menos de 1 mês');
-                                                            echo '<button class="btn btn-warning btn-sm" disabled title="' . __('Carência:') . ' ' . $t_ini . '" ' . $btn_style . ' >' . __('Bloqueado') . '</button>';
+                                                            $restante = $tempo_min_doacao_meses - $meses_ativos;
+                                                            $a = floor($restante / 12);
+                                                            $m = $restante % 12;
+                                                            $t = '';
+                                                            if ($a > 0)
+                                                                $t .= $a . ' ' . __('ano(s)');
+                                                            if ($a > 0 && $m > 0)
+                                                                $t .= __(' e ');
+                                                            if ($m > 0)
+                                                                $t .= $m . ' ' . __('mês(es)');
+                                                            if (empty($t))
+                                                                $t = __('menos de 1 mês');
+                                                            echo '<button class="btn btn-warning btn-sm" disabled title="' . __('Carência:') . ' ' . $t . '" ' . $btn_style . ' >' . __('Bloqueado') . '</button>';
                                                         }
                                                         ?>
                                                     </td>
@@ -328,23 +423,23 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     },
                                     body: JSON.stringify({ id_asset: assetId })
                                 })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: '<?php echo __('Sucesso!'); ?>',
-                                            text: '<?php echo __('Ativo doado com sucesso!'); ?>',
-                                            icon: 'success',
-                                            timer: 1500,
-                                            showConfirmButton: false
-                                        }).then(() => location.reload());
-                                    } else {
-                                        Swal.fire('<?php echo __('Erro'); ?>', data.message || '<?php echo __('Erro ao processar doação!'); ?>', 'error');
-                                    }
-                                })
-                                .catch(error => {
-                                    Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Falha na comunicação com o servidor.'); ?>', 'error');
-                                });
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            Swal.fire({
+                                                title: '<?php echo __('Sucesso!'); ?>',
+                                                text: '<?php echo __('Ativo doado com sucesso!'); ?>',
+                                                icon: 'success',
+                                                timer: 1500,
+                                                showConfirmButton: false
+                                            }).then(() => location.reload());
+                                        } else {
+                                            Swal.fire('<?php echo __('Erro'); ?>', data.message || '<?php echo __('Erro ao processar doação!'); ?>', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Falha na comunicação com o servidor.'); ?>', 'error');
+                                    });
                             }
                         });
                     }
@@ -366,7 +461,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"
+        defer></script>
     <script src="/assets/js/bs-init.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" defer></script>
     <script src="/assets/js/global_search.js" defer></script>

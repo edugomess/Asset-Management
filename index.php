@@ -51,20 +51,86 @@ $count_andamento = 0;
     <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
     <style>
-        .card.shadow {
-            transition: all 0.3s ease-in-out;
-            cursor: pointer;
+        /* PREMIUM DESIGN SYSTEM */
+        body.premium-bg, #content-wrapper.premium-bg {
+            background-color: #f8fafc !important;
+            background-image: radial-gradient(circle at top right, rgba(99,102,241,0.08), transparent 400px), radial-gradient(circle at bottom left, rgba(16,185,129,0.05), transparent 400px) !important;
+            font-family: 'Inter', sans-serif !important;
         }
-
-        .card-shadow {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .premium-card {
+            background: rgba(255, 255, 255, 0.90) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .card-shadow:hover {
+        .premium-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
         }
+        .card-icon-modern {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+        }
+        .premium-card:hover .card-icon-modern {
+            transform: scale(1.1);
+            background: rgba(0,0,0,0.06);
+        }
+        .progress-premium {
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 12px !important;
+        }
+        .progress-bar-premium {
+            border-radius: 8px;
+            transition: width 1.5s ease-in-out;
+        }
+        .avatar-premium {
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .avatar-premium:hover {
+            transform: scale(1.1);
+        }
+        .form-control-premium {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s;
+        }
+        .form-control-premium:focus {
+            background-color: #fff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+            outline: none;
+        }
+        .btn-modern {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.4rem 0.8rem;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-modern:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .font-inter { font-family: 'Inter', sans-serif !important; }
+        .text-slate-800 { color: #1e293b !important; }
+        .text-slate-500 { color: #64748b !important; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <?php
@@ -110,8 +176,8 @@ if ($res_closed) {
 $closed_string = implode(",", $closed_data);
 
 // === RANKING DE SLA ===
-$mes_filtro = isset($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('m');
-$ano_filtro = isset($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
+$mes_filtro = !empty($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('n');
+$ano_filtro = !empty($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
 
 $sql_ranking = "SELECT r.nome, r.sobrenome, r.foto_perfil, COUNT(*) as total,
     SUM(CASE WHEN (TIMESTAMPDIFF(MINUTE, c.data_abertura, c.data_fechamento) - COALESCE(c.tempo_congelado_minutos, 0)) <= 
@@ -136,15 +202,16 @@ if ($res_rank && mysqli_num_rows($res_rank) > 0) {
 }
 
 // === RANKING DE RECORRÊNCIA ===
-$mes_rec_filtro = isset($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('m');
-$ano_rec_filtro = isset($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
+$mes_rec_filtro = !empty($_GET['mes_recorrencia']) ? intval($_GET['mes_recorrencia']) : date('n');
+$ano_rec_filtro = !empty($_GET['ano_recorrencia']) ? intval($_GET['ano_recorrencia']) : date('Y');
 $sql_rec = "SELECT TRIM(titulo) as titulo, COUNT(*) as total FROM chamados WHERE MONTH(data_abertura) = $mes_rec_filtro AND YEAR(data_abertura) = $ano_rec_filtro GROUP BY TRIM(titulo) ORDER BY total DESC LIMIT 5";
 $recorrencia_data = [];
 $max_recorrencia = 0;
 $res_rec = mysqli_query($conn, $sql_rec);
 if ($res_rec) {
     while ($row = mysqli_fetch_assoc($res_rec)) {
-        if ($row['total'] > $max_recorrencia) $max_recorrencia = $row['total'];
+        if ($row['total'] > $max_recorrencia)
+            $max_recorrencia = $row['total'];
         $recorrencia_data[] = $row;
     }
 }
@@ -162,7 +229,11 @@ $metrics = [];
 // Metrics: Categories
 $sql_cats = "SELECT categoria, COUNT(*) as total, SUM(CASE WHEN (assigned_to IS NULL OR assigned_to = 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção') THEN 1 ELSE 0 END) as disponiveis FROM ativos GROUP BY categoria";
 $res_cats = mysqli_query($conn, $sql_cats);
-if ($res_cats) { while ($row = mysqli_fetch_assoc($res_cats)) { $metrics["cat:" . $row['categoria']] = $row; } }
+if ($res_cats) {
+    while ($row = mysqli_fetch_assoc($res_cats)) {
+        $metrics["cat:" . $row['categoria']] = $row;
+    }
+}
 
 // Metrics: Status
 $res_disp = mysqli_query($conn, "SELECT COUNT(*) as total FROM ativos WHERE (assigned_to IS NULL OR assigned_to = 0) AND id_asset NOT IN (SELECT id_asset FROM manutencao WHERE status_manutencao = 'Em Manutenção')");
@@ -175,39 +246,78 @@ $metrics['st:Em manutenção'] = ['total' => mysqli_fetch_assoc($res_manut)['tot
 // Metrics: Licenses
 $sql_lics = "SELECT software, SUM(quantidade_total) as total, SUM(quantidade_total - quantidade_uso) as disponiveis FROM licencas GROUP BY software";
 $res_lics = mysqli_query($conn, $sql_lics);
-if ($res_lics) { while ($row = mysqli_fetch_assoc($res_lics)) { $metrics["lic:" . $row['software']] = $row; } }
+if ($res_lics) {
+    while ($row = mysqli_fetch_assoc($res_lics)) {
+        $metrics["lic:" . $row['software']] = $row;
+    }
+}
 
-function getCardIcon($type, $name) {
+function getCardIcon($type, $name)
+{
     if ($type === 'st') {
-        switch ($name) { case 'Disponível': return 'fa-check-circle'; case 'Em uso': return 'fa-user-check'; case 'Em manutenção': return 'fa-tools'; default: return 'fa-info-circle'; }
+        switch ($name) {
+            case 'Disponível':
+                return 'fa-check-circle';
+            case 'Em uso':
+                return 'fa-user-check';
+            case 'Em manutenção':
+                return 'fa-tools';
+            default:
+                return 'fa-info-circle';
+        }
     } elseif ($type === 'lic') {
         $n = strtolower($name);
-        if (strpos($n, 'office') !== false || strpos($n, '365') !== false) return 'fa-file-word';
-        if (strpos($n, 'windows') !== false) return 'fa-windows';
-        if (strpos($n, 'adobe') !== false || strpos($n, 'photoshop') !== false) return 'fa-paint-brush';
-        if (strpos($n, 'antivirus') !== false || strpos($n, 'kaspersky') !== false || strpos($n, 'defender') !== false) return 'fa-shield-alt';
+        if (strpos($n, 'office') !== false || strpos($n, '365') !== false)
+            return 'fa-file-word';
+        if (strpos($n, 'windows') !== false)
+            return 'fa-windows';
+        if (strpos($n, 'adobe') !== false || strpos($n, 'photoshop') !== false)
+            return 'fa-paint-brush';
+        if (strpos($n, 'antivirus') !== false || strpos($n, 'kaspersky') !== false || strpos($n, 'defender') !== false)
+            return 'fa-shield-alt';
         return 'fa-key';
     } else {
         $n = strtolower($name);
-        if (strpos($n, 'desktop') !== false) return 'fa-desktop';
-        if (strpos($n, 'notebook') !== false) return 'fa-laptop';
-        if (strpos($n, 'monitor') !== false) return 'fa-desktop';
-        if (strpos($n, 'impressora') !== false) return 'fa-print';
-        if (strpos($n, 'servidor') !== false) return 'fa-server';
-        if (strpos($n, 'roteador') !== false || strpos($n, 'switch') !== false) return 'fa-network-wired';
+        if (strpos($n, 'desktop') !== false)
+            return 'fa-desktop';
+        if (strpos($n, 'notebook') !== false)
+            return 'fa-laptop';
+        if (strpos($n, 'monitor') !== false)
+            return 'fa-desktop';
+        if (strpos($n, 'impressora') !== false)
+            return 'fa-print';
+        if (strpos($n, 'servidor') !== false)
+            return 'fa-server';
+        if (strpos($n, 'roteador') !== false || strpos($n, 'switch') !== false)
+            return 'fa-network-wired';
         return 'fa-box';
     }
 }
 
-function getCardColor($type, $name) {
+function getCardColor($type, $name)
+{
     if ($type === 'st') {
-        switch ($name) { case 'Disponível': return 'success'; case 'Em uso': return 'primary'; case 'Em manutenção': return 'warning'; default: return 'secondary'; }
-    } elseif ($type === 'lic') { return 'info'; }
-    else { $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary', 'dark']; $sum = array_sum(str_split(md5($name))); return $colors[$sum % count($colors)]; }
+        switch ($name) {
+            case 'Disponível':
+                return 'success';
+            case 'Em uso':
+                return 'primary';
+            case 'Em manutenção':
+                return 'warning';
+            default:
+                return 'secondary';
+        }
+    } elseif ($type === 'lic') {
+        return 'info';
+    } else {
+        $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary', 'dark'];
+        $sum = array_sum(str_split(md5($name)));
+        return $colors[$sum % count($colors)];
+    }
 }
 ?>
 
-<body id="page-top">
+<body id="page-top" class="premium-bg font-inter">
     <?php startNProgress(); ?>
     <div id="wrapper">
         <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0"
@@ -217,7 +327,7 @@ function getCardColor($type, $name) {
                 <?php include 'sidebar_menu.php'; ?>
             </div>
         </nav>
-        <div class="d-flex flex-column premium-page-fade" id="content-wrapper">
+        <div class="d-flex flex-column premium-page-fade premium-bg" id="content-wrapper">
             <div id="content">
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
@@ -252,7 +362,8 @@ function getCardColor($type, $name) {
                         <?php
                         // Render Cards
                         foreach ($selected_cards as $idx => $card_key) {
-                            if (strpos($card_key, ':') === false) continue;
+                            if (strpos($card_key, ':') === false)
+                                continue;
                             list($type, $name) = explode(':', $card_key, 2);
                             $data = $metrics[$card_key] ?? ['total' => 0, 'disponiveis' => 0];
                             $icon = getCardIcon($type, $name);
@@ -260,22 +371,29 @@ function getCardColor($type, $name) {
                             $delay = ($idx + 1) * 0.1;
                             ?>
                             <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                                 style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 155px; animation-delay: <?php echo $delay; ?>s;">
-                                <div class="card shadow card-shadow border-left-<?php echo $color; ?> py-2" style="height: 100%;">
+                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 155px; animation-delay: <?php echo $delay; ?>s;">
+                                <div class="card premium-card border-left-<?php echo $color; ?> py-2"
+                                    style="height: 100%;">
                                     <div class="card-body p-3">
                                         <div class="row align-items-center no-gutters">
                                             <div class="col mr-2">
-                                                <div class="text-uppercase text-<?php echo $color; ?> font-weight-bold text-xs mb-1">
+                                                <div
+                                                    class="text-uppercase text-<?php echo $color; ?> font-weight-bold text-xs mb-1" style="font-weight: 700; letter-spacing: 0.05em;">
                                                     <span><?php echo __($name); ?></span>
                                                 </div>
-                                                <div class="text-dark font-weight-bold h5 mb-0">
+                                                <div class="text-slate-800 font-weight-bold h4 mb-0">
                                                     <span><?php echo $data['total']; ?></span>
-                                                    <div class="text-muted small mt-1" style="font-size: 0.65rem; line-height: 1;">
+                                                    <div class="text-slate-500 small mt-1 font-weight-medium"
+                                                        style="font-size: 0.70rem; line-height: 1;">
                                                         <?php echo $data['disponiveis']; ?> <?php echo __('Disp.'); ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-auto"><i class="fas <?php echo $icon; ?> fa-lg text-gray-300"></i></div>
+                                            <div class="col-auto">
+                                                <div class="card-icon-modern">
+                                                    <i class="fas <?php echo $icon; ?> fa-lg text-<?php echo $color; ?>" style="opacity: 0.8"></i>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -291,7 +409,8 @@ function getCardColor($type, $name) {
                                 <div class="card-header d-flex justify-content-between align-items-center"
                                     style="background: rgb(248, 249, 252);">
                                     <h6 class="text-primary font-weight-bold m-0">
-                                        <?php echo __('Chamados Finalizados (Mês)'); ?></h6>
+                                        <?php echo __('Chamados Finalizados (Mês)'); ?>
+                                    </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
@@ -312,7 +431,8 @@ function getCardColor($type, $name) {
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0">
-                                        <?php echo __('Status dos Chamados'); ?></h6>
+                                        <?php echo __('Status dos Chamados'); ?>
+                                    </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
@@ -347,12 +467,12 @@ function getCardColor($type, $name) {
                     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="m-0 font-weight-bold text-primary">
-                                            <?php echo __('Ranking de SLA - Melhores Técnicos'); ?>
+                                <div class="card premium-card mb-4">
+                                    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <h6 class="m-0 font-weight-bold text-slate-800">
+                                            <i class="fas fa-trophy text-warning mr-2"></i><?php echo __('Ranking de SLA - Melhores Técnicos'); ?>
                                         </h6>
-                                        <form method="GET" class="form-inline">
+                                        <form method="GET" action="index.php" class="form-inline mt-2 mt-md-0">
                                             <!-- Preservar filtro de recorrência ao filtrar SLA -->
                                             <input type="hidden" name="mes_recorrencia"
                                                 value="<?php echo $mes_rec_filtro; ?>">
@@ -360,7 +480,7 @@ function getCardColor($type, $name) {
                                                 value="<?php echo $ano_rec_filtro; ?>">
 
                                             <select name="mes_ranking" id="mes_ranking"
-                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                class="form-control form-control-premium mr-2" style="font-size: 0.8rem;">
                                                 <?php
                                                 foreach ($meses as $num => $nome) {
                                                     $selected = ($num == $mes_filtro) ? 'selected' : '';
@@ -369,7 +489,7 @@ function getCardColor($type, $name) {
                                                 ?>
                                             </select>
                                             <select name="ano_ranking" id="ano_ranking"
-                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                class="form-control form-control-premium mr-2" style="font-size: 0.8rem;">
                                                 <?php
                                                 for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
                                                     $selected = ($i == $ano_filtro) ? 'selected' : '';
@@ -377,12 +497,11 @@ function getCardColor($type, $name) {
                                                 }
                                                 ?>
                                             </select>
-                                            <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);"><?php echo __('Filtrar'); ?></button>
+                                            <button type="submit" class="btn btn-modern btn-primary text-white mr-2"
+                                                style="background: #4f46e5; border: none;"><i class="fas fa-filter mr-1"></i> <?php echo __('Filtrar'); ?></button>
                                             <a href="relatorio_ranking_sla.php?mes=<?php echo $mes_filtro; ?>&ano=<?php echo $ano_filtro; ?>"
-                                                id="btn_pdf_sla" target="_blank" class="btn btn-danger btn-sm"
-                                                style="font-size: 0.7rem; background: #e74a3b;">
-                                                <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                                id="btn_pdf_sla" target="_blank" class="btn btn-modern btn-danger text-white">
+                                                <i class="fas fa-file-pdf mr-1"></i> PDF
                                             </a>
                                         </form>
                                     </div>
@@ -401,29 +520,31 @@ function getCardColor($type, $name) {
                                                     <?php foreach ($ranking_data as $rank): ?>
                                                         <tr>
                                                             <td class="align-middle">
-                                                                <img class="img-profile rounded-circle"
-                                                                    style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;"
+                                                                <img class="img-profile rounded-circle avatar-premium"
+                                                                    style="width: 36px; height: 36px; margin-right: 12px; object-fit: cover;"
                                                                     src="<?php echo !empty($rank['foto_perfil']) ? htmlspecialchars($rank['foto_perfil']) : '/assets/img/avatars/avatar1.jpeg'; ?>"
                                                                     alt="<?php echo htmlspecialchars($rank['nome']); ?>">
-                                                                <?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?>
+                                                                <span class="font-weight-500 text-slate-800"><?php echo htmlspecialchars($rank['nome'] . ' ' . $rank['sobrenome']); ?></span>
                                                             </td>
-                                                            <td class="align-middle"><?php echo $rank['total']; ?></td>
-                                                            <td class="align-middle"><?php echo $rank['met_sla']; ?></td>
+                                                            <td class="align-middle text-center"><span class="badge badge-light p-2" style="font-size: 0.85rem"><?php echo $rank['total']; ?></span></td>
+                                                            <td class="align-middle text-center"><span class="badge badge-light p-2 text-success" style="font-size: 0.85rem"><?php echo $rank['met_sla']; ?></span></td>
                                                             <td class="align-middle">
-                                                                <div class="progress" style="height: 20px;">
-                                                                    <?php
-                                                                    $color = 'bg-danger';
-                                                                    if ($rank['percentage'] >= 80)
-                                                                        $color = 'bg-success';
-                                                                    elseif ($rank['percentage'] >= 50)
-                                                                        $color = 'bg-warning';
-                                                                    ?>
-                                                                    <div class="progress-bar <?php echo $color; ?>"
-                                                                        role="progressbar"
-                                                                        style="width: <?php echo $rank['percentage']; ?>%"
-                                                                        aria-valuenow="<?php echo $rank['percentage']; ?>"
-                                                                        aria-valuemin="0" aria-valuemax="100">
-                                                                        <?php echo $rank['percentage']; ?>%
+                                                                <div class="d-flex align-items-center">
+                                                                    <span class="mr-2 font-weight-bold" style="font-size: 0.85rem"><?php echo $rank['percentage']; ?>%</span>
+                                                                    <div class="progress progress-premium flex-grow-1">
+                                                                        <?php
+                                                                        $color = 'bg-danger';
+                                                                        if ($rank['percentage'] >= 80)
+                                                                            $color = 'bg-success';
+                                                                        elseif ($rank['percentage'] >= 50)
+                                                                            $color = 'bg-warning';
+                                                                        ?>
+                                                                        <div class="progress-bar progress-bar-premium <?php echo $color; ?>"
+                                                                            role="progressbar"
+                                                                            style="width: <?php echo $rank['percentage']; ?>%"
+                                                                            aria-valuenow="<?php echo $rank['percentage']; ?>"
+                                                                            aria-valuemin="0" aria-valuemax="100">
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -450,18 +571,18 @@ function getCardColor($type, $name) {
                     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
                         <div class="row">
                             <div class="col-lg-12 mb-4">
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="text-primary font-weight-bold m-0">
-                                            <?php echo __('Ranking de Chamados por Recorrência'); ?>
+                                <div class="card premium-card mb-4">
+                                    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                        <h6 class="m-0 font-weight-bold text-slate-800">
+                                            <i class="fas fa-fire text-danger mr-2"></i><?php echo __('Ranking de Chamados por Recorrência'); ?>
                                         </h6>
-                                        <form method="GET" class="form-inline">
-                                            <!-- Preservar filtro de SLA al filtrar Recorrência -->
+                                        <form method="GET" action="index.php" class="form-inline mt-2 mt-md-0">
+                                            <!-- Preservar filtro de SLA ao filtrar Recorrência -->
                                             <input type="hidden" name="mes_ranking" value="<?php echo $mes_filtro; ?>">
                                             <input type="hidden" name="ano_ranking" value="<?php echo $ano_filtro; ?>">
 
                                             <select name="mes_recorrencia" id="mes_recorrencia"
-                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                class="form-control form-control-premium mr-2" style="font-size: 0.8rem;">
                                                 <?php
                                                 foreach ($meses as $num => $nome) {
                                                     $selected = ($num == $mes_rec_filtro) ? 'selected' : '';
@@ -470,7 +591,7 @@ function getCardColor($type, $name) {
                                                 ?>
                                             </select>
                                             <select name="ano_recorrencia" id="ano_recorrencia"
-                                                class="form-control form-control-sm mr-2" style="font-size: 0.75rem;">
+                                                class="form-control form-control-premium mr-2" style="font-size: 0.8rem;">
                                                 <?php
                                                 for ($i = $ano_atual; $i >= $ano_atual - 2; $i--) {
                                                     $selected = ($i == $ano_rec_filtro) ? 'selected' : '';
@@ -478,38 +599,42 @@ function getCardColor($type, $name) {
                                                 }
                                                 ?>
                                             </select>
-                                            <button type="submit" class="btn btn-primary btn-sm mr-2"
-                                                style="font-size: 0.7rem; background: rgb(44,64,74); border-color: rgb(44,64,74);"><?php echo __('Filtrar'); ?></button>
+                                            <button type="submit" class="btn btn-modern btn-primary text-white mr-2"
+                                                style="background: #4f46e5; border: none;"><i class="fas fa-filter mr-1"></i> <?php echo __('Filtrar'); ?></button>
                                             <a href="relatorio_ranking_recorrencia.php?mes=<?php echo $mes_rec_filtro; ?>&ano=<?php echo $ano_rec_filtro; ?>"
-                                                id="btn_pdf_recorrencia" target="_blank" class="btn btn-danger btn-sm"
-                                                style="font-size: 0.7rem; background: #e74a3b;">
-                                                <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> PDF
+                                                id="btn_pdf_recorrencia" target="_blank" class="btn btn-modern btn-danger text-white">
+                                                <i class="fas fa-file-pdf mr-1"></i> PDF
                                             </a>
                                         </form>
                                     </div>
                                     <div class="card-body">
                                         <?php
                                         if (!empty($recorrencia_data)) {
-                                            $cores = ['bg-danger', 'bg-warning', 'bg-primary', 'bg-info', 'bg-success'];
+                                            $cores = ['bg-danger', 'bg-warning', 'bg-info', 'bg-primary', 'bg-success'];
                                             foreach ($recorrencia_data as $i => $rec) {
                                                 $pct = ($max_recorrencia > 0) ? round(($rec['total'] / $max_recorrencia) * 100) : 0;
                                                 $cor = $cores[$i % count($cores)];
-                                                $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 45, '...'));
+                                                $titulo_chamado = htmlspecialchars(mb_strimwidth($rec['titulo'], 0, 50, '...'));
                                                 ?>
-                                                <h4 class="small font-weight-bold"><?php echo $titulo_chamado; ?><span
-                                                        class="float-right"><?php echo $rec['total']; ?>
-                                                        <?php echo __('chamado(s)'); ?></span></h4>
-                                                <div class="progress mb-4">
-                                                    <div class="progress-bar <?php echo $cor; ?>" role="progressbar"
-                                                        aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
-                                                        style="width: <?php echo $pct; ?>%;">
-                                                        <?php echo $rec['total']; ?>
+                                                <div class="mb-3">
+                                                    <h4 class="small font-weight-bold text-slate-800 mb-1">
+                                                        <?php echo $titulo_chamado; ?>
+                                                        <span class="float-right badge badge-light"><?php echo $rec['total']; ?> <?php echo __('chamados'); ?></span>
+                                                    </h4>
+                                                    <div class="progress progress-premium">
+                                                        <div class="progress-bar progress-bar-premium <?php echo $cor; ?>" role="progressbar"
+                                                            aria-valuenow="<?php echo $pct; ?>" aria-valuemin="0" aria-valuemax="100"
+                                                            style="width: <?php echo $pct; ?>%;">
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <?php
                                             }
                                         } else {
-                                            echo '<p class="text-center text-muted">' . __('Nenhum chamado registrado.') . '</p>';
+                                            echo '<div class="text-center p-4">
+                                                    <i class="fas fa-check-circle text-success fa-3x mb-3 opacity-50"></i>
+                                                    <p class="text-muted">' . __('Nenhum chamado recorrente neste período. Ótimo trabalho!') . '</p>
+                                                  </div>';
                                         }
                                         ?>
                                     </div>
@@ -531,7 +656,17 @@ function getCardColor($type, $name) {
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30" defer></script>
     <script src="/assets/js/global_search.js" defer></script>
     <script>
-        // Inline script removed, moved to global_search.js
+        function updateSlaPdfLink() {
+            var mes = document.getElementById('mes_ranking').value;
+            var ano = document.getElementById('ano_ranking').value;
+            document.getElementById('btn_pdf_sla').href = 'relatorio_ranking_sla.php?mes=' + mes + '&ano=' + ano;
+        }
+
+        function updateRecPdfLink() {
+            var mes = document.getElementById('mes_recorrencia').value;
+            var ano = document.getElementById('ano_recorrencia').value;
+            document.getElementById('btn_pdf_recorrencia').href = 'relatorio_ranking_recorrencia.php?mes=' + mes + '&ano=' + ano;
+        }
     </script>
     <script>
         // Atualizar links de PDF dinamicamente ao mudar os selects (apenas se existirem)

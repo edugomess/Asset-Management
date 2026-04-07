@@ -245,9 +245,8 @@ include_once 'auth.php'; // Proteção de sessão
                     </div>
                 </div>
 
-                <!-- Success Modal -->
-                <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
+                <dialog class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
                             <div class="modal-header border-0 p-4" style="background: #2c404a; color: white;">
                                 <div class="d-flex align-items-center">
@@ -261,11 +260,9 @@ include_once 'auth.php'; // Proteção de sessão
                                 </div>
                             </div>
                             <div class="modal-body text-center p-4 bg-light">
-                                <div class="mb-3">
-                                    <i class="fas fa-ticket-alt fa-3x text-primary mb-3"></i>
-                                    <h4 class="text-dark font-weight-bold" id="modal-chamado-id"></h4>
+                                    <i class="fas fa-ticket-alt fa-3x text-primary mb-3" aria-hidden="true"></i>
+                                    <h4 class="text-dark font-weight-bold" id="modal-chamado-id" aria-live="polite"><?php echo __('Aguardando ID...'); ?></h4>
                                     <p class="text-muted"><?php echo __('Acompanhe o status na lista de chamados.'); ?></p>
-                                </div>
                             </div>
                             <div class="modal-footer border-0 p-4 bg-white">
                                 <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold shadow-sm" id="btn-redirect-chamados" style="border-radius: 12px; background: #2c404a; border: none;">

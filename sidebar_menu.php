@@ -43,6 +43,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'leiloe') !== false) ? 'active' : ''; ?>"
+                href="leiloes.php">
+                <i class="fas fa-gavel"></i><span><?php echo __('Lotes de Leilão'); ?></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'doado') !== false) ? 'active' : ''; ?>"
+                href="ativos_doados.php">
+                <i class="fas fa-hand-holding-heart"></i><span><?php echo __('Histórico de Doações'); ?></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo (strpos($current_page, 'leiloados') !== false) ? 'active' : ''; ?>"
+                href="ativos_leiloados.php">
+                <i class="fas fa-file-invoice-dollar"></i><span><?php echo __('Histórico de Leilões'); ?></span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link <?php echo (strpos($current_page, 'licenca') !== false) ? 'active' : ''; ?>"
                 href="licencas.php">
                 <i class="fas fa-file-contract"></i><span><?php echo __('Licenças & Software'); ?></span>

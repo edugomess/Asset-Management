@@ -60,7 +60,13 @@ $dep_config = [
     'periodo_meses' => 0,
     'elegivel_doacao' => 0,
     'tempo_doacao_anos' => 5,
-    'tempo_doacao_meses' => 0
+    'tempo_doacao_meses' => 0,
+    'destinacao_tier1' => 'Doação',
+    'destinacao_tier2' => 'Doação',
+    'destinacao_tier3' => 'Doação',
+    'destinacao_tier4' => 'Doação',
+    'destinacao_infraestrutura' => 'Doação',
+    'elegivel_leilao' => 0
 ];
 $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
 if ($result_dep && mysqli_num_rows($result_dep) > 0) {
@@ -99,7 +105,8 @@ if ($periodo_total_meses > 0 && $valor_original > 0) {
     $percentual_depreciado = 0;
 }
 
-// Elegibilidade para doação
+// Elegibilidade Mista: Doação ou Leilão
+$leilao_habilitado = intval($dep_config['elegivel_leilao']);
 $doacao_habilitada = intval($dep_config['elegivel_doacao']);
 $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
 $meses_desde_cadastro = ($diff->y * 12) + $diff->m;
@@ -112,22 +119,59 @@ if ($result_cat_eleg && mysqli_num_rows($result_cat_eleg) > 0) {
     $cat_elegivel = intval($row_cat_eleg['elegivel_doacao']);
 }
 
-if (!$doacao_habilitada) {
-    $status_doacao = __('Doação Desativada');
-    $cor_doacao = "text-secondary";
-} elseif (!$cat_elegivel) {
-    $status_doacao = __('Categoria não elegível');
-    $cor_doacao = "text-warning";
-} elseif (empty($ativo['assigned_to'])) {
-    $status_doacao = __('Aguardando Atribuição');
-    $cor_doacao = "text-warning";
-} elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
-    $status_doacao = __('Elegível para Doação');
-    $cor_doacao = "text-success";
+// Qual é a política de destinação do Tier?
+$mapDestinacoes = [
+    'Tier 1' => $dep_config['destinacao_tier1'] ?? 'Doação',
+    'Tier 2' => $dep_config['destinacao_tier2'] ?? 'Doação',
+    'Tier 3' => $dep_config['destinacao_tier3'] ?? 'Doação',
+    'Tier 4' => $dep_config['destinacao_tier4'] ?? 'Doação',
+    'Infraestrutura' => $dep_config['destinacao_infraestrutura'] ?? 'Doação'
+];
+$destinacao_do_ativo = $mapDestinacoes[$tier_ativo] ?? 'Doação';
+
+$cor_doacao = "text-secondary";
+$status_doacao = __('Não Aplicável');
+
+if ($destinacao_do_ativo === 'Leilão') {
+    if (!$leilao_habilitado) {
+        $status_doacao = __('Leilões Desativados');
+        $cor_doacao = "text-secondary";
+    } elseif ($percentual_depreciado >= 100) {
+        $status_doacao = __('Elegível para Leilão');
+        $cor_doacao = "text-success";
+    } else {
+        $status_doacao = __('Aguardando Depreciação');
+        $cor_doacao = "text-danger";
+    }
+} elseif ($destinacao_do_ativo === 'Doação') {
+    if (!$doacao_habilitada) {
+        $status_doacao = __('Doação Desativada');
+        $cor_doacao = "text-secondary";
+    } elseif (!$cat_elegivel) {
+        $status_doacao = __('Categoria não elegível');
+        $cor_doacao = "text-warning";
+    } elseif (empty($ativo['assigned_to'])) {
+        $status_doacao = __('Aguardando Atribuição');
+        $cor_doacao = "text-warning";
+    } elseif ($meses_desde_cadastro >= $tempo_min_doacao_meses) {
+        $status_doacao = __('Elegível para Doação');
+        $cor_doacao = "text-success";
+    } else {
+        $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
+        $status_doacao = __('Bloqueado (Carência)');
+        $cor_doacao = "text-danger";
+    }
+} elseif ($destinacao_do_ativo === 'Descarte') {
+    if ($percentual_depreciado >= 100) {
+        $status_doacao = __('Elegível para Descarte');
+        $cor_doacao = "text-success";
+    } else {
+        $status_doacao = __('Aguardando Fim de Vida');
+        $cor_doacao = "text-danger";
+    }
 } else {
-    $restante_meses = $tempo_min_doacao_meses - $meses_desde_cadastro;
-    $status_doacao = __('Bloqueado (Carência)');
-    $cor_doacao = "text-danger";
+    $status_doacao = __('Sem Destinação (Nenhuma)');
+    $cor_doacao = "text-secondary";
 }
 
 // 3. Função para buscar o path do local de forma recursiva

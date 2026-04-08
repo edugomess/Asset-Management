@@ -96,6 +96,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $elegivel = isset($_POST['depreciacao']['elegivel_doacao']) ? 1 : 0;
     $doacao_anos = (int) $_POST['depreciacao']['tempo_doacao_anos'];
     $doacao_meses = (int) $_POST['depreciacao']['tempo_doacao_meses'];
+    
+    $dest_t1 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier1'] ?? 'Doação');
+    $dest_t2 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier2'] ?? 'Doação');
+    $dest_t3 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier3'] ?? 'Doação');
+    $dest_t4 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier4'] ?? 'Doação');
+    $dest_inf = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_infraestrutura'] ?? 'Doação');
+    $elegivel_leilao = isset($_POST['depreciacao']['elegivel_leilao']) ? 1 : 0;
 
     // Check if record exists
     $check = mysqli_query($conn, "SELECT id FROM configuracoes_depreciacao LIMIT 1");
@@ -112,11 +119,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
             periodo_meses = $periodo_meses, 
             elegivel_doacao = $elegivel, 
             tempo_doacao_anos = $doacao_anos, 
-            tempo_doacao_meses = $doacao_meses 
+            tempo_doacao_meses = $doacao_meses,
+            destinacao_tier1 = '$dest_t1',
+            destinacao_tier2 = '$dest_t2',
+            destinacao_tier3 = '$dest_t3',
+            destinacao_tier4 = '$dest_t4',
+            destinacao_infraestrutura = '$dest_inf',
+            elegivel_leilao = $elegivel_leilao
             WHERE id = " . $row_dep['id'];
     } else {
-        $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, taxa_tier1, taxa_tier2, taxa_tier3, taxa_tier4, taxa_infraestrutura, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses) 
-            VALUES ($taxa, $taxa_t1, $taxa_t2, $taxa_t3, $taxa_t4, $taxa_inf, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses)";
+        $sql_dep = "INSERT INTO configuracoes_depreciacao (taxa_depreciacao, taxa_tier1, taxa_tier2, taxa_tier3, taxa_tier4, taxa_infraestrutura, periodo_anos, periodo_meses, elegivel_doacao, tempo_doacao_anos, tempo_doacao_meses, destinacao_tier1, destinacao_tier2, destinacao_tier3, destinacao_tier4, destinacao_infraestrutura, elegivel_leilao) 
+            VALUES ($taxa, $taxa_t1, $taxa_t2, $taxa_t3, $taxa_t4, $taxa_inf, $periodo_anos, $periodo_meses, $elegivel, $doacao_anos, $doacao_meses, '$dest_t1', '$dest_t2', '$dest_t3', '$dest_t4', '$dest_inf', $elegivel_leilao)";
     }
 
     $success = mysqli_query($conn, $sql_dep);
@@ -357,7 +370,13 @@ $dep_config = [
     'periodo_meses' => 0,
     'elegivel_doacao' => 0,
     'tempo_doacao_anos' => 5,
-    'tempo_doacao_meses' => 0
+    'tempo_doacao_meses' => 0,
+    'destinacao_tier1' => 'Doação',
+    'destinacao_tier2' => 'Doação',
+    'destinacao_tier3' => 'Doação',
+    'destinacao_tier4' => 'Doação',
+    'destinacao_infraestrutura' => 'Doação',
+    'elegivel_leilao' => 0
 ];
 $result_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
 if ($result_dep && mysqli_num_rows($result_dep) > 0) {
@@ -1317,6 +1336,63 @@ function getHoursAndMinutes($total_minutes)
 
                                 <hr class="my-4">
 
+                                <!-- Política de Destinação de Fim de Vida -->
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Destinação de Fim de Vida (End-of-Life)'); ?></label>
+                                    <div class="col-sm-9">
+                                        <p class="small text-muted mb-3"><?php echo __('Defina o destino padrão de um equipamento após a sua depreciação contábil chegar a 100%.'); ?></p>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
+                                                <select class="form-control border-left-primary" name="depreciacao[dest_tier1]">
+                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier1'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier1'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier1'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier1'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
+                                                <select class="form-control border-left-info" name="depreciacao[dest_tier2]">
+                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier2'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier2'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier2'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier2'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
+                                                <select class="form-control border-left-success" name="depreciacao[dest_tier3]">
+                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier3'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier3'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier3'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier3'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
+                                                <select class="form-control border-left-warning" name="depreciacao[dest_tier4]">
+                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier4'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier4'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier4'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier4'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
+                                                <select class="form-control border-left-danger" name="depreciacao[dest_infraestrutura]">
+                                                    <option value="Doação" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
                                 <!-- Elegível para Doação (Global) -->
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Doação?'); ?></label>
@@ -1326,6 +1402,20 @@ function getHoursAndMinutes($total_minutes)
                                                 name="depreciacao[elegivel_doacao]" value="1" <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
                                             <label class="custom-control-label" for="elegivelDoacao">
                                                 <?php echo ($dep_config['elegivel_doacao'] == 1) ? __('Sim, ativos podem ser doados') : __('Não, doação desativada'); ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Elegível para Leilão (Global) -->
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Leilão?'); ?></label>
+                                    <div class="col-sm-4">
+                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                            <input type="checkbox" class="custom-control-input" id="elegivelLeilao"
+                                                name="depreciacao[elegivel_leilao]" value="1" <?php echo ($dep_config['elegivel_leilao'] == 1) ? 'checked' : ''; ?>>
+                                            <label class="custom-control-label" for="elegivelLeilao">
+                                                <?php echo ($dep_config['elegivel_leilao'] == 1) ? __('Sim, ativos no Fim-de-Vida podem ser leiloados') : __('Não, leilão desativado'); ?>
                                             </label>
                                         </div>
                                     </div>
@@ -1711,6 +1801,7 @@ function getHoursAndMinutes($total_minutes)
                     const minutes = parseInt($row.find('.sla-minutes').val()) || 0;
                     const total = (hours * 60) + minutes;
 
+
                     $row.find('.label-p1').text(formatTimeDisplay(Math.round(total / 6)));
                     $row.find('.label-p2').text(formatTimeDisplay(Math.round(total / 3)));
                     $row.find('.label-p3').text(formatTimeDisplay(Math.round(total * 2 / 3)));
@@ -1723,6 +1814,19 @@ function getHoursAndMinutes($total_minutes)
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
             updateSLABars(); // Initial call 
+            
+            $('#elegivelDoacao').on('change', function () {
+                $(this).next('label').text(this.checked ? "<?php echo __('Sim, ativos podem ser doados'); ?>" : "<?php echo __('Não, doação desativada'); ?>");
+                if (this.checked) {
+                    $('#doacaoOptions').slideDown();
+                } else {
+                    $('#doacaoOptions').slideUp();
+                }
+            });
+            
+            $('#elegivelLeilao').on('change', function () {
+                $(this).next('label').text(this.checked ? "<?php echo __('Sim, ativos no Fim-de-Vida podem ser leiloados'); ?>" : "<?php echo __('Não, leilão desativado'); ?>");
+            });
 
             // Toggle Label Updates (Real-time feedback)
             $('#iaAgenteAtivoBottom').on('change', function () {

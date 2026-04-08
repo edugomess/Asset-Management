@@ -1,6 +1,6 @@
 <?php
 /**
- * LISTAGEM DE ATIVOS DOADOS: ativos_doados.php
+ * LISTAGEM DE ATIVOS leiloadOS: ativos_leiloados.php
  * Exibe o histórico de doações de ativos de TI para terceiros ou colaboradores.
  * Permite a geração de relatórios PDF para prestação de contas.
  */
@@ -77,7 +77,7 @@ include_once 'conexao.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title><?php echo __('Ativos Doados'); ?></title>
+    <title><?php echo __('Ativos leiloados'); ?></title>
     <link rel="icon" type="image/jpeg" sizes="800x800" href="/assets/img/1.gif?h=a002dd0d4fa7f57eb26a5036bc012b90">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css?h=10db4134a440e5796ec9b2db37a80278">
     <link rel="stylesheet" href="/assets/css/Montserrat.css?h=4f0fce47efb23b5c354caba98ff44c36">
@@ -137,15 +137,15 @@ include_once 'conexao.php';
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark"><?php echo __('Ativos Doados'); ?></h3>
+                        <h3 class="text-dark"><?php echo __('Ativos leiloados'); ?></h3>
                         <div>
                             <a class="btn btn-danger active text-white pulse animated btn-user mr-2" role="button"
                                 style="border-radius: 10px; height: 50px; padding: 13px 30px;"
-                                href="/gerar_relatorio_doacoes.php" target="_blank"><i class="fas fa-file-pdf"></i>
+                                href="/gerar_relatorio_leiloes.php" target="_blank"><i class="fas fa-file-pdf"></i>
                                 PDF</a>
                             <a class="btn btn-success active text-white pulse animated btn-user" role="button"
                                 style="border-radius: 10px; height: 50px; padding: 13px 30px; background-color: #1cc88a; border-color: #1cc88a;"
-                                href="/gerar_relatorio_doacoes.php?format=xlsx" target="_blank"><i
+                                href="/gerar_relatorio_leiloes.php?format=xlsx" target="_blank"><i
                                     class="fas fa-file-excel"></i> XLSX</a>
                         </div>
                     </div>
@@ -176,7 +176,7 @@ include_once 'conexao.php';
 
                                 // Buscar termo de pesquisa
                                 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-                                $where_clause = "WHERE v.status = 'Doado'";
+                                $where_clause = "WHERE v.status = 'Leiloado'";
                                 if (!empty($search)) {
                                     $where_clause .= " AND (v.modelo LIKE '%$search%' OR v.tag LIKE '%$search%' OR v.hostName LIKE '%$search%')";
                                 }
@@ -196,7 +196,7 @@ include_once 'conexao.php';
                                 // Calcular o limite de registros
                                 $start_from = ($current_page - 1) * $results_per_page;
 
-                                // Consultar os ativos doados
+                                // Consultar os ativos leiloados
                                 $sql = "SELECT v.*, u.nome, u.sobrenome FROM venda v LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios $where_clause ORDER BY v.data_venda DESC LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
@@ -209,9 +209,8 @@ include_once 'conexao.php';
                                             <th><?php echo __('Categoria'); ?></th>
                                             <th><?php echo __('Tag'); ?></th>
                                             <th><?php echo __('HostName'); ?></th>
-                                            <th><?php echo __('Doado para'); ?></th>
                                             <th><?php echo __('Centro de Custo'); ?></th>
-                                            <th><?php echo __('Data Doação'); ?></th>
+                                            <th><?php echo __('Data Leilão'); ?></th>
                                             <th><?php echo __('Status'); ?></th>
                                         </tr>
                                     </thead>
@@ -239,16 +238,15 @@ include_once 'conexao.php';
                                                     <td><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
-                                                    <td><?php echo htmlspecialchars($recebedor); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td><?php echo $data_venda; ?></td>
                                                     <td><span
-                                                            class="status-badge badge-info"><?php echo __('Doado'); ?></span></td>
+                                                            class="status-badge badge-warning"><?php echo __('leiloado'); ?></span></td>
                                                 </tr>
                                                 <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='9' class='text-center'>" . __('Nenhum ativo doado encontrado.') . "</td></tr>";
+                                            echo "<tr><td colspan='9' class='text-center'>" . __('Nenhum ativo leiloado encontrado.') . "</td></tr>";
                                         }
                                         ?>
                                     </tbody>

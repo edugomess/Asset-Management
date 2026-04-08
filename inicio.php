@@ -111,14 +111,29 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         'periodo_meses' => 0,
                         'elegivel_doacao' => 1,
                         'tempo_doacao_anos' => 5,
-                        'tempo_doacao_meses' => 0
+                        'tempo_doacao_meses' => 0,
+                        'destinacao_tier1' => 'Doação',
+                        'destinacao_tier2' => 'Doação',
+                        'destinacao_tier3' => 'Doação',
+                        'destinacao_tier4' => 'Doação',
+                        'destinacao_infraestrutura' => 'Doação',
+                        'elegivel_leilao' => 0
                     ];
                     $res_dep = mysqli_query($conn, "SELECT * FROM configuracoes_depreciacao LIMIT 1");
                     if ($res_dep && mysqli_num_rows($res_dep) > 0) {
                         $dep_config = mysqli_fetch_assoc($res_dep);
                     }
                     $doacao_global = intval($dep_config['elegivel_doacao']);
+                    $leilao_global = intval($dep_config['elegivel_leilao']);
                     $tempo_min_doacao_meses = (intval($dep_config['tempo_doacao_anos']) * 12) + intval($dep_config['tempo_doacao_meses']);
+                    
+                    $mapDestinacoes = [
+                        'Tier 1' => $dep_config['destinacao_tier1'] ?? 'Doação',
+                        'Tier 2' => $dep_config['destinacao_tier2'] ?? 'Doação',
+                        'Tier 3' => $dep_config['destinacao_tier3'] ?? 'Doação',
+                        'Tier 4' => $dep_config['destinacao_tier4'] ?? 'Doação',
+                        'Infraestrutura' => $dep_config['destinacao_infraestrutura'] ?? 'Doação'
+                    ];
 
                     // Categorias elegíveis
                     $cat_doacao_map = [];
@@ -136,7 +151,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     $count_ativos_metrics = 0;
                     $valor_patrimonial_atual = 0;
                     $valor_original_total = 0;
-                    $count_elegiveis = 0;
+                    $count_elegiveis_doacao = 0;
+                    $count_elegiveis_leilao = 0;
 
                     while ($m = mysqli_fetch_assoc($res_metrics)) {
                         $count_ativos_metrics++;
@@ -173,10 +189,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         }
                         $valor_patrimonial_atual += $v_atual;
 
-                        // Elegibilidade
-                        $cat_el = isset($cat_doacao_map[$m['categoria']]) ? $cat_doacao_map[$m['categoria']] : 1;
-                        if ($doacao_global && $cat_el && ($meses_atv >= $tempo_min_doacao_meses)) {
-                            $count_elegiveis++;
+                        // Elegibilidade Mista
+                        $dest_m = $mapDestinacoes[$tier_m] ?? 'Doação';
+                        $percentual_dep = ($v_original > 0) ? ($dep_total / $v_original) * 100 : 0;
+                        
+                        if ($dest_m === 'Leilão') {
+                            if ($leilao_global && $percentual_dep >= 100) {
+                                $count_elegiveis_leilao++;
+                            }
+                        } elseif ($dest_m === 'Doação') {
+                            $cat_el = isset($cat_doacao_map[$m['categoria']]) ? $cat_doacao_map[$m['categoria']] : 1;
+                            if ($doacao_global && $cat_el && ($meses_atv >= $tempo_min_doacao_meses)) {
+                                $count_elegiveis_doacao++;
+                            }
                         }
                     }
                     $perda_patrimonial_avg = ($valor_original_total > 0) ? (1 - ($valor_patrimonial_atual / $valor_original_total)) * 100 : 0;
@@ -240,11 +265,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo __('Elegíveis para Doação'); ?></div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $count_elegiveis; ?></div>
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" title="Elegíveis para Doação ou Leilão"><?php echo __('Elegíveis Fim de Vida'); ?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <small class="text-muted" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;">DOAÇÕES:</small><?php echo $count_elegiveis_doacao; ?>
+                                                <small class="text-muted ml-2" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;">LEILÃO:</small><?php echo $count_elegiveis_leilao; ?>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-hand-holding-heart fa-2x text-gray-300"></i>
+                                            <i class="fas fa-boxes fa-2x text-warning" style="opacity:0.3;"></i>
                                         </div>
                                     </div>
                                 </div>

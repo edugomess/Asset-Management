@@ -38,12 +38,12 @@ try {
         }
 
         // Transferir o ativo para a tabela "venda" (que agora representa doações)
-        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, imagem, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtDoacao = $conn->prepare($queryDoacao);
         $status_doado = 'Doado';
         $stmtDoacao->bind_param(
-            'sssssssssssi i',
+            'sssssssssssi',
             $ativo['categoria'],
             $ativo['fabricante'],
             $ativo['modelo'],
@@ -51,7 +51,7 @@ try {
             $ativo['hostName'],
             $ativo['valor'],
             $ativo['macAdress'],
-            $ativo['imagem'],
+            
             $status_doado,
             $ativo['dataAtivacao'],
             $ativo['centroDeCusto'],

@@ -87,7 +87,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><?php echo __('Centro de Custo'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-wallet mr-2 text-success"></i><?php echo __('Centro de Custo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row mb-3">

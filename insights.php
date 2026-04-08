@@ -153,7 +153,8 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                 <!-- Topbar Principal -->
                 <?php include_once 'topbar.php'; ?>
 
-                <div class="container-fluid">
+                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
+                    <h3 class="text-dark mb-4 animate__animated animate__fadeInDown"><i class="fas fa-brain mr-2 text-warning"></i><?php echo __('Inteligência e Prevenção'); ?></h3>
                     <div class="row animate__animated animate__fadeInUp">
                         <!-- Card: Incidentes Recorrentes -->
                         <div class="col-lg-6 mb-4">

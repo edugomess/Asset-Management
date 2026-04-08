@@ -48,7 +48,7 @@ if (!$local) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><?php echo __('Editar Local'); ?></h3>
+                    <h3 class="text-dark mb-1"><i class="fas fa-map-marker-alt mr-2 text-warning"></i><?php echo __('Editar Local'); ?></h3>
                     
                     <div class="row justify-content-center">
                         <div class="col-md-6">

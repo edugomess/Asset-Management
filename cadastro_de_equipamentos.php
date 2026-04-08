@@ -50,7 +50,7 @@ include_once 'auth.php'; // Proteção de sessão
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Cadastro de Ativo'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Novo Equipamento'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form id="assetForm" action="inserir_equipamento.php" method="post"

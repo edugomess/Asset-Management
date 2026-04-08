@@ -183,7 +183,7 @@ if (isset($_GET['msg'])) {
                         </div>
                     </div>
 
-                    <h3 class="text-dark mb-4"><?php echo __('Gerenciar Locais e Infraestrutura'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-map-marked-alt mr-2 text-info"></i><?php echo __('Gerenciar Locais e Infraestrutura'); ?></h3>
                     <?php echo $msg; ?>
                     
                     <div class="row">

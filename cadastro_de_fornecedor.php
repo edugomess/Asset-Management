@@ -58,7 +58,7 @@ include_once 'auth.php'; // Proteção de sessão
                 <?php include_once 'topbar.php'; ?>
                 <div id="content-1">
                     <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Cadastro de Fornecedor'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Cadastrar Fornecedor'); ?></h3>
                     <div class="card shadow">
                             <div class="card-body">
                                 <form action="inserir_fornecedor.php" method="post" enctype="multipart/form-data">

@@ -43,7 +43,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0"><?php echo __('Novo Artigo da KB'); ?></h3>
+                        <h3 class="text-dark mb-0"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Novo Artigo da KB'); ?></h3>
                         <a href="gerenciar_kb.php" class="btn btn-secondary shadow-sm" style="border-radius: 10px; padding: 8px 20px;">
                             <i class="fas fa-arrow-left mr-2"></i><?php echo __('Voltar'); ?>
                         </a>
@@ -84,7 +84,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                 </div>
 
                                 <div class="form-group mt-4">
-                                    <label class="font-weight-bold text-gray-700"><?php echo __('Conteúdo do Artigo'); ?></label>
+                                    <label class="font-weight-bold text-gray-700"><i class="fas fa-align-left mr-1"></i><?php echo __('Conteúdo do Artigo'); ?></label>
                                     <textarea id="summernote" name="conteudo" required></textarea>
                                 </div>
 

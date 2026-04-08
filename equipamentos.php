@@ -284,8 +284,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                     <h3 class="text-dark mb-4">
                         <?php
-                        // Define o título da página com base no filtro de status
-                        echo (isset($_GET['status']) && ($_GET['status'] === 'Manutencao' || $_GET['status'] === 'Manutenção')) ? __('Ativos em Manutenção') : __('Ativos');
+                        // Define o ícone e o título com base no filtro de status
+                        if (isset($_GET['status']) && ($_GET['status'] === 'Manutencao' || $_GET['status'] === 'Manutenção')) {
+                            echo '<i class="fas fa-tools mr-2 text-danger"></i>' . __('Ativos em Manutenção');
+                        } else {
+                            echo '<i class="fas fa-laptop-medical mr-2 text-info"></i>' . __('Ativos');
+                        }
                         ?>
                     </h3>
 

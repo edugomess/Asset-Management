@@ -49,7 +49,7 @@ if (!$article) {
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0"><?php echo __('Editar Artigo'); ?></h3>
+                        <h3 class="text-dark mb-0"><i class="fas fa-edit mr-2 text-primary"></i><?php echo __('Editar Artigo da KB'); ?></h3>
                         <a href="gerenciar_kb.php" class="btn btn-secondary shadow-sm" style="border-radius: 10px; padding: 8px 20px;">
                             <i class="fas fa-arrow-left mr-2"></i><?php echo __('Voltar'); ?>
                         </a>

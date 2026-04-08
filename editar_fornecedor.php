@@ -55,7 +55,7 @@ if (!$fornecedor) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Editar Fornecedor'); ?></h3>
+                    <h3 class="text-dark mb-1"><i class="fas fa-handshake mr-2 text-secondary"></i><?php echo __('Editar Fornecedor'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_fornecedor.php" method="post" enctype="multipart/form-data">

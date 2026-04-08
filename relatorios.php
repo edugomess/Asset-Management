@@ -9,7 +9,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 
 <head>
     <meta charset="utf-8">
@@ -60,7 +60,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><?php echo __('Relatórios'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-file-invoice mr-2 text-info"></i><?php echo __('Relatórios'); ?></h3>
                     <div class="card shadow">
                         <div class="card-header py-3">
                             <p class="text-primary m-0 font-weight-bold"></p>
@@ -170,10 +170,15 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <option value="relatorio_distribuicao_tipos_local.php">59 - <?php echo __('Distribuição por Tipo de Local'); ?></option>
                                                 </optgroup>
 
+                                                <optgroup label="<?php echo __('Leilão'); ?>">
+                                                    <option value="relatorio_leiloes_pendentes.php">60 - <?php echo __('Ativos Elegíveis (Pendentes)'); ?></option>
+                                                    <option value="relatorio_leiloes_realizados.php" data-periodo="true">61 - <?php echo __('Histórico de Leilões Realizados'); ?></option>
+                                                </optgroup>
+
                                                 <optgroup label="<?php echo __('Outros'); ?>">
-                                                    <option value="relatorio_centro_de_custo.php">60 - <?php echo __('Centros de Custo (Lista)'); ?></option>
-                                                    <option value="relatorio_cc_detalhado.php">61 - <?php echo __('Centros de Custo (Detalhado)'); ?></option>
-                                                    <option value="relatorio_resumo_geral.php">62 - <?php echo __('Resumo Geral do Sistema'); ?></option>
+                                                    <option value="relatorio_centro_de_custo.php">62 - <?php echo __('Centros de Custo (Lista)'); ?></option>
+                                                    <option value="relatorio_cc_detalhado.php">63 - <?php echo __('Centros de Custo (Detalhado)'); ?></option>
+                                                    <option value="relatorio_resumo_geral.php">64 - <?php echo __('Resumo Geral do Sistema'); ?></option>
                                                 </optgroup>
                                             <?php endif; ?>
                                         </select>

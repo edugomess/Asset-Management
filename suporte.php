@@ -146,7 +146,7 @@ $result_cc = mysqli_query($conn, $sql_cc);
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <!-- Hero Section -->
                     <div class="hero-section text-center">
-                        <h2 class="font-weight-bold" style="font-size: 2.5rem;"><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
+                        <h2 class="font-weight-bold" style="font-size: 2.5rem;"><i class="fas fa-headset mr-2 text-primary"></i><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
                         <p class="lead opacity-75"><?php echo __('Sua central de suporte e inteligência para gestão de ativos.'); ?></p>
                     </div>
 

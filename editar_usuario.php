@@ -59,7 +59,7 @@ $can_edit_all = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuari
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Editar Usuário'); ?></h3>
+                    <h3 class="text-dark mb-1"><i class="fas fa-user-edit mr-2 text-primary"></i><?php echo __('Editar Usuário'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_usuario.php" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">

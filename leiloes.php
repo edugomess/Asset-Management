@@ -313,7 +313,7 @@ if ($result) {
                                                     ?>
                                                     <tr class="clickable-row" data-href="perfil_ativo.php?id=<?php echo $ativo['id_asset']; ?>">
                                                         <td onclick="event.stopPropagation();">
-                                                            <input type="checkbox" name="lote[]" value="<?php echo $ativo['id_asset']; ?>">
+                                                            <input type="checkbox" name="lote[]" value="<?php echo $ativo['id_asset']; ?>" data-status="<?php echo $raw_status; ?>">
                                                         </td>
                                                         <td class="d-flex align-items-center">
                                                             <?php
@@ -351,6 +351,7 @@ if ($result) {
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="/assets/js/theme.js"></script>
         <script>
             $(document).ready(function() {
@@ -366,7 +367,12 @@ if ($result) {
 
             function extractBatch() {
                 if ($('input[name="lote[]"]:checked').length === 0) {
-                    alert("<?php echo __('Selecione ao menos um ativo marcando a caixa [Sel] para extrair.'); ?>");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '<?php echo __('Atenção'); ?>',
+                        text: '<?php echo __('Selecione ao menos um ativo marcando a caixa [Sel] para extrair.'); ?>',
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
                 $('#exportForm').submit();
@@ -374,34 +380,81 @@ if ($result) {
 
             function leiloarLote() {
                 var selected = [];
+                var hasAssigned = false;
+                
                 $('input[name="lote[]"]:checked').each(function() {
                     selected.push($(this).val());
+                    if ($(this).data('status') !== 'Disponível') {
+                        hasAssigned = true;
+                    }
                 });
 
                 if (selected.length === 0) {
-                    alert("<?php echo __('Selecione ao menos um ativo marcando a caixa [Sel] para Leiloar.'); ?>");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '<?php echo __('Atenção'); ?>',
+                        text: '<?php echo __('Selecione ao menos um ativo marcando a caixa [Sel] para Leiloar.'); ?>',
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
 
-                if (confirm("<?php echo __('Tem certeza que deseja marcar estes ativos como LEILOADOS? Esta ação transferirá os itens do inventário ativo para o histórico de Vendas/Leilão definitivamente e não pode ser desfeita.'); ?>")) {
-                    $.ajax({
-                        url: 'leiloar_lote.php',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ lote: selected }),
-                        success: function(resp) {
-                            if (resp && resp.success) {
-                                alert("<?php echo __('Lote leiloado com sucesso e transferido para o Histórico!'); ?>");
-                                location.reload();
-                            } else {
-                                alert("Erro: " + (resp.message ? resp.message : "<?php echo __('Ocorreu um erro no servidor.'); ?>"));
-                            }
-                        },
-                        error: function() {
-                            alert("<?php echo __('Erro na comunicação com o servidor.'); ?>");
-                        }
+                if (hasAssigned) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '<?php echo __('Ativos Atribuídos'); ?>',
+                        text: '<?php echo __('Um ou mais ativos selecionados ainda estão atribuídos a um usuário ou local. Você deve realizar a desatribuição (liberação) de todos os itens antes de marcá-los como leiloados.'); ?>',
+                        confirmButtonColor: '#d33'
                     });
+                    return;
                 }
+
+                Swal.fire({
+                    title: '<?php echo __('Confirmar Leilão'); ?>',
+                    text: '<?php echo __('Tem certeza que deseja marcar estes ativos como LEILOADOS? Esta ação transferirá os itens do inventário ativo para o histórico de Vendas/Leilão definitivamente.'); ?>',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f39c12',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '<?php echo __('Sim, leiloar!'); ?>',
+                    cancelButtonText: '<?php echo __('Cancelar'); ?>'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'leiloar_lote.php',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ lote: selected }),
+                            success: function(resp) {
+                                if (resp && resp.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '<?php echo __('Sucesso!'); ?>',
+                                        text: '<?php echo __('Lote leiloado com sucesso e transferido para o Histórico!'); ?>',
+                                        confirmButtonColor: '#28a745'
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro',
+                                        text: resp.message ? resp.message : "<?php echo __('Ocorreu um erro no servidor.'); ?>",
+                                        confirmButtonColor: '#d33'
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro de Comunicação',
+                                    text: '<?php echo __('Erro na comunicação com o servidor.'); ?>',
+                                    confirmButtonColor: '#d33'
+                                });
+                            }
+                        });
+                    }
+                });
             }
         </script>
 </body>

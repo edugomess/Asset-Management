@@ -55,7 +55,7 @@ if (!$cc) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Editar Centro de Custo'); ?></h3>
+                    <h3 class="text-dark mb-1"><i class="fas fa-wallet mr-2 text-success"></i><?php echo __('Editar Centro de Custo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_centro_de_custo.php" method="post">

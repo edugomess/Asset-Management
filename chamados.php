@@ -153,7 +153,7 @@ $result = mysqli_query($conn, $sql);
             <div id="content">
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><?php echo __('Chamados'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-ticket-alt mr-2 text-primary"></i><?php echo __('Chamados'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">

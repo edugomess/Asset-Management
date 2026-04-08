@@ -332,7 +332,7 @@ function getCardColor($type, $name)
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0"><?php echo __('Dashboard'); ?></h3>
+                        <h3 class="text-dark mb-0"><i class="fas fa-chart-pie mr-2 text-primary"></i><?php echo __('Dashboard'); ?></h3>
                         <div class="d-flex align-items-center">
                             <?php
                             $where_closed = "";

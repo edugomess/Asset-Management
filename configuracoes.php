@@ -827,7 +827,7 @@ function getHoursAndMinutes($total_minutes)
             <div id="content">
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><?php echo __('Configurações do Sistema'); ?></h3>
+                    <h3 class="text-dark mb-4"><i class="fas fa-cogs mr-2 text-secondary"></i><?php echo __('Configurações do Sistema'); ?></h3>
 
                     <div id="autoSaveStatus"><i class="fas fa-check-circle mr-2"></i> <span
                             id="autoSaveMessage"><?php echo __('Alteração salva!'); ?></span></div>

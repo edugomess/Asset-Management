@@ -59,7 +59,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
-                        <h3 class="text-dark mb-0"><?php echo __('Base de Conhecimento'); ?></h3>
+                        <h3 class="text-dark mb-0"><i class="fas fa-book-reader mr-2 text-info"></i><?php echo __('Base de Conhecimento'); ?></h3>
                     </div>
 
                     <div class="card shadow">

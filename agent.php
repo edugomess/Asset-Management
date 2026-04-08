@@ -178,7 +178,7 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4 animate__animated animate__fadeInDown"><?php echo __('Agente Inteligente - Assistente Virtual'); ?></h3>
+                    <h3 class="text-dark mb-4 animate__animated animate__fadeInDown"><i class="fas fa-robot mr-2 text-primary"></i><?php echo __('Agente Inteligente - Assistente Virtual'); ?></h3>
                     <div class="card shadow card-shadow mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold" style="color: rgb(44,64,74);">
@@ -194,7 +194,7 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
                             <?php if (!$chat_ativo): ?>
                                 <div class="text-center py-5">
                                     <i class="fas fa-comment-slash fa-4x text-gray-300 mb-4"></i>
-                                    <h5 class="text-secondary"><?php echo __('O Chat por IA está desativado'); ?></h5>
+                                    <h2 class="font-weight-bold" style="font-size: 2.5rem;"><i class="fas fa-headset mr-2 text-primary"></i><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
                                     <p class="text-muted"><?php echo __('Esta funcionalidade foi desabilitada nas configurações do sistema pelo administrador.'); ?></p>
                                     <a href="configuracoes.php" class="btn btn-primary btn-sm mt-3" style="background: rgb(44,64,74); border: none;">
                                         <i class="fas fa-cogs mr-1"></i> <?php echo __('Ir para Configurações'); ?>

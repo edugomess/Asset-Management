@@ -61,7 +61,7 @@ if (!$asset) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-1"><?php echo __('Editar Ativo'); ?></h3>
+                    <h3 class="text-dark mb-1"><i class="fas fa-laptop-medical mr-2 text-info"></i><?php echo __('Editar Ativo'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="update_ativo.php" method="post" enctype="multipart/form-data">

@@ -582,7 +582,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                         <div class="ticket-header-card animate__animated animate__fadeInDown">
                             <div class="ticket-title-section">
                                 <small class="text-muted font-weight-bold text-uppercase" style="letter-spacing: 1px;">Ticket ID #<?php echo $chamado['id']; ?></small>
-                                <h3><?php echo htmlspecialchars($chamado['titulo']); ?></h3>
+                                <h3><i class="fas fa-ticket-alt mr-2 text-primary"></i><?php echo htmlspecialchars($chamado['titulo']); ?></h3>
                             </div>
 
                             <!-- SLA Timer Bar -->

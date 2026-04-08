@@ -137,7 +137,7 @@ include_once 'conexao.php';
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark"><?php echo __('Ativos leiloados'); ?></h3>
+                        <h3 class="text-dark"><i class="fas fa-file-invoice-dollar mr-2 text-warning"></i><?php echo __('Ativos leiloados'); ?></h3>
                         <div>
                             <a class="btn btn-danger active text-white pulse animated btn-user mr-2" role="button"
                                 style="border-radius: 10px; height: 50px; padding: 13px 30px;"

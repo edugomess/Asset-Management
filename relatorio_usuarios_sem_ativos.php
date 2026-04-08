@@ -2,14 +2,14 @@
 require('ReportGenerator.php');
 
 $columns = [
-    ['header' => 'Nome (Setor)', 'width' => 75, 'align' => 'L', 'field' => 'nome'],
-    ['header' => 'Email', 'width' => 60, 'align' => 'L', 'field' => 'email'],
-    ['header' => 'Centro de Custo', 'width' => 50, 'align' => 'L', 'field' => 'centroDeCusto']
+    ['header' => 'Nome', 'width' => 60, 'align' => 'L', 'field' => 'nome_completo'],
+    ['header' => 'Setor', 'width' => 45, 'align' => 'L', 'field' => 'setor'],
+    ['header' => 'Email', 'width' => 45, 'align' => 'L', 'field' => 'email'],
+    ['header' => 'CC', 'width' => 35, 'align' => 'L', 'field' => 'centroDeCusto']
 ];
 
 $pdf = new ReportGenerator('Relatório de Usuários Sem Ativos', $columns, $conn);
-// Users that do not appear in ativos.assigned_to
-$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome, ' (', COALESCE(u.setor, '-'), ')') as nome, u.email, u.centroDeCusto 
+$sql = "SELECT CONCAT(u.nome, ' ', u.sobrenome) as nome_completo, u.setor, u.email, u.centroDeCusto 
         FROM usuarios u 
         LEFT JOIN ativos a ON u.id_usuarios = a.assigned_to 
         WHERE a.id_asset IS NULL 

@@ -47,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
     $prioridade = isset($_POST['prioridade']) ? mysqli_real_escape_string($conn, $_POST['prioridade']) : $chamado_base['prioridade'];
     $service_tag = isset($_POST['service_tag']) ? mysqli_real_escape_string($conn, $_POST['service_tag']) : ($chamado_base['service_tag'] ?? null);
 
+    // BUSCA O DATA_PRIMEIRA_RESPOSTA ATUAL (para não sobrescrever)
+    $res_pr = $conn->query("SELECT data_primeira_resposta FROM chamados WHERE id = $id_chamado");
+    $row_pr = $res_pr ? $res_pr->fetch_assoc() : [];
+    $data_primeira_resposta_atual = $row_pr['data_primeira_resposta'] ?? null;
+
     // Restrição de Segurança: Se não for Admin/Suporte, ignora alterações de status, responsável e prioridade
     $is_tecnico = ($_SESSION['nivelUsuario'] === 'Admin' || $_SESSION['nivelUsuario'] === 'Suporte');
     if (!$is_tecnico) {
@@ -156,7 +161,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['status']) || isset($_
 
         $id_asset = isset($_POST['id_asset']) && !empty($_POST['id_asset']) ? (int)$_POST['id_asset'] : ($chamado_base['id_asset'] ?? 'NULL');
         $id_gestor_aprovador = isset($_POST['id_gestor_aprovador']) && !empty($_POST['id_gestor_aprovador']) ? (int)$_POST['id_gestor_aprovador'] : ($chamado_base['id_gestor_aprovador'] ?? 'NULL');
-        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', service_tag = '$service_tag', id_asset = $id_asset, id_gestor_aprovador = $id_gestor_aprovador, nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql WHERE id = $id_chamado";
+
+        // === SLA DE PRIMEIRO ATENDIMENTO: Captura automática ===
+        // Só registra se ainda não foi registrado e a ação é de um técnico
+        $primeira_resposta_sql = '';
+        if ($is_tecnico && empty($data_primeira_resposta_atual)) {
+            $atribuiu_responsavel = ($responsavel_id !== 'NULL' && empty($chamado_base['responsavel_id']));
+            $adicionou_comentario = !empty($corpo_limpo) && !in_array($nova_nota_texto, $ignorar_tags);
+            if ($atribuiu_responsavel || $adicionou_comentario) {
+                $primeira_resposta_sql = ', data_primeira_resposta = NOW()';
+            }
+        }
+
+        $sql_update = "UPDATE chamados SET status = '$novo_status', responsavel_id = $responsavel_id, prioridade = '$prioridade', service_tag = '$service_tag', id_asset = $id_asset, id_gestor_aprovador = $id_gestor_aprovador, nota_resolucao = '$nota_resolucao' $fechamento_sql $congelamento_sql $primeira_resposta_sql WHERE id = $id_chamado";
 
         if ($conn->query($sql_update) === true) {
             $msg = '<div class="alert alert-success">' . __('Chamado atualizado com sucesso!') . '</div>';
@@ -203,10 +220,14 @@ if ($res_ia && mysqli_num_rows($res_ia) > 0) {
 
 // Configurações de SLA
 $sla_configs = [];
-$res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos FROM configuracoes_sla");
+$sla_primeira_resposta_minutos_config = 10; // Padrão
+$res_config = mysqli_query($conn, "SELECT categoria, tempo_sla_minutos, sla_primeira_resposta_minutos FROM configuracoes_sla");
 if ($res_config) {
     while ($row_config = mysqli_fetch_assoc($res_config)) {
         $sla_configs[$row_config['categoria']] = $row_config['tempo_sla_minutos'];
+        if (!empty($row_config['sla_primeira_resposta_minutos'])) {
+            $sla_primeira_resposta_minutos_config = (int)$row_config['sla_primeira_resposta_minutos'];
+        }
     }
 }
 $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880];
@@ -822,6 +843,50 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                         <div class="mb-3">
                                             <div class="form-label-premium"><?php echo __('Aberto em'); ?></div>
                                             <div class="form-value text-muted small"><i class="fas fa-calendar-alt mr-1"></i> <?php echo date('d/m/Y H:i', strtotime($chamado['data_abertura'])); ?></div>
+                                        </div>
+
+                                        <!-- SLA DE PRIMEIRO ATENDIMENTO -->
+                                        <div class="mb-3">
+                                            <div class="form-label-premium">
+                                                <i class="fas fa-stopwatch mr-1 text-info"></i>
+                                                <?php echo __('Primeiro Atendimento'); ?>
+                                                <span class="badge badge-pill badge-light text-muted ml-1" style="font-size:0.6rem;" title="SLA alvo configurado">Meta: <?php echo $sla_primeira_resposta_minutos_config; ?> min</span>
+                                            </div>
+                                            <?php
+                                            if (!empty($chamado['data_primeira_resposta'])):
+                                                $ts_abertura  = strtotime($chamado['data_abertura']);
+                                                $ts_resposta  = strtotime($chamado['data_primeira_resposta']);
+                                                $diff_min     = round(($ts_resposta - $ts_abertura) / 60);
+                                                $dentro_prazo = $diff_min <= $sla_primeira_resposta_minutos_config;
+                                                if ($diff_min >= 60) {
+                                                    $tempo_fmt = floor($diff_min / 60) . 'h ' . ($diff_min % 60) . 'min';
+                                                } else {
+                                                    $tempo_fmt = $diff_min . ' min';
+                                                }
+                                            ?>
+                                                <div class="d-flex align-items-center p-2 rounded mt-1"
+                                                     style="background: <?php echo $dentro_prazo ? 'rgba(28,200,138,0.08)' : 'rgba(231,74,59,0.08)'; ?>; border: 1px solid <?php echo $dentro_prazo ? '#1cc88a' : '#e74a3b'; ?>;">
+                                                    <i class="fas <?php echo $dentro_prazo ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'; ?> mr-2"></i>
+                                                    <div>
+                                                        <div class="font-weight-bold" style="font-size:0.85rem; color: <?php echo $dentro_prazo ? '#1cc88a' : '#e74a3b'; ?>;">
+                                                            <?php echo $dentro_prazo ? __('Dentro do Prazo') : __('Fora do Prazo'); ?>
+                                                        </div>
+                                                        <div class="text-muted" style="font-size:0.75rem;">
+                                                            <?php echo __('Respondido em'); ?>: <strong><?php echo $tempo_fmt; ?></strong>
+                                                            &bull; <?php echo date('d/m H:i', $ts_resposta); ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="d-flex align-items-center p-2 rounded mt-1"
+                                                     style="background: rgba(246,194,62,0.08); border: 1px solid #f6c23e;">
+                                                    <i class="fas fa-hourglass-half text-warning mr-2"></i>
+                                                    <div>
+                                                        <div class="font-weight-bold text-warning" style="font-size:0.85rem;"><?php echo __('Aguardando 1º Atendimento'); ?></div>
+                                                        <div class="text-muted" style="font-size:0.75rem;"><?php echo __('Nenhum contato técnico registrado'); ?></div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <?php if (!empty($chamado['anexo'])): ?>
                                             <div class="mt-4 p-2 bg-light rounded text-center">

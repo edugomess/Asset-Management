@@ -74,6 +74,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
         }
     }
 
+    // === SLA DE PRIMEIRO ATENDIMENTO: Salva o tempo alvo global ===
+    if (isset($_POST['sla_primeira_resposta_minutos'])) {
+        $sla_pr = max(1, (int) $_POST['sla_primeira_resposta_minutos']);
+        // Garante que a coluna existe antes de tentar salvar
+        $conn->query("ALTER TABLE configuracoes_sla ADD COLUMN IF NOT EXISTS sla_primeira_resposta_minutos INT NOT NULL DEFAULT 10");
+        // Atualiza em todas as linhas (é um valor global)
+        if (!mysqli_query($conn, "UPDATE configuracoes_sla SET sla_primeira_resposta_minutos = $sla_pr")) {
+            $success = false;
+        }
+    }
+
     $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     if ($isAjax) {
         echo json_encode(['success' => $success]);
@@ -343,11 +354,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dashboard_config'])) {
 
 // === COLETA DE DADOS ATUAIS: Busca as configurações salvas para preencher o formulário ===
 $configs = [];
-// Check column name first to be safe or assume rename worked. 
-// We know we ran: ALTER TABLE configuracoes_sla CHANGE tempo_sla_horas tempo_sla_minutos INT...
+$sla_primeira_resposta_minutos = 10; // Padrão: 10 minutos
+// Garante que a coluna existe silenciosamente
+$conn->query("ALTER TABLE configuracoes_sla ADD COLUMN IF NOT EXISTS sla_primeira_resposta_minutos INT NOT NULL DEFAULT 10");
 $result = mysqli_query($conn, "SELECT * FROM configuracoes_sla");
 while ($row = mysqli_fetch_assoc($result)) {
     $configs[$row['categoria']] = $row['tempo_sla_minutos'];
+    // Pega o valor global de primeiro atendimento (é o mesmo em todas as linhas)
+    if (!empty($row['sla_primeira_resposta_minutos'])) {
+        $sla_primeira_resposta_minutos = (int) $row['sla_primeira_resposta_minutos'];
+    }
 }
 
 // Valores padrão corrigidos (Incidente = 6h/360min como solicitado)
@@ -1239,6 +1255,35 @@ function getHoursAndMinutes($total_minutes)
                                     </div>
                                     <?php
                                 } ?>
+
+                                <!-- SLA DE PRIMEIRO ATENDIMENTO -->
+                                <hr class="my-4">
+                                <div class="form-group row align-items-center mb-3">
+                                    <div class="col-sm-12 mb-2">
+                                        <div class="d-flex align-items-center p-3 rounded" style="background: linear-gradient(135deg,#f0f7ff,#fff); border: 1px solid #d1e7ff;">
+                                            <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#36b9cc,#1d8fa3);display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="mr-3">
+                                                <i class="fas fa-stopwatch text-white" style="font-size:1.1rem;"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="font-weight-bold text-dark" style="font-size:0.9rem;"><?php echo __('SLA de Primeiro Atendimento'); ?></div>
+                                                <div class="text-muted small"><?php echo __('Tempo máximo para o primeiro contato do técnico (atribuição ou comentário). Usado apenas em relatórios.'); ?></div>
+                                            </div>
+                                            <div class="ml-3 d-flex align-items-center">
+                                                <div class="input-group input-group-sm" style="width:130px;">
+                                                    <input type="number" class="form-control font-weight-bold text-center"
+                                                        name="sla_primeira_resposta_minutos"
+                                                        id="sla_primeira_resposta_minutos"
+                                                        value="<?php echo (int)$sla_primeira_resposta_minutos; ?>"
+                                                        min="1" max="1440" style="border-radius: 8px 0 0 8px;">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" style="border-radius: 0 8px 8px 0; background:#e8f4f8; color:#1d8fa3; font-weight:700;"><?php echo __('min'); ?></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted d-block mt-1 ml-1"><i class="fas fa-info-circle mr-1 text-info"></i><?php echo __('Padrão recomendado: 10 minutos. Este valor não afeta o SLA de resolução.'); ?></small>
+                                    </div>
+                                </div>
 
                                 <div class="form-group row mt-4">
                                     <div class="col-sm-12 text-right">

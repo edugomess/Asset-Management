@@ -573,8 +573,7 @@
         transition: all 0.3s ease !important;
         padding: 0 25px !important;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
-        width: 100% !important; /* Garante preenchimento da coluna */
-        margin-bottom: 15px !important; /* Espaço para o grid abaixo em mobile */
+        min-width: 180px !important; /* Mantém o tamanho robusto original */
     }
 
     .btn-premium-cadastro:hover {
@@ -583,6 +582,48 @@
         box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
         color: #fff !important;
         text-decoration: none !important;
+    }
+
+    .btn-premium-import {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        height: 50px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        text-transform: none !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 0 25px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        cursor: pointer !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-premium-import:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #343a40 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+        color: #fff !important;
+        text-decoration: none !important;
+    }
+
+    .btn-premium-import::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-premium-import:hover::after {
+        left: 100%;
     }
 
     /* Correção Modais Summernote - Z-index e Estabilidade */

@@ -229,6 +229,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
     <link rel="stylesheet" href="/assets/fonts/fontawesome5-overrides.min.css?h=a0e894d2f295b40fda5171460781b200">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/summernote_premium.css">
     <?php include_once 'sidebar_style.php'; ?>
     <style>
         .note-editor { border-radius: 10px !important; border: 1px solid #e3e6f0 !important; overflow: hidden; margin-bottom: 10px; }

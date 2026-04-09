@@ -35,7 +35,6 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
-    <?php include_once 'pagination_style.php'; ?>
     <style>
         .clickable-row { cursor: pointer; transition: all 0.2s; }
         .clickable-row:hover { background-color: rgba(0,0,0,0.05) !important; }
@@ -79,10 +78,29 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                     <h3 class="text-dark mb-4"><i class="fas fa-user-shield mr-2 text-dark"></i><?php echo __('Usuários'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-6 col-xl-2 text-nowrap">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 15px;">
+                                <div class="d-flex align-items-center">
                                     <a class="btn-premium-cadastro pulse animated" role="button"
                                         href="cadastro_de_usuario.php"><?php echo __('Cadastrar Novo'); ?></a>
+                                    <a href="#" class="btn-premium-import ml-3 shadow-sm pulse animated" 
+                                        role="button"
+                                        onclick="window.abrirModalImportar('usuarios'); return false;"
+                                        data-import-type="usuarios">
+                                        <i class="fas fa-file-import mr-2"></i><?php echo __('Importar CSV'); ?>
+                                    </a>
+                                </div>
+
+                                <div class="dataTables_filter">
+                                    <!-- Formulário de busca simples na tabela -->
+                                    <form method="GET" action="" class="form-inline">
+                                        <div class="form-group mr-2">
+                                            <input type="search" name="search"
+                                                class="form-control form-control-sm premium-filter"
+                                                placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
+                                                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
+                                                aria-label="<?php echo __('Buscar Usuários'); ?>">
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
 
@@ -235,23 +253,13 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lightpick@1.3.4/lightpick.min.css"></script>
-    <script src="/assets/js/Date-Range-Picker.js?h=1d598b35ada76eb401b3897ae4b61ccb"></script>
-    <script src="/assets/js/Animated-numbers-section.js?h=a0ec092b1194013aa3c8e220b0938a52"></script>
-    <script src="/assets/js/Bootstrap-Image-Uploader.js?h=2218f85124ce4687cddacceb8e123cc9"></script>
-    <script src="/assets/js/DateRangePicker.js?h=e84100887465fbb69726c415c180211a"></script>
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
-    <script src="/assets/js/Multi-Select-Dropdown-by-Jigar-Mistry.js?h=45421b0ed6bd109b4f00e752ae5bf3e5"></script>
-    <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
-    <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <?php include_once 'modal_importar.php'; ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="/assets/js/bs-init.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <script>
         function deleteUser(id, name) {
             Swal.fire({

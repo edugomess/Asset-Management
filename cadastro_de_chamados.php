@@ -26,6 +26,7 @@ include_once 'auth.php'; // Proteção de sessão
     <?php include_once 'sidebar_style.php'; ?>
     <!-- Summernote Rich Text Editor -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/summernote_premium.css">
     <style>
         .note-editor.note-frame {
             border-radius: 12px;

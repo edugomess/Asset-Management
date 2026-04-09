@@ -295,41 +295,44 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 col-xl-2 text-nowrap">
-                                    <div class="dataTables_length">
-                                        <?php
-                                        // Exibe o botão de cadastro apenas se não estivermos na visualização de manutenção
-                                        if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')):
-                                            ?>
-                                            <a class="btn-premium-cadastro pulse animated"
-                                                role="button"
-                                                href="/cadastro_de_equipamentos.php"><?php echo __('Cadastrar Novo'); ?></a>
-                                        <?php endif; ?>
-                                    </div>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 15px;">
+                                <div class="d-flex align-items-center">
+                                    <?php
+                                    // Exibe o botão de cadastro apenas se não estivermos na visualização de manutenção
+                                    if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')):
+                                        ?>
+                                        <a class="btn-premium-cadastro pulse animated"
+                                            role="button"
+                                            href="cadastro_de_equipamentos.php"><?php echo __('Cadastrar Novo'); ?></a>
+                                        <a href="#" class="btn-premium-import ml-3 shadow-sm pulse animated" 
+                                            role="button"
+                                            onclick="window.abrirModalImportar('ativos'); return false;"
+                                            data-import-type="ativos">
+                                            <i class="fas fa-file-import mr-2"></i><?php echo __('Importar CSV'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="col-md-6 col-xl-10">
-                                    <div class="text-md-right dataTables_filter">
-                                        <?php if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')): ?>
-                                        <!-- Formulário de busca simples na tabela -->
-                                        <form method="GET" action="" class="form-inline justify-content-end">
-                                            <div class="form-group mr-2">
-                                                <input type="search" name="search"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
-                                                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                                                    aria-label="<?php echo __('Buscar Ativos'); ?>">
-                                            </div>
-                                            <div class="form-group mr-2">
-                                                <input type="search" name="sector"
-                                                    class="form-control form-control-sm premium-filter"
-                                                    placeholder="<?php echo __('Setor...'); ?>" onsearch="this.form.submit()"
-                                                    value="<?php echo isset($_GET['sector']) ? htmlspecialchars($_GET['sector']) : ''; ?>"
-                                                    aria-label="<?php echo __('Filtrar por Setor'); ?>">
-                                            </div>
-                                        </form>
-                                        <?php endif; ?>
-                                    </div>
+
+                                <div class="dataTables_filter">
+                                    <?php if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')): ?>
+                                    <!-- Formulário de busca simples na tabela -->
+                                    <form method="GET" action="" class="form-inline">
+                                        <div class="form-group mr-2">
+                                            <input type="search" name="search"
+                                                class="form-control form-control-sm premium-filter"
+                                                placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
+                                                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
+                                                aria-label="<?php echo __('Buscar Ativos'); ?>">
+                                        </div>
+                                        <div class="form-group mr-2">
+                                            <input type="search" name="sector"
+                                                class="form-control form-control-sm premium-filter"
+                                                placeholder="<?php echo __('Setor...'); ?>" onsearch="this.form.submit()"
+                                                value="<?php echo isset($_GET['sector']) ? htmlspecialchars($_GET['sector']) : ''; ?>"
+                                                aria-label="<?php echo __('Filtrar por Setor'); ?>">
+                                        </div>
+                                    </form>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -648,6 +651,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         </div> <!-- content-wrapper -->
     <!-- performance_footer.php is now at the very end -->
     </div> <!-- wrapper -->
+    <?php include_once 'modal_importar.php'; ?>
 
     <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
@@ -742,5 +746,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     </script>
 
     <?php include_once 'performance_footer.php'; ?>
+    <?php include_once 'modal_delete_asset.php'; ?>
+    <?php include_once 'modal_importar.php'; ?>
 </body>
 </html>

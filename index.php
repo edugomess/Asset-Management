@@ -175,6 +175,30 @@ if ($res_closed) {
 }
 $closed_string = implode(",", $closed_data);
 
+// === SLA de Primeiro Atendimento (Mês Atual) ===
+$sla_pr_min = 10;
+$res_sla_cfg = mysqli_query($conn, "SELECT sla_primeira_resposta_minutos FROM configuracoes_sla LIMIT 1");
+if ($res_sla_cfg && mysqli_num_rows($res_sla_cfg) > 0) {
+    $row_sla_cfg = mysqli_fetch_assoc($res_sla_cfg);
+    $sla_pr_min = (int)($row_sla_cfg['sla_primeira_resposta_minutos'] ?? 10) ?: 10;
+}
+
+$sql_sla_pr = "SELECT 
+    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) <= $sla_pr_min THEN 1 ELSE 0 END) as dentro,
+    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) > $sla_pr_min THEN 1 ELSE 0 END) as fora,
+    SUM(CASE WHEN data_primeira_resposta IS NULL THEN 1 ELSE 0 END) as sem_resposta
+FROM chamados 
+WHERE MONTH(data_abertura) = MONTH(CURRENT_DATE()) AND YEAR(data_abertura) = YEAR(CURRENT_DATE()) $where_chamados";
+
+$res_sla_pr = mysqli_query($conn, $sql_sla_pr);
+$sla_pr_data = mysqli_fetch_assoc($res_sla_pr);
+$sla_pr_string = implode(",", [
+    $sla_pr_data['dentro'] ?? 0,
+    $sla_pr_data['fora'] ?? 0,
+    $sla_pr_data['sem_resposta'] ?? 0
+]);
+$total_sla_pr = ($sla_pr_data['dentro'] ?? 0) + ($sla_pr_data['fora'] ?? 0) + ($sla_pr_data['sem_resposta'] ?? 0);
+
 // === RANKING DE SLA ===
 $mes_filtro = !empty($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('n');
 $ano_filtro = !empty($_GET['ano_ranking']) ? intval($_GET['ano_ranking']) : date('Y');
@@ -404,7 +428,7 @@ function getCardColor($type, $name)
                     </div>
 
                     <div class="row mb-5">
-                        <div class="col-lg-7 col-xl-8">
+                        <div class="col-lg-6 col-xl-6">
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center"
                                     style="background: rgb(248, 249, 252);">
@@ -413,7 +437,7 @@ function getCardColor($type, $name)
                                     </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
-                                                class="fas fa-ellipsis-v text-gray-400"></i></button>
+                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
                                             <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
                                                 href="chamados.php?filtro_status=finalizados">&nbsp;<?php echo __('Ver Finalizados'); ?></a>
@@ -427,7 +451,7 @@ function getCardColor($type, $name)
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-5 col-xl-4">
+                        <div class="col-lg-3 col-xl-3">
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0">
@@ -447,7 +471,7 @@ function getCardColor($type, $name)
                                         <canvas
                                             data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
-                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4.7rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
+                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
                                             <?php echo $total_ativos; ?>
                                         </div>
                                     </div>
@@ -458,6 +482,42 @@ function getCardColor($type, $name)
                                             <?php echo __('Em And.'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-warning"></i>
                                             <?php echo __('Pendente'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="col-lg-3 col-xl-3">
+                            <div class="card shadow mb-4 h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="text-primary font-weight-bold m-0">
+                                        <?php echo __('SLA 1ª Resposta'); ?>
+                                    </h6>
+                                    <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
+                                            aria-expanded="false" data-toggle="dropdown" type="button"><i
+                                                class="fas fa-ellipsis-v text-gray-400"></i></button>
+                                        <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
+                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
+                                                href="relatorio_chamados_sla_primeiro_atendimento.php" target="_blank">&nbsp;<?php echo __('Relatório PDF'); ?></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <div class="chart-area" style="position: relative;">
+                                        <canvas
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;,&quot;<?php echo __('Sem Resposta'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;,&quot;#858796&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                        <div
+                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
+                                            <?php echo $total_sla_pr; ?>
+                                        </div>
+                                    </div>
+                                    <div class="text-center small mt-4"><span class="mr-2"><i
+                                                class="fas fa-circle text-success"></i>
+                                            <?php echo __('Dentro'); ?></span><span class="mr-2"><i
+                                                class="fas fa-circle text-danger"></i>
+                                            <?php echo __('Fora'); ?></span><span class="mr-2"><i
+                                                class="fas fa-circle text-secondary"></i>
+                                            <?php echo __('S. Resp.'); ?></span>
                                     </div>
                                 </div>
                             </div>

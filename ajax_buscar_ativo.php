@@ -4,13 +4,14 @@
  * Busca informações de um ativo com base na Service Tag (campo 'tag' na tabela ativos).
  */
 include 'conexao.php';
+include 'language.php';
 
 header('Content-Type: application/json');
 
 $tag = isset($_GET['tag']) ? mysqli_real_escape_string($conn, $_GET['tag']) : '';
 
 if (empty($tag)) {
-    echo json_encode(['success' => false, 'message' => 'Tag não informada.']);
+    echo json_encode(['success' => false, 'message' => __('Tag não informada.')]);
     exit;
 }
 
@@ -25,13 +26,13 @@ if ($result && $result->num_rows > 0) {
             'id' => $ativo['id_asset'],
             'modelo' => $ativo['modelo'],
             'fabricante' => $ativo['fabricante'],
-            'categoria' => $ativo['categoria'],
-            'status' => $ativo['status'],
+            'categoria' => __($ativo['categoria']),
+            'status' => __($ativo['status']),
             'link_perfil' => 'perfil_ativo.php?id=' . $ativo['id_asset']
         ]
     ]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
+    echo json_encode(['success' => false, 'message' => __('Ativo não encontrado.')]);
 }
 
 $conn->close();

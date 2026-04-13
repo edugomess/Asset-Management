@@ -197,7 +197,7 @@ if (isset($_GET['msg'])) {
                                     <form action="inserir_local.php" method="POST">
                                         <div class="form-group">
                                             <label for="nome_local"><strong><?php echo __('Nome do Local'); ?></strong></label>
-                                            <input class="form-control premium-filter" type="text" id="nome_local" name="nome_local" placeholder="Ex: Prédio Central, Sala 02..." required>
+                                            <input class="form-control premium-filter" type="text" id="nome_local" name="nome_local" placeholder="<?php echo __('Ex: Prédio Central, Sala 02...'); ?>" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="tipo_local"><strong><?php echo __('Tipo'); ?></strong></label>
@@ -420,7 +420,7 @@ if (isset($_GET['msg'])) {
                     },
                     error: function() {
                         $('#deleteLoading').hide();
-                        alert('Erro ao verificar dependências.');
+                        alert('<?php echo __("Erro ao verificar dependências."); ?>');
                     }
                 });
             });

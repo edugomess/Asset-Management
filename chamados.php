@@ -379,7 +379,7 @@ $result = mysqli_query($conn, $sql);
                 <td><a href='editar_chamado.php?id=" . $row['id'] . "' class='font-weight-bold text-dark' onclick='event.stopPropagation()'>" . htmlspecialchars($row['titulo']) . "</a></td>
                 <td class='font-weight-bold text-dark'>" . $categoria_display . "</td>
                 <td><span class='status-badge " . $prioridade_class . " font-weight-bold'>" . __($prioridade) . "</span></td>
-                <td class='font-weight-bold text-dark'>" . date('d/m/Y H:i', strtotime($row['data_abertura'])) . "</td>
+                <td class='font-weight-bold text-dark'>" . __date($row['data_abertura'], true) . "</td>
                 <td class='font-weight-bold text-dark'>" . htmlspecialchars($solicitante) . "</td>
                 <td><span class='status-badge " . $responsavel_class . " font-weight-bold'>" . htmlspecialchars($responsavel) . "</span></td>
                 <td><span class='status-badge " . $status_class . " font-weight-bold'>" . __($row['status']) . "</span></td>

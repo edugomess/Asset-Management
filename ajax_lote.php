@@ -28,7 +28,7 @@ try {
                 ];
                 echo json_encode(['success' => true, 'id_lote' => $id_lote, 'nome_lote' => $nome_lote]);
             } else {
-                throw new RuntimeException("Erro ao criar lote: " . $conn->error);
+                throw new RuntimeException(__('Erro ao criar lote: ') . $conn->error);
             }
             break;
 
@@ -37,7 +37,7 @@ try {
             $assets = $_POST['assets'] ?? [];
 
             if (!$id_lote || empty($assets)) {
-                throw new InvalidArgumentException("Dados insuficientes para adicionar ao lote.");
+                throw new InvalidArgumentException(__('Dados insuficientes para adicionar ao lote.'));
             }
 
             $placeholders = implode(',', array_fill(0, count($assets), '?'));
@@ -50,14 +50,14 @@ try {
             if ($stmt->execute()) {
                 echo json_encode(['success' => true, 'count' => $stmt->affected_rows]);
             } else {
-                throw new RuntimeException("Erro ao adicionar ativos ao lote: " . $conn->error);
+                throw new RuntimeException(__('Erro ao adicionar ativos ao lote: ') . $conn->error);
             }
             break;
 
         case 'close':
             $id_lote = (int)($_POST['id_lote'] ?? ($_SESSION['active_lote']['id'] ?? 0));
             if (!$id_lote) {
-                throw new InvalidArgumentException("ID do lote não fornecido.");
+                throw new InvalidArgumentException(__('ID do lote não fornecido.'));
             }
 
             $stmt = $conn->prepare("UPDATE lotes_leilao SET status = 'Fechado' WHERE id_lote = ?");
@@ -68,14 +68,14 @@ try {
                 }
                 echo json_encode(['success' => true]);
             } else {
-                throw new RuntimeException("Erro ao fechar lote.");
+                throw new RuntimeException(__('Erro ao fechar lote.'));
             }
             break;
 
         case 'get_items':
             $id_lote = (int)($_POST['id_lote'] ?? 0);
             if (!$id_lote) {
-                throw new InvalidArgumentException("ID do lote inválido.");
+                throw new InvalidArgumentException(__('ID do lote inválido.'));
             }
 
             $query = "SELECT id_asset, modelo, tag, valor, categoria FROM ativos WHERE id_lote = ?";
@@ -93,7 +93,7 @@ try {
         case 'remove_item':
             $id_asset = (int)($_POST['id_asset'] ?? 0);
             if (!$id_asset) {
-                throw new InvalidArgumentException("ID do ativo inválido.");
+                throw new InvalidArgumentException(__('ID do ativo inválido.'));
             }
 
             $stmt = $conn->prepare("UPDATE ativos SET id_lote = NULL WHERE id_asset = ?");
@@ -101,7 +101,7 @@ try {
             if ($stmt->execute()) {
                 echo json_encode(['success' => true]);
             } else {
-                throw new RuntimeException("Erro ao remover item do lote.");
+                throw new RuntimeException(__('Erro ao remover item do lote.'));
             }
             break;
 
@@ -109,7 +109,7 @@ try {
             $id_lote = (int)($_POST['id_lote'] ?? 0);
             $novo_nome = $_POST['nome_lote'] ?? '';
             if (!$id_lote || empty($novo_nome)) {
-                throw new InvalidArgumentException("Dados inválidos para renomear.");
+                throw new InvalidArgumentException(__('Dados inválidos para renomear.'));
             }
 
             $stmt = $conn->prepare("UPDATE lotes_leilao SET nome_lote = ? WHERE id_lote = ?");
@@ -120,14 +120,14 @@ try {
                 }
                 echo json_encode(['success' => true]);
             } else {
-                throw new RuntimeException("Erro ao renomear lote.");
+                throw new RuntimeException(__('Erro ao renomear lote.'));
             }
             break;
 
         case 'reopen':
             $id_lote = (int)($_POST['id_lote'] ?? 0);
             if (!$id_lote) {
-                throw new InvalidArgumentException("ID do lote inválido.");
+                throw new InvalidArgumentException(__('ID do lote inválido.'));
             }
 
             $conn->begin_transaction();
@@ -148,14 +148,14 @@ try {
                 echo json_encode(['success' => true]);
             } else {
                 $conn->rollback();
-                throw new RuntimeException("Erro ao reabrir lote.");
+                throw new RuntimeException(__('Erro ao reabrir lote.'));
             }
             break;
 
         case 'auction':
             $id_lote = (int)($_POST['id_lote'] ?? 0);
             if (!$id_lote) {
-                throw new InvalidArgumentException("ID do lote não fornecido.");
+                throw new InvalidArgumentException(__("ID do lote não fornecido."));
             }
 
             $conn->begin_transaction();
@@ -215,12 +215,12 @@ try {
                 $conn->commit();
                 echo json_encode(['success' => true]);
             } else {
-                throw new RuntimeException("Nenhum ativo encontrado para este lote.");
+                throw new RuntimeException(__('Nenhum ativo encontrado para este lote.'));
             }
             break;
 
         default:
-            throw new InvalidArgumentException("Ação inválida.");
+            throw new InvalidArgumentException(__("Ação inválida."));
     }
 } catch (Exception $e) {
     if (isset($conn)) {

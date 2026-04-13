@@ -306,7 +306,7 @@ $(document).ready(function() {
                     showConfirmButton: false
                 }).then(() => location.reload());
             } else {
-                Swal.fire('Error', res.message || '<?php echo __('Erro ao atribuir'); ?>', 'error');
+                Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao atribuir'); ?>', 'error');
                 $('#btnConfirmAssign').prop('disabled', false).text('<?php echo __('Confirmar Atribuição'); ?>');
             }
         }, 'json');
@@ -336,12 +336,12 @@ $(document).ready(function() {
         let data = { action: 'send_to_maintenance', id_asset: assetId, tipo_manutencao: type };
 
         if (type === 'Reparo') {
-            if (!$('#maintenanceReason').val()) { Swal.fire('Atenção', '<?php echo __('Relate o motivo do reparo.'); ?>', 'warning'); return; }
+            if (!$('#maintenanceReason').val()) { Swal.fire('<?php echo __('Atenção'); ?>', '<?php echo __('Relate o motivo do reparo.'); ?>', 'warning'); return; }
             data.observacoes = $('#maintenanceReason').val();
             data.item_trocado = $('#itemTrocado').val();
         } else if (type === 'Upgrade') {
             const cat = $('#upgradeCategory').val();
-            if (!cat) { Swal.fire('Atenção', '<?php echo __('Selecione a categoria do upgrade.'); ?>', 'warning'); return; }
+            if (!cat) { Swal.fire('<?php echo __('Atenção'); ?>', '<?php echo __('Selecione a categoria do upgrade.'); ?>', 'warning'); return; }
             data.categoria_upgrade = cat;
             data.observacoes = $('#upgradeDescription').val();
             data.valor_upgrade = $('#upgradeCost').val();
@@ -351,14 +351,14 @@ $(document).ready(function() {
                 data.detalhes_update = $('#upgradeValue').val();
             }
         } else if (type === 'Insumo') {
-            if (!$('#supplyType').val()) { Swal.fire('Atenção', '<?php echo __('Selecione o tipo de insumo.'); ?>', 'warning'); return; }
+            if (!$('#supplyType').val()) { Swal.fire('<?php echo __('Atenção'); ?>', '<?php echo __('Selecione o tipo de insumo.'); ?>', 'warning'); return; }
             data.item_trocado = $('#supplyType').val();
             data.observacoes = $('#supplyDescription').val();
         }
 
         $.post('ajax_ativos.php', data, function(res) {
             if (res.success) location.reload();
-            else Swal.fire('Error', res.message || '<?php echo __('Erro ao processar manutenção'); ?>', 'error');
+            else Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao processar manutenção'); ?>', 'error');
         }, 'json');
     });
 });
@@ -422,7 +422,7 @@ window.unassignUser = function(id) {
                         showConfirmButton: false
                     }).then(() => location.reload());
                 } else {
-                    Swal.fire('Error', res.message || '<?php echo __('Erro ao liberar'); ?>', 'error');
+                    Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar'); ?>', 'error');
                 }
             }, 'json');
         }
@@ -459,7 +459,7 @@ window.releaseFromMaintenance = function(id) {
         if (result.isConfirmed) {
             $.post('ajax_ativos.php', { action: 'release_maintenance', id_asset: id }, function (res) {
                 if (res.success) location.reload();
-                else Swal.fire('Error', res.message || '<?php echo __('Erro ao liberar manutenção'); ?>', 'error');
+                else Swal.fire('<?php echo __('Erro'); ?>', res.message || '<?php echo __('Erro ao liberar manutenção'); ?>', 'error');
             }, 'json');
         }
     });

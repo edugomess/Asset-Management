@@ -151,7 +151,7 @@ window.iniciarImportacao = function() {
         if (typeof Swal !== "undefined") {
             Swal.fire({
                 icon: 'warning',
-                title: 'Atenção',
+                title: '<?php echo __('Atenção'); ?>',
                 text: '<?php echo __('Selecione um arquivo CSV primeiro.'); ?>'
             });
         } else {
@@ -195,9 +195,9 @@ window.iniciarImportacao = function() {
             }
         } else {
             if (typeof Swal !== "undefined") {
-                Swal.fire({ icon: 'error', title: 'Erro', text: data.message });
+                Swal.fire({ icon: 'error', title: '<?php echo __('Erro'); ?>', text: data.message });
             } else {
-                alert('Erro: ' + data.message);
+                alert('<?php echo __('Erro: '); ?>' + data.message);
             }
             document.getElementById('btnConfirmarImport').style.display = 'inline-block';
             if (importResults) importResults.style.display = 'none';
@@ -206,9 +206,9 @@ window.iniciarImportacao = function() {
     .catch(error => {
         console.error('Error:', error);
         if (typeof Swal !== "undefined") {
-            Swal.fire({ icon: 'error', title: 'Erro de Requisição', text: 'Ocorreu um erro no processamento do arquivo.' });
+            Swal.fire({ icon: 'error', title: '<?php echo __('Erro de Requisição'); ?>', text: '<?php echo __('Ocorreu um erro no processamento do arquivo.'); ?>' });
         } else {
-            alert('Ocorreu um erro no processamento do arquivo.');
+            alert('<?php echo __('Ocorreu um erro no processamento do arquivo.'); ?>');
         }
         document.getElementById('btnConfirmarImport').style.display = 'inline-block';
         if (importResults) importResults.style.display = 'none';

@@ -1,6 +1,7 @@
 <?php include 'performance_header.php'; ?>
 <?php
 include 'conexao.php';
+include_once 'language.php';
 /**
  * PÁGINA DE ACESSO: login.php
  * Interface de autenticação e processamento de credenciais dos usuários.

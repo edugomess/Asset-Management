@@ -47,7 +47,7 @@ if ($idle_limit < 0)
                 </div>
             </div>
             <div class="modal-body text-center p-4 bg-light">
-                <p class="text-muted mb-4">Por segurança, sua sessão será encerrada automaticamente.</p>
+                <p class="text-muted mb-4"><?php echo __('Por segurança, sua sessão será encerrada automaticamente.'); ?></p>
                 
                 <div class="position-relative d-inline-block mb-4">
                     <svg width="100" height="100" viewbox="0 0 100 100">
@@ -60,14 +60,14 @@ if ($idle_limit < 0)
                     </div>
                 </div>
 
-                <p class="text-secondary small mb-0">Deseja continuar seu trabalho?</p>
+                <p class="text-secondary small mb-0"><?php echo __('Deseja continuar seu trabalho?'); ?></p>
             </div>
             <div class="modal-footer border-0 p-4 bg-white d-flex flex-column">
                 <button type="button" class="btn btn-primary btn-block p-3 font-weight-bold shadow-sm mb-2" id="stayConnectedBtn"
                     style="background: #2c404a; border: none; border-radius: 12px;">
-                    <i class="fas fa-check-circle mr-2"></i>SIM, CONTINUAR CONECTADO
+                    <i class="fas fa-check-circle mr-2"></i><?php echo __('SIM, CONTINUAR CONECTADO'); ?>
                 </button>
-                <a href="logout.php?timeout=true" class="btn btn-link text-muted font-weight-bold btn-block m-0">Sair agora</a>
+                <a href="logout.php?timeout=true" class="btn btn-link text-muted font-weight-bold btn-block m-0"><?php echo __('Sair agora'); ?></a>
             </div>
         </div>
     </div>

@@ -359,6 +359,14 @@ $my_id = $_SESSION['id_usuarios'];
             });
         }
 
+        const statusTranslations = {
+            'Disponível': '<?php echo __('Disponível'); ?>',
+            'Ausente': '<?php echo __('Ausente'); ?>',
+            'Ocupado': '<?php echo __('Ocupado'); ?>',
+            'Offline': '<?php echo __('Offline'); ?>',
+            'Grupo': '<?php echo __('Grupo'); ?>'
+        };
+
         function loadUserList() {
             $.get('ajax_chat.php?action=list_users', function(res) {
                 if (res.success) {
@@ -376,7 +384,7 @@ $my_id = $_SESSION['id_usuarios'];
                                 <div class="chat-user-info">
                                     <div class="chat-user-name">${user.nome_completo}</div>
                                     <div class="chat-user-status ${statusClass}">
-                                        <span class="status-dot ${dotClass}"></span> ${isGroup ? 'Grupo' : user.chat_status}
+                                        <span class="status-dot ${dotClass}"></span> ${isGroup ? statusTranslations['Grupo'] : (statusTranslations[user.chat_status] || user.chat_status)}
                                     </div>
                                 </div>
                                 <span class="badge badge-danger badge-counter unread-count" id="unread-${listId}" style="display:none;">0</span>

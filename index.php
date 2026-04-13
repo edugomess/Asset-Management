@@ -427,10 +427,10 @@ function getCardColor($type, $name)
                                     </div>
                                 </div>
                             </div>
-                            <?php
+                        <?php
                         }
                         ?>
-                    </div>
+                    </div><!-- End: row px-2 -->
 
                     <div class="row mb-5">
                         <div class="col-lg-6 col-xl-6">
@@ -444,7 +444,7 @@ function getCardColor($type, $name)
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                  class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
-                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
+                                            <p class="text-center dropdown-header"><?php echo __('Opções:'); ?></p><a class="dropdown-item"
                                                 href="chamados.php?filtro_status=finalizados">&nbsp;<?php echo __('Ver Finalizados'); ?></a>
                                         </div>
                                     </div>
@@ -460,13 +460,13 @@ function getCardColor($type, $name)
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0">
-                                        <?php echo __('Status dos Chamados'); ?>
+                                        <?php echo __('Status dos Chamados'); ?> / <?php echo $meses[date('n')]; ?>
                                     </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
-                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
+                                            <p class="text-center dropdown-header"><?php echo __('Opções:'); ?></p><a class="dropdown-item"
                                                 href="chamados.php">&nbsp;<?php echo __('Ver Chamados'); ?></a>
                                         </div>
                                     </div>
@@ -475,8 +475,7 @@ function getCardColor($type, $name)
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
                                             data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
-                                        <div
-                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
+                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none; text-align: center; line-height: 1;">
                                             <?php echo $total_ativos_f; ?>
                                         </div>
                                     </div>
@@ -484,7 +483,7 @@ function getCardColor($type, $name)
                                                 class="fas fa-circle text-primary"></i>
                                             <?php echo __('Aberto'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-info"></i>
-                                            <?php echo __('Em And.'); ?></span><span class="mr-2"><i
+                                            <?php echo __('Em Andamento'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-warning"></i>
                                             <?php echo __('Pendente'); ?></span>
                                     </div>
@@ -496,13 +495,13 @@ function getCardColor($type, $name)
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0">
-                                        <?php echo __('SLA 1ª Resposta'); ?>
+                                        <?php echo __('SLA 1ª Resposta'); ?> / <?php echo $meses[date('n')]; ?>
                                     </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i
                                                 class="fas fa-ellipsis-v text-gray-400"></i></button>
                                         <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in">
-                                            <p class="text-center dropdown-header">Opções:</p><a class="dropdown-item"
+                                            <p class="text-center dropdown-header"><?php echo __('Opções:'); ?></p><a class="dropdown-item"
                                                 href="relatorio_chamados_sla_primeiro_atendimento.php" target="_blank">&nbsp;<?php echo __('Relatório PDF'); ?></a>
                                         </div>
                                     </div>
@@ -510,13 +509,10 @@ function getCardColor($type, $name)
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;,&quot;<?php echo __('Sem Resposta'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro do Prazo'); ?>&quot;,&quot;<?php echo __('Fora do Prazo'); ?>&quot;,&quot;<?php echo __('Sem Resposta'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
                                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none; text-align: center; line-height: 1;">
                                             <?php echo $total_sla_pr; ?>
-                                            <div style="font-size: 0.8rem; font-weight: 600; color: #858796; text-transform: uppercase; margin-top: 2px;">
-                                                <?php echo $meses[date('n')]; ?>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
@@ -525,12 +521,13 @@ function getCardColor($type, $name)
                                                 class="fas fa-circle text-danger"></i>
                                             <?php echo __('Fora'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-warning"></i>
-                                            <?php echo __('Sem Resp.'); ?></span>
+                                            <?php echo __('Sem Resposta'); ?></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div><!-- End: Charts -->
+                    </div>
+                </div><!-- End: Charts -->
                     <!-- Start: SLA Ranking -->
                     <?php if ($_SESSION['nivelUsuario'] == 'Admin' || $_SESSION['nivelUsuario'] == 'Suporte'): ?>
                         <div class="row">

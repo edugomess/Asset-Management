@@ -209,10 +209,10 @@ include_once 'auth.php'; // Proteção de sessão
                                                 </button>
                                             </div>
                                             <select class="form-control" name="prioridade" id="prioridade" required="">
-                                                <option value="P1" style="color: #8b0000; font-weight: bold;">P1 - Crítica (SLA Urgente)</option>
-                                                <option value="P2" style="color: #e74a3b;">P2 - Alta</option>
-                                                <option value="P3" style="color: #f6c23e;">P3 - Média</option>
-                                                <option value="P4" style="color: #1cc88a;" selected>P4 - Baixa</option>
+                                                <option value="P1" style="color: #8b0000; font-weight: bold;">P1 - <?php echo __('Crítica (SLA Urgente)'); ?></option>
+                                                <option value="P2" style="color: #e74a3b;">P2 - <?php echo __('Alta'); ?></option>
+                                                <option value="P3" style="color: #f6c23e;">P3 - <?php echo __('Média'); ?></option>
+                                                <option value="P4" style="color: #1cc88a;" selected>P4 - <?php echo __('Baixa'); ?></option>
                                             </select>
                                             <div id="ai-priority-reason" class="small text-info mt-1" style="display: none; line-height: 1.2;"></div>
                                         </div>

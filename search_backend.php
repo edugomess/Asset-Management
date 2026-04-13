@@ -1,5 +1,6 @@
 <?php
 include 'conexao.php';
+include 'language.php';
 
 header('Content-Type: application/json');
 
@@ -19,7 +20,7 @@ $res_users = mysqli_query($conn, $sql_users);
 if ($res_users) {
     while ($row = mysqli_fetch_assoc($res_users)) {
         $results[] = [
-            'category' => 'Usuários',
+            'category' => __('Usuários'),
             'label' => $row['nome'] . ' ' . $row['sobrenome'] . ' (' . $row['email'] . ')',
             'url' => 'usuarios.php?search=' . urlencode($row['nome']),
             'type' => 'user'
@@ -39,7 +40,7 @@ $res_assets = mysqli_query($conn, $sql_assets);
 if ($res_assets) {
     while ($row = mysqli_fetch_assoc($res_assets)) {
         $results[] = [
-            'category' => 'Ativos',
+            'category' => __('Ativos'),
             'label' => $row['modelo'] . ' - Tag: ' . $row['tag'] . ' (' . $row['categoria'] . ')',
             'url' => 'equipamentos.php?search=' . urlencode($row['tag']),
             'type' => 'asset'
@@ -63,7 +64,7 @@ if ($res_tickets) {
     while ($row = mysqli_fetch_assoc($res_tickets)) {
         $solicitante = !empty($row['nome']) ? ' (' . $row['nome'] . ' ' . $row['sobrenome'] . ')' : '';
         $results[] = [
-            'category' => 'Chamados',
+            'category' => __('Chamados'),
             'label' => '#' . $row['id'] . ' - ' . $row['titulo'] . $solicitante,
             'url' => 'chamados.php?filtro_status=todos&search=' . urlencode($row['id']),
             'type' => 'ticket'
@@ -78,7 +79,7 @@ $res_cost = mysqli_query($conn, $sql_cost);
 if ($res_cost) {
     while ($row = mysqli_fetch_assoc($res_cost)) {
         $results[] = [
-            'category' => 'Centro de Custo',
+            'category' => __('Centro de Custo'),
             'label' => $row['nomeSetor'] . ' (' . $row['codigo'] . ')',
             'url' => 'centro_de_custo.php?search=' . urlencode($row['nomeSetor']),
             'type' => 'cost_center'
@@ -93,7 +94,7 @@ $res_suppliers = mysqli_query($conn, $sql_suppliers);
 if ($res_suppliers) {
     while ($row = mysqli_fetch_assoc($res_suppliers)) {
         $results[] = [
-            'category' => 'Fornecedores',
+            'category' => __('Fornecedores'),
             'label' => $row['nomeEmpresa'],
             'url' => 'fornecedores.php?search=' . urlencode($row['nomeEmpresa']),
             'type' => 'supplier'
@@ -107,7 +108,7 @@ $res_licenses = mysqli_query($conn, $sql_licenses);
 if ($res_licenses) {
     while ($row = mysqli_fetch_assoc($res_licenses)) {
         $results[] = [
-            'category' => 'Licenças',
+            'category' => __('Licenças'),
             'label' => $row['software'] . ' (' . $row['fabricante'] . ')',
             'url' => 'licencas.php?search=' . urlencode($row['software']),
             'type' => 'license'

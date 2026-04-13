@@ -9,12 +9,12 @@ include_once 'conexao.php';
 
 // Segurança: Apenas Admin/Suporte
 if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte')) {
-    echo json_encode(['success' => false, 'message' => 'Acesso negado.']);
+    echo json_encode(['success' => false, 'message' => __('Acesso negado.')]);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['csv_file'])) {
-    echo json_encode(['success' => false, 'message' => 'Dados inválidos.']);
+    echo json_encode(['success' => false, 'message' => __('Dados inválidos.')]);
     exit();
 }
 
@@ -22,7 +22,7 @@ $type = isset($_POST['type']) ? $_POST['type'] : 'ativos';
 $file = $_FILES['csv_file']['tmp_name'];
 
 if (!is_uploaded_file($file)) {
-    echo json_encode(['success' => false, 'message' => 'Erro no upload do arquivo.']);
+    echo json_encode(['success' => false, 'message' => __('Erro no upload do arquivo.')]);
     exit();
 }
 

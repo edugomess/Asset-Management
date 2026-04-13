@@ -18,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         
         // Verificação de permissão: Autor ou Admin
         if ($row['usuario_id'] != $user_id && $_SESSION['nivelUsuario'] !== 'Admin') {
-            echo json_encode(['success' => false, 'message' => 'Permissão negada.']);
+            echo json_encode(['success' => false, 'message' => __('Permissão negada.')]);
             exit;
         }
         
         // Verificação de status: Apenas 'Aberto' ou 'Pendente' podem ser cancelados pelo solicitante
         if (!in_array($row['status'], ['Aberto', 'Pendente']) && $_SESSION['nivelUsuario'] !== 'Admin') {
-            echo json_encode(['success' => false, 'message' => 'Este chamado já está em atendimento e não pode ser cancelado.']);
+            echo json_encode(['success' => false, 'message' => __('Este chamado já está em atendimento e não pode ser cancelado.')]);
             exit;
         }
         
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         }
         
         $notas[] = [
-            'texto' => 'Chamado cancelado pelo solicitante.',
+            'texto' => __('Chamado cancelado pelo solicitante.'),
             'data' => date('d/m/Y H:i'),
             'usuario' => $_SESSION['nome_usuario'] ?? 'Sistema'
         ];
@@ -54,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
         if ($conn->query($sql_update)) {
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar banco: ' . $conn->error]);
+            echo json_encode(['success' => false, 'message' => __('Erro ao atualizar banco: ') . $conn->error]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Chamado não encontrado.']);
+        echo json_encode(['success' => false, 'message' => __('Chamado não encontrado.')]);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Requisição inválida.']);
+    echo json_encode(['success' => false, 'message' => __('Requisição inválida.')]);
 }

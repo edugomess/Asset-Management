@@ -10,7 +10,7 @@ include 'funcoes_email.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Método inválido.']);
+    echo json_encode(['success' => false, 'message' => __('Método inválido.')]);
     exit;
 }
 
@@ -21,7 +21,7 @@ $centro_custo_id = isset($_POST['centro_custo']) ? (int)$_POST['centro_custo'] :
 $mensagem_corpo = isset($_POST['mensagem']) ? mysqli_real_escape_string($conn, $_POST['mensagem']) : '';
 
 if (empty($nome) || empty($email_usuario) || empty($mensagem_corpo)) {
-    echo json_encode(['success' => false, 'message' => 'Por favor, preencha todos os campos obrigatórios.']);
+    echo json_encode(['success' => false, 'message' => __('Por favor, preencha todos os campos obrigatórios.')]);
     exit;
 }
 
@@ -72,10 +72,10 @@ try {
     $mail->Body = $body;
 
     $mail->send();
-    echo json_encode(['success' => true, 'message' => 'Mensagem enviada com sucesso!']);
+    echo json_encode(['success' => true, 'message' => __('Mensagem enviada com sucesso!')]);
 } catch (Exception $e) {
     error_log("Erro ao enviar e-mail de suporte: {$mail->ErrorInfo}");
-    echo json_encode(['success' => false, 'message' => 'Erro ao enviar e-mail. Por favor, tente novamente mais tarde.']);
+    echo json_encode(['success' => false, 'message' => __('Erro ao enviar e-mail. Por favor, tente novamente mais tarde.')]);
 }
 
 mysqli_close($conn);

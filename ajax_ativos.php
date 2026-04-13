@@ -56,7 +56,7 @@ switch ($action) {
 
         if ($stmt->execute()) {
             $userName = getUserName($conn, $id_usuario);
-            recordHistory($conn, $id_asset, $admin_id, 'Atribuição', "Ativo atribuído ao usuário: $userName");
+            recordHistory($conn, $id_asset, $admin_id, __('Atribuição'), __('Ativo atribuído ao usuário: ') . $userName);
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => $conn->error]);
@@ -75,7 +75,7 @@ switch ($action) {
         $stmt->bind_param('ii', $id_local, $id_asset);
         
         if ($stmt->execute()) {
-            recordHistory($conn, $id_asset, $admin_id, 'Atribuição', "Ativo atribuído a um Local (ID $id_local)");
+            recordHistory($conn, $id_asset, $admin_id, __('Atribuição'), __('Ativo atribuído a um Local (ID ') . $id_local . ')');
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => $conn->error]);
@@ -88,7 +88,7 @@ switch ($action) {
         $stmt->bind_param('i', $id_asset);
 
         if ($stmt->execute()) {
-            recordHistory($conn, $id_asset, $admin_id, 'Liberação', "Atribuição removida. Ativo agora está disponível.");
+            recordHistory($conn, $id_asset, $admin_id, __('Liberação'), __('Atribuição removida. Ativo agora está disponível.'));
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => $conn->error]);
@@ -137,7 +137,7 @@ switch ($action) {
                     $stmt_up = $conn->prepare("UPDATE ativos SET memoria = ? WHERE id_asset = ?");
                     $stmt_up->bind_param('si', $item_trocado, $id_asset);
                     if ($stmt_up->execute()) {
-                        recordHistory($conn, $id_asset, $admin_id, 'Atualização Técnica', "Hardware atualizado via Upgrade: Memória RAM alterada de [$old_val] para [$item_trocado].");
+                        recordHistory($conn, $id_asset, $admin_id, __('Atualização Técnica'), __('Hardware atualizado via Upgrade: Memória RAM alterada de [') . $old_val . __('] para [') . $item_trocado . '].');
                     }
                     $stmt_up->close();
                 } elseif ($cat_upgrade === 'Armazenamento') {
@@ -146,18 +146,18 @@ switch ($action) {
                     $stmt_up = $conn->prepare("UPDATE ativos SET armazenamento = ?, tipo_armazenamento = ? WHERE id_asset = ?");
                     $stmt_up->bind_param('ssi', $detalhes_update, $item_trocado, $id_asset);
                     if ($stmt_up->execute()) {
-                        recordHistory($conn, $id_asset, $admin_id, 'Atualização Técnica', "Hardware atualizado via Upgrade: Armazenamento alterado para [$item_trocado $detalhes_update].");
+                        recordHistory($conn, $id_asset, $admin_id, __('Atualização Técnica'), __('Hardware atualizado via Upgrade: Armazenamento alterado para [') . "$item_trocado $detalhes_update" . '].');
                     }
                     $stmt_up->close();
                 }
             }
 
-            $hist_details = "[$tipo] " . ($tipo === 'Upgrade' ? "$cat_upgrade: " : "") . $observacoes;
-            if (!empty($item_trocado)) $hist_details .= " | Peça/Módulo: $item_trocado";
-            if (!empty($detalhes_update)) $hist_details .= " | Detalhes: $detalhes_update";
-            if ($val_upgrade > 0) $hist_details .= " | Valor: R$ " . number_format($val_upgrade, 2, ',', '.');
+            $hist_details = "[" . __($tipo) . "] " . ($tipo === 'Upgrade' ? __($cat_upgrade) . ": " : "") . $observacoes;
+            if (!empty($item_trocado)) $hist_details .= " | " . __('Peça/Módulo: ') . $item_trocado;
+            if (!empty($detalhes_update)) $hist_details .= " | " . __('Detalhes: ') . $detalhes_update;
+            if ($val_upgrade > 0) $hist_details .= " | " . __('Valor: R$ ') . number_format($val_upgrade, 2, ',', '.');
 
-            recordHistory($conn, $id_asset, $admin_id, 'Manutenção', $hist_details);
+            recordHistory($conn, $id_asset, $admin_id, __('Manutenção'), $hist_details);
 
             // ALERTAS (Background - Email e WhatsApp)
             $php_path = 'c:\xampp\php\php.exe';
@@ -200,17 +200,16 @@ switch ($action) {
             $stmt_m->execute();
 
             if ($stmt_m->affected_rows > 0 && $id_a > 0) {
-                // Update asset status to Disponível (or keep previous assignment logic, but usually returning from maintenance makes it available)
-                // If it was in use, we might want to return to 'Em uso'? But usually it goes to stock.
+                // ... logic
                 $stmt = $conn->prepare("UPDATE ativos SET status = 'Disponível' WHERE id_asset = ?");
                 $stmt->bind_param('i', $id_a);
                 $stmt->execute();
 
-                recordHistory($conn, $id_a, $admin_id, 'Fim de Manutenção', "Manutenção concluída e ativo liberado via perfil.");
+                recordHistory($conn, $id_a, $admin_id, __('Fim de Manutenção'), __('Manutenção concluída e ativo liberado via perfil.'));
                 $conn->commit();
                 echo json_encode(['success' => true]);
             } else {
-                throw new Exception("Nenhuma manutenção ativa encontrada ou identificada.");
+                throw new Exception(__('Nenhuma manutenção ativa encontrada ou identificada.'));
             }
         } catch (Exception $e) {
             $conn->rollback();

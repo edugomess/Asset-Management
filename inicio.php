@@ -267,8 +267,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" title="Elegíveis para Doação ou Leilão"><?php echo __('Elegíveis Fim de Vida'); ?></div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <small class="text-muted" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;">DOAÇÕES:</small><?php echo $count_elegiveis_doacao; ?>
-                                                <small class="text-muted ml-2" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;">LEILÃO:</small><?php echo $count_elegiveis_leilao; ?>
+                                                <small class="text-muted" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;"><?php echo __('DOAÇÕES:'); ?></small><?php echo $count_elegiveis_doacao; ?>
+                                                <small class="text-muted ml-2" style="font-size:0.6rem; vertical-align:middle; margin-right:4px;"><?php echo __('LEILÃO:'); ?></small><?php echo $count_elegiveis_leilao; ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">

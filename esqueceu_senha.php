@@ -1,4 +1,4 @@
-<?php include 'conexao.php'; ?>
+<?php include 'conexao.php'; include_once 'language.php'; ?>
 <!DOCTYPE html>
 <html lang="<?php echo $_SESSION['idioma'] ?? 'pt-br'; ?>">
 <head>

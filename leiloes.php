@@ -600,20 +600,20 @@ if ($result) {
                 });
 
                 if (selected.length === 0) {
-                    Swal.fire('Atencão', 'Selecione ao menos um ativo.', 'warning');
+                    Swal.fire('<?php echo __('Atenção'); ?>', '<?php echo __('Selecione ao menos um ativo.'); ?>', 'warning');
                     return;
                 }
 
                 if (hasAssigned) {
-                    Swal.fire('Erro', 'Todos os ativos devem estar desatribuídos (Disponíveis).', 'error');
+                    Swal.fire('<?php echo __('Erro'); ?>', '<?php echo __('Todos os ativos devem estar desatribuídos (Disponíveis).'); ?>', 'error');
                     return;
                 }
 
                 $.post('ajax_lote.php', { action: 'add_assets', id_lote: id_lote, assets: selected }, function(resp) {
                     if (resp.success) {
-                        Swal.fire('Sucesso', 'Itens adicionados ao lote com sucesso.', 'success').then(() => location.reload());
+                        Swal.fire('<?php echo __('Sucesso'); ?>', '<?php echo __('Itens adicionados ao lote com sucesso.'); ?>', 'success').then(() => location.reload());
                     } else {
-                        Swal.fire('Erro', resp.message, 'error');
+                        Swal.fire('<?php echo __('Erro'); ?>', resp.message, 'error');
                     }
                 });
             }
@@ -650,11 +650,11 @@ if ($result) {
                     if (result.isConfirmed) {
                         $.post('ajax_lote.php', { action: 'auction', id_lote: id_lote }, function(resp) {
                             if (resp.success) {
-                                Swal.fire('Sucesso', 'Lote finalizado e leiloado.', 'success').then(() => {
+                                Swal.fire('<?php echo __('Sucesso'); ?>', '<?php echo __('Lote finalizado e leiloado.'); ?>', 'success').then(() => {
                                     location.reload();
                                 });
                             } else {
-                                Swal.fire('Erro', resp.message, 'error');
+                                Swal.fire('<?php echo __('Erro'); ?>', resp.message, 'error');
                             }
                         });
                     }
@@ -680,14 +680,14 @@ if ($result) {
                                 <td><span class="badge badge-secondary">${item.tag}</span></td>
                                 <td>R$ ${parseFloat(item.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
                                 <td class="text-center">
-                                    <button class="btn btn-outline-danger btn-sm" onclick="removeItemFromBatch(${item.id_asset})" title="Remover do Lote">
+                                    <button class="btn btn-outline-danger btn-sm" onclick="removeItemFromBatch(${item.id_asset})" title="<?php echo __('Remover do Lote'); ?>">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
                             </tr>`;
                         });
                         if (resp.items.length === 0) {
-                            html = '<tr><td colspan="4" class="text-center py-3">Nenhum item neste lote.</td></tr>';
+                            html = '<tr><td colspan="4" class="text-center py-3"><?php echo __('Nenhum item neste lote.'); ?></td></tr>';
                         }
                         $('#listItensLote').html(html);
                     }
@@ -696,18 +696,19 @@ if ($result) {
 
             function removeItemFromBatch(id_asset) {
                 Swal.fire({
-                    title: 'Remover Item?',
-                    text: 'O item voltará para a lista de ativos elegíveis.',
+                    title: '<?php echo __('Remover Item?'); ?>',
+                    text: '<?php echo __('O item voltará para a lista de ativos elegíveis.'); ?>',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, remover'
+                    confirmButtonText: '<?php echo __('Sim, remover'); ?>',
+                    cancelButtonText: '<?php echo __('Cancelar'); ?>'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.post('ajax_lote.php', { action: 'remove_item', id_asset: id_asset }, function(resp) {
                             if (resp.success) {
                                 loadLoteItems(currentEditLoteId);
                             } else {
-                                Swal.fire('Erro', resp.message, 'error');
+                                Swal.fire('<?php echo __('Erro'); ?>', resp.message, 'error');
                             }
                         });
                     }
@@ -729,18 +730,19 @@ if ($result) {
 
             function reopenLote() {
                 Swal.fire({
-                    title: 'Reabrir Lote?',
-                    text: 'O lote voltará a ser o Lote Ativo selecionado no topo da página para que você adicione novos itens.',
+                    title: '<?php echo __('Reabrir Lote?'); ?>',
+                    text: '<?php echo __('O lote voltará a ser o Lote Ativo selecionado no topo da página para que você adicione novos itens.'); ?>',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Sim, reabrir'
+                    confirmButtonText: '<?php echo __('Sim, reabrir'); ?>',
+                    cancelButtonText: '<?php echo __('Cancelar'); ?>'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.post('ajax_lote.php', { action: 'reopen', id_lote: currentEditLoteId }, function(resp) {
                             if (resp.success) {
                                 location.reload();
                             } else {
-                                Swal.fire('Erro', resp.message, 'error');
+                                Swal.fire('<?php echo __('Erro'); ?>', resp.message, 'error');
                             }
                         });
                     }

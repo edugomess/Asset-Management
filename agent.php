@@ -194,7 +194,7 @@ if ($res_config && mysqli_num_rows($res_config) > 0) {
                             <?php if (!$chat_ativo): ?>
                                 <div class="text-center py-5">
                                     <i class="fas fa-comment-slash fa-4x text-gray-300 mb-4"></i>
-                                    <h2 class="font-weight-bold" style="font-size: 2.5rem;"><i class="fas fa-headset mr-2 text-primary"></i><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
+                                    <h2 class="font-weight-bold" style="font-size: 2.5rem;"><?php echo __('Como podemos ajudar você hoje?'); ?></h2>
                                     <p class="text-muted"><?php echo __('Esta funcionalidade foi desabilitada nas configurações do sistema pelo administrador.'); ?></p>
                                     <a href="configuracoes.php" class="btn btn-primary btn-sm mt-3" style="background: rgb(44,64,74); border: none;">
                                         <i class="fas fa-cogs mr-1"></i> <?php echo __('Ir para Configurações'); ?>

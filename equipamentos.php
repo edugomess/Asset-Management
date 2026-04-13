@@ -489,11 +489,11 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td>
                                                         <span class="font-weight-bold" style="color: #2c404a;">
-                                                            R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
+                                                            <?php echo __currency($valor_atual); ?>
                                                         </span>
                                                         <br>
-                                                        <small class="text-muted">(<?php echo __('Original:'); ?> R$
-                                                            <?php echo number_format($valor_original, 2, ',', '.'); ?>)</small>
+                                                        <small class="text-muted">(<?php echo __('Original:'); ?> 
+                                                            <?php echo __currency($valor_original); ?>)</small>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
                                                     <td><strong><?php echo htmlspecialchars(($row['tier'] ?: $row['setor']) ?: '-'); ?></strong></td>

@@ -857,7 +857,7 @@ function getHoursAndMinutes($total_minutes)
                                 <i class="fas fa-server mr-2"></i><?php echo __('Configuração de E-mail (SMTP)'); ?>
                             </h6>
                             <span class="badge badge-pill badge-light text-muted small" id="smtpUpdatedAt"
-                                title="Última atualização">
+                                title="<?php echo __('Última atualização'); ?>">
                                 <?php if (!empty($smtp_config['updated_at'])): ?>
                                     <?php echo __('Atualizado em:'); ?> <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
                                 <?php else: ?>

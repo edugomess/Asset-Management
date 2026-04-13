@@ -145,10 +145,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                         if (mysqli_num_rows($result) > 0) {
                                             while ($row = mysqli_fetch_assoc($result)) {
                                                 echo "<tr class='clickable-row' data-href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'>
-                                           <td><strong><a href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'>" . htmlspecialchars($row['nomeSetor']) . "</a></strong></td>
+                                           <td><strong><a href='perfil_centro_de_custo.php?id=" . $row['id_centro_de_custo'] . "'>" . htmlspecialchars(__($row['nomeSetor'])) . "</a></strong></td>
                     <td>" . htmlspecialchars($row['codigo']) . "</td>
                     <td>" . htmlspecialchars($row['ramal']) . "</td>
-                    <td>" . htmlspecialchars($row['unidade']) . "</td>
+                    <td>" . htmlspecialchars(__($row['unidade'])) . "</td>
                     <td>" . htmlspecialchars($row['emailGestor']) . "</td>
                     <td>" . htmlspecialchars($row['gestor']) . "</td>
                     <td>

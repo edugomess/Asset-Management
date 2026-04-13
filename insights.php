@@ -168,7 +168,7 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                     <?php if ($res_recorrencia->num_rows > 0): ?>
                                         <?php while ($row = $res_recorrencia->fetch_assoc()): ?>
                                             <div class="mb-3 p-2 insight-item"
-                                                aria-label="<?php echo __('Visualizar chamados sobre ') . htmlspecialchars($row['titulo']); ?>"
+                                                aria-label="<?php echo __('Visualizar chamados sobre ') . __($row['titulo']); ?>"
                                                 onclick="window.location='chamados.php?busca=<?php echo urlencode($row['titulo']); ?>'">
                                                 <div class="small font-weight-bold">
                                                     <?php echo htmlspecialchars($row['titulo']); ?>
@@ -307,11 +307,11 @@ if ($res_recentes && $res_recentes->num_rows > 0) {
                                                             </div>
                                                             <div class="font-weight-bold text-dark">
                                                                 <?php echo __('Checklist para:'); ?>
-                                                                "<?php echo htmlspecialchars($problema); ?>"
+                                                                "<?php echo __($problema); ?>"
                                                             </div>
                                                         </div>
                                                         <p class="mb-0 small text-secondary">
-                                                            <?php echo htmlspecialchars($dica); ?>
+                                                            <?php echo __($dica); ?>
                                                         </p>
                                                     </div>
                                                 </div>

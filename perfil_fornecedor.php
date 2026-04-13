@@ -243,7 +243,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                                                     echo '<tr class="clickable-row" onclick="window.location=\'perfil_ativo.php?id='.$row['id_asset'].'\'">';
                                                     echo '<td><a href="perfil_ativo.php?id='.$row['id_asset'].'" class="font-weight-bold">'.htmlspecialchars($row['modelo']).'</a></td>';
                                                     echo '<td><span class="badge badge-info">'.htmlspecialchars($row['tag']).'</span></td>';
-                                                    echo '<td>'.htmlspecialchars($row['status']).'</td>';
+                                                    echo '<td>'.__($row['status']).'</td>';
                                                     echo '<td class="text-right">R$ '.number_format($row['valor'], 2, ',', '.').'</td>';
                                                     echo '</tr>';
                                                 }
@@ -265,7 +265,7 @@ $foto = !empty($fornecedor['imagem']) ? htmlspecialchars($fornecedor['imagem']) 
                                                     echo '<tr class="clickable-row" onclick="window.location=\'perfil_licenca.php?id='.$row['id_licenca'].'\'">';
                                                     echo '<td><span class="font-weight-bold">'.htmlspecialchars($row['software']).'</span> <small class="text-muted">(Licença)</small></td>';
                                                     echo '<td><small>'.htmlspecialchars($row['chave']).'</small></td>';
-                                                    echo '<td>'.htmlspecialchars($row['status']).'</td>';
+                                                    echo '<td>'.__($row['status']).'</td>';
                                                     echo '<td class="text-right">R$ '.number_format($row_total, 2, ',', '.').'</td>';
                                                     echo '</tr>';
                                                 }

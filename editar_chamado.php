@@ -636,7 +636,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                      data-sla-total="<?php echo $sla_total_minutos * 60; ?>" 
                                      data-status="<?php echo $chamado['status']; ?>">
                                     <div class="sla-timer-text">
-                                        <span>SLA STATUS</span>
+                                        <span><?php echo __('SLA STATUS'); ?></span>
                                         <span id="sla-header-text">--:--</span>
                                     </div>
                                     <div class="progress progress-premium">

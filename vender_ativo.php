@@ -10,7 +10,7 @@ try {
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!isset($data['id_asset'])) {
-        throw new Exception('ID do ativo não fornecido.');
+        throw new Exception(__('ID do ativo não fornecido.'));
     }
 
     $id_asset = $data['id_asset'];
@@ -42,10 +42,10 @@ try {
 
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao transferir o ativo para a tabela de venda.']);
+            echo json_encode(['success' => false, 'message' => __('Erro ao transferir o ativo para a tabela de venda.')]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Ativo não encontrado.']);
+        echo json_encode(['success' => false, 'message' => __('Ativo não encontrado.')]);
     }
 
     // Reativar verificação de chave estrangeira

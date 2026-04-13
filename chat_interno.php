@@ -23,6 +23,28 @@ $my_id = $_SESSION['id_usuarios'];
     <link rel="stylesheet" href="/assets/css/Nunito.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/assets/css/chat_premium.css">
+    <style>
+        .msg-sender-name {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+            margin-left: 12px;
+        }
+        .me .msg-sender-name {
+            display: none;
+        }
+        .form-control-premium {
+            border-radius: 10px;
+            border: 1px solid #e3e6f0;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+        .form-control-premium:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.1);
+        }
+    </style>
     <?php include_once 'sidebar_style.php'; ?>
 </head>
 
@@ -63,6 +85,11 @@ $my_id = $_SESSION['id_usuarios'];
                                 </div>
                             </div>
                             <div class="chat-sidebar-header">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <button class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#createGroupModal" style="background: rgb(44,64,74); border: none;">
+                                        <i class="fas fa-users mr-1"></i> <?php echo __('Novo Grupo'); ?>
+                                    </button>
+                                </div>
                                 <div class="input-group sidebar-search">
                                     <input type="text" id="user-search" class="form-control bg-light border-0 small" placeholder="<?php echo __('Buscar colega...'); ?>">
                                     <div class="input-group-append">
@@ -151,12 +178,80 @@ $my_id = $_SESSION['id_usuarios'];
         </div>
     </div>
 
+    <!-- Modal de Criação de Grupo -->
+    <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-users-cog mr-2"></i><?php echo __('Criar Novo Grupo'); ?></h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="small font-weight-bold"><?php echo __('Nome do Grupo'); ?></label>
+                        <input type="text" id="group-name" class="form-control form-control-premium" placeholder="<?php echo __('Ex: Equipe de TI'); ?>">
+                    </div>
+                    <label class="small font-weight-bold"><?php echo __('Selecionar Membros'); ?></label>
+                    <div id="group-members-list" class="list-group" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px;">
+                        <!-- Listagem dinâmica de usuários para seleção -->
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><?php echo __('Cancelar'); ?></button>
+                    <button type="button" class="btn btn-primary btn-sm px-4" onclick="createNewGroup()" style="background: rgb(44,64,74); border: none;"><?php echo __('Criar Grupo'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Membros do Grupo -->
+    <div class="modal fade" id="groupMembersModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-users mr-2"></i><?php echo __('Membros do Grupo'); ?></h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="group-members-display-list" class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Membros listados aqui -->
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between bg-light">
+                    <button type="button" class="btn btn-danger btn-sm rounded-pill px-3" onclick="leaveGroup()"><i class="fas fa-sign-out-alt mr-1"></i><?php echo __('Sair do Grupo'); ?></button>
+                    <div>
+                        <button type="button" id="admin-add-btn" class="btn btn-primary btn-sm rounded-pill px-3 mr-2" style="display:none;" onclick="openAddMemberModal()"><i class="fas fa-plus mr-1"></i><?php echo __('Adicionar'); ?></button>
+                        <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-dismiss="modal"><?php echo __('Fechar'); ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar Membro -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="modal-header bg-dark text-white" style="border-radius: 15px 15px 0 0;">
+                    <h5 class="modal-title small font-weight-bold"><?php echo __('Convidar para o Grupo'); ?></h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="potential-members-list" class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Usuários não membros aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/theme.js"></script>
 
     <script>
         let currentDestId = null;
+        let isGroupChat = false;
         let lastMessageCount = 0;
 
         $(document).ready(function() {
@@ -164,7 +259,7 @@ $my_id = $_SESSION['id_usuarios'];
             fetchMyStatus();
 
             setInterval(function() {
-                if (currentDestId) fetchMessages(currentDestId, true);
+                if (currentDestId) fetchMessages(currentDestId, true, isGroupChat);
                 pollUnread();
                 loadUserList();
             }, 5000);
@@ -176,29 +271,64 @@ $my_id = $_SESSION['id_usuarios'];
                 });
             });
 
-            $('#chat-form').on('submit', function(e) {
-                e.preventDefault();
-                sendMessage();
-            });
+            $('#chat-form').on('submit', function(e) { e.preventDefault(); sendMessage(); });
+            $('#chat-attach').on('change', function() { if (this.files && this.files[0]) sendMessage(this.files[0]); });
 
-            // Upload de imagem ao selecionar
-            $('#chat-attach').on('change', function() {
-                if (this.files && this.files[0]) {
-                    sendMessage(this.files[0]);
-                }
-            });
-
-            // Delegar clique para abrir perfil
             $(document).on('click', '.view-profile', function() {
-                const id = currentDestId;
-                if (id) showUserProfile(id);
+                if (isGroupChat) showGroupMembers(currentDestId);
+                else showUserProfile(currentDestId);
+            });
+
+            $('#createGroupModal').on('show.bs.modal', function() {
+                loadMembersSelection();
             });
         });
 
         function linkify(text) {
+            if (!text) return '';
             const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
             return text.replace(urlRegex, function(url) {
                 return '<a href="' + url + '" target="_blank" class="chat-link">' + url + '</a>';
+            });
+        }
+
+        function createNewGroup() {
+            const nome = $('#group-name').val().trim();
+            const membros = [];
+            $('.member-checkbox:checked').each(function() { membros.push($(this).val()); });
+
+            if (!nome || membros.length === 0) {
+                alert('<?php echo __("Preencha o nome e selecione ao menos um membro."); ?>');
+                return;
+            }
+
+            $.post('ajax_chat.php?action=create_group', { nome: nome, membros: membros }, function(res) {
+                if (res.success) {
+                    $('#createGroupModal').modal('hide');
+                    $('#group-name').val('');
+                    loadUserList();
+                    selectUser(res.grupo_id, nome, '/assets/img/group-no-image.png', true);
+                }
+            });
+        }
+
+        function loadMembersSelection() {
+            $.get('ajax_chat.php?action=list_users', function(res) {
+                if (res.success) {
+                    let html = '';
+                    res.users.forEach(user => {
+                        if (!user.is_group) {
+                            html += `
+                                <label class="list-group-item d-flex align-items-center mb-0" style="cursor:pointer; border:none; border-bottom: 1px solid #f8f9fc;">
+                                    <input type="checkbox" class="member-checkbox mr-3" value="${user.id_usuarios}">
+                                    <img src="${user.foto}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">
+                                    <span>${user.nome_completo}</span>
+                                </label>
+                            `;
+                        }
+                    });
+                    $('#group-members-list').html(html);
+                }
             });
         }
 
@@ -207,7 +337,9 @@ $my_id = $_SESSION['id_usuarios'];
             if (!msg && !file) return;
 
             const formData = new FormData();
-            formData.append('destinatario_id', currentDestId);
+            if (isGroupChat) formData.append('grupo_id', currentDestId);
+            else formData.append('destinatario_id', currentDestId);
+            
             formData.append('mensagem', msg);
             if (file) formData.append('imagem', file);
 
@@ -221,9 +353,7 @@ $my_id = $_SESSION['id_usuarios'];
                     if (res.success) {
                         $('#chat-msg').val('').focus();
                         $('#chat-attach').val('');
-                        fetchMessages(currentDestId);
-                    } else if (res.message) {
-                        alert(res.message);
+                        fetchMessages(currentDestId, false, isGroupChat);
                     }
                 }
             });
@@ -234,18 +364,22 @@ $my_id = $_SESSION['id_usuarios'];
                 if (res.success) {
                     let html = '';
                     res.users.forEach(user => {
-                        const statusClass = 'status-' + user.chat_status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                        const dotClass = 'bg-' + user.chat_status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        const isGroup = !!user.is_group;
+                        const actualId = isGroup ? user.id_grupo : user.id_usuarios;
+                        const statusClass = isGroup ? '' : 'status-' + user.chat_status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        const dotClass = isGroup ? 'bg-primary' : 'bg-' + user.chat_status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        const listId = isGroup ? 'g' + user.id_grupo : user.id_usuarios;
+
                         html += `
-                            <div class="chat-user-item ${currentDestId == user.id_usuarios ? 'active' : ''}" data-id="${user.id_usuarios}" onclick="selectUser(${user.id_usuarios}, '${user.nome_completo}', '${user.foto}')">
-                                <img src="${user.foto}" class="chat-avatar" onclick="event.stopPropagation(); showUserProfile(${user.id_usuarios})">
+                            <div class="chat-user-item ${currentDestId == actualId && isGroupChat == isGroup ? 'active' : ''}" data-id="${listId}" onclick="selectUser(${actualId}, '${user.nome_completo}', '${user.foto}', ${isGroup})">
+                                <img src="${user.foto}" class="chat-avatar" ${!isGroup ? `onclick="event.stopPropagation(); showUserProfile(${user.id_usuarios})"` : ''}>
                                 <div class="chat-user-info">
                                     <div class="chat-user-name">${user.nome_completo}</div>
                                     <div class="chat-user-status ${statusClass}">
-                                        <span class="status-dot ${dotClass}"></span> ${user.chat_status}
+                                        <span class="status-dot ${dotClass}"></span> ${isGroup ? 'Grupo' : user.chat_status}
                                     </div>
                                 </div>
-                                <span class="badge badge-danger badge-counter unread-count" id="unread-${user.id_usuarios}" style="display:none;">0</span>
+                                <span class="badge badge-danger badge-counter unread-count" id="unread-${listId}" style="display:none;">0</span>
                             </div>
                         `;
                     });
@@ -255,20 +389,24 @@ $my_id = $_SESSION['id_usuarios'];
             });
         }
 
-        function selectUser(id, name, photo) {
+        function selectUser(id, name, photo, isGroup = false) {
             currentDestId = id;
+            isGroupChat = isGroup;
+            const listId = isGroup ? 'g' + id : id;
+            
             $('.chat-user-item').removeClass('active');
-            $(`.chat-user-item[data-id="${id}"]`).addClass('active');
+            $(`.chat-user-item[data-id="${listId}"]`).addClass('active');
             $('#active-user-name').text(name);
             $('#active-user-avatar').attr('src', photo);
             $('#chat-header').fadeIn();
             $('#chat-input-area').fadeIn();
-            $(`#unread-${id}`).hide().text('0');
-            fetchMessages(id);
+            $(`#unread-${listId}`).hide().text('0');
+            fetchMessages(id, false, isGroup);
         }
 
-        function fetchMessages(otherId, isPolling = false) {
-            $.get('ajax_chat.php?action=fetch', { with: otherId }, function(res) {
+        function fetchMessages(otherId, isPolling = false, isGroup = false) {
+            const params = isGroup ? { with_group: otherId } : { with: otherId };
+            $.get('ajax_chat.php?action=fetch', params, function(res) {
                 if (res.success) {
                     if (isPolling && res.messages.length === lastMessageCount) return;
                     let html = '';
@@ -288,14 +426,18 @@ $my_id = $_SESSION['id_usuarios'];
                                 </div>
                             `;
                         }
+                        
+                        let senderName = (isGroup && !msg.is_me) ? `<div class="msg-sender-name">${msg.sender_name}</div>` : '';
+                        
                         html += `
                             <div class="msg-container ${msg.is_me ? 'me' : 'other'}">
+                                ${senderName}
                                 <div class="msg-bubble">${content}</div>
                                 <div class="msg-time">${msg.time_formatted}</div>
                             </div>
                         `;
                     });
-                    $('#chat-history').html(html || '<div class="text-center text-muted p-5 small"><?php echo __('Nenhuma mensagem ainda. Comece a conversar!'); ?></div>');
+                    $('#chat-history').html(html || '<div class="text-center text-muted p-5 small"><?php echo __('Nenhuma mensagem ainda!'); ?></div>');
                     if (!isPolling || res.messages.length > lastMessageCount) scrollToBottom();
                     lastMessageCount = res.messages.length;
                 }
@@ -315,6 +457,105 @@ $my_id = $_SESSION['id_usuarios'];
                     $('#userProfileModal').modal('show');
                 }
             });
+        }
+
+        function showGroupMembers(id) {
+            $.get('ajax_chat.php?action=get_group_members', { id: id }, function(res) {
+                if (res.success) {
+                    let html = '';
+                    const isAdmin = res.is_admin;
+                    
+                    if (isAdmin) $('#admin-add-btn').show();
+                    else $('#admin-add-btn').hide();
+
+                    res.members.forEach(m => {
+                        let actions = `
+                            <button class="btn btn-light btn-sm rounded-circle mr-1" onclick="selectUser(${m.id_usuarios}, '${m.nome_completo}', '${m.foto}', false)" title="<?php echo __('Conversa Privada'); ?>">
+                                <i class="fas fa-comment text-primary"></i>
+                            </button>
+                        `;
+                        
+                        if (isAdmin && m.id_usuarios != <?php echo $my_id; ?>) {
+                            actions += `
+                                <button class="btn btn-light btn-sm rounded-circle" onclick="removeMember(${m.id_usuarios})" title="<?php echo __('Remover do Grupo'); ?>">
+                                    <i class="fas fa-user-minus text-danger"></i>
+                                </button>
+                            `;
+                        }
+
+                        html += `
+                            <div class="list-group-item d-flex align-items-center py-3">
+                                <img src="${m.foto}" style="width:40px; height:40px; border-radius:12px; object-fit:cover; margin-right:15px;">
+                                <div class="flex-grow-1">
+                                    <div class="font-weight-bold text-dark">${m.nome_completo}</div>
+                                    <div class="small text-muted text-uppercase">${m.funcao || '-'}</div>
+                                </div>
+                                <div class="d-flex">
+                                    ${actions}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    $('#group-members-display-list').html(html);
+                    $('#groupMembersModal').modal('show');
+                }
+            });
+        }
+
+        function removeMember(uid) {
+            if (confirm('<?php echo __("Tem certeza que deseja remover este membro?"); ?>')) {
+                $.post('ajax_chat.php?action=remove_member', { id_grupo: currentDestId, usuario_id: uid }, function(res) {
+                    if (res.success) showGroupMembers(currentDestId);
+                    else alert(res.message);
+                });
+            }
+        }
+
+        function openAddMemberModal() {
+            loadPotentialMembers();
+            $('#addMemberModal').modal('show');
+        }
+
+        function loadPotentialMembers() {
+            $.get('ajax_chat.php?action=list_potential_members', { id_grupo: currentDestId }, function(res) {
+                if (res.success) {
+                    let html = '';
+                    res.users.forEach(u => {
+                        html += `
+                            <div class="list-group-item d-flex align-items-center py-2" style="cursor:pointer" onclick="addMember(${u.id_usuarios})">
+                                <img src="${u.foto}" style="width:30px; height:30px; border-radius:50%; margin-right:10px;">
+                                <div class="small font-weight-bold">${u.nome_completo}</div>
+                                <i class="fas fa-plus-circle ml-auto text-success"></i>
+                            </div>
+                        `;
+                    });
+                    $('#potential-members-list').html(html || '<div class="p-3 text-center small text-muted"><?php echo __("Todos os usuários já estão no grupo."); ?></div>');
+                }
+            });
+        }
+
+        function addMember(uid) {
+            $.post('ajax_chat.php?action=add_member', { id_grupo: currentDestId, usuario_id: uid }, function(res) {
+                if (res.success) {
+                    $('#addMemberModal').modal('hide');
+                    showGroupMembers(currentDestId);
+                }
+            });
+        }
+
+        function leaveGroup() {
+            if (confirm('<?php echo __("Tem certeza que deseja sair deste grupo? Se você for o administrador, outro membro será promovido."); ?>')) {
+                $.post('ajax_chat.php?action=leave_group', { id_grupo: currentDestId }, function(res) {
+                    if (res.success) {
+                        $('#groupMembersModal').modal('hide');
+                        $('#chat-header').hide();
+                        $('#chat-input-area').hide();
+                        $('#chat-history').html('<div class="empty-chat-state"><i class="fas fa-comments"></i><h4><?php echo __("Você saiu do grupo"); ?></h4></div>');
+                        currentDestId = null;
+                        loadUserList();
+                    }
+                });
+            }
         }
 
         function updateMyStatus(status) {
@@ -337,8 +578,10 @@ $my_id = $_SESSION['id_usuarios'];
         function pollUnread() {
             $.get('ajax_chat.php?action=poll', function(res) {
                 if (res.success) {
-                    for (const [userId, count] of Object.entries(res.unread)) {
-                        if (userId != currentDestId && count > 0) $(`#unread-${userId}`).text(count).show();
+                    const currentListId = isGroupChat ? 'g' + currentDestId : currentDestId;
+                    for (const [listId, count] of Object.entries(res.unread)) {
+                        if (listId != currentListId && count > 0) $(`#unread-${listId}`).text(count).show();
+                        else if (listId == currentListId) $(`#unread-${listId}`).hide();
                     }
                     // Atualiza distintivo global no sidebar
                     const globalBadge = $('#global-chat-badge');

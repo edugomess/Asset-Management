@@ -162,27 +162,47 @@ try {
 
             // 1. Buscar ativos do lote
             $query = "SELECT * FROM ativos WHERE id_lote = ?";
+            $query = "SELECT id_asset FROM ativos WHERE id_lote = ?";
             $stmtFetch = $conn->prepare($query);
             $stmtFetch->bind_param('i', $id_lote);
             $stmtFetch->execute();
             $result = $stmtFetch->get_result();
 
             if ($result->num_rows > 0) {
-                // 2. Inserir em venda
-                $queryVenda = "INSERT INTO venda (id_asset, categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, assigned_to, centroDeCusto, dataAtivacao, descricao, data_venda)
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Leiloado', ?, ?, ?, ?, NOW())";
+                // 2. Coletar dados dos ativos antes de deletar
+                $sqlAssets = "SELECT id_asset, categoria, fabricante, modelo, tag, hostName, valor, macAdress, assigned_to, centroDeCusto, dataAtivacao, descricao, numero_serie, processador, memoria, armazenamento, setor 
+                             FROM ativos WHERE id_lote = ?";
+                $stmtAssets = $conn->prepare($sqlAssets);
+                $stmtAssets->bind_param('i', $id_lote);
+                $stmtAssets->execute();
+                $assetsData = $stmtAssets->get_result()->fetch_all(MYSQLI_ASSOC);
+                
+                $assetIds = array_column($assetsData, 'id_asset');
+                $idsList = implode(',', $assetIds);
+
+                // 3. Limpar dependências (Usuário autorizou descartar histórico)
+                $conn->query("DELETE FROM manutencao WHERE id_asset IN ($idsList)");
+                $conn->query("DELETE FROM atribuicoes WHERE id_asset IN ($idsList)");
+                $conn->query("DELETE FROM atribuicoes_licencas WHERE id_ativo IN ($idsList)");
+                $conn->query("DELETE FROM historico_ativos WHERE ativo_id IN ($idsList)");
+                $conn->query("UPDATE ativos SET parent_asset_id = NULL WHERE parent_asset_id IN ($idsList)");
+
+                // 4. Inserir em venda
+                $queryVenda = "INSERT INTO venda (id_asset, id_lote, categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, assigned_to, centroDeCusto, dataAtivacao, descricao, data_venda, numero_serie, processador, memoria, armazenamento, setor)
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Leiloado', ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?)";
                 $stmtVenda = $conn->prepare($queryVenda);
 
-                while ($ativo = $result->fetch_assoc()) {
-                    $stmtVenda->bind_param('isssssssisss', 
-                        $ativo['id_asset'], $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], 
+                foreach ($assetsData as $ativo) {
+                    $stmtVenda->bind_param('iisssssssissssssss', 
+                        $ativo['id_asset'], $id_lote, $ativo['categoria'], $ativo['fabricante'], $ativo['modelo'], 
                         $ativo['tag'], $ativo['hostName'], $ativo['valor'], $ativo['macAdress'], 
-                        $ativo['assigned_to'], $ativo['centroDeCusto'], $ativo['dataAtivacao'], $ativo['descricao']
+                        $ativo['assigned_to'], $ativo['centroDeCusto'], $ativo['dataAtivacao'], $ativo['descricao'],
+                        $ativo['numero_serie'], $ativo['processador'], $ativo['memoria'], $ativo['armazenamento'], $ativo['setor']
                     );
                     $stmtVenda->execute();
                 }
 
-                // 3. Remover de ativos
+                // 5. Remover de ativos
                 $stmtDel = $conn->prepare("DELETE FROM ativos WHERE id_lote = ?");
                 $stmtDel->bind_param('i', $id_lote);
                 $stmtDel->execute();

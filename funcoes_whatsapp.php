@@ -35,7 +35,7 @@ function enviarWhatsAppNovoChamado($id_chamado)
     $chamado = $res->fetch_assoc();
 
     $prioridade = strtoupper(trim($chamado['prioridade'] ?? ''));
-    $tipoOriginal = strtolower(trim($chamado['tipo'] ?? ''));
+    $tipoOriginal = strtolower(trim($chamado['categoria'] ?? ''));
 
     // 3. Filtro GERAL de Prioridade
     $prioEnabled = false;

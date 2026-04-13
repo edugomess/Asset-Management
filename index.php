@@ -146,19 +146,20 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     $where_chamados = " AND usuario_id = " . $_SESSION['id_usuarios'];
 }
 
-$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Em Atendimento', 'Pendente') $where_chamados GROUP BY status");
+$res = mysqli_query($conn, "SELECT status, COUNT(*) as total FROM chamados WHERE status IN ('Aberto', 'Em Andamento', 'Pendente') $where_chamados GROUP BY status");
 if ($res) {
     while ($row = mysqli_fetch_assoc($res)) {
         $data[$row['status']] = $row['total'];
         $total_ativos += $row['total'];
         if ($row['status'] == 'Aberto')
             $count_aberto = $row['total'];
-        elseif ($row['status'] == 'Em Andamento' || $row['status'] == 'Em Atendimento')
-            $count_andamento += $row['total'];
+        elseif ($row['status'] == 'Em Andamento')
+            $count_andamento = $row['total'];
         elseif ($row['status'] == 'Pendente')
             $count_pendente = $row['total'];
     }
 }
+$total_ativos_f = (int)$total_ativos;
 $data_string = implode(",", [
     isset($data['Aberto']) ? $data['Aberto'] : 0,
     $count_andamento,
@@ -185,18 +186,23 @@ if ($res_sla_cfg && mysqli_num_rows($res_sla_cfg) > 0) {
 
 $sql_sla_pr = "SELECT 
     SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) <= $sla_pr_min THEN 1 ELSE 0 END) as dentro,
-    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) > $sla_pr_min THEN 1 ELSE 0 END) as fora
+    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) > $sla_pr_min THEN 1 ELSE 0 END) as fora,
+    SUM(CASE WHEN data_primeira_resposta IS NULL AND status NOT IN ('Resolvido', 'Fechado', 'Cancelado') THEN 1 ELSE 0 END) as sem_resposta
 FROM chamados 
 WHERE MONTH(data_abertura) = MONTH(CURRENT_DATE()) AND YEAR(data_abertura) = YEAR(CURRENT_DATE()) 
-AND data_primeira_resposta IS NOT NULL $where_chamados";
+$where_chamados";
 
 $res_sla_pr = mysqli_query($conn, $sql_sla_pr);
 $sla_pr_data = mysqli_fetch_assoc($res_sla_pr);
 $sla_pr_string = implode(",", [
     $sla_pr_data['dentro'] ?? 0,
-    $sla_pr_data['fora'] ?? 0
+    $sla_pr_data['fora'] ?? 0,
+    $sla_pr_data['sem_resposta'] ?? 0
 ]);
-$total_sla_pr = ($sla_pr_data['dentro'] ?? 0) + ($sla_pr_data['fora'] ?? 0);
+$total_sla_pr = ($sla_pr_data['dentro'] ?? 0) + ($sla_pr_data['fora'] ?? 0) + ($sla_pr_data['sem_resposta'] ?? 0);
+$pct_dentro_f = $total_sla_pr > 0 ? round(($sla_pr_data['dentro'] / $total_sla_pr) * 100) : 0;
+$pct_fora_f = $total_sla_pr > 0 ? round(($sla_pr_data['fora'] / $total_sla_pr) * 100) : 0;
+$pct_sem_f = $total_sla_pr > 0 ? round(($sla_pr_data['sem_resposta'] / $total_sla_pr) * 100) : 0;
 
 // === RANKING DE SLA ===
 $mes_filtro = !empty($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('n');
@@ -471,7 +477,7 @@ function getCardColor($type, $name)
                                             data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Aberto'); ?>&quot;,&quot;<?php echo __('Em Andamento'); ?>&quot;,&quot;<?php echo __('Pendente'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#36b9cc&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $data_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
                                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
-                                            <?php echo $total_ativos; ?>
+                                            <?php echo $total_ativos_f; ?>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
@@ -504,17 +510,22 @@ function getCardColor($type, $name)
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;,&quot;<?php echo __('Sem Resposta'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;,&quot;#f6c23e&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
-                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
-                                            <?php echo $sla_pr_data['fora'] ?? 0; ?>
+                                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none; text-align: center; line-height: 1;">
+                                            <?php echo $total_sla_pr; ?>
+                                            <div style="font-size: 0.8rem; font-weight: 600; color: #858796; text-transform: uppercase; margin-top: 2px;">
+                                                <?php echo $meses[date('n')]; ?>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
                                                 class="fas fa-circle text-success"></i>
                                             <?php echo __('Dentro'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-danger"></i>
-                                            <?php echo __('Fora'); ?></span>
+                                            <?php echo __('Fora'); ?></span><span class="mr-2"><i
+                                                class="fas fa-circle text-warning"></i>
+                                            <?php echo __('Sem Resp.'); ?></span>
                                     </div>
                                 </div>
                             </div>

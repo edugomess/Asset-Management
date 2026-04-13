@@ -159,16 +159,23 @@ class ReportGenerator extends FPDF
         $this->SetFont('Arial', '', 8);
 
         $result = $this->conn->query($sql);
-        // ... (rest of logic remains same) ...
 
         if ($result && $result->num_rows > 0) {
+            $fill = false; // Alternância de cores
             while ($row = $result->fetch_assoc()) {
+                // Background color for alternating rows
+                if ($fill) {
+                    $this->SetFillColor(245, 245, 245);
+                } else {
+                    $this->SetFillColor(255, 255, 255);
+                }
+
                 foreach ($this->columns as $col) {
                     $val = isset($row[$col['field']]) ? $row[$col['field']] : '';
 
                     // Format output if needed
                     if (isset($col['format'])) {
-                        if ($col['format'] == 'money') {
+                        if ($col['format'] == 'money' || $col['format'] == 'currency') {
                             $val = 'R$ ' . number_format($val, 2, ',', '.');
                         } elseif ($col['format'] == 'date') {
                             $val = date('d/m/Y', strtotime($val));
@@ -183,9 +190,10 @@ class ReportGenerator extends FPDF
                         $val .= '..';
                     }
 
-                    $this->Cell($col['width'], 7, $this->utf8_to_iso88591($val), 1, 0, $col['align']);
+                    $this->Cell($col['width'], 7, $this->utf8_to_iso88591($val), 1, 0, $col['align'], true);
                 }
                 $this->Ln();
+                $fill = !$fill;
             }
         } else {
             $this->Cell(0, 10, $this->utf8_to_iso88591('Nenhum registro encontrado.'), 1, 1, 'C');

@@ -23,15 +23,16 @@ try {
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
-        $queryVenda = "INSERT INTO venda (id_asset, categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, assigned_to, centroDeCusto, dataAtivacao, descricao, data_venda)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        $queryVenda = "INSERT INTO venda (id_asset, id_lote, categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, assigned_to, centroDeCusto, dataAtivacao, descricao, data_venda)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         $stmtVenda = $conn->prepare($queryVenda);
         $status_leilao = 'Leiloado';
 
         while ($ativo = mysqli_fetch_assoc($result)) {
             $stmtVenda->bind_param(
-                'issssssssisss',
+                'iissssssssisss',
                 $ativo['id_asset'],
+                $ativo['id_lote'],
                 $ativo['categoria'],
                 $ativo['fabricante'],
                 $ativo['modelo'],

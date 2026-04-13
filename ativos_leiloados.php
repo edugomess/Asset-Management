@@ -197,7 +197,13 @@ include_once 'conexao.php';
                                 $start_from = ($current_page - 1) * $results_per_page;
 
                                 // Consultar os ativos leiloados
-                                $sql = "SELECT v.*, u.nome, u.sobrenome FROM venda v LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios $where_clause ORDER BY v.data_venda DESC LIMIT $start_from, $results_per_page";
+                                $sql = "SELECT v.*, u.nome, u.sobrenome, l.nome_lote 
+                                        FROM venda v 
+                                        LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios 
+                                        LEFT JOIN lotes_leilao l ON v.id_lote = l.id_lote
+                                        $where_clause 
+                                        ORDER BY v.data_venda DESC 
+                                        LIMIT $start_from, $results_per_page";
                                 $result = mysqli_query($conn, $sql);
                                 ?>
 
@@ -210,6 +216,8 @@ include_once 'conexao.php';
                                             <th><?php echo __('Tag'); ?></th>
                                             <th><?php echo __('HostName'); ?></th>
                                             <th><?php echo __('Centro de Custo'); ?></th>
+                                            <th><?php echo __('Lote'); ?></th>
+                                            <th><?php echo __('Lance Sugerido'); ?></th>
                                             <th><?php echo __('Data Leilão'); ?></th>
                                             <th><?php echo __('Status'); ?></th>
                                         </tr>
@@ -221,8 +229,11 @@ include_once 'conexao.php';
                                                 // Format date
                                                 $data_venda = date('d/m/Y H:i', strtotime($row['data_venda']));
                                                 $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
+                                                
+                                                // Calculate suggested bid (10%)
+                                                $lance_sugerido = floatval($row['valor'] ?? 0) * 0.10;
                                                 ?>
-                                                <tr class="clickable-row" data-href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>">
+                                                <tr>
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';
@@ -239,6 +250,18 @@ include_once 'conexao.php';
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                                    <td>
+                                                        <span class="badge badge-secondary">
+                                                            <?php 
+                                                            if (!empty($row['id_lote'])) {
+                                                                echo "#" . $row['id_lote'] . " - " . htmlspecialchars($row['nome_lote'] ?? '');
+                                                            } else {
+                                                                echo "N/A";
+                                                            }
+                                                            ?>
+                                                        </span>
+                                                    </td>
+                                                    <td><strong>R$ <?php echo number_format($lance_sugerido, 2, ',', '.'); ?></strong></td>
                                                     <td><?php echo $data_venda; ?></td>
                                                     <td><span
                                                             class="status-badge badge-warning"><?php echo __('leiloado'); ?></span></td>

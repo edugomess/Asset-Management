@@ -978,7 +978,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                                 </div>
 
                                 <!-- Aprovação do Gestor -->
-                                <?php if ($chamado['categoria'] === 'Requisição' || $chamado['categoria'] === 'Mudança'): ?>
+                                <?php if (($chamado['categoria'] === 'Mudança' || ($chamado['categoria'] === 'Requisição' && ($chamado['tipo_servico'] ?? '') === 'Completa')) && !empty($chamado['id_gestor_aprovador'])): ?>
                                 <div class="info-card approval-card mb-4 animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
                                     <div class="card-header">
                                         <i class="fas fa-user-tie text-warning"></i> <?php echo __('Aprovação do Gestor'); ?>

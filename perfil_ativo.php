@@ -36,8 +36,58 @@ $result_ativo = mysqli_query($conn, $sql_ativo);
 $ativo = mysqli_fetch_assoc($result_ativo);
 
 if (!$ativo) {
-    header("Location: equipamentos.php");
-    exit();
+    // 1.1 Tenta buscar na tabela de vendas (Ativos Leiloados/Doados)
+    $sql_venda = "SELECT v.*, u.nome AS user_nome, u.sobrenome AS user_sobrenome, 
+                  loth.nome_lote as lote_nome
+                  FROM venda v 
+                  LEFT JOIN usuarios u ON v.assigned_to = u.id_usuarios
+                  LEFT JOIN lotes_leilao loth ON v.id_lote = loth.id_lote
+                  WHERE v.id_asset = '$id'";
+    $result_venda = mysqli_query($conn, $sql_venda);
+    $ativo = mysqli_fetch_assoc($result_venda);
+
+    if (!$ativo) {
+        header("Location: equipamentos.php");
+        exit();
+    }
+
+    // Bloqueia visualização de ativos doados ou leiloados
+    if ($ativo['status'] === 'Doado' || $ativo['status'] === 'Leiloado') {
+        $redirect = ($ativo['status'] === 'Doado') ? 'ativos_doados.php' : 'ativos_leiloados.php';
+        header("Location: $redirect?error=not_viewable");
+        exit();
+    }
+
+    // Ajustes de compatibilidade para campos que não existem na tabela venda
+    $defaults = [
+        'nome_local' => '-',
+        'id_manutencao' => null,
+        'manutencao_data' => null,
+        'manutencao_desc' => null,
+        'tipo_manutencao' => null,
+        'numero_serie' => '-',
+        'tier' => 'N/A',
+        'setor' => '-',
+        'processador' => '',
+        'memoria' => '',
+        'armazenamento' => '',
+        'tipo_armazenamento' => '',
+        'polegadas' => '',
+        'is_scanner' => 'Não',
+        'imei' => '',
+        'sim_card' => '',
+        'numero_nota_fiscal' => '-',
+        'anexo_nota_fiscal' => '',
+        'imagem' => '/assets/img/no-image.png',
+        'parent_asset_id' => null,
+        'parent_tag' => '',
+        'parent_modelo' => ''
+    ];
+    foreach ($defaults as $key => $val) {
+        if (!isset($ativo[$key])) {
+            $ativo[$key] = $val;
+        }
+    }
 }
 
 // 1.5 Calculando dados para QR Code (global)

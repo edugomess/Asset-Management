@@ -223,7 +223,7 @@ include_once 'conexao.php';
                                                 $data_venda = date('d/m/Y H:i', strtotime($row['data_venda']));
                                                 $recebedor = ($row['nome'] || $row['sobrenome']) ? $row['nome'] . ' ' . $row['sobrenome'] : 'N/A';
                                                 ?>
-                                                <tr class="clickable-row" data-href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>">
+                                                <tr>
                                                     <td class="d-flex align-items-center">
                                                         <?php
                                                         $foto = !empty($row['imagem']) ? htmlspecialchars($row['imagem']) : '';

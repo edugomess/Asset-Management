@@ -94,7 +94,7 @@ $end_sql   = mysqli_real_escape_string($conn, $end   . ' 23:59:59');
 
 $sql = "SELECT 
             c.id, c.titulo, c.categoria, c.prioridade,
-            c.data_abertura, c.data_primeira_resposta
+            c.data_abertura, c.data_primeira_resposta, c.status
         FROM chamados c
         WHERE c.data_abertura BETWEEN '$start_sql' AND '$end_sql'
         ORDER BY c.data_abertura DESC
@@ -113,9 +113,12 @@ if ($res && mysqli_num_rows($res) > 0) {
         $categoria  = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $row['categoria']);
         $prioridade = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $row['prioridade'] ?: '-');
         $abertura   = date('d/m/Y H:i', strtotime($row['data_abertura']));
+        $tempo_fmt  = '-';
+        $resposta   = '-';
+        $status_sla = '-';
 
         if (!empty($row['data_primeira_resposta'])) {
-            $total++; // Only count responded tickets in the total for percentages
+            $total++; 
             $ts_aber  = strtotime($row['data_abertura']);
             $ts_resp  = strtotime($row['data_primeira_resposta']);
             $diff_min = round(($ts_resp - $ts_aber) / 60);
@@ -129,25 +132,35 @@ if ($res && mysqli_num_rows($res) > 0) {
 
             if ($diff_min <= $sla_pr_min) {
                 $status_sla = 'Dentro Prazo';
-                $pdf->SetFillColor(220, 255, 220);
+                $pdf->SetFillColor(220, 255, 220); // Verde
                 $dentro++;
             } else {
                 $status_sla = 'Fora do Prazo';
-                $pdf->SetFillColor(255, 220, 220);
+                $pdf->SetFillColor(255, 220, 220); // Vermelho
                 $fora++;
             }
-
-            $pdf->Cell(15,  8, $row['id'],                                                      1, 0, 'C');
-            $pdf->Cell(70,  8, $titulo,                                                         1, 0, 'L');
-            $pdf->Cell(30,  8, $categoria,                                                      1, 0, 'C');
-            $pdf->Cell(20,  8, $prioridade,                                                     1, 0, 'C');
-            $pdf->Cell(32,  8, $abertura,                                                       1, 0, 'C');
-            $pdf->Cell(32,  8, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $resposta),              1, 0, 'C');
-            $pdf->Cell(22,  8, $tempo_fmt,                                                      1, 0, 'C');
-            $pdf->Cell(22,  8, "$sla_pr_min min",                                              1, 0, 'C');
-            $pdf->Cell(28,  8, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $status_sla),            1, 1, 'C', true);
-            $pdf->SetFillColor(255, 255, 255);
+        } else {
+            // Sem resposta: verificar se ainda está aberto
+            if (!in_array($row['status'], ['Resolvido', 'Fechado', 'Cancelado'])) {
+                $total++;
+                $sem_resp++;
+                $status_sla = 'Sem Resposta';
+                $pdf->SetFillColor(255, 252, 191); // Amarelo
+            } else {
+                continue; // Ignora se foi fechado sem resposta
+            }
         }
+
+        $pdf->Cell(15,  8, $row['id'],                                                      1, 0, 'C');
+        $pdf->Cell(70,  8, $titulo,                                                         1, 0, 'L');
+        $pdf->Cell(30,  8, $categoria,                                                      1, 0, 'C');
+        $pdf->Cell(20,  8, $prioridade,                                                     1, 0, 'C');
+        $pdf->Cell(32,  8, $abertura,                                                       1, 0, 'C');
+        $pdf->Cell(32,  8, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $resposta),              1, 0, 'C');
+        $pdf->Cell(22,  8, $tempo_fmt,                                                      1, 0, 'C');
+        $pdf->Cell(22,  8, "$sla_pr_min min",                                              1, 0, 'C');
+        $pdf->Cell(28,  8, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $status_sla),            1, 1, 'C', true);
+        $pdf->SetFillColor(255, 255, 255);
     }
 
     // ─── Rodapé com resumo ────────────────────────────────────────────────────
@@ -157,10 +170,12 @@ if ($res && mysqli_num_rows($res) > 0) {
 
     $pct_dentro = $total > 0 ? round(($dentro / $total) * 100) : 0;
     $pct_fora   = $total > 0 ? round(($fora   / $total) * 100) : 0;
+    $pct_sem    = $total > 0 ? round(($sem_resp / $total) * 100) : 0;
 
-    $pdf->Cell(66, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Total Respondidos: $total"),               1, 0, 'C', true);
-    $pdf->Cell(66, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Dentro do prazo: $dentro ({$pct_dentro}%)"),  1, 0, 'C', true);
-    $pdf->Cell(66, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Fora do prazo: $fora ({$pct_fora}%)"),        1, 1, 'C', true);
+    $pdf->Cell(67, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Total Monitorados: $total"),              1, 0, 'C', true);
+    $pdf->Cell(68, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Dentro: $dentro ({$pct_dentro}%)"),        1, 0, 'C', true);
+    $pdf->Cell(68, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Fora: $fora ({$pct_fora}%)"),              1, 0, 'C', true);
+    $pdf->Cell(68, 9, iconv('UTF-8', 'ISO-8859-1//TRANSLIT', "Sem Resposta: $sem_resp ({$pct_sem}%)"),   1, 1, 'C', true);
 
 } else {
     $pdf->SetFont('Arial', 'I', 9);

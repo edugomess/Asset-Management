@@ -38,12 +38,12 @@ try {
         }
 
         // Transferir o ativo para a tabela "venda" (que agora representa doações)
-        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto, descricao, assigned_to)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $queryDoacao = "INSERT INTO venda (categoria, fabricante, modelo, tag, hostName, valor, macAdress, status, dataAtivacao, centroDeCusto, descricao, assigned_to, numero_serie, processador, memoria, armazenamento, setor)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtDoacao = $conn->prepare($queryDoacao);
         $status_doado = 'Doado';
         $stmtDoacao->bind_param(
-            'sssssssssssi',
+            'sssssssssssisssss',
             $ativo['categoria'],
             $ativo['fabricante'],
             $ativo['modelo'],
@@ -51,12 +51,16 @@ try {
             $ativo['hostName'],
             $ativo['valor'],
             $ativo['macAdress'],
-            
             $status_doado,
             $ativo['dataAtivacao'],
             $ativo['centroDeCusto'],
             $ativo['descricao'],
-            $ativo['assigned_to']
+            $ativo['assigned_to'],
+            $ativo['numero_serie'],
+            $ativo['processador'],
+            $ativo['memoria'],
+            $ativo['armazenamento'],
+            $ativo['setor']
         );
         if ($stmtDoacao->execute()) {
             // Remover o ativo da tabela "ativos"

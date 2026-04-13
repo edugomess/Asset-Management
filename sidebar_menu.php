@@ -128,6 +128,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </li>
     <?php endif; ?>
     <li class="nav-item">
+        <a class="nav-link <?php echo ($current_page == 'chat_interno.php') ? 'active' : ''; ?>" href="chat_interno.php">
+            <i class="fas fa-comments"></i><span><?php echo __('Chat Interno'); ?></span>
+            <span class="badge badge-danger badge-counter ml-1" id="global-chat-badge" style="display:none;font-size: 0.6rem; vertical-align: top;">0</span>
+        </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link <?php echo ($current_page == 'agent.php') ? 'active' : ''; ?>" href="agent.php">
             <i class="fas fa-brain"></i><span><?php echo __('Assistente IA'); ?></span>
         </a>
@@ -158,5 +164,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
             ul.style.overflowX = 'visible';
         });
     });
+
+    // Heartbeat e Notificações do Chat (Vanilla JS for Global Compatibility)
+    function pollGlobalChat() {
+        fetch('ajax_chat.php?action=poll')
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    const sBadge = document.getElementById('global-chat-badge');
+                    const tBadge = document.getElementById('topbar-chat-badge');
+                    
+                    if (res.total > 0) {
+                        if (sBadge) {
+                            sBadge.textContent = res.total;
+                            sBadge.style.display = 'inline-block';
+                        }
+                        if (tBadge) tBadge.style.display = 'block';
+                    } else {
+                        if (sBadge) sBadge.style.display = 'none';
+                        if (tBadge) tBadge.style.display = 'none';
+                    }
+                }
+            })
+            .catch(err => console.error('Chat Poll Error:', err));
+    }
+
+    // Inicialização segura
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        pollGlobalChat();
+    } else {
+        document.addEventListener('DOMContentLoaded', pollGlobalChat);
+    }
+    
+    // Intervalo de atualização (Heartbeat + Notificações)
+    setInterval(pollGlobalChat, 30000); // A cada 30 segundos
 })();
 </script>

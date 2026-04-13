@@ -22,6 +22,17 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
         </form>
 
         <ul class="navbar-nav flex-nowrap ml-auto">
+            <!-- Nav Item - Chat Messages -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="chat_interno.php" id="messagesDropdown" role="button" style="color: rgb(44,64,74);">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <!-- Notificação (Bolinha Vermelha) -->
+                    <span class="badge badge-danger" id="topbar-chat-badge" style="display:none;"></span>
+                </a>
+            </li>
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
             <li class="nav-item dropdown no-arrow">
                 <a class="dropdown-toggle nav-link" aria-expanded="false" data-toggle="dropdown" href="#">
                     <span class="d-none d-lg-inline mr-2 text-gray-600 small"><?php echo $userName; ?></span>

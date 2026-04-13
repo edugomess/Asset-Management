@@ -28,6 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['foto_perfil'] = $usuario['foto_perfil'];
             $_SESSION['nivelUsuario'] = $usuario['nivelUsuario']; // Controle de Acesso (ACL)
 
+            // STATUS CHAT: Definir como 'Disponível' ao logar
+            mysqli_query($conn, "UPDATE usuarios SET chat_status = 'Disponível' WHERE id_usuarios = " . $usuario['id_usuarios']);
+
             // Redirecionamento bem-sucedido: Dashboard
             header("Location: index.php");
             exit();

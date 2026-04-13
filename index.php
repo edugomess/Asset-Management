@@ -185,19 +185,18 @@ if ($res_sla_cfg && mysqli_num_rows($res_sla_cfg) > 0) {
 
 $sql_sla_pr = "SELECT 
     SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) <= $sla_pr_min THEN 1 ELSE 0 END) as dentro,
-    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) > $sla_pr_min THEN 1 ELSE 0 END) as fora,
-    SUM(CASE WHEN data_primeira_resposta IS NULL THEN 1 ELSE 0 END) as sem_resposta
+    SUM(CASE WHEN data_primeira_resposta IS NOT NULL AND TIMESTAMPDIFF(MINUTE, data_abertura, data_primeira_resposta) > $sla_pr_min THEN 1 ELSE 0 END) as fora
 FROM chamados 
-WHERE MONTH(data_abertura) = MONTH(CURRENT_DATE()) AND YEAR(data_abertura) = YEAR(CURRENT_DATE()) $where_chamados";
+WHERE MONTH(data_abertura) = MONTH(CURRENT_DATE()) AND YEAR(data_abertura) = YEAR(CURRENT_DATE()) 
+AND data_primeira_resposta IS NOT NULL $where_chamados";
 
 $res_sla_pr = mysqli_query($conn, $sql_sla_pr);
 $sla_pr_data = mysqli_fetch_assoc($res_sla_pr);
 $sla_pr_string = implode(",", [
     $sla_pr_data['dentro'] ?? 0,
-    $sla_pr_data['fora'] ?? 0,
-    $sla_pr_data['sem_resposta'] ?? 0
+    $sla_pr_data['fora'] ?? 0
 ]);
-$total_sla_pr = ($sla_pr_data['dentro'] ?? 0) + ($sla_pr_data['fora'] ?? 0) + ($sla_pr_data['sem_resposta'] ?? 0);
+$total_sla_pr = ($sla_pr_data['dentro'] ?? 0) + ($sla_pr_data['fora'] ?? 0);
 
 // === RANKING DE SLA ===
 $mes_filtro = !empty($_GET['mes_ranking']) ? intval($_GET['mes_ranking']) : date('n');
@@ -505,19 +504,17 @@ function getCardColor($type, $name)
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="chart-area" style="position: relative;">
                                         <canvas
-                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;,&quot;<?php echo __('Sem Resposta'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;,&quot;#858796&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
+                                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;<?php echo __('Dentro'); ?>&quot;,&quot;<?php echo __('Fora'); ?>&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#1cc88a&quot;,&quot;#e74a3b&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[<?php echo $sla_pr_string; ?>]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;cutoutPercentage&quot;:80,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;animation&quot;:{&quot;animateRotate&quot;:true,&quot;animateScale&quot;:true,&quot;duration&quot;:2500},&quot;tooltips&quot;:{&quot;backgroundColor&quot;:&quot;#fff&quot;,&quot;bodyFontColor&quot;:&quot;#858796&quot;,&quot;borderColor&quot;:&quot;#dddfeb&quot;,&quot;borderWidth&quot;:1,&quot;xPadding&quot;:15,&quot;yPadding&quot;:15,&quot;displayColors&quot;:false,&quot;caretPadding&quot;:10}}}"></canvas>
                                         <div
                                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: 800; color: #5a5c69; pointer-events: none;">
-                                            <?php echo $total_sla_pr; ?>
+                                            <?php echo $sla_pr_data['fora'] ?? 0; ?>
                                         </div>
                                     </div>
                                     <div class="text-center small mt-4"><span class="mr-2"><i
                                                 class="fas fa-circle text-success"></i>
                                             <?php echo __('Dentro'); ?></span><span class="mr-2"><i
                                                 class="fas fa-circle text-danger"></i>
-                                            <?php echo __('Fora'); ?></span><span class="mr-2"><i
-                                                class="fas fa-circle text-secondary"></i>
-                                            <?php echo __('S. Resp.'); ?></span>
+                                            <?php echo __('Fora'); ?></span>
                                     </div>
                                 </div>
                             </div>

@@ -5,7 +5,15 @@
  * SCRIPT DE LOGOUT: logout.php
  * Finaliza a sessão do usuário com segurança e limpa todos os dados temporários.
  */
+ */
 session_start();
+include 'conexao.php';
+
+if (isset($_SESSION['id_usuarios'])) {
+    $uid = $_SESSION['id_usuarios'];
+    mysqli_query($conn, "UPDATE usuarios SET chat_status = 'Offline' WHERE id_usuarios = $uid");
+}
+
 session_unset();
 session_destroy();
 header("Location: login.php");

@@ -22,20 +22,29 @@ mysqli_query($conn, "UPDATE usuarios SET last_seen = NOW() WHERE id_usuarios = $
 
 switch ($action) {
     case 'list_users':
-        // Seleciona usuários
+        $search = mysqli_real_escape_string($conn, $_GET['q'] ?? '');
+
+        // USERS: Filtrar por Ativo, remover self, e aplicar busca se existir.
+        // Regra de Negócio: Se não houver busca, mostrar apenas contatos com interação prévia (ultimo_contato != NULL).
         $sql_users = "SELECT u.id_usuarios, u.nome, u.sobrenome, u.foto_perfil, u.chat_status,
-                        (SELECT MAX(timestamp) FROM chat_mensagens 
-                         WHERE (remetente_id = u.id_usuarios AND destinatario_id = $my_id) 
-                            OR (remetente_id = $my_id AND destinatario_id = u.id_usuarios)
-                        ) as ultimo_contato,
-                        IF(u.last_seen > NOW() - INTERVAL 5 MINUTE, u.chat_status, 'Offline') as status_atual
-                    FROM usuarios u
-                    WHERE u.id_usuarios != $my_id AND u.status = 'Ativo'
-                    ORDER BY ultimo_contato DESC, u.nome ASC";
+                (SELECT MAX(timestamp) FROM chat_mensagens 
+                 WHERE (remetente_id = u.id_usuarios AND destinatario_id = $my_id) 
+                    OR (remetente_id = $my_id AND destinatario_id = u.id_usuarios)
+                ) as ultimo_contato,
+                IF(u.last_seen > NOW() - INTERVAL 5 MINUTE, u.chat_status, 'Offline') as status_atual
+            FROM usuarios u
+            WHERE u.id_usuarios != $my_id AND u.status = 'Ativo' ";
         
-        $res_u = mysqli_query($conn, $sql_users);
+        if (!empty($search)) {
+            $sql_users .= " AND (u.nome LIKE '%$search%' OR u.sobrenome LIKE '%$search%' OR u.usuarioAD LIKE '%$search%') ";
+        }
+
+        $sql_users .= " HAVING (ultimo_contato IS NOT NULL OR '$search' != '') ";
+        $sql_users .= " ORDER BY ultimo_contato DESC, u.nome ASC";
+
+        $res_users = $conn->query($sql_users);
         $users = [];
-        while ($row = mysqli_fetch_assoc($res_u)) {
+        while ($row = $res_users->fetch_assoc()) {
             $row['nome_completo'] = $row['nome'] . ' ' . $row['sobrenome'];
             $row['foto'] = !empty($row['foto_perfil']) ? $row['foto_perfil'] : '/assets/img/no-image.png';
             $row['chat_status'] = $row['status_atual']; 
@@ -43,16 +52,23 @@ switch ($action) {
             $users[] = $row;
         }
 
-        // Seleciona grupos que o usuário faz parte
+        // GRUPOS: Mesmo critério (interação ou busca direta)
         $sql_groups = "SELECT g.id_grupo, g.nome_grupo, g.foto_grupo,
-                        (SELECT MAX(timestamp) FROM chat_mensagens WHERE grupo_id = g.id_grupo) as ultimo_contato
-                       FROM chat_grupos g
-                       JOIN chat_grupo_membros m ON g.id_grupo = m.id_grupo
-                       WHERE m.usuario_id = $my_id
-                       ORDER BY ultimo_contato DESC, g.nome_grupo ASC";
-        $res_g = mysqli_query($conn, $sql_groups);
+                (SELECT MAX(timestamp) FROM chat_mensagens WHERE grupo_id = g.id_grupo) as ultimo_contato
+            FROM chat_grupos g
+            JOIN chat_grupo_membros m ON g.id_grupo = m.id_grupo
+            WHERE m.usuario_id = $my_id ";
+
+        if (!empty($search)) {
+            $sql_groups .= " AND g.nome_grupo LIKE '%$search%' ";
+        }
+
+        $sql_groups .= " HAVING (ultimo_contato IS NOT NULL OR '$search' != '') ";
+        $sql_groups .= " ORDER BY ultimo_contato DESC, g.nome_grupo ASC";
+
+        $res_groups = $conn->query($sql_groups);
         $groups = [];
-        while ($row = mysqli_fetch_assoc($res_g)) {
+        while ($row = $res_groups->fetch_assoc()) {
             $row['nome_completo'] = $row['nome_grupo'];
             $row['foto'] = !empty($row['foto_grupo']) ? $row['foto_grupo'] : '/assets/img/group-no-image.png'; // Placeholder para grupos
             $row['chat_status'] = ''; // Grupos não tem status

@@ -261,14 +261,16 @@ $my_id = $_SESSION['id_usuarios'];
             setInterval(function() {
                 if (currentDestId) fetchMessages(currentDestId, true, isGroupChat);
                 pollUnread();
-                loadUserList();
+                loadUserList($('#user-search').val());
             }, 5000);
 
-            $('#user-search').on('keyup', function() {
-                const value = $(this).val().toLowerCase();
-                $("#user-list .chat-user-item").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
+            let searchTimeout;
+            $('#user-search').on('input', function() {
+                clearTimeout(searchTimeout);
+                const val = $(this).val();
+                searchTimeout = setTimeout(() => {
+                    loadUserList(val);
+                }, 300); // Debounce de 300ms
             });
 
             $('#chat-form').on('submit', function(e) { e.preventDefault(); sendMessage(); });
@@ -367,8 +369,8 @@ $my_id = $_SESSION['id_usuarios'];
             'Grupo': '<?php echo __('Grupo'); ?>'
         };
 
-        function loadUserList() {
-            $.get('ajax_chat.php?action=list_users', function(res) {
+        function loadUserList(q = '') {
+            $.get('ajax_chat.php?action=list_users', { q: q }, function(res) {
                 if (res.success) {
                     let html = '';
                     res.users.forEach(user => {
@@ -391,6 +393,11 @@ $my_id = $_SESSION['id_usuarios'];
                             </div>
                         `;
                     });
+                    if (html === '' && q !== '') {
+                        html = `<div class="text-center p-5 text-muted small"><i class="fas fa-search mb-2 d-block fa-2x"></i><?php echo __('Nenhum contato encontrado com este nome.'); ?></div>`;
+                    } else if (html === '') {
+                        html = `<div class="text-center p-5 text-muted small"><i class="fas fa-history mb-2 d-block fa-2x"></i><?php echo __('Inicie uma conversa ou pesquise para encontrar colegas.'); ?></div>`;
+                    }
                     $('#user-list').html(html);
                     pollUnread();
                 }

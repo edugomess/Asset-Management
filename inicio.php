@@ -228,7 +228,34 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 
                     <h3 class="text-dark mb-4"><?php echo __('Operação'); ?></h3>
 
+
+                    <!-- ALERTA DE ESTOQUE CRÍTICO (Dinâmico via AJAX) -->
+                    <div id="dashboard-stock-alert" style="display: none;" class="animate__animated animate__shakeX">
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow border-left-danger py-2 bg-light">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                    <i class="fas fa-exclamation-circle mr-1"></i><?php echo __('Reposição Necessária'); ?>
+                                                </div>
+                                                <div id="stock-alert-content" class="h6 mb-0 font-weight-bold text-gray-800">
+                                                    <!-- Conteúdo preenchido pelo JS -->
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-shipping-fast fa-2x text-danger" style="opacity: 0.5;"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- METRICS GRID -->
+
                     <div class="row mb-4 animate__animated animate__fadeInUp">
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card shadow border-left-primary py-2 h-100">
@@ -523,6 +550,30 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
     <script src="/assets/js/bs-init.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" defer></script>
     <script src="/assets/js/global_search.js" defer></script>
+    <script>
+        /**
+         * Monitoramento de Estoque para o Dashboard
+         */
+        function checkDashboardAlerts() {
+            fetch('ajax_notificacoes.php')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('dashboard-stock-alert');
+                    const content = document.getElementById('stock-alert-content');
+                    if (!container || !content) return;
+
+                    if (data.count > 0) {
+                        container.style.display = 'block';
+                        let summary = data.alerts.map(a => `<span class="badge badge-danger mr-2 p-2">${a.title} (${a.subtitle.split(' - ')[1]})</span>`).join('');
+                        content.innerHTML = summary;
+                    } else {
+                        container.style.display = 'none';
+                    }
+                });
+        }
+        document.addEventListener('DOMContentLoaded', checkDashboardAlerts);
+    </script>
 </body>
+
 
 </html>

@@ -12,6 +12,13 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
     exit();
 }
 
+// === MIGRAÇÃO: Garante colunas de estoque na tabela de alertas ===
+$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t1 INT NOT NULL DEFAULT 3");
+$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t2 INT NOT NULL DEFAULT 3");
+$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t3 INT NOT NULL DEFAULT 3");
+$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t4 INT NOT NULL DEFAULT 3");
+$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_inf INT NOT NULL DEFAULT 3");
+
 // === PROCESSAMENTO SMTP: Salva as credenciais do servidor de e-mail ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['smtp_config'])) {
     // Garantir tabela
@@ -230,6 +237,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['idioma_config'])) {
         echo json_encode(['success' => $success]);
     } else {
         header("Location: configuracoes.php?msg=" . ($success ? "idioma_success" : "error"));
+    }
+    exit();
+}
+
+// === PROCESSAMENTO DE ESTOQUE: Configura alertas de reposição por Tier ===
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['estoque_config'])) {
+    $t1 = max(0, (int) ($_POST['threshold_t1'] ?? 3));
+    $t2 = max(0, (int) ($_POST['threshold_t2'] ?? 3));
+    $t3 = max(0, (int) ($_POST['threshold_t3'] ?? 3));
+    $t4 = max(0, (int) ($_POST['threshold_t4'] ?? 3));
+    $inf = max(0, (int) ($_POST['threshold_inf'] ?? 3));
+
+    $sql = "UPDATE configuracoes_alertas SET 
+            estoque_threshold_t1 = $t1,
+            estoque_threshold_t2 = $t2,
+            estoque_threshold_t3 = $t3,
+            estoque_threshold_t4 = $t4,
+            estoque_threshold_inf = $inf
+            WHERE id = 1";
+
+    $success = mysqli_query($conn, $sql);
+
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if ($isAjax) {
+        echo json_encode(['success' => $success]);
+    } else {
+        header("Location: configuracoes.php?msg=" . ($success ? "estoque_success" : "error"));
     }
     exit();
 }
@@ -1176,10 +1210,63 @@ function getHoursAndMinutes($total_minutes)
                                     </div>
                                 </div>
 
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════ -->
+                    <!-- MONITORAMENTO DE ESTOQUE (NOVO)          -->
+                    <!-- ══════════════════════════════════════════ -->
+                    <div class="card shadow mb-4" id="cardEstoque">
+                        <div class="card-header py-3">
+                            <h6 class="text-primary m-0 font-weight-bold">
+                                <i class="fas fa-boxes mr-2"></i><?php echo __('Configurações de Estoque'); ?>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-4">
+                                <?php echo __('Defina o nível mínimo de unidades para disparar o alerta de reposição para cada Tier.'); ?>
+                            </p>
+                            
+                            <form id="formEstoqueConfig">
+                                <input type="hidden" name="estoque_config" value="1">
+                                <div class="row">
+                                    <?php 
+                                    $tiers_map = [
+                                        'estoque_threshold_t1' => 'Tier 1',
+                                        'estoque_threshold_t2' => 'Tier 2',
+                                        'estoque_threshold_t3' => 'Tier 3',
+                                        'estoque_threshold_t4' => 'Tier 4',
+                                        'estoque_threshold_inf' => 'Infraestrutura'
+                                    ];
+                                    $post_map = [
+                                        'estoque_threshold_t1' => 'threshold_t1',
+                                        'estoque_threshold_t2' => 'threshold_t2',
+                                        'estoque_threshold_t3' => 'threshold_t3',
+                                        'estoque_threshold_t4' => 'threshold_t4',
+                                        'estoque_threshold_inf' => 'threshold_inf'
+                                    ];
+                                    foreach ($tiers_map as $col => $label): ?>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="small font-weight-bold text-gray-700"><?php echo __($label); ?></label>
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-exclamation-triangle text-warning"></i></span>
+                                            </div>
+                                            <input type="number" class="form-control" name="<?php echo $post_map[$col]; ?>" 
+                                                   value="<?php echo (int)($alert_config[$col] ?? 3); ?>" min="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><?php echo __('unidades'); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
                                 <div class="text-right mt-3">
-                                    <button type="submit" id="btnSalvarAlertas" class="btn btn-primary"
-                                        style="background: rgb(44,64,74);">
-                                        <i class="fas fa-save mr-2"></i> <?php echo __('Salvar Configurações'); ?>
+                                    <button type="submit" class="btn btn-primary btn-sm btn-save-ajax" 
+                                            style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
+                                        <i class="fas fa-save mr-1"></i><?php echo __('Salvar Alterações'); ?>
                                     </button>
                                 </div>
                             </form>

@@ -22,11 +22,31 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
         </form>
 
         <ul class="navbar-nav flex-nowrap ml-auto">
+            <!-- Nav Item - Alerts -->
+            <?php if ($isAdminOrSuporte): ?>
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: rgb(44,64,74);">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <span class="badge badge-danger badge-counter" id="topbar-alerts-badge" style="display:none;"></span>
+                </a>
+                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                    <h6 class="dropdown-header" style="background: #2c404a; border: none; padding: 12px;">
+                        <?php echo __('Alertas do Sistema'); ?>
+                    </h6>
+                    <div id="topbar-alerts-list">
+                        <div class="dropdown-item d-flex align-items-center py-3">
+                            <span class="text-gray-500 small"><?php echo __('Nenhum alerta crítico no momento.'); ?></span>
+                        </div>
+                    </div>
+                    <a class="dropdown-item text-center small text-gray-500 font-weight-bold" href="insights.php" style="border-top: 1px solid #f2f2f2;"><?php echo __('Ver no Insights'); ?></a>
+                </div>
+            </li>
+            <?php endif; ?>
+
             <!-- Nav Item - Chat Messages -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="chat_interno.php" id="messagesDropdown" role="button" style="color: rgb(44,64,74);">
                     <i class="fas fa-envelope fa-fw"></i>
-                    <!-- Notificação (Bolinha Vermelha) -->
                     <span class="badge badge-danger" id="topbar-chat-badge" style="display:none;"></span>
                 </a>
             </li>
@@ -51,3 +71,51 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
         </ul>
     </div>
 </nav>
+
+<script>
+/**
+ * Polling de Notificações de Estoque e Sistema
+ */
+function pollSystemNotifications() {
+    fetch('ajax_notificacoes.php')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('topbar-alerts-badge');
+            const list = document.getElementById('topbar-alerts-list');
+            if(!badge || !list) return;
+
+            if (data.count > 0) {
+                badge.textContent = data.count > 9 ? '9+' : data.count;
+                badge.style.display = 'block';
+                
+                let html = '';
+                data.alerts.forEach(alert => {
+                    html += `
+                        <a class="dropdown-item d-flex align-items-center" href="${alert.link}">
+                            <div class="mr-3">
+                                <div class="icon-circle ${alert.bg_class}">
+                                    <i class="${alert.icon} text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">${alert.title}</div>
+                                <span class="font-weight-bold" style="font-size: 0.8rem;">${alert.subtitle}</span>
+                            </div>
+                        </a>`;
+                });
+                list.innerHTML = html;
+            } else {
+                badge.style.display = 'none';
+                list.innerHTML = `<div class="dropdown-item d-flex align-items-center py-3">
+                    <span class="text-gray-500 small"><?php echo __('Nenhum alerta crítico no momento.'); ?></span>
+                </div>`;
+            }
+        })
+        .catch(err => console.error('Notification Error:', err));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    pollSystemNotifications();
+    setInterval(pollSystemNotifications, 60000); // Verifica a cada minuto
+});
+</script>

@@ -1057,7 +1057,20 @@ return [
     'CONGELADO' => 'CONGELADO',
     'ATENÇÃO' => 'ATENÇÃO',
     'NO PRAZO' => 'NO PRAZO',
+    'Estoque Crítico' => 'Estoque Crítico',
+    'Reposição Necessária' => 'Reposição Necessária',
+    'unidades disponíveis' => 'unidades disponíveis',
+    'Alertas do Sistema' => 'Alertas do Sistema',
+    'Nenhum alerta crítico no momento.' => 'Nenhum alerta crítico no momento.',
+    'Ver Detalhes' => 'Ver Detalhes',
+    'Ver Todos' => 'Ver Todos',
+    'Colegas e Grupos' => 'Colegas e Grupos',
+    'Inicie uma conversa ou pesquise para encontrar colegas.' => 'Inicie uma conversa ou pesquise para encontrar colegas.',
+    'Nenhum contato encontrado com este nome.' => 'Nenhum contato encontrado com este nome.',
+    'Configurações de Estoque' => 'Configurações de Estoque',
+    'Ponto de Reposição' => 'Ponto de Reposição',
+    'Defina o nível mínimo de unidades para disparar o alerta.' => 'Defina o nível mínimo de unidades para disparar o alerta.',
+    'Nível de Alerta (Unidades)' => 'Nível de Alerta (Unidades)',
+    'Alertar quando houver menos de' => 'Alertar quando houver menos de',
+    'unidades' => 'unidades',
 ];
-
-
-

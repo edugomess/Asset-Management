@@ -1300,4 +1300,8 @@ return [
     'Nível de Alerta (Unidades)' => 'Alert Level (Units)',
     'Alertar quando houver menos de' => 'Alert when there are fewer than',
     'unidades' => 'units',
+    'Destinatários de Alerta de Estoque' => 'Stock Alert Recipients',
+    'Estes usuários receberão um e-mail toda vez que o estoque de uma categoria atingir o nível mínimo definido acima.' => 'These users will receive an email every time a category\'s stock reaches the minimum level defined above.',
+    'Remover Alerta de Estoque' => 'Remove Stock Alert',
+    'Nenhum destinatário de estoque configurado.' => 'No stock recipients configured.',
 ];

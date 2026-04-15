@@ -14,9 +14,9 @@ $idle_timeout = 600; // Padrão: 10 minutos (em segundos)
 if (file_exists('conexao.php')) {
     include_once 'conexao.php';
 
-    // Busca as configurações de expiração customizadas no banco de dados
+    // Busca as configurações de expiração customizadas no banco de dados (defensivo)
     $res_config = $conn->query("SELECT idle_timeout_minutos, idle_timeout_admin, idle_timeout_suporte FROM configuracoes_alertas LIMIT 1");
-    $idle_config = $res_config->fetch_assoc();
+    $idle_config = ($res_config && $res_config->num_rows > 0) ? $res_config->fetch_assoc() : [];
 
     // Define o tempo limite dinâmico de acordo com o nível de privilégio do usuário
     $nivel = $_SESSION['nivelUsuario'] ?? 'Usuário';
@@ -58,7 +58,7 @@ if (!isset($_SESSION['nome_usuario'])) {
 
     $id_usuario_sessao = $_SESSION['id_usuarios'];
 
-    // Recupera dados atualizados do usuário logado
+    // Recupera dados atualizados do usuário logado (defensivo: verifica se a tabela está disponível)
     $stmt_nome = $conn->prepare("SELECT nome, sobrenome, foto_perfil FROM usuarios WHERE id_usuarios = ?");
 
     if ($stmt_nome) {

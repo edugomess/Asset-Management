@@ -14,19 +14,28 @@ require_once 'conexao.php';
 require_once 'funcoes_email.php';
 require_once 'funcoes_whatsapp.php';
 
-// Argumentos: [tipo] [id] [extra]
+// Argumentos: [tipo] [id_or_json] [extra]
 $tipo = $argv[1] ?? '';
-$id = (int) ($argv[2] ?? 0);
+$arg2 = $argv[2] ?? ''; // ID (int) ou JSON (string)
 $extra = $argv[3] ?? '';
 
-if (!$tipo || !$id) {
+if (!$tipo || !$arg2) {
     die("Parâmetros inválidos.");
 }
 
 if ($tipo === 'chamado') {
+    $id = (int)$arg2;
     enviarAlertaNovoChamado($id);
     enviarWhatsAppNovoChamado($id);
 } elseif ($tipo === 'manutencao') {
+    $id = (int)$arg2;
     enviarAlertaManutencao($id, $extra);
     enviarWhatsAppManutencao($id, $extra);
+} elseif ($tipo === 'estoque') {
+    $itensCriticos = json_decode($arg2, true);
+    if (!empty($itensCriticos)) {
+        enviarAlertaEstoque($itensCriticos);
+        enviarWhatsAppEstoque($itensCriticos);
+    }
 }
+?>

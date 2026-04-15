@@ -16,6 +16,7 @@ if ($res && $res->num_rows > 0) {
         // Ativos
         $isActiveChamados = ($row['recebe_chamados'] ?? 0) == 1 ? 'active' : '';
         $isActiveManutencao = ($row['recebe_manutencao'] ?? 0) == 1 ? 'active' : '';
+        $isActiveEstoque = ($row['recebe_estoque'] ?? 0) == 1 ? 'active' : '';
 
         $cP1 = ($row['prioridade_p1'] ?? 1) == 1 ? 'active' : '';
         $cP2 = ($row['prioridade_p2'] ?? 1) == 1 ? 'active' : '';
@@ -39,11 +40,13 @@ if ($res && $res->num_rows > 0) {
             </div>
             
             <div class="recipient-actions">
-                <!-- Tipo (Chamado x Manutenção) -->
+                <!-- Tipo (Chamado x Manutenção x Estoque) -->
                 <div class="recipient-badge-group bg-light rounded px-2 py-1 border d-flex align-items-center">
-                    <i class="fas fa-ticket-alt mini-icon-btn ' . $isActiveChamados . '" data-pref="recebe_chamados" title="Novos Chamados"></i>
+                    <i class="fas fa-ticket-alt mini-icon-btn ' . $isActiveChamados . '" data-pref="recebe_chamados" title="' . __('Novos Chamados') . '"></i>
                     <div class="mx-1 text-muted" style="width: 1px; height: 12px; background: #e3e6f0;"></div>
-                    <i class="fas fa-tools mini-icon-btn ' . $isActiveManutencao . '" data-pref="recebe_manutencao" title="Manutenções"></i>
+                    <i class="fas fa-tools mini-icon-btn ' . $isActiveManutencao . '" data-pref="recebe_manutencao" title="' . __('Manutenções') . '"></i>
+                    <div class="mx-1 text-muted" style="width: 1px; height: 12px; background: #e3e6f0;"></div>
+                    <i class="fas fa-boxes mini-icon-btn ' . $isActiveEstoque . '" data-pref="recebe_estoque" title="' . __('Alertas de Estoque') . '"></i>
                 </div>
 
                 <!-- Prioridade -->

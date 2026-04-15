@@ -16,8 +16,12 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
 $conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t1 INT NOT NULL DEFAULT 3");
 $conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t2 INT NOT NULL DEFAULT 3");
 $conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t3 INT NOT NULL DEFAULT 3");
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t4 INT NOT NULL DEFAULT 3");
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_inf INT NOT NULL DEFAULT 3");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS recebe_estoque TINYINT NOT NULL DEFAULT 0");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t1 TINYINT NOT NULL DEFAULT 1");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t2 TINYINT NOT NULL DEFAULT 1");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t3 TINYINT NOT NULL DEFAULT 1");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t4 TINYINT NOT NULL DEFAULT 1");
+$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_inf TINYINT NOT NULL DEFAULT 1");
 
 // === PROCESSAMENTO SMTP: Salva as credenciais do servidor de e-mail ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['smtp_config'])) {
@@ -114,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['depreciacao'])) {
     $elegivel = isset($_POST['depreciacao']['elegivel_doacao']) ? 1 : 0;
     $doacao_anos = (int) $_POST['depreciacao']['tempo_doacao_anos'];
     $doacao_meses = (int) $_POST['depreciacao']['tempo_doacao_meses'];
-    
+
     $dest_t1 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier1'] ?? 'Doação');
     $dest_t2 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier2'] ?? 'Doação');
     $dest_t3 = mysqli_real_escape_string($conn, $_POST['depreciacao']['dest_tier3'] ?? 'Doação');
@@ -450,7 +454,7 @@ if (!empty($alert_config['dashboard_cards'])) {
 $all_categories = [];
 $res_cat = mysqli_query($conn, "SELECT categoria FROM categoria ORDER BY categoria ASC");
 if ($res_cat) {
-    while($row = mysqli_fetch_assoc($res_cat)) {
+    while ($row = mysqli_fetch_assoc($res_cat)) {
         $all_categories[] = $row['categoria'];
     }
 }
@@ -460,7 +464,7 @@ $all_statuses = ['Disponível', 'Em uso', 'Em manutenção'];
 $all_licenses = [];
 $res_lic = mysqli_query($conn, "SELECT DISTINCT software FROM licencas WHERE software IS NOT NULL AND software != '' ORDER BY software ASC");
 if ($res_lic) {
-    while($row = mysqli_fetch_assoc($res_lic)) {
+    while ($row = mysqli_fetch_assoc($res_lic)) {
         $all_licenses[] = $row['software'];
     }
 }
@@ -816,6 +820,10 @@ function getHoursAndMinutes($total_minutes)
             color: #f6c23e;
         }
 
+        .mini-icon-btn.active.fa-boxes {
+            color: #1cc88a;
+        }
+
         .mini-icon-btn.fa-times-circle:hover {
             color: #e74a3b;
             opacity: 1;
@@ -858,6 +866,25 @@ function getHoursAndMinutes($total_minutes)
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        @media (max-width: 768px) {
+            .border-right {
+                border-right: none !important;
+                border-bottom: 1px solid #e3e6f0;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                padding-right: 0 !important;
+            }
+        }
+
+        .recipient-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .recipient-list::-webkit-scrollbar-thumb {
+            background-color: #d1d3e2;
+            border-radius: 10px;
+        }
+
         .pointer {
             cursor: pointer;
         }
@@ -877,7 +904,9 @@ function getHoursAndMinutes($total_minutes)
             <div id="content">
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-cogs mr-2 text-secondary"></i><?php echo __('Configurações do Sistema'); ?></h3>
+                    <h3 class="text-dark mb-4"><i
+                            class="fas fa-cogs mr-2 text-secondary"></i><?php echo __('Configurações do Sistema'); ?>
+                    </h3>
 
                     <div id="autoSaveStatus"><i class="fas fa-check-circle mr-2"></i> <span
                             id="autoSaveMessage"><?php echo __('Alteração salva!'); ?></span></div>
@@ -893,7 +922,8 @@ function getHoursAndMinutes($total_minutes)
                             <span class="badge badge-pill badge-light text-muted small" id="smtpUpdatedAt"
                                 title="<?php echo __('Última atualização'); ?>">
                                 <?php if (!empty($smtp_config['updated_at'])): ?>
-                                    <?php echo __('Atualizado em:'); ?> <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
+                                    <?php echo __('Atualizado em:'); ?>
+                                    <?php echo date('d/m/Y H:i', strtotime($smtp_config['updated_at'])); ?>
                                 <?php else: ?>
                                     <?php echo __('Configuração padrão'); ?>
                                 <?php endif; ?>
@@ -951,23 +981,27 @@ function getHoursAndMinutes($total_minutes)
                                     <input type="hidden" name="smtp_config" value="1">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Nome do Remetente'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Nome do Remetente'); ?></label>
                                             <input type="text" class="form-control" name="smtp_from_name"
                                                 id="smtp_from_name"
                                                 value="<?php echo htmlspecialchars($smtp_config['smtp_from_name']); ?>"
                                                 placeholder="<?php echo __('Ex: ASSET MGT - ALERTA'); ?>">
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('E-mail Remetente (usuário SMTP)'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('E-mail Remetente (usuário SMTP)'); ?></label>
                                             <input type="email" class="form-control" name="smtp_user" id="smtp_user"
                                                 value="<?php echo htmlspecialchars($smtp_config['smtp_user']); ?>"
                                                 placeholder="remetente@dominio.com">
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Senha / App Password'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Senha / App Password'); ?></label>
                                             <div class="input-group">
                                                 <input type="password" class="form-control" name="smtp_pass"
-                                                    id="smtp_pass" placeholder="<?php echo __('Deixe em branco para manter a atual'); ?>">
+                                                    id="smtp_pass"
+                                                    placeholder="<?php echo __('Deixe em branco para manter a atual'); ?>">
                                                 <div class="input-group-append">
                                                     <button class="btn btn-outline-secondary" type="button"
                                                         id="btnTogglePass" tabindex="-1">
@@ -980,21 +1014,27 @@ function getHoursAndMinutes($total_minutes)
                                                     target="_blank"><?php echo __('Senha de App'); ?></a>.</small>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Servidor SMTP (Host)'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Servidor SMTP (Host)'); ?></label>
                                             <input type="text" class="form-control" name="smtp_host" id="smtp_host"
                                                 value="<?php echo htmlspecialchars($smtp_config['smtp_host']); ?>"
                                                 placeholder="smtp.gmail.com">
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Porta'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Porta'); ?></label>
                                             <input type="number" class="form-control" name="smtp_port" id="smtp_port"
-                                                value="<?php echo (int) $smtp_config['smtp_port']; ?>" placeholder="587">
+                                                value="<?php echo (int) $smtp_config['smtp_port']; ?>"
+                                                placeholder="587">
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Criptografia'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Criptografia'); ?></label>
                                             <select class="form-control" name="smtp_secure" id="smtp_secure">
-                                                <option value="tls" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : ''; ?>><?php echo __('TLS (porta 587)'); ?></option>
-                                                <option value="ssl" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'selected' : ''; ?>><?php echo __('SSL (porta 465)'); ?></option>
+                                                <option value="tls" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : ''; ?>>
+                                                    <?php echo __('TLS (porta 587)'); ?></option>
+                                                <option value="ssl" <?php echo ($smtp_config['smtp_secure'] ?? 'tls') === 'ssl' ? 'selected' : ''; ?>>
+                                                    <?php echo __('SSL (porta 465)'); ?></option>
                                             </select>
                                         </div>
                                     </div>
@@ -1032,12 +1072,13 @@ function getHoursAndMinutes($total_minutes)
                             <p class="text-muted small mb-4">
                                 <?php echo __('Escolha o logotipo que aparecerá no cabeçalho de todos os relatórios gerados pelo sistema (PDF e Excel).'); ?>
                             </p>
-                            
+
                             <div class="row align-items-center">
                                 <div class="col-md-4 text-center mb-3 mb-md-0">
                                     <div class="p-3 border rounded bg-light d-inline-block">
-                                        <img id="logoPreview" src="<?php echo htmlspecialchars($alert_config['logo_path'] ?? 'dashboard/images/favicon.png'); ?>" 
-                                             alt="Logo" style="max-height: 80px; max-width: 100%; object-fit: contain;">
+                                        <img id="logoPreview"
+                                            src="<?php echo htmlspecialchars($alert_config['logo_path'] ?? 'dashboard/images/favicon.png'); ?>"
+                                            alt="Logo" style="max-height: 80px; max-width: 100%; object-fit: contain;">
                                     </div>
                                     <div class="mt-2 text-muted small"><?php echo __('Prévia do Logotipo'); ?></div>
                                 </div>
@@ -1045,15 +1086,18 @@ function getHoursAndMinutes($total_minutes)
                                     <form id="formLogoUpload" enctype="multipart/form-data">
                                         <input type="hidden" name="logo_upload" value="1">
                                         <div class="form-group mb-3">
-                                            <label class="small font-weight-bold text-gray-700"><?php echo __('Selecione uma imagem (PNG, JPG, GIF)'); ?></label>
+                                            <label
+                                                class="small font-weight-bold text-gray-700"><?php echo __('Selecione uma imagem (PNG, JPG, GIF)'); ?></label>
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="logo_file" name="logo_file" accept="image/*" required>
-                                                <label class="custom-file-label" for="logo_file"><?php echo __('Escolher arquivo...'); ?></label>
+                                                <input type="file" class="custom-file-input" id="logo_file"
+                                                    name="logo_file" accept="image/*" required>
+                                                <label class="custom-file-label"
+                                                    for="logo_file"><?php echo __('Escolher arquivo...'); ?></label>
                                             </div>
                                         </div>
                                         <div class="text-right mt-3">
                                             <button type="submit" class="btn btn-primary btn-sm" id="btnUploadLogo"
-                                                    style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
+                                                style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
                                                 <i class="fas fa-save mr-1"></i><?php echo __('Salvar Logotipo'); ?>
                                             </button>
                                         </div>
@@ -1068,12 +1112,16 @@ function getHoursAndMinutes($total_minutes)
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="text-primary m-0 font-weight-bold"><?php echo __('Canais de Notificação e Alerta'); ?></h6>
+                            <h6 class="text-primary m-0 font-weight-bold">
+                                <i class="fas fa-bell mr-2"></i><?php echo __('Canais de Notificação e Alerta'); ?>
+                            </h6>
                         </div>
                         <div class="card-body">
                             <form id="formAlertasConfig" autocomplete="off">
                                 <input type="hidden" name="config_alertas" value="1">
-                                <p class="text-muted small mb-4 mt-2"><?php echo __('Filtre os alertas ativando ou inativando os canais de envio separadamente.'); ?></p>
+                                <p class="text-muted small mb-4 mt-2">
+                                    <?php echo __('Filtre os alertas ativando ou inativando os canais de envio separadamente.'); ?>
+                                </p>
 
                                 <div class="row">
                                     <!-- Canal WhatsApp -->
@@ -1082,7 +1130,8 @@ function getHoursAndMinutes($total_minutes)
                                             <div class="card-header-custom bg-whatsapp">
                                                 <div class="d-flex align-items-center">
                                                     <i class="fab fa-whatsapp mr-2"></i>
-                                                    <span class="font-weight-bold"><?php echo __('Canal: WhatsApp'); ?></span>
+                                                    <span
+                                                        class="font-weight-bold"><?php echo __('Canal: WhatsApp'); ?></span>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input channel-toggle"
@@ -1097,7 +1146,8 @@ function getHoursAndMinutes($total_minutes)
                                                 <div class="mb-3">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        <?php echo __('O QUE NOTIFICAR? (GLOBAL)'); ?></div>
+                                                        <?php echo __('O QUE NOTIFICAR? (GLOBAL)'); ?>
+                                                    </div>
                                                     <input type="checkbox" id="wa_chamados"
                                                         name="whatsapp_recebe_chamados" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['whatsapp_recebe_chamados'] ?? 0) == 1) ? 'checked' : ''; ?>>
@@ -1114,36 +1164,31 @@ function getHoursAndMinutes($total_minutes)
                                                 <div class="mb-3 wa-priority-group">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        <?php echo __('PRIORIDADES PERMITIDAS (GLOBAL)'); ?></div>
-                                                    <input type="checkbox" id="wa_prio_p1"
-                                                        name="whatsapp_prioridade_p1" value="1" class="badge-checkbox"
-                                                        <?php echo (($alert_config['whatsapp_prioridade_p1'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_p1"
-                                                        class="badge-label" style="background-color: #8b0000; color: white;">P1</label>
-                                                    
-                                                    <input type="checkbox" id="wa_prio_p2"
-                                                        name="whatsapp_prioridade_p2" value="1" class="badge-checkbox"
-                                                        <?php echo (($alert_config['whatsapp_prioridade_p2'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_p2"
-                                                        class="badge-label badge-alta">P2</label>
+                                                        <?php echo __('PRIORIDADES PERMITIDAS (GLOBAL)'); ?>
+                                                    </div>
+                                                    <input type="checkbox" id="wa_prio_p1" name="whatsapp_prioridade_p1"
+                                                        value="1" class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p1'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p1" class="badge-label"
+                                                        style="background-color: #8b0000; color: white;">P1</label>
 
-                                                    <input type="checkbox" id="wa_prio_p3"
-                                                        name="whatsapp_prioridade_p3" value="1"
-                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p3'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_p3"
-                                                        class="badge-label badge-media">P3</label>
+                                                    <input type="checkbox" id="wa_prio_p2" name="whatsapp_prioridade_p2"
+                                                        value="1" class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p2'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p2" class="badge-label badge-alta">P2</label>
 
-                                                    <input type="checkbox" id="wa_prio_p4"
-                                                        name="whatsapp_prioridade_p4" value="1"
-                                                        class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p4'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label for="wa_prio_p4"
-                                                        class="badge-label badge-baixa">P4</label>
+                                                    <input type="checkbox" id="wa_prio_p3" name="whatsapp_prioridade_p3"
+                                                        value="1" class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p3'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p3" class="badge-label badge-media">P3</label>
+
+                                                    <input type="checkbox" id="wa_prio_p4" name="whatsapp_prioridade_p4"
+                                                        value="1" class="badge-checkbox" <?php echo (($alert_config['whatsapp_prioridade_p4'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                    <label for="wa_prio_p4" class="badge-label badge-baixa">P4</label>
                                                 </div>
 
                                                 <div class="wa-category-group">
                                                     <div
                                                         class="small font-weight-bold text-success mb-2 text-uppercase">
-                                                        <?php echo __('CATEGORIAS PERMITIDAS (GLOBAL)'); ?></div>
+                                                        <?php echo __('CATEGORIAS PERMITIDAS (GLOBAL)'); ?>
+                                                    </div>
                                                     <input type="checkbox" id="wa_tipo_incidente"
                                                         name="whatsapp_tipo_incidente" value="1" class="badge-checkbox"
                                                         <?php echo (($alert_config['cat_incidente'] ?? 1) == 1) ? 'checked' : ''; ?>>
@@ -1172,7 +1217,8 @@ function getHoursAndMinutes($total_minutes)
                                             <div class="card-header-custom bg-email">
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-envelope mr-2"></i>
-                                                    <span class="font-weight-bold"><?php echo __('Canal: E-mail'); ?></span>
+                                                    <span
+                                                        class="font-weight-bold"><?php echo __('Canal: E-mail'); ?></span>
                                                 </div>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" class="custom-control-input channel-toggle"
@@ -1198,11 +1244,13 @@ function getHoursAndMinutes($total_minutes)
                                                 </div>
 
                                                 <div class="small font-weight-bold text-primary mb-2 text-uppercase">
-                                                    <?php echo __('DESTINATÁRIOS ATIVOS'); ?></div>
+                                                    <?php echo __('DESTINATÁRIOS ATIVOS'); ?>
+                                                </div>
                                                 <div class="recipient-list mb-3" id="activeEmailRecipients">
                                                     <!-- Loading or empty state -->
-                                                        <div class="p-3 text-center text-muted small"><i
-                                                                class="fas fa-spinner fa-spin mr-1"></i> <?php echo __('Carregando destinatários...'); ?></div>
+                                                    <div class="p-3 text-center text-muted small"><i
+                                                            class="fas fa-spinner fa-spin mr-1"></i>
+                                                        <?php echo __('Carregando destinatários...'); ?></div>
                                                 </div>
 
                                             </div>
@@ -1210,648 +1258,796 @@ function getHoursAndMinutes($total_minutes)
                                     </div>
                                 </div>
 
-                                </div>
-                            </form>
                         </div>
+                        </form>
                     </div>
+                </div>
 
-                    <!-- ══════════════════════════════════════════ -->
-                    <!-- MONITORAMENTO DE ESTOQUE (NOVO)          -->
-                    <!-- ══════════════════════════════════════════ -->
-                    <div class="card shadow mb-4" id="cardEstoque">
-                        <div class="card-header py-3">
-                            <h6 class="text-primary m-0 font-weight-bold">
-                                <i class="fas fa-boxes mr-2"></i><?php echo __('Configurações de Estoque'); ?>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted small mb-4">
-                                <?php echo __('Defina o nível mínimo de unidades para disparar o alerta de reposição para cada Tier.'); ?>
-                            </p>
-                            
-                            <form id="formEstoqueConfig">
-                                <input type="hidden" name="estoque_config" value="1">
-                                <div class="row">
-                                    <?php 
-                                    $tiers_map = [
-                                        'estoque_threshold_t1' => 'Tier 1',
-                                        'estoque_threshold_t2' => 'Tier 2',
-                                        'estoque_threshold_t3' => 'Tier 3',
-                                        'estoque_threshold_t4' => 'Tier 4',
-                                        'estoque_threshold_inf' => 'Infraestrutura'
-                                    ];
-                                    $post_map = [
-                                        'estoque_threshold_t1' => 'threshold_t1',
-                                        'estoque_threshold_t2' => 'threshold_t2',
-                                        'estoque_threshold_t3' => 'threshold_t3',
-                                        'estoque_threshold_t4' => 'threshold_t4',
-                                        'estoque_threshold_inf' => 'threshold_inf'
-                                    ];
-                                    foreach ($tiers_map as $col => $label): ?>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="small font-weight-bold text-gray-700"><?php echo __($label); ?></label>
-                                        <div class="input-group input-group-sm">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-exclamation-triangle text-warning"></i></span>
-                                            </div>
-                                            <input type="number" class="form-control" name="<?php echo $post_map[$col]; ?>" 
-                                                   value="<?php echo (int)($alert_config[$col] ?? 3); ?>" min="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('unidades'); ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                                <div class="text-right mt-3">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-save-ajax" 
-                                            style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
-                                        <i class="fas fa-save mr-1"></i><?php echo __('Salvar Alterações'); ?>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                <!-- ══════════════════════════════════════════ -->
+                <!-- MONITORAMENTO DE ESTOQUE (NOVO)          -->
+                <!-- ══════════════════════════════════════════ -->
+                <div class="card shadow mb-4" id="cardEstoque">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i class="fas fa-boxes mr-2"></i><?php echo __('Configurações de Estoque'); ?>
+                        </h6>
                     </div>
-
-                    <div class="card shadow">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Configuração de SLA (Service Level Agreement)'); ?>
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <form id="formSLA" method="POST" action="configuracoes.php">
-                                <p class="mb-4"><?php echo __('Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria de chamado.'); ?></p>
-
-                                <?php
-                                $categories = ['Incidente', 'Mudança', 'Requisição'];
-                                foreach ($categories as $cat) {
-                                    $time = getHoursAndMinutes($configs[$cat]);
-                                    ?>
-                                    <div class="form-group row align-items-center mb-4 sla-row"
-                                        data-category="<?php echo $cat; ?>">
-                                        <label for="sla_<?php echo $cat; ?>"
-                                            class="col-sm-2 col-form-label font-weight-bold"><?php echo __($cat); ?></label>
-                                        <div class="col-sm-3">
-                                            <div class="input-group input-group-sm">
-                                                <input type="number" class="form-control sla-hours"
-                                                    name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>"
-                                                    required min="0" placeholder="0">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text"><?php echo __('Horas'); ?></span>
+                    <div class="card-body">
+                        <form id="formEstoqueConfig">
+                            <input type="hidden" name="estoque_config" value="1">
+                            <div class="row">
+                                <!-- Lado Esquerdo: Quantidades (Thresholds) -->
+                                <div class="col-md-5 border-right">
+                                    <h6 class="font-weight-bold mb-4 text-dark"><i
+                                            class="fas fa-sliders-h mr-2"></i><?php echo __('Ponto de Reposição'); ?>
+                                    </h6>
+                                    <div class="row pr-md-3">
+                                        <?php
+                                        $tiers_map = [
+                                            'estoque_threshold_t1' => 'Tier 1',
+                                            'estoque_threshold_t2' => 'Tier 2',
+                                            'estoque_threshold_t3' => 'Tier 3',
+                                            'estoque_threshold_t4' => 'Tier 4',
+                                            'estoque_threshold_inf' => 'Infraestrutura'
+                                        ];
+                                        $post_map = [
+                                            'estoque_threshold_t1' => 'threshold_t1',
+                                            'estoque_threshold_t2' => 'threshold_t2',
+                                            'estoque_threshold_t3' => 'threshold_t3',
+                                            'estoque_threshold_t4' => 'threshold_t4',
+                                            'estoque_threshold_inf' => 'threshold_inf'
+                                        ];
+                                        foreach ($tiers_map as $col => $label): ?>
+                                            <div class="col-12 mb-3">
+                                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                                    <label
+                                                        class="small font-weight-bold text-gray-700 m-0"><?php echo __($label); ?></label>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div class="input-group input-group-sm">
-                                                <input type="number" class="form-control sla-minutes"
-                                                    name="sla[<?php echo $cat; ?>][minutes]"
-                                                    value="<?php echo $time['m']; ?>" required min="0" max="59"
-                                                    placeholder="0">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text"><?php echo __('Minutos'); ?></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2"
-                                            style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
-                                            <div class="text-center" style="flex: 1;">
-                                                <span class="badge mb-2 px-2 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; background-color: #8b0000; color: white;">P1</span>
-                                                <div style="height: 6px; background: #8b0000; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-p1" style="font-size: 0.75rem;">--</strong>
-                                            </div>
-                                            <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-danger mb-2 px-2 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P2</span>
-                                                <div style="height: 6px; background: #dc3545; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-p2" style="font-size: 0.75rem;">--</strong>
-                                            </div>
-                                            <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-warning mb-2 px-2 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">P3</span>
-                                                <div style="height: 6px; background: #f6c23e; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-p3" style="font-size: 0.75rem;">--</strong>
-                                            </div>
-                                            <div class="text-center" style="flex: 1;">
-                                                <span class="badge badge-success mb-2 px-2 py-1"
-                                                    style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P4</span>
-                                                <div style="height: 6px; background: #1cc88a; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;"></div>
-                                                <strong class="text-dark d-block label-p4" style="font-size: 0.75rem;">--</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php
-                                } ?>
-
-                                <!-- SLA DE PRIMEIRO ATENDIMENTO -->
-                                <hr class="my-4">
-                                <div class="form-group row align-items-center mb-3">
-                                    <div class="col-sm-12 mb-2">
-                                        <div class="d-flex align-items-center p-3 rounded" style="background: linear-gradient(135deg,#f0f7ff,#fff); border: 1px solid #d1e7ff;">
-                                            <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#36b9cc,#1d8fa3);display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="mr-3">
-                                                <i class="fas fa-stopwatch text-white" style="font-size:1.1rem;"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="font-weight-bold text-dark" style="font-size:0.9rem;"><?php echo __('SLA de Primeiro Atendimento'); ?></div>
-                                                <div class="text-muted small"><?php echo __('Tempo máximo para o primeiro contato do técnico (atribuição ou comentário). Usado apenas em relatórios.'); ?></div>
-                                            </div>
-                                            <div class="ml-3 d-flex align-items-center">
-                                                <div class="input-group input-group-sm" style="width:130px;">
-                                                    <input type="number" class="form-control font-weight-bold text-center"
-                                                        name="sla_primeira_resposta_minutos"
-                                                        id="sla_primeira_resposta_minutos"
-                                                        value="<?php echo (int)$sla_primeira_resposta_minutos; ?>"
-                                                        min="1" max="1440" style="border-radius: 8px 0 0 8px;">
+                                                <div class="input-group input-group-sm">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i
+                                                                class="fas fa-exclamation-triangle text-warning"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control"
+                                                        name="<?php echo $post_map[$col]; ?>"
+                                                        value="<?php echo (int) ($alert_config[$col] ?? 3); ?>" min="0">
                                                     <div class="input-group-append">
-                                                        <span class="input-group-text" style="border-radius: 0 8px 8px 0; background:#e8f4f8; color:#1d8fa3; font-weight:700;"><?php echo __('min'); ?></span>
+                                                        <span
+                                                            class="input-group-text small"><?php echo __('unidades'); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Lado Direito: Destinatários -->
+                                <div class="col-md-7 pl-md-4">
+                                    <h6 class="font-weight-bold mb-3 text-primary"><i
+                                            class="fas fa-envelope-open-text mr-2"></i><?php echo __('Destinatários de Alerta'); ?>
+                                    </h6>
+                                    <p class="text-muted small mb-3">
+                                        <?php echo __('Usuários que receberão e-mails de alerta para os tiers selecionados.'); ?>
+                                    </p>
+
+                                    <div class="position-relative mb-3">
+                                        <input type="text" id="estoqueRecipientSearch"
+                                            class="form-control form-control-sm"
+                                            placeholder="<?php echo __('Pesquisar destinatário...'); ?>"
+                                            style="border-radius: 20px; padding-left: 15px;">
+                                        <i class="fas fa-search position-absolute text-muted"
+                                            style="right: 15px; top: 10px; font-size: 0.8rem;"></i>
+                                        <div id="estoqueRecipientDropdown" class="dropdown-menu w-100 shadow-sm"
+                                            style="display:none; position:absolute; top: 100%; left:0; z-index:1000; border-radius: 8px;">
                                         </div>
-                                        <small class="text-muted d-block mt-1 ml-1"><i class="fas fa-info-circle mr-1 text-info"></i><?php echo __('Padrão recomendado: 10 minutos. Este valor não afeta o SLA de resolução.'); ?></small>
                                     </div>
-                                </div>
 
-                                <div class="form-group row mt-4">
-                                    <div class="col-sm-12 text-right">
-                                        <button type="submit" class="btn btn-primary btn-save-ajax"
-                                            style="background: rgb(44,64,74);"><?php echo __('Salvar Alterações'); ?></button>
+                                    <div class="recipient-list mt-3" id="activeEstoqueRecipients"
+                                        style="max-height: 350px; overflow-y: auto;">
+                                        <div class="p-3 text-center text-muted small"><i
+                                                class="fas fa-spinner fa-spin mr-1"></i>
+                                            <?php echo __('Carregando...'); ?></div>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+
+                            <div class="text-right mt-4 border-top pt-3">
+                                <button type="submit" class="btn btn-primary btn-sm btn-save-ajax"
+                                    style="background: rgb(44,64,74); border-color: rgb(44,64,74);">
+                                    <i class="fas fa-save mr-1"></i><?php echo __('Salvar Alterações'); ?>
+                                </button>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
-                    <!-- Seção de Depreciação e Doação -->
-                    <div class="card shadow mt-4">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Configuração de Depreciação e Doação de Ativos'); ?>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i
+                                class="fas fa-clock mr-2"></i><?php echo __('Configuração de SLA (Service Level Agreement)'); ?>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="formSLA" method="POST" action="configuracoes.php">
+                            <p class="mb-4">
+                                <?php echo __('Defina o tempo máximo de resolução (Horas e Minutos) para cada categoria de chamado.'); ?>
                             </p>
-                        </div>
-                        <div class="card-body">
-                            <form id="formDepreciacao" method="POST" action="configuracoes.php">
-                                <p class="mb-4"><?php echo __('Defina a taxa de depreciação dos ativos e as regras de elegibilidade para doação.'); ?></p>
 
-                                <!-- Taxa de Depreciação -->
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Taxas de Depreciação (%)'); ?></label>
-                                    <div class="col-sm-9">
-                                        <div class="row">
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control border-left-primary" name="depreciacao[taxa_t1]"
-                                                        value="<?php echo $dep_config['taxa_tier1']; ?>" required min="0" max="100" step="0.01">
-                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
+                            <?php
+                            $categories = ['Incidente', 'Mudança', 'Requisição'];
+                            foreach ($categories as $cat) {
+                                $time = getHoursAndMinutes($configs[$cat]);
+                                ?>
+                                <div class="form-group row align-items-center mb-4 sla-row"
+                                    data-category="<?php echo $cat; ?>">
+                                    <label for="sla_<?php echo $cat; ?>"
+                                        class="col-sm-2 col-form-label font-weight-bold"><?php echo __($cat); ?></label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control sla-hours"
+                                                name="sla[<?php echo $cat; ?>][hours]" value="<?php echo $time['h']; ?>"
+                                                required min="0" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><?php echo __('Horas'); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control sla-minutes"
+                                                name="sla[<?php echo $cat; ?>][minutes]" value="<?php echo $time['m']; ?>"
+                                                required min="0" max="59" placeholder="0">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text"><?php echo __('Minutos'); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-between align-items-center pl-4 py-2"
+                                        style="background: #f8f9fc; border-radius: 12px; border: 1px solid #e3e6f0;">
+                                        <div class="text-center" style="flex: 1;">
+                                            <span class="badge mb-2 px-2 py-1"
+                                                style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; background-color: #8b0000; color: white;">P1</span>
+                                            <div
+                                                style="height: 6px; background: #8b0000; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;">
+                                            </div>
+                                            <strong class="text-dark d-block label-p1"
+                                                style="font-size: 0.75rem;">--</strong>
+                                        </div>
+                                        <div class="text-center" style="flex: 1;">
+                                            <span class="badge badge-danger mb-2 px-2 py-1"
+                                                style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P2</span>
+                                            <div
+                                                style="height: 6px; background: #dc3545; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;">
+                                            </div>
+                                            <strong class="text-dark d-block label-p2"
+                                                style="font-size: 0.75rem;">--</strong>
+                                        </div>
+                                        <div class="text-center" style="flex: 1;">
+                                            <span class="badge badge-warning mb-2 px-2 py-1"
+                                                style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px; color: #fff; background-color: #f6c23e;">P3</span>
+                                            <div
+                                                style="height: 6px; background: #f6c23e; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;">
+                                            </div>
+                                            <strong class="text-dark d-block label-p3"
+                                                style="font-size: 0.75rem;">--</strong>
+                                        </div>
+                                        <div class="text-center" style="flex: 1;">
+                                            <span class="badge badge-success mb-2 px-2 py-1"
+                                                style="border-radius: 50px; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.5px;">P4</span>
+                                            <div
+                                                style="height: 6px; background: #1cc88a; margin: 0 3px 8px 3px; border-radius: 10px; opacity: 0.8;">
+                                            </div>
+                                            <strong class="text-dark d-block label-p4"
+                                                style="font-size: 0.75rem;">--</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+                            } ?>
+
+                            <!-- SLA DE PRIMEIRO ATENDIMENTO -->
+                            <hr class="my-4">
+                            <div class="form-group row align-items-center mb-3">
+                                <div class="col-sm-12 mb-2">
+                                    <div class="d-flex align-items-center p-3 rounded"
+                                        style="background: linear-gradient(135deg,#f0f7ff,#fff); border: 1px solid #d1e7ff;">
+                                        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#36b9cc,#1d8fa3);display:flex;align-items:center;justify-content:center;flex-shrink:0;"
+                                            class="mr-3">
+                                            <i class="fas fa-stopwatch text-white" style="font-size:1.1rem;"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="font-weight-bold text-dark" style="font-size:0.9rem;">
+                                                <?php echo __('SLA de Primeiro Atendimento'); ?></div>
+                                            <div class="text-muted small">
+                                                <?php echo __('Tempo máximo para o primeiro contato do técnico (atribuição ou comentário). Usado apenas em relatórios.'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="ml-3 d-flex align-items-center">
+                                            <div class="input-group input-group-sm" style="width:130px;">
+                                                <input type="number" class="form-control font-weight-bold text-center"
+                                                    name="sla_primeira_resposta_minutos"
+                                                    id="sla_primeira_resposta_minutos"
+                                                    value="<?php echo (int) $sla_primeira_resposta_minutos; ?>" min="1"
+                                                    max="1440" style="border-radius: 8px 0 0 8px;">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"
+                                                        style="border-radius: 0 8px 8px 0; background:#e8f4f8; color:#1d8fa3; font-weight:700;"><?php echo __('min'); ?></span>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control border-left-info" name="depreciacao[taxa_t2]"
-                                                        value="<?php echo $dep_config['taxa_tier2']; ?>" required min="0" max="100" step="0.01">
-                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control border-left-success" name="depreciacao[taxa_t3]"
-                                                        value="<?php echo $dep_config['taxa_tier3']; ?>" required min="0" max="100" step="0.01">
-                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control border-left-warning" name="depreciacao[taxa_t4]"
-                                                        value="<?php echo $dep_config['taxa_tier4']; ?>" required min="0" max="100" step="0.01">
-                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control border-left-danger" name="depreciacao[taxa_inf]"
-                                                        value="<?php echo $dep_config['taxa_infraestrutura']; ?>" required min="0" max="100" step="0.01">
-                                                    <div class="input-group-append"><span class="input-group-text">%</span></div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
+                                    <small class="text-muted d-block mt-1 ml-1"><i
+                                            class="fas fa-info-circle mr-1 text-info"></i><?php echo __('Padrão recomendado: 10 minutos. Este valor não afeta o SLA de resolução.'); ?></small>
                                 </div>
+                            </div>
 
-                                <!-- Período de Depreciação -->
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Período de Depreciação'); ?></label>
-                                    <div class="col-sm-2">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[periodo_anos]"
-                                                value="<?php echo $dep_config['periodo_anos']; ?>" required min="0"
-                                                placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('Anos'); ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="depreciacao[periodo_meses]"
-                                                value="<?php echo $dep_config['periodo_meses']; ?>" required min="0"
-                                                max="11" placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('Meses'); ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr class="my-4">
-
-                                <!-- Política de Destinação de Fim de Vida -->
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Destinação de Fim de Vida (End-of-Life)'); ?></label>
-                                    <div class="col-sm-9">
-                                        <p class="small text-muted mb-3"><?php echo __('Defina o destino padrão de um equipamento após a sua depreciação contábil chegar a 100%.'); ?></p>
-                                        <div class="row">
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
-                                                <select class="form-control border-left-primary" name="depreciacao[dest_tier1]">
-                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier1'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
-                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier1'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
-                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier1'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
-                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier1'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
-                                                <select class="form-control border-left-info" name="depreciacao[dest_tier2]">
-                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier2'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
-                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier2'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
-                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier2'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
-                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier2'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
-                                                <select class="form-control border-left-success" name="depreciacao[dest_tier3]">
-                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier3'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
-                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier3'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
-                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier3'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
-                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier3'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
-                                                <select class="form-control border-left-warning" name="depreciacao[dest_tier4]">
-                                                    <option value="Doação" <?php echo ($dep_config['destinacao_tier4'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
-                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_tier4'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
-                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_tier4'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
-                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier4'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
-                                                <select class="form-control border-left-danger" name="depreciacao[dest_infraestrutura]">
-                                                    <option value="Doação" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
-                                                    <option value="Leilão" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
-                                                    <option value="Descarte" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
-                                                    <option value="Nenhuma" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr class="my-4">
-
-                                <!-- Elegível para Doação (Global) -->
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Doação?'); ?></label>
-                                    <div class="col-sm-4">
-                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
-                                            <input type="checkbox" class="custom-control-input" id="elegivelDoacao"
-                                                name="depreciacao[elegivel_doacao]" value="1" <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
-                                            <label class="custom-control-label" for="elegivelDoacao">
-                                                <?php echo ($dep_config['elegivel_doacao'] == 1) ? __('Sim, ativos podem ser doados') : __('Não, doação desativada'); ?>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Elegível para Leilão (Global) -->
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Leilão?'); ?></label>
-                                    <div class="col-sm-4">
-                                        <div class="custom-control custom-switch" style="margin-top: 7px;">
-                                            <input type="checkbox" class="custom-control-input" id="elegivelLeilao"
-                                                name="depreciacao[elegivel_leilao]" value="1" <?php echo ($dep_config['elegivel_leilao'] == 1) ? 'checked' : ''; ?>>
-                                            <label class="custom-control-label" for="elegivelLeilao">
-                                                <?php echo ($dep_config['elegivel_leilao'] == 1) ? __('Sim, ativos no Fim-de-Vida podem ser leiloados') : __('Não, leilão desativado'); ?>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Elegibilidade por Categoria -->
-                                <div id="categoriasDoacaoSection">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegibilidade por Categoria'); ?></label>
-                                        <div class="col-sm-9">
-                                            <div class="row">
-                                                <?php foreach ($cat_doacao as $cat_nome => $cat_eleg): ?>
-                                                    <div class="col-sm-4 mb-2">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input cat-switch"
-                                                                id="catDoacao_<?php echo md5($cat_nome); ?>"
-                                                                name="cat_doacao[<?php echo htmlspecialchars($cat_nome); ?>]"
-                                                                value="1" <?php echo ($cat_eleg == 1) ? 'checked' : ''; ?>>
-                                                            <label class="custom-control-label"
-                                                                for="catDoacao_<?php echo md5($cat_nome); ?>"><?php echo htmlspecialchars($cat_nome); ?></label>
-                                                        </div>
-                                                    </div>
-                                                    <?php
-                                                endforeach; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Tempo mínimo para Doação -->
-                                <div class="form-group row" id="tempoDoacaoRow">
-                                    <label class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Tempo mínimo para Doação'); ?></label>
-                                    <div class="col-sm-2">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control"
-                                                name="depreciacao[tempo_doacao_anos]"
-                                                value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0"
-                                                placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('Anos'); ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control"
-                                                name="depreciacao[tempo_doacao_meses]"
-                                                value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0"
-                                                max="11" placeholder="0">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('Meses'); ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mt-4">
-                                    <div class="col-sm-12 text-right">
-                                        <button type="submit" class="btn btn-primary btn-save-ajax"
-                                            style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Depreciação'); ?></button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- SESSÃO E SEGURANÇA -->
-                    <div class="card shadow mt-4 mb-4">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold"><?php echo __('Sessão e Segurança'); ?></p>
-                        </div>
-                        <div class="card-body">
-                            <form id="formSessao" method="POST">
-                                <input type="hidden" name="session_config" value="1">
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold"><?php echo __('Tempo Geral (Padrão)'); ?></label>
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" name="idle_timeout"
-                                                value="<?php echo $alert_config['idle_timeout_minutos'] ?? 10; ?>"
-                                                min="1">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><?php echo __('minutos'); ?></span>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted"><?php echo __('Logout para usuários comuns.'); ?></small>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold text-primary"><?php echo __('Tempo para Administradores'); ?></label>
-                                        <div class="input-group border-left-primary">
-                                            <input type="number" class="form-control" name="idle_timeout_admin"
-                                                value="<?php echo $alert_config['idle_timeout_admin'] ?? 10; ?>"
-                                                min="1">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text bg-primary text-white"><?php echo __('minutos'); ?></span>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted"><?php echo __('Logout para nível Admin.'); ?></small>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label font-weight-bold text-info"><?php echo __('Tempo para Suporte'); ?></label>
-                                        <div class="input-group border-left-info">
-                                            <input type="number" class="form-control" name="idle_timeout_suporte"
-                                                value="<?php echo $alert_config['idle_timeout_suporte'] ?? 10; ?>"
-                                                min="1">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text bg-info text-white"><?php echo __('minutos'); ?></span>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted"><?php echo __('Logout para nível Suporte.'); ?></small>
-                                    </div>
-                                </div>
-                                <div class="text-right mt-3">
+                            <div class="form-group row mt-4">
+                                <div class="col-sm-12 text-right">
                                     <button type="submit" class="btn btn-primary btn-save-ajax"
-                                        style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Sessão'); ?></button>
+                                        style="background: rgb(44,64,74);"><?php echo __('Salvar Alterações'); ?></button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
-                    <!-- CONFIGURAÇÃO DO DASHBOARD -->
-                    <div class="card shadow mt-4">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold"><i class="fas fa-th-large mr-2"></i><?php echo __('Configuração do Dashboard (Cards)'); ?></p>
-                        </div>
-                        <div class="card-body">
-                            <form id="formDashboard" method="POST">
-                                <input type="hidden" name="dashboard_config" value="1">
-                                <p class="text-muted small mb-4"><?php echo __('Selecione até 8 categorias, status ou licenças para exibir como cards de resumo na página inicial.'); ?></p>
-                                
-                                <div class="row">
-                                    <div class="col-md-5 border-right">
-                                        <h6 class="font-weight-bold mb-3 text-primary"><?php echo __('Categorias de Ativos'); ?></h6>
-                                        <div class="row">
-                                            <?php foreach ($all_categories as $cat): ?>
-                                                <div class="col-sm-6 mb-2">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
-                                                               id="db_cat_<?php echo md5($cat); ?>" name="selected_cards[]" 
-                                                               value="cat:<?php echo htmlspecialchars($cat); ?>"
-                                                               <?php echo in_array("cat:$cat", $dashboard_cards) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label small" for="db_cat_<?php echo md5($cat); ?>">
-                                                            <?php echo htmlspecialchars($cat); ?>
-                                                        </label>
-                                                    </div>
+                <!-- Seção de Depreciação e Doação -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i
+                                class="fas fa-percentage mr-2"></i><?php echo __('Configuração de Depreciação e Doação de Ativos'); ?>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="formDepreciacao" method="POST" action="configuracoes.php">
+                            <p class="mb-4">
+                                <?php echo __('Defina a taxa de depreciação dos ativos e as regras de elegibilidade para doação.'); ?>
+                            </p>
+
+                            <!-- Taxa de Depreciação -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Taxas de Depreciação (%)'); ?></label>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control border-left-primary"
+                                                    name="depreciacao[taxa_t1]"
+                                                    value="<?php echo $dep_config['taxa_tier1']; ?>" required min="0"
+                                                    max="100" step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text">%</span>
                                                 </div>
-                                            <?php endforeach; ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-3 border-right">
-                                        <h6 class="font-weight-bold mb-3 text-success"><?php echo __('Status'); ?></h6>
-                                        <div class="row">
-                                            <?php foreach ($all_statuses as $st): ?>
-                                                <div class="col-sm-12 mb-2">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
-                                                               id="db_st_<?php echo md5($st); ?>" name="selected_cards[]" 
-                                                               value="st:<?php echo htmlspecialchars($st); ?>"
-                                                               <?php echo in_array("st:$st", $dashboard_cards) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label small" for="db_st_<?php echo md5($st); ?>">
-                                                            <?php echo __($st); ?>
-                                                        </label>
-                                                    </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control border-left-info"
+                                                    name="depreciacao[taxa_t2]"
+                                                    value="<?php echo $dep_config['taxa_tier2']; ?>" required min="0"
+                                                    max="100" step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text">%</span>
                                                 </div>
-                                            <?php endforeach; ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="font-weight-bold mb-3 text-info"><?php echo __('Licenças'); ?></h6>
-                                        <div class="row">
-                                            <?php foreach ($all_licenses as $lic): ?>
-                                                <div class="col-sm-12 mb-2">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input dashboard-card-checkbox" 
-                                                               id="db_lic_<?php echo md5($lic); ?>" name="selected_cards[]" 
-                                                               value="lic:<?php echo htmlspecialchars($lic); ?>"
-                                                               <?php echo in_array("lic:$lic", $dashboard_cards) ? 'checked' : ''; ?>>
-                                                        <label class="custom-control-label small" for="db_lic_<?php echo md5($lic); ?>">
-                                                            <?php echo htmlspecialchars($lic); ?>
-                                                        </label>
-                                                    </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control border-left-success"
+                                                    name="depreciacao[taxa_t3]"
+                                                    value="<?php echo $dep_config['taxa_tier3']; ?>" required min="0"
+                                                    max="100" step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text">%</span>
                                                 </div>
-                                            <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control border-left-warning"
+                                                    name="depreciacao[taxa_t4]"
+                                                    value="<?php echo $dep_config['taxa_tier4']; ?>" required min="0"
+                                                    max="100" step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control border-left-danger"
+                                                    name="depreciacao[taxa_inf]"
+                                                    value="<?php echo $dep_config['taxa_infraestrutura']; ?>" required
+                                                    min="0" max="100" step="0.01">
+                                                <div class="input-group-append"><span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="text-right mt-4 border-top pt-3">
-                                    <span id="cardCountInfo" class="mr-3 small text-muted">
-                                        <?php echo __('Selecionados:'); ?> <span id="currentCardCount">0</span>/8
-                                    </span>
-                                    <button type="submit" class="btn btn-primary btn-save-ajax" style="background: rgb(44,64,74);">
-                                        <i class="fas fa-save mr-2"></i><?php echo __('Salvar Configuração do Dashboard'); ?>
+                            <!-- Período de Depreciação -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Período de Depreciação'); ?></label>
+                                <div class="col-sm-2">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="depreciacao[periodo_anos]"
+                                            value="<?php echo $dep_config['periodo_anos']; ?>" required min="0"
+                                            placeholder="0">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><?php echo __('Anos'); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="depreciacao[periodo_meses]"
+                                            value="<?php echo $dep_config['periodo_meses']; ?>" required min="0"
+                                            max="11" placeholder="0">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><?php echo __('Meses'); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- Política de Destinação de Fim de Vida -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Destinação de Fim de Vida (End-of-Life)'); ?></label>
+                                <div class="col-sm-9">
+                                    <p class="small text-muted mb-3">
+                                        <?php echo __('Defina o destino padrão de um equipamento após a sua depreciação contábil chegar a 100%.'); ?>
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 1'); ?></label>
+                                            <select class="form-control border-left-primary"
+                                                name="depreciacao[dest_tier1]">
+                                                <option value="Doação" <?php echo ($dep_config['destinacao_tier1'] == 'Doação') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Doação'); ?></option>
+                                                <option value="Leilão" <?php echo ($dep_config['destinacao_tier1'] == 'Leilão') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Leilão'); ?></option>
+                                                <option value="Descarte" <?php echo ($dep_config['destinacao_tier1'] == 'Descarte') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Descarte'); ?></option>
+                                                <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier1'] == 'Nenhuma') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Nenhuma'); ?></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 2'); ?></label>
+                                            <select class="form-control border-left-info"
+                                                name="depreciacao[dest_tier2]">
+                                                <option value="Doação" <?php echo ($dep_config['destinacao_tier2'] == 'Doação') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Doação'); ?></option>
+                                                <option value="Leilão" <?php echo ($dep_config['destinacao_tier2'] == 'Leilão') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Leilão'); ?></option>
+                                                <option value="Descarte" <?php echo ($dep_config['destinacao_tier2'] == 'Descarte') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Descarte'); ?></option>
+                                                <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier2'] == 'Nenhuma') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Nenhuma'); ?></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 3'); ?></label>
+                                            <select class="form-control border-left-success"
+                                                name="depreciacao[dest_tier3]">
+                                                <option value="Doação" <?php echo ($dep_config['destinacao_tier3'] == 'Doação') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Doação'); ?></option>
+                                                <option value="Leilão" <?php echo ($dep_config['destinacao_tier3'] == 'Leilão') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Leilão'); ?></option>
+                                                <option value="Descarte" <?php echo ($dep_config['destinacao_tier3'] == 'Descarte') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Descarte'); ?></option>
+                                                <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier3'] == 'Nenhuma') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Nenhuma'); ?></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Tier 4'); ?></label>
+                                            <select class="form-control border-left-warning"
+                                                name="depreciacao[dest_tier4]">
+                                                <option value="Doação" <?php echo ($dep_config['destinacao_tier4'] == 'Doação') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Doação'); ?></option>
+                                                <option value="Leilão" <?php echo ($dep_config['destinacao_tier4'] == 'Leilão') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Leilão'); ?></option>
+                                                <option value="Descarte" <?php echo ($dep_config['destinacao_tier4'] == 'Descarte') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Descarte'); ?></option>
+                                                <option value="Nenhuma" <?php echo ($dep_config['destinacao_tier4'] == 'Nenhuma') ? 'selected' : ''; ?>>
+                                                    <?php echo __('Nenhuma'); ?></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label
+                                                class="small text-muted font-weight-bold"><?php echo __('Infraestrutura'); ?></label>
+                                            <select class="form-control border-left-danger"
+                                                name="depreciacao[dest_infraestrutura]">
+                                                <option value="Doação" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Doação') ? 'selected' : ''; ?>><?php echo __('Doação'); ?></option>
+                                                <option value="Leilão" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Leilão') ? 'selected' : ''; ?>><?php echo __('Leilão'); ?></option>
+                                                <option value="Descarte" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Descarte') ? 'selected' : ''; ?>><?php echo __('Descarte'); ?></option>
+                                                <option value="Nenhuma" <?php echo ($dep_config['destinacao_infraestrutura'] == 'Nenhuma') ? 'selected' : ''; ?>><?php echo __('Nenhuma'); ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <!-- Elegível para Doação (Global) -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Doação?'); ?></label>
+                                <div class="col-sm-4">
+                                    <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                        <input type="checkbox" class="custom-control-input" id="elegivelDoacao"
+                                            name="depreciacao[elegivel_doacao]" value="1" <?php echo ($dep_config['elegivel_doacao'] == 1) ? 'checked' : ''; ?>>
+                                        <label class="custom-control-label" for="elegivelDoacao">
+                                            <?php echo ($dep_config['elegivel_doacao'] == 1) ? __('Sim, ativos podem ser doados') : __('Não, doação desativada'); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Elegível para Leilão (Global) -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegível para Leilão?'); ?></label>
+                                <div class="col-sm-4">
+                                    <div class="custom-control custom-switch" style="margin-top: 7px;">
+                                        <input type="checkbox" class="custom-control-input" id="elegivelLeilao"
+                                            name="depreciacao[elegivel_leilao]" value="1" <?php echo ($dep_config['elegivel_leilao'] == 1) ? 'checked' : ''; ?>>
+                                        <label class="custom-control-label" for="elegivelLeilao">
+                                            <?php echo ($dep_config['elegivel_leilao'] == 1) ? __('Sim, ativos no Fim-de-Vida podem ser leiloados') : __('Não, leilão desativado'); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Elegibilidade por Categoria -->
+                            <div id="categoriasDoacaoSection">
+                                <div class="form-group row">
+                                    <label
+                                        class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Elegibilidade por Categoria'); ?></label>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <?php foreach ($cat_doacao as $cat_nome => $cat_eleg): ?>
+                                                <div class="col-sm-4 mb-2">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input cat-switch"
+                                                            id="catDoacao_<?php echo md5($cat_nome); ?>"
+                                                            name="cat_doacao[<?php echo htmlspecialchars($cat_nome); ?>]"
+                                                            value="1" <?php echo ($cat_eleg == 1) ? 'checked' : ''; ?>>
+                                                        <label class="custom-control-label"
+                                                            for="catDoacao_<?php echo md5($cat_nome); ?>"><?php echo htmlspecialchars($cat_nome); ?></label>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                            endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tempo mínimo para Doação -->
+                            <div class="form-group row" id="tempoDoacaoRow">
+                                <label
+                                    class="col-sm-3 col-form-label font-weight-bold"><?php echo __('Tempo mínimo para Doação'); ?></label>
+                                <div class="col-sm-2">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="depreciacao[tempo_doacao_anos]"
+                                            value="<?php echo $dep_config['tempo_doacao_anos']; ?>" min="0"
+                                            placeholder="0">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><?php echo __('Anos'); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="depreciacao[tempo_doacao_meses]"
+                                            value="<?php echo $dep_config['tempo_doacao_meses']; ?>" min="0" max="11"
+                                            placeholder="0">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><?php echo __('Meses'); ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-sm-12 text-right">
+                                    <button type="submit" class="btn btn-primary btn-save-ajax"
+                                        style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Depreciação'); ?></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SESSÃO E SEGURANÇA -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i class="fas fa-user-shield mr-2"></i><?php echo __('Sessão e Segurança'); ?>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="formSessao" method="POST">
+                            <input type="hidden" name="session_config" value="1">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label
+                                        class="form-label font-weight-bold"><?php echo __('Tempo Geral (Padrão)'); ?></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="idle_timeout"
+                                            value="<?php echo $alert_config['idle_timeout_minutos'] ?? 10; ?>" min="1">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><?php echo __('minutos'); ?></span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted"><?php echo __('Logout para usuários comuns.'); ?></small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label
+                                        class="form-label font-weight-bold text-primary"><?php echo __('Tempo para Administradores'); ?></label>
+                                    <div class="input-group border-left-primary">
+                                        <input type="number" class="form-control" name="idle_timeout_admin"
+                                            value="<?php echo $alert_config['idle_timeout_admin'] ?? 10; ?>" min="1">
+                                        <div class="input-group-append">
+                                            <span
+                                                class="input-group-text bg-primary text-white"><?php echo __('minutos'); ?></span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted"><?php echo __('Logout para nível Admin.'); ?></small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label
+                                        class="form-label font-weight-bold text-info"><?php echo __('Tempo para Suporte'); ?></label>
+                                    <div class="input-group border-left-info">
+                                        <input type="number" class="form-control" name="idle_timeout_suporte"
+                                            value="<?php echo $alert_config['idle_timeout_suporte'] ?? 10; ?>" min="1">
+                                        <div class="input-group-append">
+                                            <span
+                                                class="input-group-text bg-info text-white"><?php echo __('minutos'); ?></span>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted"><?php echo __('Logout para nível Suporte.'); ?></small>
+                                </div>
+                            </div>
+                            <div class="text-right mt-3">
+                                <button type="submit" class="btn btn-primary btn-save-ajax"
+                                    style="background: rgb(44,64,74);"><?php echo __('Salvar Configurações de Sessão'); ?></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- CONFIGURAÇÃO DO DASHBOARD -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i class="fas fa-th-large mr-2"></i><?php echo __('Configuração do Dashboard (Cards)'); ?>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="formDashboard" method="POST">
+                            <input type="hidden" name="dashboard_config" value="1">
+                            <p class="text-muted small mb-4">
+                                <?php echo __('Selecione até 8 categorias, status ou licenças para exibir como cards de resumo na página inicial.'); ?>
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-5 border-right">
+                                    <h6 class="font-weight-bold mb-3 text-primary">
+                                        <?php echo __('Categorias de Ativos'); ?></h6>
+                                    <div class="row">
+                                        <?php foreach ($all_categories as $cat): ?>
+                                            <div class="col-sm-6 mb-2">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox"
+                                                        class="custom-control-input dashboard-card-checkbox"
+                                                        id="db_cat_<?php echo md5($cat); ?>" name="selected_cards[]"
+                                                        value="cat:<?php echo htmlspecialchars($cat); ?>" <?php echo in_array("cat:$cat", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label small"
+                                                        for="db_cat_<?php echo md5($cat); ?>">
+                                                        <?php echo htmlspecialchars($cat); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <h6 class="font-weight-bold mb-3 text-success"><?php echo __('Status'); ?></h6>
+                                    <div class="row">
+                                        <?php foreach ($all_statuses as $st): ?>
+                                            <div class="col-sm-12 mb-2">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox"
+                                                        class="custom-control-input dashboard-card-checkbox"
+                                                        id="db_st_<?php echo md5($st); ?>" name="selected_cards[]"
+                                                        value="st:<?php echo htmlspecialchars($st); ?>" <?php echo in_array("st:$st", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label small"
+                                                        for="db_st_<?php echo md5($st); ?>">
+                                                        <?php echo __($st); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="font-weight-bold mb-3 text-info"><?php echo __('Licenças'); ?></h6>
+                                    <div class="row">
+                                        <?php foreach ($all_licenses as $lic): ?>
+                                            <div class="col-sm-12 mb-2">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox"
+                                                        class="custom-control-input dashboard-card-checkbox"
+                                                        id="db_lic_<?php echo md5($lic); ?>" name="selected_cards[]"
+                                                        value="lic:<?php echo htmlspecialchars($lic); ?>" <?php echo in_array("lic:$lic", $dashboard_cards) ? 'checked' : ''; ?>>
+                                                    <label class="custom-control-label small"
+                                                        for="db_lic_<?php echo md5($lic); ?>">
+                                                        <?php echo htmlspecialchars($lic); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-right mt-4 border-top pt-3">
+                                <span id="cardCountInfo" class="mr-3 small text-muted">
+                                    <?php echo __('Selecionados:'); ?> <span id="currentCardCount">0</span>/8
+                                </span>
+                                <button type="submit" class="btn btn-primary btn-save-ajax"
+                                    style="background: rgb(44,64,74);">
+                                    <i
+                                        class="fas fa-save mr-2"></i><?php echo __('Salvar Configuração do Dashboard'); ?>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- IDIOMA DO SISTEMA -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i class="fas fa-language mr-2"></i><?php echo __('Idioma do Sistema'); ?>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="formIdioma" method="POST">
+                            <input type="hidden" name="idioma_config" value="1">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <label
+                                        class="form-label font-weight-bold"><?php echo __('Selecione o idioma padrão:'); ?></label>
+                                    <select class="form-control" name="idioma">
+                                        <option value="pt-BR" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'pt-BR' ? 'selected' : ''; ?>>Português (Brasil)</option>
+                                        <option value="en-US" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'en-US' ? 'selected' : ''; ?>>English (United States)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 text-right mt-3 mt-md-0">
+                                    <button type="submit" class="btn btn-primary btn-save-ajax"
+                                        style="background: rgb(44,64,74);">
+                                        <i class="fas fa-save mr-2"></i><?php echo __('Salvar Idioma'); ?>
                                     </button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
+                </div>
 
-                    <!-- IDIOMA DO SISTEMA -->
-                    <div class="card shadow mt-4">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 font-weight-bold"><i class="fas fa-language mr-2"></i><?php echo __('Idioma do Sistema'); ?></p>
-                        </div>
-                        <div class="card-body">
-                            <form id="formIdioma" method="POST">
-                                <input type="hidden" name="idioma_config" value="1">
-                                <div class="row align-items-center">
-                                    <div class="col-md-6">
-                                        <label class="form-label font-weight-bold"><?php echo __('Selecione o idioma padrão:'); ?></label>
-                                        <select class="form-control" name="idioma">
-                                            <option value="pt-BR" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'pt-BR' ? 'selected' : ''; ?>>Português (Brasil)</option>
-                                            <option value="en-US" <?php echo ($alert_config['idioma'] ?? 'pt-BR') == 'en-US' ? 'selected' : ''; ?>>English (United States)</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 text-right mt-3 mt-md-0">
-                                        <button type="submit" class="btn btn-primary btn-save-ajax" style="background: rgb(44,64,74);">
-                                            <i class="fas fa-save mr-2"></i><?php echo __('Salvar Idioma'); ?>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                <!-- CONFIGURAÇÕES DE IA (STANDALONE) -->
+                <div class="card shadow mt-4 mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="text-primary m-0 font-weight-bold">
+                            <i class="fas fa-robot mr-2"></i> <?php echo __('Inteligência Artificial (IA)'); ?>
+                        </h6>
                     </div>
-
-                    <!-- CONFIGURAÇÕES DE IA (STANDALONE) -->
-                    <div class="card shadow mt-4 mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="text-primary m-0 font-weight-bold">
-                                <i class="fas fa-robot mr-2"></i> <?php echo __('Inteligência Artificial (IA)'); ?>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <form id="formIA" method="POST">
-                                <input type="hidden" name="ia_config" value="1">
-                                <p class="text-muted small mb-4 mt-2"><?php echo __('Configure onde o Agente de IA deve atuar no sistema, ativando ou desativando cada módulo de forma independente.'); ?></p>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card border-0 bg-light h-100">
-                                            <div class="card-body d-flex flex-column justify-content-between">
-                                                <div>
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <i class="fas fa-comments text-primary mr-2 fa-lg"></i>
-                                                        <span class="font-weight-bold">Chat Agent</span>
-                                                    </div>
-                                                    <p class="small text-muted mb-3"><?php echo __('Permite que usuários conversem com o Agente de IA pelo chat do sistema.'); ?></p>
+                    <div class="card-body">
+                        <form id="formIA" method="POST">
+                            <input type="hidden" name="ia_config" value="1">
+                            <p class="text-muted small mb-4 mt-2">
+                                <?php echo __('Configure onde o Agente de IA deve atuar no sistema, ativando ou desativando cada módulo de forma independente.'); ?>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-comments text-primary mr-2 fa-lg"></i>
+                                                    <span class="font-weight-bold">Chat Agent</span>
                                                 </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="iaChatAtivo"
-                                                        name="ia_chat_ativo" value="1" <?php echo (($alert_config['ia_chat_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaChatAtivo"><?php echo __('Ativar no Chat'); ?></label>
-                                                </div>
+                                                <p class="small text-muted mb-3">
+                                                    <?php echo __('Permite que usuários conversem com o Agente de IA pelo chat do sistema.'); ?>
+                                                </p>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card border-0 bg-light h-100">
-                                            <div class="card-body d-flex flex-column justify-content-between">
-                                                <div>
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <i class="fas fa-ticket-alt text-info mr-2 fa-lg"></i>
-                                                        <span class="font-weight-bold">Assistente de Chamados</span>
-                                                    </div>
-                                                    <p class="small text-muted mb-3"><?php echo __('Exibe sugestões de ação automáticas ao abrir um chamado técnico.'); ?></p>
-                                                </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                        id="iaChamadosAtivo" name="ia_chamados_ativo" value="1" <?php echo (($alert_config['ia_chamados_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaChamadosAtivo"><?php echo __('Ativar nos Chamados'); ?></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card border-0 bg-light h-100">
-                                            <div class="card-body d-flex flex-column justify-content-between">
-                                                <div>
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <i class="fas fa-shield-alt text-success mr-2 fa-lg"></i>
-                                                        <span class="font-weight-bold">Previsão e Prevenção</span>
-                                                    </div>
-                                                    <p class="small text-muted mb-3"><?php echo __('Gera consultoria estratégica automática com base nos dados de infraestrutura.'); ?></p>
-                                                </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                        id="iaPreveAtivo" name="ia_preve_ativo" value="1" <?php echo (($alert_config['ia_preve_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
-                                                    <label class="custom-control-label" for="iaPreveAtivo"><?php echo __('Ativar Prevenções'); ?></label>
-                                                </div>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="iaChatAtivo"
+                                                    name="ia_chat_ativo" value="1" <?php echo (($alert_config['ia_chat_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                <label class="custom-control-label"
+                                                    for="iaChatAtivo"><?php echo __('Ativar no Chat'); ?></label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-right mt-3">
-                                    <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);"
-                                        id="btnSalvarIA">
-                                        <i class="fas fa-save mr-2"></i> <?php echo __('Salvar Configuração de IA'); ?>
-                                    </button>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-ticket-alt text-info mr-2 fa-lg"></i>
+                                                    <span class="font-weight-bold">Assistente de Chamados</span>
+                                                </div>
+                                                <p class="small text-muted mb-3">
+                                                    <?php echo __('Exibe sugestões de ação automáticas ao abrir um chamado técnico.'); ?>
+                                                </p>
+                                            </div>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="iaChamadosAtivo"
+                                                    name="ia_chamados_ativo" value="1" <?php echo (($alert_config['ia_chamados_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                <label class="custom-control-label"
+                                                    for="iaChamadosAtivo"><?php echo __('Ativar nos Chamados'); ?></label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-shield-alt text-success mr-2 fa-lg"></i>
+                                                    <span class="font-weight-bold">Previsão e Prevenção</span>
+                                                </div>
+                                                <p class="small text-muted mb-3">
+                                                    <?php echo __('Gera consultoria estratégica automática com base nos dados de infraestrutura.'); ?>
+                                                </p>
+                                            </div>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="iaPreveAtivo"
+                                                    name="ia_preve_ativo" value="1" <?php echo (($alert_config['ia_preve_ativo'] ?? 1) == 1) ? 'checked' : ''; ?>>
+                                                <label class="custom-control-label"
+                                                    for="iaPreveAtivo"><?php echo __('Ativar Prevenções'); ?></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right mt-3">
+                                <button type="submit" class="btn btn-primary" style="background: rgb(44,64,74);"
+                                    id="btnSalvarIA">
+                                    <i class="fas fa-save mr-2"></i> <?php echo __('Salvar Configuração de IA'); ?>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </div> <!-- End of tab content / main container -->
-            </div>
+                </div>
+            </div> <!-- End of tab content / main container -->
         </div>
+    </div>
     </div>
     </div>
     </div> <!-- End of content -->
@@ -1946,7 +2142,7 @@ function getHoursAndMinutes($total_minutes)
 
             $('.sla-hours, .sla-minutes').on('input', updateSLABars);
             updateSLABars(); // Initial call 
-            
+
             $('#elegivelDoacao').on('change', function () {
                 $(this).next('label').text(this.checked ? "<?php echo __('Sim, ativos podem ser doados'); ?>" : "<?php echo __('Não, doação desativada'); ?>");
                 if (this.checked) {
@@ -1955,7 +2151,7 @@ function getHoursAndMinutes($total_minutes)
                     $('#doacaoOptions').slideUp();
                 }
             });
-            
+
             $('#elegivelLeilao').on('change', function () {
                 $(this).next('label').text(this.checked ? "<?php echo __('Sim, ativos no Fim-de-Vida podem ser leiloados'); ?>" : "<?php echo __('Não, leilão desativado'); ?>");
             });
@@ -2042,7 +2238,7 @@ function getHoursAndMinutes($total_minutes)
                 }
             }
 
-            $('.dashboard-card-checkbox').on('change', function() {
+            $('.dashboard-card-checkbox').on('change', function () {
                 if ($('.dashboard-card-checkbox:checked').length > 8) {
                     $(this).prop('checked', false);
                     Swal.fire({
@@ -2162,6 +2358,11 @@ function getHoursAndMinutes($total_minutes)
                                 $btn.addClass('active');
                             } else {
                                 $btn.removeClass('active');
+                            }
+                            // Recarrega ambas as listas para manter sincronia
+                            loadActiveRecipients();
+                            if (typeof loadActiveEstoqueRecipients === "function") {
+                                loadActiveEstoqueRecipients();
                             }
                             showAutoSaved();
                         }
@@ -2292,20 +2493,105 @@ function getHoursAndMinutes($total_minutes)
             });
             // ══ FIM BLOCO SMTP ════════════════════════════════
 
+            // ══════════════════════════════════════════════════
+            // LÓGICA DE DESTINATÁRIOS DE ESTOQUE
+            // ══════════════════════════════════════════════════
+            const $searchEst = $('#estoqueRecipientSearch');
+            const $dropdownEst = $('#estoqueRecipientDropdown');
+            const $listEst = $('#activeEstoqueRecipients');
+
+            function loadActiveEstoqueRecipients() {
+                $.ajax({
+                    url: 'ajax_list_estoque_usuarios.php',
+                    type: 'GET',
+                    success: function (resp) {
+                        $listEst.html(resp);
+                    }
+                });
+            }
+
+            $searchEst.on('keyup', function () {
+                const query = $(this).val();
+                if (query.length < 2) { $dropdownEst.hide(); return; }
+
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'search', query: query },
+                    success: function (resp) {
+                        $dropdownEst.html(resp.replace(/select-recipient/g, 'select-estoque-recipient')).show();
+                    }
+                });
+            });
+
+            $(document).on('click', '.select-estoque-recipient', function (e) {
+                e.preventDefault();
+                const uid = $(this).data('uid');
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'add', user_id: uid, context: 'estoque' },
+                    dataType: 'json',
+                    success: function (resp) {
+                        // Se falhou por já existir no sistema global, apenas tentamos o toggle
+                        if (!resp.success) {
+                            $.ajax({
+                                url: 'ajax_alertas_usuarios.php',
+                                type: 'POST',
+                                data: { action: 'toggle', user_id: uid, pref: 'recebe_estoque', state: 1 },
+                                dataType: 'json',
+                                success: function (r2) {
+                                    if (r2.success) {
+                                        $searchEst.val(''); $dropdownEst.hide();
+                                        loadActiveEstoqueRecipients(); loadActiveRecipients(); showAutoSaved();
+                                    }
+                                }
+                            });
+                        } else {
+                            $searchEst.val(''); $dropdownEst.hide();
+                            loadActiveEstoqueRecipients(); loadActiveRecipients(); showAutoSaved();
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.remove-estoque-recipient', function () {
+                const uid = $(this).closest('.recipient-item').data('uid');
+                $.ajax({
+                    url: 'ajax_alertas_usuarios.php',
+                    type: 'POST',
+                    data: { action: 'toggle', user_id: uid, pref: 'recebe_estoque', state: 0 },
+                    dataType: 'json',
+                    success: function (resp) {
+                        if (resp.success) {
+                            loadActiveEstoqueRecipients(); loadActiveRecipients(); showAutoSaved();
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#estoqueRecipientSearch, #estoqueRecipientDropdown').length) {
+                    $dropdownEst.hide();
+                }
+            });
+
+            loadActiveEstoqueRecipients();
+
         });
     </script>
-        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Preview do logo ao selecionar arquivo
-            $('#logo_file').on('change', function() {
+            $('#logo_file').on('change', function () {
                 var fileName = $(this).val().split('\\').pop();
                 $(this).next('.custom-file-label').addClass("selected").html(fileName);
 
                 if (this.files && this.files[0]) {
                     var reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         $('#logoPreview').attr('src', e.target.result);
                     };
                     reader.readAsDataURL(this.files[0]);
@@ -2313,7 +2599,7 @@ function getHoursAndMinutes($total_minutes)
             });
 
             // Upload via AJAX
-            $('#formLogoUpload').on('submit', function(e) {
+            $('#formLogoUpload').on('submit', function (e) {
                 e.preventDefault();
                 var formData = new FormData(this);
                 var $btn = $('#btnUploadLogo');
@@ -2327,7 +2613,7 @@ function getHoursAndMinutes($total_minutes)
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function(response) {
+                    success: function (response) {
                         try {
                             var res = JSON.parse(response);
                             if (res.success) {
@@ -2344,10 +2630,10 @@ function getHoursAndMinutes($total_minutes)
                             alert('<?php echo __('Erro ao processar resposta do servidor'); ?>');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         alert('<?php echo __('Erro na requisição'); ?>');
                     },
-                    complete: function() {
+                    complete: function () {
                         $btn.prop('disabled', false).html(oldHtml);
                     }
                 });

@@ -1073,4 +1073,8 @@ return [
     'Nível de Alerta (Unidades)' => 'Nível de Alerta (Unidades)',
     'Alertar quando houver menos de' => 'Alertar quando houver menos de',
     'unidades' => 'unidades',
+    'Destinatários de Alerta de Estoque' => 'Destinatários de Alerta de Estoque',
+    'Estes usuários receberão um e-mail toda vez que o estoque de uma categoria atingir o nível mínimo definido acima.' => 'Estes usuários receberão um e-mail toda vez que o estoque de uma categoria atingir o nível mínimo definido acima.',
+    'Remover Alerta de Estoque' => 'Remover Alerta de Estoque',
+    'Nenhum destinatário de estoque configurado.' => 'Nenhum destinatário de estoque configurado.',
 ];

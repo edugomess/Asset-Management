@@ -5,12 +5,22 @@ $action = $_POST['action'] ?? '';
 
 if ($action == 'search') {
     $query = mysqli_real_escape_string($conn, $_POST['query']);
-    // Procura por usuários onde o nome, sobrenome ou email tenham a string e que não estejam na tabela alertas_usuarios
-    $sql = "SELECT id_usuarios, nome, sobrenome, email FROM usuarios 
-            WHERE (nome LIKE '%$query%' OR sobrenome LIKE '%$query%' OR email LIKE '%$query%')
-            AND status = 'Ativo'
-            AND id_usuarios NOT IN (SELECT usuario_id FROM alertas_usuarios)
-            LIMIT 5";
+    $context = $_POST['context'] ?? 'geral';
+
+    // Busca usuários ativos que ainda não estão na lista DO CONTEXTO selecionado
+    $subquery = "SELECT usuario_id FROM alertas_usuarios";
+    if ($context === 'estoque') {
+        $subquery .= " WHERE recebe_estoque = 1";
+    } else {
+        $subquery .= " WHERE recebe_chamados = 1 OR recebe_manutencao = 1";
+    }
+
+    $sql = "SELECT id_usuarios, nome, sobrenome, email 
+            FROM usuarios 
+            WHERE (nome LIKE '%$query%' OR sobrenome LIKE '%$query%' OR email LIKE '%$query%') 
+              AND status = 'Ativo'
+              AND id_usuarios NOT IN ($subquery)
+            LIMIT 15";
     $res = $conn->query($sql);
     if ($res && $res->num_rows > 0) {
         while ($row = $res->fetch_assoc()) {
@@ -27,6 +37,7 @@ if ($action == 'search') {
 
 if ($action == 'add') {
     $user_id = (int) $_POST['user_id'];
+    $context = $_POST['context'] ?? '';
 
     // Check if user exists and is active
     $check = $conn->query("SELECT id_usuarios FROM usuarios WHERE id_usuarios = $user_id AND status = 'Ativo'");
@@ -36,8 +47,11 @@ if ($action == 'add') {
     }
 
     // Configurações padrão ao adicionar
-    $sql = "INSERT INTO alertas_usuarios (usuario_id, recebe_chamados, recebe_manutencao, prioridade_p1, prioridade_p2, prioridade_p3, prioridade_p4, tipo_incidente, tipo_requisicao, tipo_mudanca)
-            VALUES ($user_id, 1, 0, 1, 1, 1, 1, 1, 1, 1)";
+    $recebe_chamados = ($context == 'estoque') ? 0 : 1;
+    $recebe_estoque = ($context == 'estoque') ? 1 : 0;
+
+    $sql = "INSERT INTO alertas_usuarios (usuario_id, recebe_chamados, recebe_manutencao, recebe_estoque, estoque_t1, estoque_t2, estoque_t3, estoque_t4, estoque_inf, prioridade_p1, prioridade_p2, prioridade_p3, prioridade_p4, tipo_incidente, tipo_requisicao, tipo_mudanca)
+            VALUES ($user_id, $recebe_chamados, 0, $recebe_estoque, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)";
     if ($conn->query($sql)) {
         echo json_encode(['success' => true]);
     } else {
@@ -51,17 +65,22 @@ if ($action == 'toggle') {
     $pref = preg_replace('/[^a-z0-9_]/', '', strtolower($_POST['pref']));
     $state = (int) $_POST['state'];
 
-    $allowed_prefs = ['recebe_chamados', 'recebe_manutencao', 'prioridade_p1', 'prioridade_p2', 'prioridade_p3', 'prioridade_p4', 'tipo_incidente', 'tipo_requisicao', 'tipo_mudanca'];
+    $allowed_prefs = [
+        'recebe_chamados', 'recebe_manutencao', 'recebe_estoque', 
+        'estoque_t1', 'estoque_t2', 'estoque_t3', 'estoque_t4', 'estoque_inf',
+        'prioridade_p1', 'prioridade_p2', 'prioridade_p3', 'prioridade_p4', 
+        'tipo_incidente', 'tipo_requisicao', 'tipo_mudanca'
+    ];
 
     if (in_array($pref, $allowed_prefs)) {
         $sql = "UPDATE alertas_usuarios SET `$pref` = $state WHERE usuario_id = $user_id";
         if ($conn->query($sql)) {
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false]);
+            echo json_encode(['success' => false, 'message' => $conn->error]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid preference']);
+        echo json_encode(['success' => false, 'message' => 'Invalid preference: ' . $pref]);
     }
     exit;
 }

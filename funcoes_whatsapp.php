@@ -57,19 +57,15 @@ function enviarWhatsAppNovoChamado($id_chamado)
     $phone = WHATSAPP_PHONE;
     $apikey = WHATSAPP_API_KEY;
 
-    $mensagem = "\xe2\x95\x94\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x97\n";
-    $mensagem .= "\xe2\x95\x91 \xf0\x9f\x86\x95 *NOVO CHAMADO ABERTO*  \xe2\x95\x91\n";
-    $mensagem .= "\xe2\x95\x9a\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x9d\n\n";
-
-    $mensagem .= "\xf0\x9f\x86\x94 *ID:* #" . $id_chamado . "\n";
-    $mensagem .= "\xf0\x9f\x93\x9d *T\xc3\xadtulo:* " . $chamado['titulo'] . "\n";
-    $mensagem .= "\xf0\x9f\x91\xa4 *Solicitante:* " . $chamado['solicitante'] . "\n";
-    $mensagem .= "\xe2\x9a\xa1 *Prioridade:* " . $prioridade . "\n";
-    $mensagem .= "\xf0\x9f\x93\x84 *Descri\xc3\xa7\xc3\xa3o:* " . $chamado['descricao'] . "\n";
-    $mensagem .= "\xf0\x9f\x93\x85 *Data:* " . date('d/m/Y H:i', strtotime($chamado['data_abertura'])) . "\n\n";
-
+    $mensagem = "🆕 *NOVO CHAMADO ABERTO*\n\n";
+    $mensagem .= "🆔 *ID:* #" . $id_chamado . "\n";
+    $mensagem .= "📝 *Título:* " . $chamado['titulo'] . "\n";
+    $mensagem .= "👤 *Solicitante:* " . $chamado['solicitante'] . "\n";
+    $mensagem .= "⚡ *Prioridade:* " . $prioridade . "\n";
+    $mensagem .= "🗒️ *Descrição:* " . $chamado['descricao'] . "\n";
+    $mensagem .= "📅 *Data:* " . date('d/m/Y H:i', strtotime($chamado['data_abertura'])) . "\n\n";
     $mensagem .= "------------------------------------------\n";
-    $mensagem .= "\xf0\x9f\x92\xbc _Asset Management System_";
+    $mensagem .= "💼 _Asset Management System_";
 
     $url = "https://api.callmebot.com/whatsapp.php?phone=" . $phone . "&text=" . rawurlencode($mensagem) . "&apikey=" . $apikey;
 
@@ -100,20 +96,46 @@ function enviarWhatsAppManutencao($id_ativo, $observacoes = "")
     $phone = WHATSAPP_PHONE;
     $apikey = WHATSAPP_API_KEY;
 
-    $mensagem = "\xe2\x95\x94\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x97\n";
-    $mensagem .= "\xe2\x95\x91 \xf0\x9f\x9b\xa0\xef\xb8\x8f *ATIVO EM MANUTEN\xc3\x87\xc3\x83O* \xe2\x95\x91\n";
-    $mensagem .= "\xe2\x95\x9a\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x90\xe2\x95\x9d\n\n";
-
-    $mensagem .= "\xf0\x9f\x96\xa5\xef\xb8\x8f *Modelo:* " . $ativo['modelo'] . "\n";
-    $mensagem .= "\xf0\x9f\x8f\xb7\xef\xb8\x8f *TAG:* " . $ativo['tag'] . "\n";
-    $mensagem .= "\xf0\x9f\x93\x9d *Obs:* " . ($observacoes ?: "Nenhuma") . "\n";
-    $mensagem .= "\xf0\x9f\x93\x85 *Data:* " . date('d/m/Y H:i') . "\n\n";
-
+    $mensagem = "🛠️ *ATIVO EM MANUTENÇÃO*\n\n";
+    $mensagem .= "🖥️ *Modelo:* " . $ativo['modelo'] . "\n";
+    $mensagem .= "🏷️ *TAG:* " . $ativo['tag'] . "\n";
+    $mensagem .= "📝 *Obs:* " . ($observacoes ?: "Nenhuma") . "\n";
+    $mensagem .= "📅 *Data:* " . date('d/m/Y H:i') . "\n\n";
     $mensagem .= "------------------------------------------\n";
-    $mensagem .= "\xf0\x9f\x92\xbc _Asset Management System_";
+    $mensagem .= "💼 _Asset Management System_";
 
     $url = "https://api.callmebot.com/whatsapp.php?phone=" . $phone . "&text=" . rawurlencode($mensagem) . "&apikey=" . $apikey;
     $options = ["http" => ["method" => "GET", "header" => "User-Agent: PHP\r\n", "timeout" => 10]];
+    $context = stream_context_create($options);
+    file_get_contents($url, false, $context);
+
+    return true;
+}
+
+function enviarWhatsAppEstoque($itensCriticos)
+{
+    global $conn;
+    if (empty($itensCriticos)) return false;
+
+    // 1. Verificar configuração GLOBAL do WhatsApp para Estoque
+    $sql_check = "SELECT whatsapp_ativo, whatsapp_recebe_estoque FROM configuracoes_alertas LIMIT 1";
+    $res_check = $conn->query($sql_check);
+    if (!$res_check || !$row_check = $res_check->fetch_assoc()) return false;
+    if ($row_check['whatsapp_ativo'] != 1 || $row_check['whatsapp_recebe_estoque'] != 1) return false;
+
+    $phone = WHATSAPP_PHONE;
+    $apikey = WHATSAPP_API_KEY;
+
+    $msg = "📦 *ALERTA DE ESTOQUE CRÍTICO*\n\n";
+    foreach ($itensCriticos as $item) {
+        $msg .= "• *" . $item['categoria'] . "* (" . $item['tier'] . "): " . $item['qtd'] . " unid.\n";
+    }
+    $msg .= "\n📅 *Data:* " . date('d/m/Y H:i') . "\n";
+    $msg .= "------------------------------------------\n";
+    $msg .= "💼 _Asset Management System_";
+
+    $url = "https://api.callmebot.com/whatsapp.php?phone=" . $phone . "&text=" . rawurlencode($msg) . "&apikey=" . $apikey;
+    $options = ["http" => ["method" => "GET", "header" => "User-Agent: PHP\r\n", "timeout" => 15]];
     $context = stream_context_create($options);
     file_get_contents($url, false, $context);
 

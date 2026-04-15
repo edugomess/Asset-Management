@@ -126,7 +126,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                      </option>
                                                      <option value="relatorio_chamados_aprovacoes.php">34 - <?php echo __('Aprovações de Gestores'); ?></option>
                                                      <option value="relatorio_chamados_sla_compliance.php">35 - <?php echo __('Compliance de SLA (Dynamic)'); ?></option>
-                                                     <option value="relatorio_chamados_sla_primeiro_atendimento.php" data-periodo="true">36 - <?php echo __('SLA de Primeiro Atendimento'); ?> ⏱</option>
+                                                     <option value="relatorio_chamados_sla_primeiro_atendimento.php" data-periodo="true">36 - <?php echo __('SLA de Primeiro Atendimento'); ?></option>
                                                 <?php endif; ?>
                                             </optgroup>
 

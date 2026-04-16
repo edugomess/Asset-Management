@@ -3,6 +3,72 @@ $userName = htmlspecialchars($_SESSION['nome_usuario']);
 $fotoPerfil = !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg';
 $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
 ?>
+<style>
+/* Estilo Premium para Ícones da Topbar */
+.nav-link-utility {
+    background: none;
+    border-radius: 50% !important;
+    width: 38px;
+    height: 38px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: none;
+    color: rgb(44, 64, 74) !important;
+    padding: 0 !important;
+}
+.nav-link-utility:hover {
+    background: rgba(44, 64, 74, 0.05);
+    transform: translateY(-2px);
+    color: #4f46e5 !important;
+}
+.btn-help-manual {
+    color: #4f46e5 !important;
+    animation: pulse-help 2s infinite;
+}
+.btn-help-manual:hover {
+    background: rgba(79, 70, 229, 0.15) !important;
+}
+@keyframes pulse-help {
+    0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+}
+
+/* Customização Premium Intro.js */
+.introjs-tooltip {
+    border-radius: 16px !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    padding: 20px !important;
+    font-family: 'Inter', sans-serif !important;
+}
+.introjs-tooltiptext {
+    font-size: 0.95rem !important;
+    color: #475569 !important;
+    line-height: 1.5 !important;
+}
+.introjs-tooltip-title {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 8px !important;
+}
+.introjs-nextbutton, .introjs-prevbutton, .introjs-donebutton {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+    transition: all 0.2s !important;
+    border: none !important;
+    padding: 8px 16px !important;
+}
+.introjs-nextbutton { background-image: linear-gradient(to right, #4f46e5, #4338ca) !important; color: white !important; }
+.introjs-prevbutton { background: #f1f5f9 !important; color: #475569 !important; }
+.introjs-donebutton { background: #10b981 !important; color: white !important; }
+.introjs-progress { background-color: #e2e8f0 !important; border-radius: 10px !important; }
+.introjs-progressbar { background-color: #4f46e5 !important; border-radius: 10px !important; }
+</style>
 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 5px 23px;">
     <div class="container-fluid">
         <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button">
@@ -24,10 +90,10 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
         <ul class="navbar-nav flex-nowrap ml-auto">
             <!-- Nav Item - Alerts -->
             <?php if ($isAdminOrSuporte): ?>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: rgb(44,64,74);">
+            <li class="nav-item dropdown no-arrow mx-1 align-self-center">
+                <a class="nav-link dropdown-toggle nav-link-utility" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-bell fa-fw"></i>
-                    <span class="badge badge-danger badge-counter" id="topbar-alerts-badge" style="display:none;"></span>
+                    <span class="badge badge-danger badge-counter" id="topbar-alerts-badge" style="display:none; top: 0; right: 0;"></span>
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                     <h6 class="dropdown-header" style="background: #2c404a; border: none; padding: 12px;">
@@ -44,10 +110,17 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
             <?php endif; ?>
 
             <!-- Nav Item - Chat Messages -->
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="chat_interno.php" id="messagesDropdown" role="button" style="color: rgb(44,64,74);">
+            <li class="nav-item dropdown no-arrow mx-1 align-self-center">
+                <a class="nav-link dropdown-toggle nav-link-utility" href="chat_interno.php" id="messagesDropdown" role="button">
                     <i class="fas fa-envelope fa-fw"></i>
-                    <span class="badge badge-danger" id="topbar-chat-badge" style="display:none;"></span>
+                    <span class="badge badge-danger" id="topbar-chat-badge" style="display:none; top: 0; right: 0;"></span>
+                </a>
+            </li>
+
+            <!-- Botão de Ajuda Interativo -->
+            <li class="nav-item mx-1 align-self-center">
+                <a class="nav-link nav-link-utility btn-help-manual" href="javascript:void(0);" id="start-manual" title="<?php echo __('Ajuda Interativa'); ?>">
+                    <i class="fas fa-question-circle fa-fw"></i>
                 </a>
             </li>
 
@@ -119,3 +192,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(pollSystemNotifications, 60000); // Verifica a cada minuto
 });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+<script src="/assets/js/system_manual.js"></script>

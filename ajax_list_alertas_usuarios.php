@@ -52,16 +52,16 @@ if ($res && $res->num_rows > 0) {
                 <!-- Prioridade -->
                 <div class="recipient-badge-group">
                     <button type="button" class="mini-badge-btn ' . $cP1 . '" data-pref="prioridade_p1" title="Crítica" style="background-color: #8b0000 !important;">1</button>
-                    <button type="button" class="mini-badge-btn bg-danger ' . $cP2 . '" data-pref="prioridade_p2" title="Alta">2</button>
-                    <button type="button" class="mini-badge-btn bg-warning ' . $cP3 . '" data-pref="prioridade_p3" title="Média">3</button>
-                    <button type="button" class="mini-badge-btn bg-success ' . $cP4 . '" data-pref="prioridade_p4" title="Baixa" style="background-color: #1cc88a !important;">4</button>
+                    <button type="button" class="mini-badge-btn ' . $cP2 . '" data-pref="prioridade_p2" title="Alta" style="background-color: #dc3545 !important;">2</button>
+                    <button type="button" class="mini-badge-btn ' . $cP3 . '" data-pref="prioridade_p3" title="Média" style="background-color: #f6c23e !important;">3</button>
+                    <button type="button" class="mini-badge-btn ' . $cP4 . '" data-pref="prioridade_p4" title="Baixa" style="background-color: #1cc88a !important;">4</button>
                 </div>
                 
                 <!-- Categoria -->
                 <div class="recipient-badge-group">
-                    <button type="button" class="mini-badge-btn bg-info ' . $cInc . '" data-pref="tipo_incidente" title="Incidente">I</button>
-                    <button type="button" class="mini-badge-btn bg-secondary ' . $cMud . '" data-pref="tipo_mudanca" title="Mudança" style="background-color: #6610f2 !important;">M</button>
-                    <button type="button" class="mini-badge-btn bg-dark ' . $cReq . '" data-pref="tipo_requisicao" title="Requisição" style="background-color: #858796 !important;">R</button>
+                    <button type="button" class="mini-badge-btn ' . $cInc . '" data-pref="tipo_incidente" title="Incidente" style="background-color: #0dcaf0 !important;">I</button>
+                    <button type="button" class="mini-badge-btn ' . $cMud . '" data-pref="tipo_mudanca" title="Mudança" style="background-color: #6610f2 !important;">M</button>
+                    <button type="button" class="mini-badge-btn ' . $cReq . '" data-pref="tipo_requisicao" title="Requisição" style="background-color: #858796 !important;">R</button>
                 </div>
                 
                 <i class="fas fa-times-circle text-muted mini-icon-btn remove-recipient" title="Remover Recebedor" style="font-size: 1.1rem; margin-left: 5px;"></i>

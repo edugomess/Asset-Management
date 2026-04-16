@@ -65,19 +65,19 @@ if ($res && $res->num_rows > 0) {
     font-weight: bold;
     border-radius: 4px;
     border: 1px solid #e3e6f0;
-    background-color: #f8f9fc;
-    color: #b7b9cc;
+    background-color: #36b9cc; /* Cor base cyan */
+    color: #fff;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0.5;
 }
 .mini-badge-btn.active {
-    background-color: #36b9cc !important;
-    border-color: #36b9cc !important;
-    color: #fff !important;
+    opacity: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .mini-badge-btn:hover {
-    filter: brightness(0.9);
+    opacity: 0.8;
 }
 </style>

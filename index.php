@@ -460,7 +460,7 @@ function getCardColor($type, $name)
                             <div class="card shadow mb-4 h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="text-primary font-weight-bold m-0">
-                                        <?php echo __('Status dos Chamados'); ?> / <?php echo $meses[date('n')]; ?>
+                                        <?php echo __('Status dos Chamados'); ?> / <?php echo __('Abertos'); ?>
                                     </h6>
                                     <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle"
                                             aria-expanded="false" data-toggle="dropdown" type="button"><i

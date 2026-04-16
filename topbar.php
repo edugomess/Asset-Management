@@ -25,16 +25,11 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
 }
 .btn-help-manual {
     color: #4f46e5 !important;
-    animation: pulse-help 2s infinite;
 }
 .btn-help-manual:hover {
     background: rgba(79, 70, 229, 0.15) !important;
 }
-@keyframes pulse-help {
-    0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-    70% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
-}
+
 
 /* Customização Premium Intro.js */
 .introjs-tooltip {

@@ -23,23 +23,32 @@ document.addEventListener('DOMContentLoaded', function() {
             // DASHBOARD DO USUÁRIO
             steps = [
                 {
-                    title: '👋 Bem-vindo!',
-                    intro: 'Este é o seu painel de controle pessoal. Aqui você acompanha seus chamados e ativos atribuídos.'
+                    title: '👋 Bem-vindo ao Asset MGT!',
+                    intro: 'Este é o seu portal central. Além de ser funcional para o dia a dia, ele foi projetado para garantir a **integridade dos dados** e a **rastreabilidade total** dos ativos da empresa.'
+                },
+                {
+                    element: '.sidebar',
+                    title: 'Navegação Estrutural (Manual Não Funcional)',
+                    intro: 'A barra lateral é a espinha dorsal do sistema. Ela reflete a separação de responsabilidades (SoD), permitindo que cada perfil acesse apenas o que lhe compete.'
+                },
+                {
+                    title: '🚀 Painel de Controle',
+                    intro: 'Acompanhe aqui seus chamados em aberto e ativos vinculados. O sistema monitora automaticamente o tempo de resposta (SLA) para garantir eficiência técnica.'
                 },
                 {
                     element: '#globalSearchInput',
                     title: 'Busca Inteligente',
-                    intro: 'Encontre equipamentos, usuários ou chamados instantaneamente.'
+                    intro: 'Pesquisa indexada que varre o banco de dados em tempo real para localizar etiquetas (Tags), números de série ou usuários.'
                 },
                 {
                     element: '#alertsDropdown',
-                    title: 'Notificações',
-                    intro: 'Alertas críticos sobre estoque, manutenções e sistema.'
+                    title: 'Central de Alertas',
+                    intro: 'Monitoramento proativo: o sistema alerta sobre o estoque atingindo o limite crítico antes que falte o insumo na operação.'
                 },
                 {
                     element: '#messagesDropdown',
-                    title: 'Comunicação',
-                    intro: 'Acesse o chat interno para falar com a equipe de TI.'
+                    title: 'Comunicação Segura',
+                    intro: 'Chat interno criptografado para evitar o uso de ferramentas externas e manter o histórico de suporte centralizado.'
                 }
             ];
         } 
@@ -47,23 +56,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // CONSOLE OPERACIONAL (ADMIN)
             steps = [
                 {
-                    title: '📊 Console Operacional',
-                    intro: 'Visão executiva para gestores. Acompanhe a saúde da sua infraestrutura.'
+                    title: '📊 Console de Governança',
+                    intro: 'Visão executiva baseada em KPIs (Key Performance Indicators). Aqui transformamos dados técnicos em decisões estratégicas.'
                 },
                 {
                     element: '#dashboard-stock-alert',
-                    title: 'Estoque Crítico',
-                    intro: 'Itens que atingiram o limite mínimo e precisam de reposição urgente.'
+                    title: 'Mitigação de Riscos',
+                    intro: 'Itens em vermelho indicam risco operacional por falta de estoque. O sistema calcula a necessidade de compra baseado no histórico de consumo.'
                 },
                 {
                     element: '.border-left-primary',
-                    title: 'Disponibilidade',
-                    intro: 'Total de ativos prontos para uso em estoque.'
+                    title: 'Taxa de Disponibilidade',
+                    intro: 'Proporção de ativos prontos para uso vs ativos em manutenção. Um índice alto indica uma TI eficiente.'
                 },
                 {
                     element: '.border-left-success',
-                    title: 'Valor Patrimonial',
-                    intro: 'Valor total do inventário calculado com depreciação em tempo real.'
+                    title: 'Gestão Patrimonial',
+                    intro: 'Valor total do inventário. Esta função não funcional auxilia na contabilidade e no cálculo de impostos e depreciação anual.'
                 }
             ];
         }
@@ -71,23 +80,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // INVENTÁRIO
             steps = [
                 {
-                    title: '📦 Inventário de Ativos',
-                    intro: 'Lista completa de hardware e dispositivos da empresa.'
+                    title: '📦 Gestão de Ciclo de Vida',
+                    intro: 'Gerencie o ativo desde a aquisição até o descarte. O foco aqui é o **Compliance** e a proteção do patrimônio.'
                 },
                 {
                     element: '.btn-premium-cadastro',
-                    title: 'Adicionar Ativos',
-                    intro: 'Cadastre novos itens individualmente ou via importação em massa.'
+                    title: 'Input de Dados',
+                    intro: 'Adicione novos itens. Cada registro gera um hash único para etiquetação física.'
                 },
                 {
                     element: '#assetsDataTable',
-                    title: 'Tabela de Dados',
-                    intro: 'Visualize Tags, Seriais e Localização. Clique em uma linha para ver o perfil completo.'
+                    title: 'Base de Dados de Ativos',
+                    intro: 'Tabela relacional. Cada linha permite rastrear quem usou o equipamento, quando foi para manutenção e qual o custo acumulado.'
                 },
                 {
                     element: '.dataTables_filter',
-                    title: 'Filtros Dinâmicos',
-                    intro: 'Filtre por setor, categoria ou fabricante para encontrar o que precisa.'
+                    title: 'Filtros de Auditoria',
+                    intro: 'Filtre rapidamente para auditorias surpresa ou conferência de estoque por setor.'
                 }
             ];
         }
@@ -95,18 +104,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // USUÁRIOS
             steps = [
                 {
-                    title: '👤 Gestão de Pessoas',
-                    intro: 'Administre o acesso de colaboradores e técnicos ao sistema.'
+                    title: '👤 Identidade e Acesso (IAM)',
+                    intro: 'Controle quem pode fazer o quê. O sistema utiliza RBAC (Role-Based Access Control) para garantir segurança.'
                 },
                 {
                     element: '.btn-premium-cadastro',
-                    title: 'Novo Usuário',
-                    intro: 'Crie perfis de Admin, Suporte ou Usuário Comum.'
+                    title: 'Provisionamento',
+                    intro: 'Crie novos perfis. Lembre-se: o tipo de usuário define a autoridade dele sobre o inventário.'
                 },
                 {
                     element: '#userTable',
-                    title: 'Controle de Acessos',
-                    intro: 'Acompanhe quem possui ativos atribuídos e o status da conta.'
+                    title: 'Matriz de Responsabilidade',
+                    intro: 'Visualize ativos sob custódia de cada colaborador. Essencial para processos de Onboarding e Offboarding.'
                 }
             ];
         }
@@ -114,18 +123,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // LICENÇAS
             steps = [
                 {
-                    title: '🔑 Software & Licenças',
-                    intro: 'Gerencie subscrições, chaves de ativação e compliance de software.'
+                    title: '🔑 Compliance de Software',
+                    intro: 'Evite multas e garanta o uso legal. Este módulo foca na **Gestão de Ativos de Software (SAM)**.'
                 },
                 {
                     element: '.btn-info-system',
-                    title: 'Atribuição Direta',
-                    intro: 'Vincule uma licença a um usuário específico com um clique.'
+                    title: 'Vinculação de Direito de Uso',
+                    intro: 'Atribua licenças a usuários. O sistema audita automaticamente se o número de instalações excede o comprado.'
                 },
                 {
                     element: '.progress',
-                    title: 'Uso de Seats',
-                    intro: 'Monitore quantos computadores estão usando esta licença vs o limite contratado.'
+                    title: 'Ocupação de Seats',
+                    intro: 'Visão não funcional: Identifique subutilização de licenças pagas para otimizar custos de subscrição.'
                 }
             ];
         }
@@ -133,18 +142,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // CHAMADOS
             steps = [
                 {
-                    title: '🎫 Central de Tickets',
-                    intro: 'Fluxo de atendimento técnico e solicitações de serviço.'
+                    title: '🎫 Gestão de Incidentes e Requisições',
+                    intro: 'Centralize o suporte. O objetivo principal aqui é a **Restauração Rápida do Serviço**.'
                 },
                 {
                     element: '.sla-container',
-                    title: 'Prazo de Resposta (SLA)',
-                    intro: 'Monitoramento visual do tempo restante para o atendimento.'
+                    title: 'Acordo de Nível de Serviço (SLA)',
+                    intro: 'Conceito Não Funcional: É a promessa de entrega. As cores indicam se estamos cumprindo o contrato de suporte com o usuário.'
                 },
                 {
                     element: '#filtro_status',
-                    title: 'Organização da Fila',
-                    intro: 'Filtre por chamados abertos ou pendentes de aprovação.'
+                    title: 'Fila de Atendimento',
+                    intro: 'Organize o trabalho por urgência e impacto. Priorize chamados P1 (Críticos) para evitar paradas na operação.'
                 }
             ];
         }
@@ -152,18 +161,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // RELATÓRIOS
             steps = [
                 {
-                    title: '📑 Central de Inteligência',
-                    intro: 'Gere documentos oficiais e análises de dados.'
+                    title: '📑 Business Intelligence',
+                    intro: 'Converta dados brutos em conhecimento. Relatórios são fundamentais para auditorias externas (ISO/IEC 27001).'
                 },
                 {
                     element: '#reportType',
-                    title: 'Modelos Disponíveis',
-                    intro: 'Mais de 60 tipos de relatórios: Financeiro, Inventário, Auditoria e mais.'
+                    title: 'Taxonomia de Relatórios',
+                    intro: 'Modelos prontos que cobrem desde a saúde financeira até o inventário físico detalhado.'
                 },
                 {
                     element: '#reportFormat',
-                    title: 'Exportação',
-                    intro: 'Escolha entre PDF para documentos oficiais ou XLSX para edição em Excel.'
+                    title: 'Integridade dos Dados',
+                    intro: 'Exportação em PDF para documentos IMUTÁVEIS (oficiais) ou XLSX para análise de tendências.'
                 }
             ];
         }
@@ -171,18 +180,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // IA INSIGHTS
             steps = [
                 {
-                    title: '🤖 Inteligência Artificial',
-                    intro: 'Análise preditiva gerada pelo Gemini 2.0.'
+                    title: '🤖 Análise Preditiva (IA)',
+                    intro: 'Utilizamos modelos avançados para prever falhas antes que elas ocorram, permitindo a manutenção proativa.'
                 },
                 {
                     element: '#ai-analysis-text',
-                    title: 'Análise Estratégica',
-                    intro: 'Sugestões automáticas baseadas no comportamento da sua infraestrutura.'
+                    title: 'Insights Estratégicos',
+                    intro: 'A IA analisa padrões de chamados e sugere melhorias na infraestrutura para reduzir a recorrência de problemas.'
                 },
                 {
                     element: '.border-bottom-danger',
-                    title: 'Prevenção de Falhas',
-                    intro: 'Identificamos ativos que falham com frequência para substituição proativa.'
+                    title: 'Gestão de Obsolescência',
+                    intro: 'Identificamos automaticamente equipamentos que geram custo de manutenção superior ao valor de mercado.'
                 }
             ];
         }
@@ -190,13 +199,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // LOCAIS
             steps = [
                 {
-                    title: '📍 Estrutura Física',
-                    intro: 'Organize sua empresa por Unidades, Prédios e Salas.'
+                    title: '📍 Topologia da Infraestrutura',
+                    intro: 'Organize logicamente seu espaço físico. Um inventário preciso depende de saber EXATAMENTE onde cada ativo está localizado.'
                 },
                 {
                     element: '.col-md-4',
-                    title: 'Cadastro de Local',
-                    intro: 'Crie hierarquias (Ex: Racks dentro de uma Sala no 2º Andar).'
+                    title: 'Hierarquia de Locais',
+                    intro: 'Crie estruturas em árvore (ex: Empresa > Prédio > CPD > Rack). Isso permite gerar relatórios de valor por unidade física.'
                 }
             ];
         }
@@ -204,18 +213,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // CHAT
             steps = [
                 {
-                    title: '💬 Comunicação Interna',
-                    intro: 'Converse com técnicos e colaboradores em tempo real.'
+                    title: '💬 Colaboração em Tempo Real',
+                    intro: 'A agilidade no suporte depende de uma comunicação rápida. Utilize o chat para esclarecer dúvidas sobre chamados sem sair do contexto do sistema.'
                 },
                 {
                     element: '.chat-sidebar',
-                    title: 'Contatos e Grupos',
-                    intro: 'Busque colegas ou crie grupos de trabalho para equipes específicas.'
+                    title: 'Segurança da Informação',
+                    intro: 'Conceito Não Funcional: Manter conversas técnicas dentro do ambiente corporativo protege dados sensíveis da empresa contra vazamentos.'
                 },
                 {
                     element: '#myStatusBtn',
-                    title: 'Status de Presença',
-                    intro: 'Avise se você está disponível, ocupado ou ausente.'
+                    title: 'Disponibilidade Técnica',
+                    intro: 'Informe seu estado. Isso ajuda na distribuição de tarefas e no gerenciamento da expectativa de resposta dos usuários.'
                 }
             ];
         }
@@ -223,18 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // BASE DE CONHECIMENTO
             steps = [
                 {
-                    title: '📚 Base de Conhecimento',
-                    intro: 'Repositório de soluções e manuais técnicos.'
+                    title: '📚 Gestão do Conhecimento',
+                    intro: 'Evite o "Silo de Informação". Documentar soluções recorrentes reduz o tempo médio de reparo (MTTR) em até 40%.'
                 },
                 {
                     element: '.btn-primary[href="adicionar_artigo.php"]',
-                    title: 'Contribuir',
-                    intro: 'Crie novos artigos para documentar resoluções de problemas comuns.'
-                },
-                {
-                    element: '.input-group',
-                    title: 'Pesquisa',
-                    intro: 'Busque por palavras-chave para encontrar soluções rapidamente.'
+                    title: 'Padronização Técnica',
+                    intro: 'Ao criar um artigo, você funcionalmente ajuda outros técnicos a seguirem o mesmo procedimento operacional para um problema comum.'
                 }
             ];
         }
@@ -242,13 +246,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // CADASTROS AUXILIARES
             steps = [
                 {
-                    title: '📋 Gestão Administrativa',
-                    intro: 'Módulo para organização financeira e de parcerias.'
-                },
-                {
-                    element: '.btn-premium-cadastro',
-                    title: 'Novo Registro',
-                    intro: 'Adicione centros de custo ou fornecedores para vincular aos seus ativos.'
+                    title: '📋 Governança Financeira',
+                    intro: 'Crucial para o ciclo de vida do ativo. O vínculo com Centros de Custo permite saber qual departamento está gerando maior gasto tecnológico.'
                 }
             ];
         }
@@ -308,8 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
         runSystemManual(true);
     });
 
-    // Auto-disparo: Apenas no primeiro acesso à página
+    // Auto-disparo: Apenas no Dashboard (index.php) no primeiro acesso
     setTimeout(() => {
-        runSystemManual(false);
-    }, 1200); // Delay sutil para garantir que a página carregou visualmente
+        const path = window.location.pathname;
+        if (path.includes('index.php') || path.endsWith('/') || path.endsWith('/htdocs/')) {
+            runSystemManual(false);
+        }
+    }, 1200); 
 });

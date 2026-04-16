@@ -23,6 +23,9 @@ if ($res && $res->num_rows > 0) {
         $cP3 = ($row['prioridade_p3'] ?? 1) == 1 ? 'active' : '';
         $cP4 = ($row['prioridade_p4'] ?? 1) == 1 ? 'active' : '';
 
+        // Dependência do estado de chamados
+        $isTicketDisabled = $isActiveChamados === 'active' ? '' : 'group-disabled';
+
         $cInc = ($row['tipo_incidente'] ?? 1) == 1 ? 'active' : '';
         $cReq = ($row['tipo_requisicao'] ?? 1) == 1 ? 'active' : '';
         $cMud = ($row['tipo_mudanca'] ?? 1) == 1 ? 'active' : '';
@@ -50,7 +53,7 @@ if ($res && $res->num_rows > 0) {
                 </div>
 
                 <!-- Prioridade -->
-                <div class="recipient-badge-group">
+                <div class="recipient-badge-group ' . $isTicketDisabled . '" data-group="tickets-priority">
                     <button type="button" class="mini-badge-btn ' . $cP1 . '" data-pref="prioridade_p1" title="Crítica" style="background-color: #8b0000 !important;">1</button>
                     <button type="button" class="mini-badge-btn ' . $cP2 . '" data-pref="prioridade_p2" title="Alta" style="background-color: #dc3545 !important;">2</button>
                     <button type="button" class="mini-badge-btn ' . $cP3 . '" data-pref="prioridade_p3" title="Média" style="background-color: #f6c23e !important;">3</button>
@@ -58,7 +61,7 @@ if ($res && $res->num_rows > 0) {
                 </div>
                 
                 <!-- Categoria -->
-                <div class="recipient-badge-group">
+                <div class="recipient-badge-group ' . $isTicketDisabled . '" data-group="tickets-type">
                     <button type="button" class="mini-badge-btn ' . $cInc . '" data-pref="tipo_incidente" title="Incidente" style="background-color: #0dcaf0 !important;">I</button>
                     <button type="button" class="mini-badge-btn ' . $cMud . '" data-pref="tipo_mudanca" title="Mudança" style="background-color: #6610f2 !important;">M</button>
                     <button type="button" class="mini-badge-btn ' . $cReq . '" data-pref="tipo_requisicao" title="Requisição" style="background-color: #858796 !important;">R</button>

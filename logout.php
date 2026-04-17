@@ -5,7 +5,6 @@
  * SCRIPT DE LOGOUT: logout.php
  * Finaliza a sessão do usuário com segurança e limpa todos os dados temporários.
  */
- */
 session_start();
 include 'conexao.php';
 

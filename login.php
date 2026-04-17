@@ -48,17 +48,42 @@ include_once 'language.php';
     <style>
         body {
             font-family: 'Inter', sans-serif !important;
-            background: radial-gradient(at 0% 0%, #1a2a33 0, transparent 50%),
-                radial-gradient(at 50% 0%, #2c404a 0, transparent 50%),
-                radial-gradient(at 100% 0%, #1a2a33 0, transparent 50%),
-                linear-gradient(135deg, #1a2a33 0%, #0d1418 100%) !important;
-            background-attachment: fixed !important;
+            background: #0d1418 !important;
             height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
             color: #fff;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Blobs */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(80px);
+        }
+
+        .blob {
+            position: absolute;
+            background: rgba(28, 200, 138, 0.15);
+            border-radius: 50%;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { width: 500px; height: 500px; top: -100px; left: -100px; background: rgba(44, 64, 74, 0.4); }
+        .blob-2 { width: 600px; height: 600px; bottom: -150px; right: -150px; background: rgba(28, 200, 138, 0.1); animation-delay: -5s; }
+        .blob-3 { width: 400px; height: 400px; top: 40%; left: 50%; background: rgba(78, 115, 223, 0.1); animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.1); }
         }
 
         .main-content {
@@ -66,121 +91,159 @@ include_once 'language.php';
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 2.5rem;
             width: 100%;
+            z-index: 10;
         }
 
+        /* Glassmorphism Card Upgrade */
         .card.shadow-lg {
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5) !important;
-            border-radius: 20px !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
             border: none !important;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6) !important;
+            border-radius: 24px !important;
             width: 100% !important;
-            max-width: 1200px !important;
-            margin: 0 !important;
+            max-width: 1400px !important;
+            overflow: hidden !important;
         }
 
         .bg-login-image {
-            border-radius: 20px 0 0 20px !important;
+            border-radius: 0 !important;
+            position: relative;
+        }
+
+        .bg-login-image::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, transparent, rgba(13, 20, 24, 0.3));
         }
 
         .login-padding {
-            padding: 2rem !important;
+            padding: 3.5rem !important;
+            background: rgba(255, 255, 255, 1) !important; /* Contrast container for the form */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .btn-user {
-            border-radius: 10px !important;
-            padding: 12px !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            background-color: #2c404a !important;
-            border: none !important;
+        /* Language Switcher */
+        .lang-switcher {
+            position: absolute;
+            top: 2rem;
+            right: 2.5rem;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
         }
 
-        .btn-user:hover {
-            filter: brightness(1.3);
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+            color: #fff;
         }
 
-        .form-control-user {
-            border-radius: 10px !important;
-            height: 50px !important;
-            border: 1px solid #ddd !important;
+        .lang-btn.active {
+            background: #2c404a;
+            border-color: #3e5b69;
         }
 
         .brand-title {
-            color: #2c404a !important;
-            font-weight: 800 !important;
-            letter-spacing: 2px;
+            color: #1a2a33 !important;
+            font-weight: 900 !important;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             font-size: 2.2rem !important;
-            margin-bottom: 2rem !important;
-            display: block;
+            margin-bottom: 2.5rem !important;
         }
 
-        .footer-premium {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            padding: 25px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            width: 100%;
-        }
-
-        .footer-premium h3 {
-            font-size: 13px;
-            font-weight: 800;
+        .btn-user {
+            border-radius: 12px !important;
+            padding: 14px !important;
+            font-size: 1rem !important;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            color: #fff;
+            letter-spacing: 1px;
+            background: #1a2a33 !important;
         }
 
-        .footer-premium ul {
-            padding: 0;
-            list-style: none;
-            margin: 0;
+        /* Premium Footer Integration */
+        .footer-premium {
+            padding: 2.5rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: auto;
+            z-index: 10;
         }
 
-        .footer-premium ul li a {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-            text-decoration: none;
-            transition: color 0.3s;
-            display: inline-block;
-            margin-bottom: 8px;
-        }
-
-        .footer-premium ul li a:hover {
-            color: #fff;
-        }
-
-        .footer-premium p {
-            font-size: 14px;
+        .footer-link {
             color: rgba(255, 255, 255, 0.5);
-            line-height: 1.6;
-            margin-bottom: 0;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 0 15px;
+            transition: color 0.3s;
+            text-decoration: none !important;
         }
+
+        .footer-link:hover { color: #fff; }
 
         .copyright {
-            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.2);
             font-size: 11px;
-            margin-top: 15px;
-            color: rgba(255, 255, 255, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 15px;
+            letter-spacing: 0.5px;
         }
+
+        @media (max-width: 991px) {
+            .login-padding { padding: 2.5rem !important; }
+            .card.shadow-lg { max-width: 500px !important; }
+        }
+
     </style>
 </head>
 
 <body id="page-top">
     <?php startNProgress(); ?>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="lang-switcher animate__animated animate__fadeIn">
+        <a href="?lang=pt-BR" class="lang-btn <?php echo ($_SESSION['idioma'] ?? 'pt-BR') === 'pt-BR' ? 'active' : ''; ?>">
+            <img src="https://flagcdn.com/w20/br.png" alt="PT" width="18"> PT
+        </a>
+        <a href="?lang=en-US" class="lang-btn <?php echo ($_SESSION['idioma'] ?? '') === 'en-US' ? 'active' : ''; ?>">
+            <img src="https://flagcdn.com/w20/us.png" alt="EN" width="18"> EN
+        </a>
+    </div>
+
     <div class="main-content premium-page-fade">
-        <div class="container d-flex justify-content-center align-items-center" style="min-width: 100%;">
+        <div class="container d-flex justify-content-center align-items-center">
             <div class="row justify-content-center w-100">
-                <div class="col-xl-12 col-lg-12 col-md-11 d-flex justify-content-center">
-                    <form action="autenticador.php" method="post"
-                        style="width: 100%; max-width: 1200px; margin-top: 0;">
-                        <div class="card shadow-lg o-hidden border-0 pulse animated" style="width: 100%;">
+                <div class="col-xl-12 col-lg-12 d-flex justify-content-center">
+                    <form action="autenticador.php" method="post" style="width: 100%;">
+                        <div class="card shadow-lg pulse animated">
                             <div class="card-body p-0">
                                 <div class="row no-gutters">
                                     <div class="col-lg-6 d-none d-lg-flex">
@@ -189,18 +252,14 @@ include_once 'language.php';
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
-                                        <div class="login-padding d-flex flex-column justify-content-center h-100">
+                                        <div class="login-padding">
                                             <div class="text-center w-100">
-                                                <?php
-                                                // Exibe um alerta visual se o redirecionamento vier de um timeout de sessão (gerado em auth.php)
-                                                if (isset($_GET['timeout'])): ?>
-                                                    <div class="alert alert-warning alert-dismissible fade show mb-4"
-                                                        role="alert"
-                                                        style="border-radius: 10px; border: none; background-color: rgba(246, 194, 62, 0.2); color: #f6c23e;">
+                                                <?php if (isset($_GET['timeout'])): ?>
+                                                    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert"
+                                                        style="border-radius: 12px; border: none; background-color: rgba(246, 194, 62, 0.1); color: #f6c23e;">
                                                         <i class="fas fa-exclamation-circle mr-2"></i>
-                                                        <strong><?php echo __('Sessão Expirada!'); ?></strong> <?php echo __('Por inatividade, sua sessão foi encerrada.'); ?>
-                                                        <button type="button" class="close" data-dismiss="alert"
-                                                            aria-label="Close">
+                                                        <strong><?php echo __('Sessão Expirada!'); ?></strong>
+                                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
@@ -208,34 +267,27 @@ include_once 'language.php';
                                                 <h3 class="brand-title"><strong>ASSET MANAGEMENT</strong></h3>
                                             </div>
                                             <div class="user w-100">
-                                                <!-- Formulário de login: envia as credenciais para o autenticador.php processar -->
-                                                <div class="form-group">
+                                                <div class="form-group mb-4">
+                                                    <label class="small font-weight-bold text-muted ml-1"><?php echo __('E-mail'); ?></label>
                                                     <input class="form-control form-control-user" type="email"
-                                                        id="exampleInputEmail" placeholder="<?php echo __('Digite seu E-mail...'); ?>"
-                                                        name="email" required>
+                                                        id="exampleInputEmail" placeholder="exemplo@empresa.com"
+                                                        name="email" required style="border: 1px solid #eee; background: #fafafa;">
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group mb-4">
+                                                    <label class="small font-weight-bold text-muted ml-1"><?php echo __('Senha'); ?></label>
                                                     <input class="form-control form-control-user" type="password"
-                                                        id="exampleInputPassword" placeholder="<?php echo __('Sua Senha'); ?>" name="senha"
-                                                        required>
+                                                        id="exampleInputPassword" placeholder="••••••••" name="senha"
+                                                        required style="border: 1px solid #eee; background: #fafafa;">
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group mb-4 d-flex justify-content-between align-items-center">
                                                     <div class="custom-control custom-checkbox small">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input custom-control-input"
-                                                                type="checkbox" id="formCheck-1">
-                                                            <label class="form-check-label custom-control-label"
-                                                                for="formCheck-1"><?php echo __('Lembrar-me'); ?></label>
-                                                        </div>
+                                                        <input class="custom-control-input" type="checkbox" id="formCheck-1">
+                                                        <label class="custom-control-label text-muted" for="formCheck-1"><?php echo __('Lembrar-me'); ?></label>
                                                     </div>
+                                                    <a class="small font-weight-bold" href="esqueceu_senha.php" style="color: #6c757d;"><?php echo __('Esqueceu a senha?'); ?></a>
                                                 </div>
-                                                <button class="btn btn-primary btn-block text-white btn-user"
+                                                <button class="btn btn-primary btn-block text-white btn-user border-0"
                                                     type="submit"><?php echo __('Entrar'); ?></button>
-                                            </div>
-                                            <hr>
-                                            <div class="text-center">
-                                                <a class="small" href="esqueceu_senha.php"
-                                                    style="color: #2c404a; font-weight: 600; text-decoration: none;"><?php echo __('Esqueceu a senha?'); ?></a>
                                             </div>
                                         </div>
                                     </div>
@@ -246,8 +298,21 @@ include_once 'language.php';
                 </div>
             </div>
         </div>
-    </div><!-- End: main-content -->
-    </div><!-- End: main-content -->
+    </div>
+
+    <footer class="footer-premium text-center">
+        <div class="container">
+            <div class="d-flex justify-content-center flex-wrap">
+                <a href="#" class="footer-link"><?php echo __('Suporte'); ?></a>
+                <a href="documentacao.php" class="footer-link"><?php echo __('Documentação'); ?></a>
+                <a href="#" class="footer-link"><?php echo __('Termos de Uso'); ?></a>
+            </div>
+            <p class="copyright">
+                &copy; <?php echo date('Y'); ?> Asset Management System. <?php echo __('Todos os direitos reservados.'); ?>
+            </p>
+        </div>
+    </footer>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>

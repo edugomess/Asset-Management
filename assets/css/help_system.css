@@ -1,0 +1,88 @@
+/* Help System - Inline Indicator & Glass Modal */
+
+.help-indicator {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    background: #2c404a; /* System Predominant Color */
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(44, 64, 74, 0.2);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+.help-indicator:hover {
+    transform: scale(1.15) rotate(10deg);
+    background: #4e73df; /* Primary Blue on hover */
+    box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3);
+}
+
+/* Glass Modal Styling */
+.glass-help-modal .modal-content {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.glass-help-modal .modal-header {
+    background: rgba(44, 64, 74, 0.05);
+    border-bottom: 1px solid rgba(44, 64, 74, 0.1);
+    border-radius: 20px 20px 0 0;
+}
+
+.glass-help-modal .modal-title {
+    color: #2c404a !important;
+}
+
+.help-item {
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    margin-bottom: 15px;
+    border-left: 4px solid #2c404a; /* Left border matches system color */
+    transition: all 0.2s ease;
+}
+
+.help-item:hover {
+    transform: translateX(5px);
+    background: white;
+    border-left-color: #4e73df; /* Becomes blue on hover */
+}
+
+.help-item h6 {
+    color: #2c404a;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.help-footer-btn {
+    background: #2c404a;
+    color: white;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-weight: 700;
+    border: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(44, 64, 74, 0.2);
+}
+
+.help-footer-btn:hover {
+    background: #4e73df;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(78, 115, 223, 0.3);
+}

@@ -29,6 +29,7 @@ $result_cc = $conn->query($sql_cc);
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
 </head>
 
 <body id="page-top">
@@ -44,7 +45,13 @@ $result_cc = $conn->query($sql_cc);
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Cadastrar Licença'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-plus-circle mr-2 text-success"></i>
+                        <?php echo __('Cadastrar Licença'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Cadastro'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="inserir_licenca.php" method="post">
@@ -179,6 +186,50 @@ $result_cc = $conn->query($sql_cc);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-file-signature mr-2"></i><?php echo __('Guia de Cadastro de Licenças'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-key mr-2"></i><?php echo __('Chave de Ativação'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Guarde a chave de ativação original para fins de auditoria e reinstalações em novos hardwares.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-calendar-times mr-2"></i><?php echo __('Data de Expiracão'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Para assinaturas SaaS, adicione a data de expiração para que o sistema envie alertas antes da renovação.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-users-cog mr-2"></i><?php echo __('Quantidade / Seats'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Indique o número total de ativações permitidas. O sistema avisará quando o limite de compliance for atingido.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-file-contract mr-2"></i><?php echo __('Tipos de Licença'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Volume (VLK) permite múltiplas ativações com a mesma chave, enquanto OEM é vinculada ao hardware.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

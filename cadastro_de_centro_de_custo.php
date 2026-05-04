@@ -26,6 +26,7 @@ include_once 'conexao.php'; // Banco de Dados
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
 </head>
 
 <body id="page-top">
@@ -41,7 +42,13 @@ include_once 'conexao.php'; // Banco de Dados
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Cadastrar Centro de Custo'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-plus-circle mr-2 text-success"></i>
+                        <?php echo __('Cadastrar Centro de Custo'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Cadastro'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="inserir_centro_de_custo.php" method="post">
@@ -138,6 +145,50 @@ include_once 'conexao.php'; // Banco de Dados
     <script src="/assets/js/bs-init.js?h=18f231563042f968d98f0c7a068280c6"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-file-invoice mr-2"></i><?php echo __('Guia de Centros de Custo'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-barcode mr-2"></i><?php echo __('Código Contábil'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('O código é fundamental para a integração com sistemas de ERP e para o faturamento de licenças de software por setor.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-user-tie mr-2"></i><?php echo __('Gestor Responsável'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('O gestor receberá notificações sobre o inventário alocado ao seu setor e alertas de custos excedentes.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-building mr-2"></i><?php echo __('Unidade Física'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Vincule o centro de custo à unidade física correta para facilitar a logística de entrega de novos equipamentos.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-phone-alt mr-2"></i><?php echo __('Ramal Coletivo'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('O ramal do setor ajuda a equipe de suporte a localizar rapidamente um responsável em caso de falhas críticas na área.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

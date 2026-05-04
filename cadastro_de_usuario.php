@@ -33,6 +33,7 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
     <link rel="stylesheet" href="/assets/css/Footer-Dark.css?h=cabc25193678a4e8700df5b6f6e02b7c">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
 </head>
 
 <body id="page-top">
@@ -48,7 +49,13 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Novo Usuário'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-plus-circle mr-2 text-success"></i>
+                        <?php echo __('Novo Usuário'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Cadastro'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form action="inserir_usuario.php" method="post" enctype="multipart/form-data">
@@ -305,6 +312,50 @@ if ($res_max && $row_max = $res_max->fetch_assoc()) {
             }
         }
     </script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-user-shield mr-2"></i><?php echo __('Guia de Cadastro de Usuários'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-id-badge mr-2"></i><?php echo __('Perfis de Acesso'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Admin (Total), Suporte (Gestão de Ativos/Tickets) e Usuário (Somente abertura de chamados e consulta).'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-key mr-2"></i><?php echo __('Login AD'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Utilize o mesmo padrão do Windows/Active Directory para facilitar o Single Sign-On (SSO) no futuro.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-id-card mr-2"></i><?php echo __('Matrícula'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('A matrícula é sugerida automaticamente, mas pode ser ajustada para coincidir com o RH da empresa.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-envelope-open-text mr-2"></i><?php echo __('Notificações'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Certifique-se de que o e-mail está correto para que o usuário receba alertas de novos equipamentos e chamados.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

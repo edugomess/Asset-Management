@@ -96,6 +96,7 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <?php include_once 'sidebar_style.php'; ?>
     <?php include_once 'pagination_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
     <style>
         .btn-tamanho-fixo {
             width: 130px;
@@ -153,7 +154,13 @@ $result = mysqli_query($conn, $sql);
             <div id="content">
                 <?php include 'topbar.php'; ?>
                 <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
-                    <h3 class="text-dark mb-4"><i class="fas fa-ticket-alt mr-2 text-primary"></i><?php echo __('Chamados'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-ticket-alt mr-2 text-primary"></i>
+                        <?php echo __('Chamados'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia da Tela'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -444,6 +451,51 @@ $result = mysqli_query($conn, $sql);
             </div>
         </div>
         <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+        <!-- Help Modal -->
+        <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title font-weight-bold">
+                            <i class="fas fa-info-circle mr-2"></i><?php echo __('Guia de Gestão de Chamados'); ?>
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="help-item">
+                                    <h6><i class="fas fa-filter mr-2"></i><?php echo __('Filtros Rápidos'); ?></h6>
+                                    <p class="small text-muted mb-0"><?php echo __('Use o seletor de status para alternar entre chamados Abertos, Pendentes ou Finalizados rapidamente.'); ?></p>
+                                </div>
+                                <div class="help-item">
+                                    <h6><i class="fas fa-stopwatch mr-2"></i><?php echo __('Controle de SLA'); ?></h6>
+                                    <p class="small text-muted mb-0"><?php echo __('A barra de progresso indica o tempo restante. Verde (No Prazo), Amarelo (Atenção) e Vermelho (Vencido).'); ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="help-item">
+                                    <h6><i class="fas fa-search mr-2"></i><?php echo __('Busca Inteligente'); ?></h6>
+                                    <p class="small text-muted mb-0"><?php echo __('Pesquise por ID, Título, Service Tag ou Nomes para encontrar qualquer ticket instantaneamente.'); ?></p>
+                                </div>
+                                <div class="help-item">
+                                    <h6><i class="fas fa-mouse-pointer mr-2"></i><?php echo __('Acesso Rápido'); ?></h6>
+                                    <p class="small text-muted mb-0"><?php echo __('Clique em qualquer linha da tabela para visualizar e editar os detalhes completos do chamado.'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                            <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>

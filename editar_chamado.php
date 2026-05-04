@@ -252,6 +252,7 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/summernote_premium.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
     <style>
         .note-editor { border-radius: 10px !important; border: 1px solid #e3e6f0 !important; overflow: hidden; margin-bottom: 10px; }
         .note-toolbar { background: #f8f9fc !important; border-bottom: 1px solid #e3e6f0 !important; }
@@ -604,7 +605,13 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
                         <div class="ticket-header-card animate__animated animate__fadeInDown">
                             <div class="ticket-title-section">
                                 <small class="text-muted font-weight-bold text-uppercase" style="letter-spacing: 1px;">Ticket ID #<?php echo $chamado['id']; ?></small>
-                                <h3><i class="fas fa-ticket-alt mr-2 text-primary"></i><?php echo htmlspecialchars($chamado['titulo']); ?></h3>
+                                <h3>
+                                    <i class="fas fa-ticket-alt mr-2 text-primary"></i>
+                                    <?php echo htmlspecialchars($chamado['titulo']); ?>
+                                    <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia da Tela'); ?>">
+                                        <i class="fas fa-question"></i>
+                                    </div>
+                                </h3>
                             </div>
 
                             <!-- SLA Timer Bar -->
@@ -1266,6 +1273,51 @@ $sla_defaults = ['Incidente' => 360, 'Mudança' => 1440, 'Requisição' => 2880]
         }
     </script>
     <script src="/assets/js/global_search.js"></script>
+
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-edit mr-2"></i><?php echo __('Guia de Gestão de Ticket'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-exchange-alt mr-2"></i><?php echo __('Fluxo de Status'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Ao passar para "Pendente", o SLA é congelado. Mova para "Resolvido" somente após confirmar a solução.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-user-check mr-2"></i><?php echo __('Atribuição'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Somente administradores e técnicos podem alterar o responsável e a prioridade dos tickets.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-comments mr-2"></i><?php echo __('Interações'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Toda atualização importante deve ser registrada no histórico para auditoria e transparência com o usuário.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-images mr-2"></i><?php echo __('Suporte a Mídia'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Você pode colar imagens diretamente no campo de texto ou anexar arquivos técnicos relevantes.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

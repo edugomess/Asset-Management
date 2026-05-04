@@ -42,6 +42,7 @@ include_once 'auth.php'; // Proteção de sessão
     <link rel="stylesheet" href="/assets/css/Simple-footer-by-krissy.css?h=73316da5ae5ad6b51632cd2e5413f263">
     <link rel="stylesheet" href="/assets/css/TR-Form.css?h=ce0bc58b5b8027e2406229d460f4d895">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
 </head>
 
 <body id="page-top">
@@ -58,7 +59,13 @@ include_once 'auth.php'; // Proteção de sessão
                 <?php include_once 'topbar.php'; ?>
                 <div id="content-1">
                     <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Cadastrar Fornecedor'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-plus-circle mr-2 text-success"></i>
+                        <?php echo __('Cadastrar Fornecedor'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Cadastro'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                             <div class="card-body">
                                 <form action="inserir_fornecedor.php" method="post" enctype="multipart/form-data">
@@ -152,7 +159,50 @@ include_once 'auth.php'; // Proteção de sessão
     <script src="/assets/js/Password-Strenght-Checker---Ambrodu.js?h=f40a32e3d989fd0e00bf2f0567e52e27"></script>
     <script src="/assets/js/theme.js?h=6d33b44a6dcb451ae1ea7efc7b5c5e30"></script>
     <script src="/assets/js/global_search.js"></script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-handshake mr-2"></i><?php echo __('Guia de Cadastro de Fornecedores'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-address-card mr-2"></i><?php echo __('CNPJ e Identificação'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Certifique-se de usar o CNPJ correto para facilitar a busca automática em notas fiscais e contratos de manutenção.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-tools mr-2"></i><?php echo __('Serviços Prestados'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Categorizar o serviço (ex: Manutenção de Nobreaks) ajuda a filtrar fornecedores durante a abertura de tickets técnicos.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-headset mr-2"></i><?php echo __('Contatos Técnicos'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Mantenha o e-mail e telefone atualizados para agilizar o contato em casos de garantia ou suporte emergencial.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-globe mr-2"></i><?php echo __('Canal de Suporte'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Adicione o site do fornecedor ou diretamente a URL do portal de suporte deles para referência rápida.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
-</html> 
- 
+</html>

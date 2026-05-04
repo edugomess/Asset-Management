@@ -40,10 +40,24 @@ function callAI($prompt, $systemContext = '', $history = [])
             return $response;
     }
 
-    if (!$_SESSION['last_ai_error']) {
+    // Fallback Local (Mock AI)
+    // Caso as chaves reais falhem (ex: chave vazada ou token expirado), retorna uma resposta simulada
+    if (!isset($_SESSION['last_ai_error'])) {
         $_SESSION['last_ai_error'] = 'Nenhuma API respondeu ou chaves não configuradas.';
     }
-    return null;
+    
+    $prompt_lower = strtolower($prompt);
+    $mock_response = "";
+    
+    if (strpos($prompt_lower, 'chamado') !== false || strpos($prompt_lower, 'ticket') !== false) {
+        $mock_response = "**Ação Imediata Sugerida (Modo Simulado):**\n1. Verifique as configurações iniciais do sistema.\n2. Analise os logs em busca de erros recentes.\n3. Teste o comportamento reproduzindo os passos descritos no chamado.\n\n**Possível Causa Raiz:**\nInstabilidade temporária, desatualização de cache ou permissões insuficientes.\n\n*(Aviso: As chaves de API da IA estão bloqueadas ou expiradas em credentials.php)*";
+    } elseif (strpos($prompt_lower, 'painel') !== false || strpos($prompt_lower, 'indicador') !== false || strpos($prompt_lower, 'métrica') !== false || strpos($systemContext, 'estratégia') !== false) {
+        $mock_response = "💡 **Insight Estratégico (Modo Simulado):**\n\n- **Oportunidade de Melhoria:** Há um volume concentrado de chamados que poderiam ser resolvidos com autoatendimento.\n- **Ação Recomendada:** Criar artigos na base de conhecimento sobre as dúvidas mais comuns.\n- **Prevenção:** Realizar treinamentos de reciclagem com a equipe.\n\n*(Aviso: O motor real da IA está inacessível. Verifique as credenciais no arquivo credentials.php)*";
+    } else {
+        $mock_response = "🤖 **Assistente IA (Modo de Contingência):** Recebi sua solicitação, mas minhas chaves de API (Gemini/GitHub) estão bloqueadas ou expiradas. Atualize as credenciais no arquivo `credentials.php` para restaurar minha inteligência completa.";
+    }
+    
+    return $mock_response;
 }
 
 /**

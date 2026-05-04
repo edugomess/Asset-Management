@@ -19,6 +19,7 @@ include_once 'auth.php'; // Proteção de sessão
     <title><?php echo __('Cadastro de Ativo'); ?> - Asset MGT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
     <script>
         // --- FUNÇÃO DE IMPRESSÃO (DEFINIDA NO TOPO PARA SEGURANÇA) ---
         function printCreatedAsset() {
@@ -50,7 +51,13 @@ include_once 'auth.php'; // Proteção de sessão
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><i class="fas fa-plus-circle mr-2 text-success"></i><?php echo __('Novo Equipamento'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-plus-circle mr-2 text-success"></i>
+                        <?php echo __('Novo Equipamento'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Cadastro'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <form id="assetForm" action="inserir_equipamento.php" method="post"
@@ -499,7 +506,7 @@ include_once 'auth.php'; // Proteção de sessão
     </div>
 
     <!-- Modal Sucesso Cadastro com Etiqueta -->
-    <dialog class="modal fade" id="successTagModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+    <div class="modal fade" id="successTagModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
                 <div class="modal-header border-0 bg-light"
@@ -529,7 +536,7 @@ include_once 'auth.php'; // Proteção de sessão
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script
@@ -679,6 +686,50 @@ include_once 'auth.php'; // Proteção de sessão
                 });
             });
         </script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-laptop-medical mr-2"></i><?php echo __('Guia de Cadastro de Ativos'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-qrcode mr-2"></i><?php echo __('Tag de Serviço'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('A Tag é gerada automaticamente pelo sistema com base no ID sequencial. É recomendável imprimir a etiqueta imediatamente após o cadastro.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-sitemap mr-2"></i><?php echo __('Atribuição'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Ativos podem ser atribuídos a Pessoas (Individual) ou Locais (Infraestrutura). Isso define como o inventário é exibido.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-file-invoice-dollar mr-2"></i><?php echo __('Nota Fiscal'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Vincule a chave de acesso da NF e anexe o PDF para facilitar auditorias financeiras e controle de garantias.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-memory mr-2"></i><?php echo __('Hardware Dinâmico'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Os campos de Hardware (RAM, CPU, GPU) aparecem automaticamente dependendo da Categoria selecionada.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

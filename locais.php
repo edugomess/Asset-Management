@@ -41,6 +41,7 @@ if (isset($_GET['msg'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <?php renderPerformanceHints(); ?>
     <?php include_once 'sidebar_style.php'; ?>
+    <link rel="stylesheet" href="/assets/css/help_system.css">
     <style>
         .tree-level-1 { font-weight: bold; color: #2c404a; }
         
@@ -183,7 +184,13 @@ if (isset($_GET['msg'])) {
                         </div>
                     </div>
 
-                    <h3 class="text-dark mb-4"><i class="fas fa-map-marked-alt mr-2 text-info"></i><?php echo __('Gerenciar Locais e Infraestrutura'); ?></h3>
+                    <h3 class="text-dark mb-4">
+                        <i class="fas fa-map-marked-alt mr-2 text-info"></i>
+                        <?php echo __('Gerenciar Locais e Infraestrutura'); ?>
+                        <div class="help-indicator animate__animated animate__fadeIn" data-toggle="modal" data-target="#helpModal" title="<?php echo __('Guia de Infraestrutura'); ?>">
+                            <i class="fas fa-question"></i>
+                        </div>
+                    </h3>
                     <?php echo $msg; ?>
                     
                     <div class="row">
@@ -439,6 +446,50 @@ if (isset($_GET['msg'])) {
             });
         });
     </script>
+    <!-- Help Modal -->
+    <div class="modal fade glass-help-modal" id="helpModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fas fa-network-wired mr-2"></i><?php echo __('Guia de Infraestrutura e Locais'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-layer-group mr-2"></i><?php echo __('Hierarquia de Locais'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('O sistema utiliza uma estrutura de árvore. Primeiro cadastre o Prédio, depois os Andares e, por fim, as Salas ou Racks.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-server mr-2"></i><?php echo __('Racks e Datacenters'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Ao cadastrar um Rack, você poderá vincular Servidores e Switches diretamente a ele na tela de Ativos.'); ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="help-item">
+                                <h6><i class="fas fa-map-pin mr-2"></i><?php echo __('Localização de Ativos'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Mapear corretamente os locais permite gerar relatórios de inventário físico por andar ou sala específica.'); ?></p>
+                            </div>
+                            <div class="help-item">
+                                <h6><i class="fas fa-exchange-alt mr-2"></i><?php echo __('Movimentações'); ?></h6>
+                                <p class="small text-muted mb-0"><?php echo __('Alterar a hierarquia de um local (Pai) moverá automaticamente todos os sub-locais vinculados a ele.'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <a href="documentacao.php" class="help-footer-btn text-decoration-none">
+                        <i class="fas fa-book mr-2"></i><?php echo __('Ver Documentação Completa'); ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

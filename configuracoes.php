@@ -2103,9 +2103,14 @@ function getHoursAndMinutes($total_minutes)
                                         <div class="row mb-4">
                                             <div class="col-md-12">
                                                 <div class="form-group p-3 border rounded" style="background-color: #f8f9fc;">
-                                                    <label for="gemini_api_key" class="font-weight-bold text-primary">
-                                                        <i class="fas fa-key mr-1"></i> Chave de API do Motor de IA (Google Gemini)
-                                                    </label>
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <label for="gemini_api_key" class="font-weight-bold text-primary mb-0">
+                                                            <i class="fas fa-key mr-1"></i> Chave de API do Motor de IA (Google Gemini)
+                                                        </label>
+                                                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn btn-sm btn-info text-white" title="<?php echo __('Gerar nova chave no Google AI Studio'); ?>">
+                                                            <i class="fas fa-external-link-alt"></i> <?php echo __('Gerar Nova Chave'); ?>
+                                                        </a>
+                                                    </div>
                                                     <div class="input-group">
                                                         <input type="password" class="form-control" id="gemini_api_key" name="gemini_api_key" 
                                                             placeholder="Cole sua nova API Key aqui (ex: AIzaSy...) para substituí-la."

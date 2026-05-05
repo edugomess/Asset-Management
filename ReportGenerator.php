@@ -111,20 +111,22 @@ class ReportGenerator extends FPDF
     {
         // Tenta detectar a coluna de data se não for informada
         if (!$dateColumn && ($this->startDate || $this->endDate)) {
-            if (stripos($sql, 'FROM chamados c') !== false) {
-                $dateColumn = 'c.data_abertura';
-            } elseif (stripos($sql, 'FROM chamados') !== false) {
-                $dateColumn = 'data_abertura';
-            } elseif (stripos($sql, 'FROM ativos a') !== false) {
-                $dateColumn = 'a.dataAtivacao';
-            } elseif (stripos($sql, 'FROM ativos') !== false) {
-                $dateColumn = 'dataAtivacao';
-            } elseif (stripos($sql, 'FROM manutencao m') !== false) {
-                $dateColumn = 'm.data_inicio';
-            } elseif (stripos($sql, 'FROM manutencao') !== false) {
-                $dateColumn = 'data_inicio';
-            } elseif (stripos($sql, 'FROM licencas') !== false) {
-                $dateColumn = 'data_aquisicao';
+            if (stripos($sql, 'historico_ativos h') !== false || stripos($sql, ' historico_ativos ') !== false) {
+                $dateColumn = (stripos($sql, 'historico_ativos h') !== false) ? 'h.data_evento' : 'data_evento';
+            } elseif (stripos($sql, 'chamados c') !== false || stripos($sql, ' chamados ') !== false) {
+                $dateColumn = (stripos($sql, 'chamados c') !== false) ? 'c.data_abertura' : 'data_abertura';
+            } elseif (stripos($sql, 'manutencao m') !== false || stripos($sql, ' manutencao ') !== false) {
+                $dateColumn = (stripos($sql, 'manutencao m') !== false) ? 'm.data_inicio' : 'data_inicio';
+            } elseif (stripos($sql, 'licencas_atribuicoes la') !== false || stripos($sql, ' licencas_atribuicoes ') !== false) {
+                $dateColumn = (stripos($sql, 'licencas_atribuicoes la') !== false) ? 'la.data_atribuicao' : 'data_atribuicao';
+            } elseif (stripos($sql, 'licencas l') !== false || stripos($sql, ' licencas ') !== false) {
+                $dateColumn = (stripos($sql, 'licencas l') !== false) ? 'l.data_aquisicao' : 'data_aquisicao';
+            } elseif (stripos($sql, 'venda v') !== false || stripos($sql, ' venda ') !== false) {
+                $dateColumn = (stripos($sql, 'venda v') !== false) ? 'v.data_venda' : 'data_venda';
+            } elseif (stripos($sql, 'ativos a') !== false || stripos($sql, ' ativos ') !== false) {
+                $dateColumn = (stripos($sql, 'ativos a') !== false) ? 'a.dataAtivacao' : 'dataAtivacao';
+            } elseif (stripos($sql, 'usuarios u') !== false || stripos($sql, ' usuarios ') !== false) {
+                $dateColumn = (stripos($sql, 'usuarios u') !== false) ? 'u.data_criacao' : 'data_criacao';
             }
         }
 

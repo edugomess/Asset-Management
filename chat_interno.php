@@ -182,7 +182,7 @@ $my_id = $_SESSION['id_usuarios'];
     <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
-                <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                <div class="modal-header text-white" style="border-radius: 15px 15px 0 0; background: #2c404a;">
                     <h5 class="modal-title font-weight-bold"><i class="fas fa-users-cog mr-2"></i><?php echo __('Criar Novo Grupo'); ?></h5>
                     <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                 </div>
@@ -208,7 +208,7 @@ $my_id = $_SESSION['id_usuarios'];
     <div class="modal fade" id="groupMembersModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
-                <div class="modal-header bg-primary text-white" style="border-radius: 15px 15px 0 0;">
+                <div class="modal-header text-white" style="border-radius: 15px 15px 0 0; background: #2c404a;">
                     <h5 class="modal-title font-weight-bold"><i class="fas fa-users mr-2"></i><?php echo __('Membros do Grupo'); ?></h5>
                     <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                 </div>
@@ -232,7 +232,7 @@ $my_id = $_SESSION['id_usuarios'];
     <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
-                <div class="modal-header bg-dark text-white" style="border-radius: 15px 15px 0 0;">
+                <div class="modal-header text-white" style="border-radius: 15px 15px 0 0; background: #2c404a;">
                     <h5 class="modal-title small font-weight-bold"><?php echo __('Convidar para o Grupo'); ?></h5>
                     <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
                 </div>

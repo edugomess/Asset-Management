@@ -2114,7 +2114,7 @@ function getHoursAndMinutes($total_minutes)
                                                             <button class="btn btn-outline-secondary bg-white" type="button" onclick="const p = document.getElementById('gemini_api_key'); p.type = p.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('fa-eye'); this.querySelector('i').classList.toggle('fa-eye-slash');" title="<?php echo __('Mostrar/Ocultar'); ?>">
                                                                 <i class="fas fa-eye text-muted"></i>
                                                             </button>
-                                                            <button class="btn btn-primary" type="button" id="btnTestarChave" title="<?php echo __('Testar conexão real com o Google'); ?>">
+                                                            <button class="btn btn-primary text-white" type="button" id="btnTestarChave" style="background: rgb(44,64,74); border-color: rgb(44,64,74);" title="<?php echo __('Testar conexão real com o Google'); ?>">
                                                                 <i class="fas fa-vial"></i> <?php echo __('Testar Chave'); ?>
                                                             </button>
                                                         </div>

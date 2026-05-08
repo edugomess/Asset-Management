@@ -64,9 +64,9 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
 .introjs-progress { background-color: #e2e8f0 !important; border-radius: 10px !important; }
 .introjs-progressbar { background-color: #4f46e5 !important; border-radius: 10px !important; }
 </style>
-<nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top" style="margin: 5px 23px;">
+<nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top mx-1 mx-md-4 my-2">
     <div class="container-fluid">
-        <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop-1" type="button">
+        <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button">
             <i class="fas fa-bars"></i>
         </button>
         <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">

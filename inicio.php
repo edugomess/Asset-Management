@@ -93,7 +93,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
         <div class="d-flex flex-column" id="content-wrapper">
             <div id="content">
                 <?php include 'topbar.php'; ?>
-                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
+                <div class="container-fluid px-2 px-md-4">
 
                     <?php
                     include 'conexao.php';
@@ -323,11 +323,10 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     </div>
 
                     <div class="card shadow">
-                        <div class="col-md-6 col-xl-3 text-nowrap">
+                        <div class="col-md-6 col-xl-3 text-nowrap mb-3">
                             <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
-                                class="btn btn-success btn-block active text-white animate__animated animate__pulse btn-user"
+                                class="btn btn-success btn-block active text-white animate__animated animate__pulse btn-user btn-premium-cadastro"
                                 role="button"
-                                style="background: rgb(44,64,74);border-radius: 10px;padding: 30px, 30px;border-width: 0px;height: 50px;margin-top: 23px;padding-top: 13px;"
                                 href="/ativos_doados.php"><?php echo __('Ver Doações'); ?></a>
                         </div>
                         <div class="card-body">
@@ -336,14 +335,14 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <thead>
                                         <tr>
                                             <th><?php echo __('Modelo'); ?></th>
-                                            <th><?php echo __('Fabricante'); ?></th>
-                                            <th><?php echo __('Categoria'); ?></th>
+                                            <th class="hide-on-mobile"><?php echo __('Fabricante'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('Categoria'); ?></th>
                                             <th><?php echo __('Tag'); ?></th>
-                                            <th><?php echo __('HostName'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('HostName'); ?></th>
                                             <th><?php echo __('Valor'); ?></th>
-                                            <th><?php echo __('MAC Address'); ?></th>
-                                            <th><?php echo __('Usuário'); ?></th>
-                                            <th><?php echo __('Centro de Custo'); ?></th>
+                                            <th class="hide-on-mobile"><?php echo __('MAC Address'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('Usuário'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('Centro de Custo'); ?></th>
                                             <th><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
@@ -398,26 +397,26 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         echo htmlspecialchars($row['modelo']);
                                                         ?>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td class="hide-on-mobile"><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td><?php echo htmlspecialchars($row['tag']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td>
                                                         <span class="font-weight-bold" style="color: #2c404a;">
                                                             R$ <?php echo number_format($valor_atual, 2, ',', '.'); ?>
                                                         </span>
                                                         <br>
-                                                        <small class="text-muted">
+                                                        <small class="text-muted hide-on-mobile">
                                                             (R$ <?php echo number_format($valor_original, 2, ',', '.'); ?>)
                                                         </small>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                    <td>
+                                                    <td class="hide-on-mobile"><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                    <td class="hide-on-tablet">
                                                         <?php
                                                         echo !empty($row['nome_usuario']) ? htmlspecialchars($row['nome_usuario']) : __('Desconhecido');
                                                         ?>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['centroDeCusto']); ?></td>
                                                     <td>
                                                         <?php
                                                         // Elegibilidade para doação baseada nas configurações

@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
+<link rel="stylesheet" href="/assets/css/responsive_fix.css">
 <style>
     /* NProgress Premium Colorization */
     #nprogress .bar { background: #1cc88a !important; height: 3px !important; }
@@ -395,8 +396,20 @@
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    @media (max-width: 768px) {
+        #content-wrapper {
+            margin-left: 0 !important;
+        }
+    }
+
     .sidebar.toggled+#content-wrapper {
         margin-left: 6.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar.toggled+#content-wrapper {
+            margin-left: 0 !important;
+        }
     }
 
     #content {

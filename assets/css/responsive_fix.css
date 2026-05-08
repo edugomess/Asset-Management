@@ -1,0 +1,92 @@
+/* 
+ * assets/css/responsive_fix.css
+ * Global responsiveness fixes for Asset Management
+ */
+
+/* Adjusting Metrics Cards on Dashboard */
+@media (max-width: 767px) {
+    .metrics-row {
+        flex-wrap: wrap !important;
+        overflow: visible !important;
+    }
+    .col-xl-1-5 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        min-width: unset !important;
+        margin-bottom: 15px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .metrics-row {
+        flex-wrap: wrap !important;
+        overflow: visible !important;
+    }
+    .col-xl-1-5 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+        min-width: unset !important;
+        margin-bottom: 15px;
+    }
+}
+
+/* Table Responsiveness Hack */
+.table-responsive-premium {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for large Modals on Mobile */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+}
+
+/* Responsive Table Columns */
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .hide-on-tablet {
+        display: none !important;
+    }
+}
+
+/* Fix for fixed-width buttons */
+@media (max-width: 576px) {
+    .btn-tamanho-fixo, .btn-premium-cadastro, .btn-premium-import {
+        width: 100% !important;
+        min-width: unset !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 10px;
+    }
+    
+    .d-flex.align-items-center.flex-wrap {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+}
+
+/* Sidebar behavior on small screens */
+@media (max-width: 768px) {
+    nav.sidebar {
+        width: 0 !important;
+        overflow: hidden;
+        transform: translateX(-100%);
+    }
+    nav.sidebar.toggled {
+        width: 15rem !important;
+        transform: translateX(0);
+        display: block !important;
+    }
+    #content-wrapper {
+        margin-left: 0 !important;
+    }
+}

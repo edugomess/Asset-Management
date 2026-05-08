@@ -74,7 +74,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
         <div class="d-flex flex-column premium-page-fade" id="content-wrapper">
             <div id="content">
                 <?php include_once 'topbar.php'; ?>
-                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
+                <div class="container-fluid px-2 px-md-4">
                     <h3 class="text-dark mb-4"><i class="fas fa-user-shield mr-2 text-dark"></i><?php echo __('Usuários'); ?></h3>
                     <div class="card shadow">
                         <div class="card-body">
@@ -133,12 +133,12 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                     <thead>
                                         <tr>
                                             <th><?php echo __('Usuário'); ?></th>
-                                            <th><?php echo __('E-mail'); ?></th>
-                                            <th><?php echo __('Função'); ?></th>
-                                            <th><?php echo __('Setor'); ?></th>
-                                            <th><?php echo __('CC'); ?></th>
+                                            <th class="hide-on-mobile"><?php echo __('E-mail'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('Função'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('Setor'); ?></th>
+                                            <th class="hide-on-tablet"><?php echo __('CC'); ?></th>
                                             <th style="text-align: center;"><?php echo __('Nível'); ?></th>
-                                            <th style="text-align: center;"><?php echo __('Status'); ?></th>
+                                            <th style="text-align: center;" class="hide-on-mobile"><?php echo __('Status'); ?></th>
                                             <th style="text-align: center;"><?php echo __('Ações'); ?></th>
                                         </tr>
                                     </thead>
@@ -157,10 +157,10 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                             <strong><?php echo htmlspecialchars($row['nome'] . ' ' . $row['sobrenome']); ?></strong>
                                                         </div>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['funcao']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['setor'] ?? '-'); ?></td>
-                                                    <td>
+                                                    <td class="hide-on-mobile"><?php echo htmlspecialchars($row['email']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['funcao']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['setor'] ?? '-'); ?></td>
+                                                    <td class="hide-on-tablet">
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
                                                         if (isset($cc_map[$cc_nome])) {
@@ -186,7 +186,7 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                                             <?php echo htmlspecialchars($nivel_display); ?>
                                                         </span>
                                                     </td>
-                                                    <td style="text-align: center;">
+                                                    <td style="text-align: center;" class="hide-on-mobile">
                                                         <span
                                                             class="status-badge badge-<?php echo ($row['status'] === 'Ativo') ? 'success' : 'danger'; ?>">
                                                             <?php echo __(htmlspecialchars($row['status'])); ?>

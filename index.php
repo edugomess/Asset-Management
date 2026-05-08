@@ -387,7 +387,7 @@ function getCardColor($type, $name)
                             </a>
                         </div>
                     </div>
-                    <div class="row px-2 flex-nowrap overflow-auto">
+                    <div class="row px-2 metrics-row">
                         <?php
                         // Render Cards
                         foreach ($selected_cards as $idx => $card_key) {
@@ -400,7 +400,7 @@ function getCardColor($type, $name)
                             $delay = ($idx + 1) * 0.1;
                             ?>
                             <div class="col-xl-1-5 col-md-3 mb-4 px-1 animate__animated animate__fadeInUp"
-                                style="flex: 0 0 12.5%; max-width: 12.5%; min-width: 155px; animation-delay: <?php echo $delay; ?>s;">
+                                style="animation-delay: <?php echo $delay; ?>s;">
                                 <div class="card premium-card border-left-<?php echo $color; ?> py-2"
                                     style="height: 100%;">
                                     <div class="card-body p-3">

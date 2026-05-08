@@ -13,6 +13,7 @@ function renderPerformanceHints() {
     <link rel="preconnect" href="https://use.fontawesome.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <link rel="stylesheet" href="/assets/css/responsive_fix.css">
     ';
 }
 

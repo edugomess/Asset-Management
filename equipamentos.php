@@ -28,7 +28,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
 <style>
     /* Estilos customizados para botões e elementos da interface */
     .btn-tamanho-fixo {
-        width: 130px;
+        min-width: 130px;
     }
 
     .btn-edit {
@@ -192,7 +192,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                 <!-- Barra Superior (Topbar) -->
                 <?php include_once 'topbar.php'; ?>
 
-                <div class="container-fluid" style="padding-left: 23px; padding-right: 23px;">
+                <div class="container-fluid px-2 px-md-4">
                     <!-- Seção de Resumo: Cards Informativos -->
                     <div class="row">
                         <?php
@@ -398,18 +398,18 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <thead>
                                         <tr>
                                             <th scope="col"><?php echo __('Modelo'); ?></th>
-                                            <th scope="col"><?php echo __('Fabricante'); ?></th>
-                                            <th scope="col"><?php echo __('Categoria'); ?></th>
+                                            <th scope="col" class="hide-on-mobile"><?php echo __('Fabricante'); ?></th>
+                                            <th scope="col" class="hide-on-tablet"><?php echo __('Categoria'); ?></th>
                                             <th scope="col"><?php echo __('Tag'); ?></th>
-                                            <th scope="col"><?php echo __('HostName'); ?></th>
+                                            <th scope="col" class="hide-on-tablet"><?php echo __('HostName'); ?></th>
                                             <th scope="col"><?php echo __('Valor Atual'); ?></th>
-                                            <th scope="col"><?php echo __('MAC'); ?></th>
-                                            <th scope="col"><?php echo __('Nível de Atribuição'); ?></th>
-                                            <th scope="col"><?php echo __('CC'); ?></th>
+                                            <th scope="col" class="hide-on-mobile"><?php echo __('MAC'); ?></th>
+                                            <th scope="col" class="hide-on-tablet"><?php echo __('Nível'); ?></th>
+                                            <th scope="col" class="hide-on-tablet"><?php echo __('CC'); ?></th>
                                             <?php if ($status_filter !== 'Manutencao'): ?>
-                                                <th scope="col"><?php echo __('Atribuído a'); ?></th>
+                                                <th scope="col" class="hide-on-mobile"><?php echo __('Atribuído a'); ?></th>
                                             <?php else: ?>
-                                                <th scope="col"><?php echo __('Motivo Manut.'); ?></th>
+                                                <th scope="col" class="hide-on-mobile"><?php echo __('Motivo Manut.'); ?></th>
                                             <?php endif; ?>
                                             <th scope="col"><?php echo __('Status'); ?></th>
                                             <th scope="col"><?php echo __('Ações'); ?></th>
@@ -479,25 +479,25 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         echo "<strong>" . htmlspecialchars($row['modelo']) . "</strong>";
                                                         ?>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['fabricante']); ?></td>
-                                                    <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                                                    <td class="hide-on-mobile"><?php echo htmlspecialchars($row['fabricante']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['categoria']); ?></td>
                                                     <td>
                                                         <a href="perfil_ativo.php?id=<?php echo $row['id_asset']; ?>"
                                                             class="font-weight-bold" style="color: #2c404a;"
                                                             onclick="event.stopPropagation();"><?php echo htmlspecialchars($row['tag']); ?></a>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['hostName']); ?></td>
+                                                    <td class="hide-on-tablet"><?php echo htmlspecialchars($row['hostName']); ?></td>
                                                     <td>
                                                         <span class="font-weight-bold" style="color: #2c404a;">
                                                             <?php echo __currency($valor_atual); ?>
                                                         </span>
                                                         <br>
-                                                        <small class="text-muted">(<?php echo __('Original:'); ?> 
+                                                        <small class="text-muted hide-on-mobile">(<?php echo __('Original:'); ?> 
                                                             <?php echo __currency($valor_original); ?>)</small>
                                                     </td>
-                                                    <td><?php echo htmlspecialchars($row['macAdress']); ?></td>
-                                                    <td><strong><?php echo htmlspecialchars(($row['tier'] ?: $row['setor']) ?: '-'); ?></strong></td>
-                                                    <td>
+                                                    <td class="hide-on-mobile"><?php echo htmlspecialchars($row['macAdress']); ?></td>
+                                                    <td class="hide-on-tablet"><strong><?php echo htmlspecialchars(($row['tier'] ?: $row['setor']) ?: '-'); ?></strong></td>
+                                                    <td class="hide-on-tablet">
                                                         <?php 
                                                         $cc_nome = $row['centroDeCusto'];
                                                         if (isset($cc_map[$cc_nome])) {
@@ -507,9 +507,8 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                         }
                                                         ?>
                                                     </td>
-
                                                     <?php if ($status_filter !== 'Manutencao'): ?>
-                                                        <td>
+                                                        <td class="hide-on-mobile">
                                                             <?php 
                                                             if (!empty($row['assigned_to']) && !empty($row['user_nome'])) {
                                                                 echo htmlspecialchars($row['user_nome']);
@@ -521,7 +520,7 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                                             ?>
                                                         </td>
                                                     <?php else: ?>
-                                                        <td>
+                                                        <td class="hide-on-mobile">
                                                             <?php
                                                             // Mostra o motivo da manutenção com tooltip para o texto completo
                                                             $motivo_completo = !empty($row['manutencao_motivo']) ? $row['manutencao_motivo'] : __('Sem observações');

@@ -12,17 +12,28 @@ if ($_SESSION['nivelUsuario'] !== 'Admin') {
     exit();
 }
 
+// Função auxiliar para garantir compatibilidade com MySQL (HostGator)
+if (!function_exists('addColumnIfNotExist')) {
+    function addColumnIfNotExist($conn, $table, $column, $definition) {
+        $check = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+        if ($check && $check->num_rows == 0) {
+            return $conn->query("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+        }
+        return true;
+    }
+}
+
 // === MIGRAÇÃO: Garante colunas de estoque na tabela de alertas ===
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t1 INT NOT NULL DEFAULT 3");
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t2 INT NOT NULL DEFAULT 3");
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS estoque_threshold_t3 INT NOT NULL DEFAULT 3");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS recebe_estoque TINYINT NOT NULL DEFAULT 0");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t1 TINYINT NOT NULL DEFAULT 1");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t2 TINYINT NOT NULL DEFAULT 1");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t3 TINYINT NOT NULL DEFAULT 1");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_t4 TINYINT NOT NULL DEFAULT 1");
-$conn->query("ALTER TABLE alertas_usuarios ADD COLUMN IF NOT EXISTS estoque_inf TINYINT NOT NULL DEFAULT 1");
-$conn->query("ALTER TABLE configuracoes_alertas ADD COLUMN IF NOT EXISTS whatsapp_recebe_estoque TINYINT NOT NULL DEFAULT 0");
+addColumnIfNotExist($conn, 'configuracoes_alertas', 'estoque_threshold_t1', 'INT NOT NULL DEFAULT 3');
+addColumnIfNotExist($conn, 'configuracoes_alertas', 'estoque_threshold_t2', 'INT NOT NULL DEFAULT 3');
+addColumnIfNotExist($conn, 'configuracoes_alertas', 'estoque_threshold_t3', 'INT NOT NULL DEFAULT 3');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'recebe_estoque', 'TINYINT NOT NULL DEFAULT 0');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'estoque_t1', 'TINYINT NOT NULL DEFAULT 1');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'estoque_t2', 'TINYINT NOT NULL DEFAULT 1');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'estoque_t3', 'TINYINT NOT NULL DEFAULT 1');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'estoque_t4', 'TINYINT NOT NULL DEFAULT 1');
+addColumnIfNotExist($conn, 'alertas_usuarios', 'estoque_inf', 'TINYINT NOT NULL DEFAULT 1');
+addColumnIfNotExist($conn, 'configuracoes_alertas', 'whatsapp_recebe_estoque', 'TINYINT NOT NULL DEFAULT 0');
 
 // === PROCESSAMENTO SMTP: Salva as credenciais do servidor de e-mail ===
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['smtp_config'])) {
@@ -90,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['sla'])) {
     if (isset($_POST['sla_primeira_resposta_minutos'])) {
         $sla_pr = max(1, (int) $_POST['sla_primeira_resposta_minutos']);
         // Garante que a coluna existe antes de tentar salvar
-        $conn->query("ALTER TABLE configuracoes_sla ADD COLUMN IF NOT EXISTS sla_primeira_resposta_minutos INT NOT NULL DEFAULT 10");
+        addColumnIfNotExist($conn, 'configuracoes_sla', 'sla_primeira_resposta_minutos', 'INT NOT NULL DEFAULT 10');
         // Atualiza em todas as linhas (é um valor global)
         if (!mysqli_query($conn, "UPDATE configuracoes_sla SET sla_primeira_resposta_minutos = $sla_pr")) {
             $success = false;
@@ -410,7 +421,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dashboard_config'])) {
 $configs = [];
 $sla_primeira_resposta_minutos = 10; // Padrão: 10 minutos
 // Garante que a coluna existe silenciosamente
-$conn->query("ALTER TABLE configuracoes_sla ADD COLUMN IF NOT EXISTS sla_primeira_resposta_minutos INT NOT NULL DEFAULT 10");
+addColumnIfNotExist($conn, 'configuracoes_sla', 'sla_primeira_resposta_minutos', 'INT NOT NULL DEFAULT 10');
 $result = mysqli_query($conn, "SELECT * FROM configuracoes_sla");
 while ($row = mysqli_fetch_assoc($result)) {
     $configs[$row['categoria']] = $row['tempo_sla_minutos'];

@@ -163,27 +163,34 @@ $result = mysqli_query($conn, $sql);
                     </h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 col-xl-2 text-nowrap">
-                                    <div class=""><a
-                                            class="btn-premium-cadastro pulse animated"
-                                            role="button"
-                                            href="/cadastro_de_chamados.php"><?php echo __('Novo Chamado'); ?></a></div>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-12 col-md-auto mb-3 mb-md-0">
+                                    <a class="btn-premium-cadastro pulse animated w-xs-100" role="button" href="/cadastro_de_chamados.php">
+                                        <i class="fas fa-plus-circle mr-1"></i><?php echo __('Novo Chamado'); ?>
+                                    </a>
                                 </div>
-                                <div class="col-md-6 col-xl-6">
-                                    <form method="GET" class="form-inline" style="margin-top: 0px;">
-                                        <label for="filtro_status" class="mr-2 font-weight-bold"><?php echo __('Filtrar por:'); ?></label>
-                                        <select name="filtro_status" id="filtro_status" class="form-control mr-2"
-                                            onchange="this.form.submit()">
-                                            <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>><?php echo __('Abertos'); ?></option>
-                                            <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
-                                            <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>><?php echo __('Pendentes'); ?></option>
-                                            <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>><?php echo __('Finalizados'); ?></option>
-                                            <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>><?php echo __('Todos'); ?></option>
-                                        </select>
-                                        <input type="search" name="search" class="form-control form-control-sm"
-                                            placeholder="<?php echo __('Buscar...'); ?>"
-                                            value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                <div class="col-12 col-md-auto ml-md-auto">
+                                    <form method="GET" class="form-inline d-flex flex-wrap gap-2">
+                                        <div class="form-group mr-2 mb-2 mb-md-0 w-xs-100">
+                                            <label for="filtro_status" class="mr-2 font-weight-bold d-none d-sm-inline-block"><?php echo __('Filtrar por:'); ?></label>
+                                            <select name="filtro_status" id="filtro_status" class="form-control form-control-sm w-xs-100" onchange="this.form.submit()">
+                                                <option value="aberto" <?php echo ($filtro_status == 'aberto') ? 'selected' : ''; ?>><?php echo __('Abertos'); ?></option>
+                                                <option value="em_andamento" <?php echo ($filtro_status == 'em_andamento') ? 'selected' : ''; ?>><?php echo __('Em Andamento'); ?></option>
+                                                <option value="pendente" <?php echo ($filtro_status == 'pendente') ? 'selected' : ''; ?>><?php echo __('Pendentes'); ?></option>
+                                                <option value="finalizados" <?php echo ($filtro_status == 'finalizados') ? 'selected' : ''; ?>><?php echo __('Finalizados'); ?></option>
+                                                <option value="todos" <?php echo ($filtro_status == 'todos') ? 'selected' : ''; ?>><?php echo __('Todos'); ?></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-0 w-xs-100">
+                                            <div class="input-group input-group-sm w-xs-100">
+                                                <input type="search" name="search" class="form-control" placeholder="<?php echo __('Buscar...'); ?>" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-primary" type="submit">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>

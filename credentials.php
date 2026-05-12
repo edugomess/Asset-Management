@@ -6,7 +6,7 @@
  */
 
 // Chave para análise estratégica de IA (Google Gemini)
-define('GEMINI_API_KEY', 'AIzaSyCYQo9D5orwhfwKgzz1RaexhimhQ0TkzHw');
+define('GEMINI_API_KEY', 'AIzaSyDgZC1IQ83svPCGkIKdeyOYc44hcaG01os');
 
 // Token para fallback via GitHub Models (Azure AI Inference)
 define('GITHUB_TOKEN', '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');

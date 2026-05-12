@@ -72,9 +72,10 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
         <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
             <div class="input-group">
                 <input class="bg-light form-control border-0 small" type="text"
-                    placeholder="<?php echo __('Pesquisar por equipamentos, usuários...'); ?>" id="globalSearchInput" autocomplete="off">
+                    placeholder="<?php echo __('Pesquisar por equipamentos, usuários...'); ?>" id="globalSearchInput" 
+                    style="border-radius: 8px 0 0 8px; height: 38px; padding-left: 15px;" autocomplete="off">
                 <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" style="background: rgb(44,64,74); border: none;">
+                    <button class="btn btn-primary" type="button" style="background: #2c404a; border: none; border-radius: 0 8px 8px 0; width: 45px;">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -113,7 +114,7 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
             </li>
 
             <!-- Botão de Ajuda Interativo -->
-            <li class="nav-item mx-1 align-self-center">
+            <li class="nav-item mx-1 align-self-center d-none d-sm-block">
                 <a class="nav-link nav-link-utility btn-help-manual" href="javascript:void(0);" id="start-manual" title="<?php echo __('Ajuda Interativa'); ?>">
                     <i class="fas fa-question-circle fa-fw"></i>
                 </a>
@@ -189,3 +190,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 <script src="/assets/js/system_manual.js"></script>
+<?php include_once 'mobile_menu.php'; ?>

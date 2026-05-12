@@ -424,11 +424,11 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                     <div
                         class="d-sm-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
                         <h3 class="text-dark mb-0"><i class="fas fa-id-card mr-2 text-info"></i><?php echo __('Perfil do Ativo'); ?></h3>
-                        <div class="d-flex gap-2" style="gap: 10px;">
-                            <button class="btn btn-danger btn-sm" onclick="gerarPDF()">
+                        <div class="d-flex flex-wrap gap-2 w-xs-100" style="gap: 10px;">
+                            <button class="btn btn-danger btn-sm w-xs-100" onclick="gerarPDF()">
                                 <i class="fas fa-file-pdf mr-1"></i><?php echo __('PDF'); ?>
                             </button>
-                            <a class="btn btn-dark btn-sm" href="equipamentos.php">
+                            <a class="btn btn-dark btn-sm w-xs-100" href="equipamentos.php">
                                 <i class="fas fa-arrow-left fa-sm mr-1"></i><?php echo __('Voltar'); ?>
                             </a>
                         </div>
@@ -504,17 +504,17 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                             <div class="info-card shadow card-shadow mb-4 text-center">
                                 <h6 class="font-weight-bold text-primary mb-3"><?php echo __('Ações Rápidas'); ?></h6>
                                 <div class="d-flex flex-column gap-2" style="gap: 10px;">
-                                    <a href="editar_ativo.php?id=<?php echo $id; ?>" class="btn btn-warning btn-action">
+                                    <a href="editar_ativo.php?id=<?php echo $id; ?>" class="btn btn-warning btn-action w-xs-100">
                                         <i class="fas fa-edit mr-2"></i><?php echo __('Editar Ativo'); ?>
                                     </a>
 
                                     <?php if (!empty($ativo['assigned_to']) || !empty($ativo['id_local'])): ?>
-                                        <button class="btn btn-danger btn-action"
+                                        <button class="btn btn-danger btn-action w-xs-100"
                                             onclick="unassignUser(<?php echo $id; ?>)">
                                             <i class="fas fa-minus-circle mr-2"></i><?php echo __('Liberar Ativo'); ?>
                                         </button>
                                     <?php else: ?>
-                                        <button class="btn btn-success btn-action"
+                                        <button class="btn btn-success btn-action w-xs-100"
                                             onclick="openAssignModal(<?php echo $id; ?>)">
                                             <i
                                                 class="fas fa-plus-circle mr-2"></i><?php echo __('Atribuir Responsável / Local'); ?>
@@ -522,12 +522,12 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <?php endif; ?>
 
                                     <?php if (empty($ativo['manutencao_data'])): ?>
-                                        <button class="btn btn-info btn-action" style="background: #2c404a; border: none;"
+                                        <button class="btn btn-info btn-action w-xs-100" style="background: #2c404a; border: none;"
                                             onclick="sendToMaintenance(<?php echo $id; ?>)">
                                             <i class="fas fa-tools mr-2"></i><?php echo __('Enviar Manutenção'); ?>
                                         </button>
                                     <?php else: ?>
-                                        <button class="btn btn-success btn-action"
+                                        <button class="btn btn-success btn-action w-xs-100"
                                             onclick="releaseFromMaintenance(<?php echo $id; ?>)">
                                             <i class="fas fa-check-circle mr-2"></i><?php echo __('Liberar Manutenção'); ?>
                                         </button>
@@ -545,54 +545,54 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <i class="fas fa-microchip mr-2"></i><?php echo __('Especificações Técnicas'); ?>
                                 </h6>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Fabricante'); ?></div>
                                         <div class="detail-value"><?php echo htmlspecialchars($ativo['fabricante'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Categoria'); ?></div>
                                         <div class="detail-value"><span class="badge badge-light border px-2 py-1" style="background: #eef2f7; color: #2c404a; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;"><?php echo htmlspecialchars($ativo['categoria']); ?></span></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Hostname'); ?></div>
                                         <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['hostName'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Número de Série'); ?></div>
                                         <div class="detail-value text-dark font-weight-bold"><?php echo htmlspecialchars($ativo['numero_serie'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Endereço MAC'); ?></div>
                                         <div class="detail-value"><?php echo htmlspecialchars($ativo['macAdress'] ?: '-'); ?></div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Service Tag / Certificado'); ?></div>
                                         <div class="detail-value"><?php echo htmlspecialchars($ativo['tag'] ?: '-'); ?></div>
                                     </div>
                                     
                                     <?php if (!empty($ativo['processador'])): ?>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Processador'); ?></div>
                                         <div class="detail-value text-dark"><i class="fas fa-microchip mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['processador']); ?></div>
                                     </div>
                                     <?php endif; ?>
 
                                     <?php if (!empty($ativo['memoria'])): ?>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Memória RAM'); ?></div>
                                         <div class="detail-value text-dark"><i class="fas fa-memory mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['memoria']); ?></div>
                                     </div>
                                     <?php endif; ?>
 
                                     <?php if (!empty($ativo['armazenamento'])): ?>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Armazenamento'); ?></div>
                                         <div class="detail-value text-dark"><i class="fas fa-hdd mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['armazenamento']); ?> (<?php echo htmlspecialchars($ativo['tipo_armazenamento'] ?: 'SSD'); ?>)</div>
                                     </div>
                                     <?php endif; ?>
 
                                     <?php if ($ativo['categoria'] == 'Monitor' && !empty($ativo['polegadas'])): ?>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Tamanho da Tela'); ?></div>
                                         <div class="detail-value text-dark"><i class="fas fa-desktop mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['polegadas']); ?></div>
                                     </div>
@@ -600,13 +600,13 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
 
                                     <?php if ($ativo['categoria'] == 'Smartphone'): ?>
                                         <?php if (!empty($ativo['imei'])): ?>
-                                        <div class="col-md-4">
+                                        <div class="col-6 col-md-4 mb-3">
                                             <div class="detail-label"><?php echo __('IMEI'); ?></div>
                                             <div class="detail-value text-dark"><i class="fas fa-barcode mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['imei']); ?></div>
                                         </div>
                                         <?php endif; ?>
                                         <?php if (!empty($ativo['sim_card'])): ?>
-                                        <div class="col-md-4">
+                                        <div class="col-6 col-md-4 mb-3">
                                             <div class="detail-label"><?php echo __('SIM Card'); ?></div>
                                             <div class="detail-value text-dark"><i class="fas fa-sim-card mr-1 small text-muted"></i><?php echo htmlspecialchars($ativo['sim_card']); ?></div>
                                         </div>
@@ -614,7 +614,7 @@ $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets
                                     <?php endif; ?>
 
                                     <?php if ($ativo['categoria'] == 'Impressora' && !empty($ativo['is_scanner'])): ?>
-                                    <div class="col-md-4">
+                                    <div class="col-6 col-md-4 mb-3">
                                         <div class="detail-label"><?php echo __('Tipo de Impressora'); ?></div>
                                         <div class="detail-value text-dark"><i class="fas fa-print mr-1 small text-muted"></i><?php echo ($ativo['is_scanner'] == 'Sim') ? __('Multifuncional') : __('Simples'); ?></div>
                                     </div>

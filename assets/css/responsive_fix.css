@@ -15,6 +15,11 @@
         min-width: unset !important;
         margin-bottom: 15px;
     }
+    
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
@@ -35,6 +40,12 @@
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+/* Hide horizontal scrollbar if not needed */
+.table-responsive {
+    overflow-x: auto !important;
 }
 
 /* Fix for large Modals on Mobile */
@@ -42,6 +53,10 @@
     .modal-dialog {
         margin: 0.5rem;
         max-width: calc(100% - 1rem);
+    }
+    
+    .modal-content {
+        border-radius: 15px !important;
     }
 }
 
@@ -60,7 +75,7 @@
 
 /* Fix for fixed-width buttons */
 @media (max-width: 576px) {
-    .btn-tamanho-fixo, .btn-premium-cadastro, .btn-premium-import {
+    .btn-tamanho-fixo, .btn-premium-cadastro, .btn-premium-import, .btn-user, .btn-block {
         width: 100% !important;
         min-width: unset !important;
         margin-left: 0 !important;
@@ -72,21 +87,37 @@
         flex-direction: column;
         align-items: stretch !important;
     }
+    
+    /* Header titles */
+    h3, .h3 {
+        font-size: 1.5rem !important;
+    }
 }
 
-/* Sidebar behavior on small screens */
-@media (max-width: 768px) {
-    nav.sidebar {
-        width: 0 !important;
-        overflow: hidden;
-        transform: translateX(-100%);
+/* Sidebar behavior is now centrally managed in sidebar_style.php */
+
+/* Login Page Specific Responsiveness */
+@media (max-width: 576px) {
+    .login-padding {
+        padding: 1.5rem !important;
     }
-    nav.sidebar.toggled {
-        width: 15rem !important;
-        transform: translateX(0);
-        display: block !important;
+    
+    .brand-title {
+        font-size: 1.5rem !important;
     }
-    #content-wrapper {
-        margin-left: 0 !important;
+    
+    .main-content {
+        padding: 1rem !important;
+    }
+}
+
+/* Utility Classes */
+.w-xs-100 {
+    width: auto;
+}
+
+@media (max-width: 576px) {
+    .w-xs-100 {
+        width: 100% !important;
     }
 }

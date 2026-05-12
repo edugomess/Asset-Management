@@ -19,12 +19,14 @@
                 radial-gradient(at 100% 0%, #1a2a33 0, transparent 50%),
                 linear-gradient(135deg, #1a2a33 0%, #0d1418 100%) !important;
             background-attachment: fixed !important;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
         .card {
             border-radius: 20px;

@@ -79,10 +79,12 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 15px;">
-                                <div class="d-flex align-items-center">
-                                    <a class="btn-premium-cadastro pulse animated" role="button"
-                                        href="cadastro_de_usuario.php"><?php echo __('Cadastrar Novo'); ?></a>
-                                    <a href="#" class="btn-premium-import ml-3 shadow-sm pulse animated" 
+                                <div class="d-flex align-items-center flex-wrap w-xs-100">
+                                    <a class="btn-premium-cadastro pulse animated w-xs-100 mb-2 mb-sm-0 mr-sm-2" role="button"
+                                        href="cadastro_de_usuario.php">
+                                        <i class="fas fa-plus-circle mr-1"></i><?php echo __('Cadastrar Novo'); ?>
+                                    </a>
+                                    <a href="#" class="btn-premium-import shadow-sm pulse animated w-xs-100 mb-2 mb-sm-0 ml-sm-2" 
                                         role="button"
                                         onclick="window.abrirModalImportar('usuarios'); return false;"
                                         data-import-type="usuarios">
@@ -90,15 +92,16 @@ while ($row_cc = mysqli_fetch_assoc($res_cc)) {
                                     </a>
                                 </div>
 
-                                <div class="dataTables_filter">
+                                <div class="dataTables_filter w-xs-100">
                                     <!-- Formulário de busca simples na tabela -->
-                                    <form method="GET" action="" class="form-inline">
-                                        <div class="form-group mr-2">
+                                    <form method="GET" action="" class="form-inline w-xs-100">
+                                        <div class="form-group w-xs-100">
                                             <input type="search" name="search"
-                                                class="form-control form-control-sm premium-filter"
-                                                placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
+                                                class="form-control premium-filter"
+                                                placeholder="<?php echo __('Buscar...'); ?>"
                                                 value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                                                aria-label="<?php echo __('Buscar Usuários'); ?>">
+                                                aria-label="<?php echo __('Buscar Usuários'); ?>"
+                                                style="height: 38px; border-radius: 8px; border: 1px solid #d1d3e2; padding-left: 15px;">
                                         </div>
                                     </form>
                                 </div>

@@ -25,7 +25,10 @@ $periodo_label = "Periodo: $start_fmt a $end_fmt";
 
 // ─── SLA alvo de primeiro atendimento ────────────────────────────────────────
 $sla_pr_min = 10; // padrão
-@$conn->query("ALTER TABLE configuracoes_sla ADD COLUMN IF NOT EXISTS sla_primeira_resposta_minutos INT NOT NULL DEFAULT 10");
+$check_col = $conn->query("SHOW COLUMNS FROM `configuracoes_sla` LIKE 'sla_primeira_resposta_minutos'");
+if ($check_col && $check_col->num_rows == 0) {
+    $conn->query("ALTER TABLE `configuracoes_sla` ADD COLUMN `sla_primeira_resposta_minutos` INT NOT NULL DEFAULT 10");
+}
 $res_sla = $conn->query("SELECT sla_primeira_resposta_minutos FROM configuracoes_sla LIMIT 1");
 if ($res_sla && $res_sla->num_rows > 0) {
     $row_sla = $res_sla->fetch_assoc();

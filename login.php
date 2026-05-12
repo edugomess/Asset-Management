@@ -49,12 +49,13 @@ include_once 'language.php';
         body {
             font-family: 'Inter', sans-serif !important;
             background: #0d1418 !important;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
         }
 

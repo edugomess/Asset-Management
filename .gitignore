@@ -1,0 +1,24 @@
+# Arquivos de Sistema
+.DS_Store
+Thumbs.db
+
+# Pastas de Cache e Temporárias
+/vendor/
+/node_modules/
+/.pytest_cache/
+/__pycache__/
+
+# Arquivos de Configuração Local (Sensíveis)
+credentials.php
+conexao.php
+
+# Backups e Scratches
+*.sql
+/scratch/
+/tmp/
+/uploads/
+/xampp/
+
+# IDEs
+.vscode/
+.idea/

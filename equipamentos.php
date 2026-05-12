@@ -296,15 +296,15 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 15px;">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center flex-wrap mb-3 mb-md-0">
                                     <?php
                                     // Exibe o botão de cadastro apenas se não estivermos na visualização de manutenção
                                     if (!isset($_GET['status']) || ($_GET['status'] !== 'Manutencao' && $_GET['status'] !== 'Manutenção')):
                                         ?>
-                                        <a class="btn-premium-cadastro pulse animated"
+                                        <a class="btn-premium-cadastro pulse animated w-xs-100 mb-2 mb-sm-0 mr-sm-2"
                                             role="button"
                                             href="cadastro_de_equipamentos.php"><?php echo __('Cadastrar Novo'); ?></a>
-                                        <a href="#" class="btn-premium-import ml-3 shadow-sm pulse animated" 
+                                        <a href="#" class="btn-premium-import shadow-sm pulse animated w-xs-100 mb-2 mb-sm-0 ml-sm-2" 
                                             role="button"
                                             onclick="window.abrirModalImportar('ativos'); return false;"
                                             data-import-type="ativos">
@@ -319,17 +319,19 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                                     <form method="GET" action="" class="form-inline">
                                         <div class="form-group mr-2">
                                             <input type="search" name="search"
-                                                class="form-control form-control-sm premium-filter"
-                                                placeholder="<?php echo __('Buscar...'); ?>" onsearch="this.form.submit()"
+                                                class="form-control premium-filter"
+                                                placeholder="<?php echo __('Buscar...'); ?>"
                                                 value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-                                                aria-label="<?php echo __('Buscar Ativos'); ?>">
+                                                aria-label="<?php echo __('Buscar Ativos'); ?>"
+                                                style="height: 38px; border-radius: 8px; border: 1px solid #d1d3e2; padding-left: 15px;">
                                         </div>
                                         <div class="form-group mr-2">
                                             <input type="search" name="sector"
-                                                class="form-control form-control-sm premium-filter"
-                                                placeholder="<?php echo __('Setor...'); ?>" onsearch="this.form.submit()"
+                                                class="form-control premium-filter"
+                                                placeholder="<?php echo __('Setor...'); ?>"
                                                 value="<?php echo isset($_GET['sector']) ? htmlspecialchars($_GET['sector']) : ''; ?>"
-                                                aria-label="<?php echo __('Filtrar por Setor'); ?>">
+                                                aria-label="<?php echo __('Filtrar por Setor'); ?>"
+                                                style="height: 38px; border-radius: 8px; border: 1px solid #d1d3e2; padding-left: 15px;">
                                         </div>
                                     </form>
                                     <?php endif; ?>

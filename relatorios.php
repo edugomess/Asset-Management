@@ -67,139 +67,157 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                         </div>
                         <div class="card-body">
                             <div class="row justify-content-center">
-                                <div class="col-md-8">
-                                    <form id="reportForm" class="d-flex align-items-center">
-                                        <select id="reportType" class="form-control mr-3" style="height: 50px;">
-                                            <option value=""><?php echo __('Selecione um relatório...'); ?></option>
+                                <div class="col-md-11">
+                                    <form id="reportForm">
+                                        <div class="row align-items-end">
+                                            <div class="col-md-7 mb-3">
+                                                <label for="reportType" class="font-weight-bold small text-gray-600 mb-1"><?php echo __('Tipo de Relatório'); ?></label>
+                                                <select id="reportType" class="form-control" style="height: 40px;">
+                                                    <option value=""><?php echo __('Selecione um relatório...'); ?></option>
 
-                                            <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                <optgroup label="<?php echo __('Ativos'); ?>">
-                                                    <option value="relatorio_ativo.php" data-periodo="true">01 - <?php echo __('Geral de Ativos'); ?></option>
-                                                    <option value="relatorio_ativos_status.php" data-periodo="true">02 - <?php echo __('Por Status'); ?></option>
-                                                    <option value="relatorio_ativos_cc.php" data-periodo="true">03 - <?php echo __('Por Centro de Custo'); ?></option>
-                                                    <option value="relatorio_financeiro.php" data-periodo="true">04 - <?php echo __('Resumo Financeiro'); ?></option>
-                                                    <option value="relatorio_ativos_fabricante.php" data-periodo="true">05 - <?php echo __('Por Fabricante'); ?></option>
-                                                    <option value="relatorio_ativos_modelo.php" data-periodo="true">06 - <?php echo __('Por Modelo'); ?></option>
-                                                    <option value="relatorio_ativos_categoria.php" data-periodo="true">07 - <?php echo __('Por Categoria'); ?></option>
-                                                    <option value="relatorio_ativos_antigos.php" data-periodo="true">08 - <?php echo __('Ativos Antigos (> 3 anos)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_ativos_recentes.php" data-periodo="true">09 - <?php echo __('Ativos Recentes (< 1 ano)'); ?></option>
-                                                    <option value="relatorio_ativos_valor_alto.php" data-periodo="true">10 - <?php echo __('Alto Valor (> R$ 5k)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_ativos_valor_baixo.php" data-periodo="true">11 - <?php echo __('Baixo Valor (< R$ 1k)'); ?></option>
-                                                    <option value="relatorio_ativos_disponiveis.php" data-periodo="true">12 - <?php echo __('Disponíveis'); ?></option>
-                                                    <option value="relatorio_ativos_em_uso.php" data-periodo="true">13 - <?php echo __('Em Uso'); ?></option>
-                                                    <option value="relatorio_ativos_manutencao.php" data-periodo="true">14 - <?php echo __('Em Manutenção'); ?></option>
-                                                    <option value="relatorio_ativos_sem_cc.php" data-periodo="true">15 - <?php echo __('Sem Centro de Custo'); ?></option>
-                                                    <option value="relatorio_ativos_por_usuario.php" data-periodo="true">16 - <?php echo __('Por Usuário'); ?></option>
-                                                    <option value="relatorio_ativos_unidade.php" data-periodo="true">17 - <?php echo __('Por Unidade'); ?></option>
-                                                    <option value="relatorio_ativos_historico.php" data-periodo="true">18 - <?php echo __('Trilha de Auditoria (Histórico)'); ?></option>
-                                                     <option value="relatorio_ativos_incidentes.php" data-periodo="true">19 - <?php echo __('Incidentes por Ativo'); ?></option>
-                                                     <option value="ativos_doados.php" data-periodo="true">20 - <?php echo __('Doações'); ?></option>
-                                                     <option value="relatorio_ativos_audit_seriais.php" data-periodo="true">21 - <?php echo __('Auditoria de Seriais e Identificação'); ?></option>
-                                                     <option value="relatorio_ativos_smartphones.php" data-periodo="true">22 - <?php echo __('Inventário de Smartphones/Mobile'); ?></option>
-                                                </optgroup>
-                                            <?php else: ?>
-                                                <optgroup label="<?php echo __('Meus Ativos'); ?>">
-                                                    <option value="relatorio_ativos_por_usuario.php" data-periodo="true">23 - <?php echo __('Meus Ativos Atribuídos'); ?>
-                                                    </option>
-                                                </optgroup>
-                                            <?php endif; ?>
-
-                                            <optgroup label="<?php echo __('Chamados'); ?>">
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                    <option value="relatorio_chamados_mensal.php" data-periodo="true">24 - <?php echo __('Resumo Mensal'); ?></option>
+                                                    <optgroup label="<?php echo __('Ativos'); ?>">
+                                                        <option value="relatorio_ativo.php" data-periodo="true">01 - <?php echo __('Geral de Ativos'); ?></option>
+                                                        <option value="relatorio_ativos_status.php" data-periodo="true">02 - <?php echo __('Por Status'); ?></option>
+                                                        <option value="relatorio_ativos_cc.php" data-periodo="true">03 - <?php echo __('Por Centro de Custo'); ?></option>
+                                                        <option value="relatorio_financeiro.php" data-periodo="true">04 - <?php echo __('Resumo Financeiro'); ?></option>
+                                                        <option value="relatorio_ativos_fabricante.php" data-periodo="true">05 - <?php echo __('Por Fabricante'); ?></option>
+                                                        <option value="relatorio_ativos_modelo.php" data-periodo="true">06 - <?php echo __('Por Modelo'); ?></option>
+                                                        <option value="relatorio_ativos_categoria.php" data-periodo="true">07 - <?php echo __('Por Categoria'); ?></option>
+                                                        <option value="relatorio_ativos_antigos.php" data-periodo="true">08 - <?php echo __('Ativos Antigos (> 3 anos)'); ?>
+                                                        </option>
+                                                        <option value="relatorio_ativos_recentes.php" data-periodo="true">09 - <?php echo __('Ativos Recentes (< 1 ano)'); ?></option>
+                                                        <option value="relatorio_ativos_valor_alto.php" data-periodo="true">10 - <?php echo __('Alto Valor (> R$ 5k)'); ?>
+                                                        </option>
+                                                        <option value="relatorio_ativos_valor_baixo.php" data-periodo="true">11 - <?php echo __('Baixo Valor (< R$ 1k)'); ?></option>
+                                                        <option value="relatorio_ativos_disponiveis.php" data-periodo="true">12 - <?php echo __('Disponíveis'); ?></option>
+                                                        <option value="relatorio_ativos_em_uso.php" data-periodo="true">13 - <?php echo __('Em Uso'); ?></option>
+                                                        <option value="relatorio_ativos_manutencao.php" data-periodo="true">14 - <?php echo __('Em Manutenção'); ?></option>
+                                                        <option value="relatorio_ativos_sem_cc.php" data-periodo="true">15 - <?php echo __('Sem Centro de Custo'); ?></option>
+                                                        <option value="relatorio_ativos_por_usuario.php" data-periodo="true">16 - <?php echo __('Por Usuário'); ?></option>
+                                                        <option value="relatorio_ativos_unidade.php" data-periodo="true">17 - <?php echo __('Por Unidade'); ?></option>
+                                                        <option value="relatorio_ativos_historico.php" data-periodo="true">18 - <?php echo __('Trilha de Auditoria (Histórico)'); ?></option>
+                                                         <option value="relatorio_ativos_incidentes.php" data-periodo="true">19 - <?php echo __('Incidentes por Ativo'); ?></option>
+                                                         <option value="ativos_doados.php" data-periodo="true">20 - <?php echo __('Doações'); ?></option>
+                                                         <option value="relatorio_ativos_audit_seriais.php" data-periodo="true">21 - <?php echo __('Auditoria de Seriais e Identificação'); ?></option>
+                                                         <option value="relatorio_ativos_smartphones.php" data-periodo="true">22 - <?php echo __('Inventário de Smartphones/Mobile'); ?></option>
+                                                    </optgroup>
+                                                <?php else: ?>
+                                                    <optgroup label="<?php echo __('Meus Ativos'); ?>">
+                                                        <option value="relatorio_ativos_por_usuario.php" data-periodo="true">23 - <?php echo __('Meus Ativos Atribuídos'); ?>
+                                                        </option>
+                                                    </optgroup>
                                                 <?php endif; ?>
-                                                <option value="relatorio_chamados_abertos.php" data-periodo="true">25 - <?php echo __('Meus Chamados Abertos'); ?>
-                                                </option>
-                                                <option value="relatorio_chamados_fechados.php" data-periodo="true">26 - <?php echo __('Meus Chamados Fechados'); ?>
-                                                </option>
-                                                <option value="relatorio_chamados_recentes.php" data-periodo="true">27 - <?php echo __('Meus Chamados Recentes (30 dias)'); ?></option>
+
+                                                <optgroup label="<?php echo __('Chamados'); ?>">
+                                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                        <option value="relatorio_chamados_mensal.php" data-periodo="true">24 - <?php echo __('Resumo Mensal'); ?></option>
+                                                    <?php endif; ?>
+                                                    <option value="relatorio_chamados_abertos.php" data-periodo="true">25 - <?php echo __('Meus Chamados Abertos'); ?>
+                                                    </option>
+                                                    <option value="relatorio_chamados_fechados.php" data-periodo="true">26 - <?php echo __('Meus Chamados Fechados'); ?>
+                                                    </option>
+                                                    <option value="relatorio_chamados_recentes.php" data-periodo="true">27 - <?php echo __('Meus Chamados Recentes (30 dias)'); ?></option>
+                                                    <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
+                                                        <option value="relatorio_chamados_categoria.php" data-periodo="true">28 - <?php echo __('Por Categoria'); ?></option>
+                                                        <option value="relatorio_chamados_tecnico.php" data-periodo="true">29 - <?php echo __('Por Técnico'); ?></option>
+                                                        <option value="relatorio_chamados_solicitante.php" data-periodo="true">30 - <?php echo __('Por Solicitante'); ?>
+                                                        </option>
+                                                        <option value="relatorio_chamados_sla_vencido.php" data-periodo="true">31 - <?php echo __('SLA Vencido'); ?></option>
+                                                        <option value="relatorio_chamados_prioridade.php" data-periodo="true">32 - <?php echo __('Por Prioridade'); ?></option>
+                                                         <option value="relatorio_chamados_sem_atribuicao.php" data-periodo="true">33 - <?php echo __('Sem Atribuição'); ?>
+                                                         </option>
+                                                         <option value="relatorio_chamados_aprovacoes.php" data-periodo="true">34 - <?php echo __('Aprovações de Gestores'); ?></option>
+                                                         <option value="relatorio_chamados_sla_compliance.php" data-periodo="true">35 - <?php echo __('Compliance de SLA (Dynamic)'); ?></option>
+                                                         <option value="relatorio_chamados_sla_primeiro_atendimento.php" data-periodo="true">36 - <?php echo __('SLA de Primeiro Atendimento'); ?></option>
+                                                    <?php endif; ?>
+                                                </optgroup>
+
                                                 <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                    <option value="relatorio_chamados_categoria.php" data-periodo="true">28 - <?php echo __('Por Categoria'); ?></option>
-                                                    <option value="relatorio_chamados_tecnico.php" data-periodo="true">29 - <?php echo __('Por Técnico'); ?></option>
-                                                    <option value="relatorio_chamados_solicitante.php" data-periodo="true">30 - <?php echo __('Por Solicitante'); ?>
-                                                    </option>
-                                                    <option value="relatorio_chamados_sla_vencido.php" data-periodo="true">31 - <?php echo __('SLA Vencido'); ?></option>
-                                                    <option value="relatorio_chamados_prioridade.php" data-periodo="true">32 - <?php echo __('Por Prioridade'); ?></option>
-                                                     <option value="relatorio_chamados_sem_atribuicao.php" data-periodo="true">33 - <?php echo __('Sem Atribuição'); ?>
-                                                     </option>
-                                                     <option value="relatorio_chamados_aprovacoes.php" data-periodo="true">34 - <?php echo __('Aprovações de Gestores'); ?></option>
-                                                     <option value="relatorio_chamados_sla_compliance.php" data-periodo="true">35 - <?php echo __('Compliance de SLA (Dynamic)'); ?></option>
-                                                     <option value="relatorio_chamados_sla_primeiro_atendimento.php" data-periodo="true">36 - <?php echo __('SLA de Primeiro Atendimento'); ?></option>
+                                                    <optgroup label="<?php echo __('Usuários'); ?>">
+                                                        <option value="relatorio_usuario.php" data-periodo="true">36 - <?php echo __('Lista Geral'); ?></option>
+                                                        <option value="relatorio_usuarios_cc.php" data-periodo="true">37 - <?php echo __('Por Centro de Custo'); ?></option>
+                                                        <option value="relatorio_usuarios_inativos.php" data-periodo="true">38 - <?php echo __('Inativos'); ?></option>
+                                                        <option value="relatorio_usuarios_sem_ativos.php" data-periodo="true">39 - <?php echo __('Sem Ativos'); ?></option>
+                                                        <option value="relatorio_usuarios_com_ativos.php" data-periodo="true">40 - <?php echo __('Com Ativos'); ?></option>
+                                                        <option value="relatorio_usuarios_funcao.php" data-periodo="true">41 - <?php echo __('Por Função'); ?></option>
+                                                        <option value="relatorio_usuarios_vips.php" data-periodo="true">42 - <?php echo __('VIPs'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Licenças'); ?>">
+                                                        <option value="relatorio_licencas_geral.php" data-periodo="true">43 - <?php echo __('Geral de Licenças'); ?></option>
+                                                        <option value="relatorio_licencas_expiradas.php" data-periodo="true">44 - <?php echo __('Expiradas / Próximas ao Vencimento'); ?></option>
+                                                        <option value="relatorio_licencas_cc.php" data-periodo="true">45 - <?php echo __('Por Centro de Custo'); ?></option>
+                                                        <option value="relatorio_licencas_em_uso.php" data-periodo="true">46 - <?php echo __('Uso de Seats (Ocupação)'); ?>
+                                                        </option>
+                                                        <option value="relatorio_atribuicoes_geral.php" data-periodo="true">47 - <?php echo __('Relatório Geral de Atribuições'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Manutenção'); ?>">
+                                                        <option value="relatorio_manutencao_atual.php" data-periodo="true">48 - <?php echo __('Manutenções Ativas'); ?></option>
+                                                        <option value="relatorio_manutencao_historico.php" data-periodo="true">49 - <?php echo __('Histórico de Manutenções'); ?></option>
+                                                        <option value="relatorio_manutencao_por_tipo.php" data-periodo="true">50 - <?php echo __('Por Tipo de Intervenção'); ?></option>
+                                                        <option value="relatorio_manutencao_estatistico.php" data-periodo="true">51 - <?php echo __('Resumo Estatístico'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Fornecedores'); ?>">
+                                                        <option value="relatorio_fornecedores_lista.php" data-periodo="true">52 - <?php echo __('Lista de Fornecedores'); ?></option>
+                                                        <option value="relatorio_fornecedores_servico.php" data-periodo="true">53 - <?php echo __('Por Tipo de Serviço'); ?></option>
+                                                        <option value="relatorio_ativos_fornecedor.php" data-periodo="true">54 - <?php echo __('Ativos por Fornecedor'); ?></option>
+                                                        <option value="relatorio_licencas_fornecedor.php" data-periodo="true">55 - <?php echo __('Licenças por Fornecedor'); ?></option>
+                                                        <option value="relatorio_compras_fornecedor.php" data-periodo="true">56 - <?php echo __('Investimento por Fornecedor'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Infraestrutura e Locais'); ?>">
+                                                        <option value="relatorio_ativos_localizacao.php" data-periodo="true">57 - <?php echo __('Ativos por Localização (Full)'); ?></option>
+                                                        <option value="relatorio_ocupacao_local.php" data-periodo="true">58 - <?php echo __('Taxa de Ocupação por Local'); ?></option>
+                                                        <option value="relatorio_distribuicao_tipos_local.php" data-periodo="true">59 - <?php echo __('Distribuição por Tipo de Local'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Leilão'); ?>">
+                                                        <option value="relatorio_leiloes_pendentes.php" data-periodo="true">60 - <?php echo __('Ativos Elegíveis (Pendentes)'); ?></option>
+                                                        <option value="relatorio_leiloes_realizados.php" data-periodo="true">61 - <?php echo __('Histórico de Leilões Realizados'); ?></option>
+                                                    </optgroup>
+
+                                                    <optgroup label="<?php echo __('Outros'); ?>">
+                                                        <option value="relatorio_centro_de_custo.php" data-periodo="true">62 - <?php echo __('Centros de Custo (Lista)'); ?></option>
+                                                        <option value="relatorio_cc_detalhado.php" data-periodo="true">63 - <?php echo __('Centros de Custo (Detalhado)'); ?></option>
+                                                        <option value="relatorio_resumo_geral.php" data-periodo="true">64 - <?php echo __('Resumo Geral do Sistema'); ?></option>
+                                                    </optgroup>
                                                 <?php endif; ?>
-                                            </optgroup>
-
-                                            <?php if ($_SESSION['nivelUsuario'] !== 'Usuário'): ?>
-                                                <optgroup label="<?php echo __('Usuários'); ?>">
-                                                    <option value="relatorio_usuario.php" data-periodo="true">36 - <?php echo __('Lista Geral'); ?></option>
-                                                    <option value="relatorio_usuarios_cc.php" data-periodo="true">37 - <?php echo __('Por Centro de Custo'); ?></option>
-                                                    <option value="relatorio_usuarios_inativos.php" data-periodo="true">38 - <?php echo __('Inativos'); ?></option>
-                                                    <option value="relatorio_usuarios_sem_ativos.php" data-periodo="true">39 - <?php echo __('Sem Ativos'); ?></option>
-                                                    <option value="relatorio_usuarios_com_ativos.php" data-periodo="true">40 - <?php echo __('Com Ativos'); ?></option>
-                                                    <option value="relatorio_usuarios_funcao.php" data-periodo="true">41 - <?php echo __('Por Função'); ?></option>
-                                                    <option value="relatorio_usuarios_vips.php" data-periodo="true">42 - <?php echo __('VIPs'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Licenças'); ?>">
-                                                    <option value="relatorio_licencas_geral.php" data-periodo="true">43 - <?php echo __('Geral de Licenças'); ?></option>
-                                                    <option value="relatorio_licencas_expiradas.php" data-periodo="true">44 - <?php echo __('Expiradas / Próximas ao Vencimento'); ?></option>
-                                                    <option value="relatorio_licencas_cc.php" data-periodo="true">45 - <?php echo __('Por Centro de Custo'); ?></option>
-                                                    <option value="relatorio_licencas_em_uso.php" data-periodo="true">46 - <?php echo __('Uso de Seats (Ocupação)'); ?>
-                                                    </option>
-                                                    <option value="relatorio_atribuicoes_geral.php" data-periodo="true">47 - <?php echo __('Relatório Geral de Atribuições'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Manutenção'); ?>">
-                                                    <option value="relatorio_manutencao_atual.php" data-periodo="true">48 - <?php echo __('Manutenções Ativas'); ?></option>
-                                                    <option value="relatorio_manutencao_historico.php" data-periodo="true">49 - <?php echo __('Histórico de Manutenções'); ?></option>
-                                                    <option value="relatorio_manutencao_por_tipo.php" data-periodo="true">50 - <?php echo __('Por Tipo de Intervenção'); ?></option>
-                                                    <option value="relatorio_manutencao_estatistico.php" data-periodo="true">51 - <?php echo __('Resumo Estatístico'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Fornecedores'); ?>">
-                                                    <option value="relatorio_fornecedores_lista.php" data-periodo="true">52 - <?php echo __('Lista de Fornecedores'); ?></option>
-                                                    <option value="relatorio_fornecedores_servico.php" data-periodo="true">53 - <?php echo __('Por Tipo de Serviço'); ?></option>
-                                                    <option value="relatorio_ativos_fornecedor.php" data-periodo="true">54 - <?php echo __('Ativos por Fornecedor'); ?></option>
-                                                    <option value="relatorio_licencas_fornecedor.php" data-periodo="true">55 - <?php echo __('Licenças por Fornecedor'); ?></option>
-                                                    <option value="relatorio_compras_fornecedor.php" data-periodo="true">56 - <?php echo __('Investimento por Fornecedor'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Infraestrutura e Locais'); ?>">
-                                                    <option value="relatorio_ativos_localizacao.php" data-periodo="true">57 - <?php echo __('Ativos por Localização (Full)'); ?></option>
-                                                    <option value="relatorio_ocupacao_local.php" data-periodo="true">58 - <?php echo __('Taxa de Ocupação por Local'); ?></option>
-                                                    <option value="relatorio_distribuicao_tipos_local.php" data-periodo="true">59 - <?php echo __('Distribuição por Tipo de Local'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Leilão'); ?>">
-                                                    <option value="relatorio_leiloes_pendentes.php" data-periodo="true">60 - <?php echo __('Ativos Elegíveis (Pendentes)'); ?></option>
-                                                    <option value="relatorio_leiloes_realizados.php" data-periodo="true">61 - <?php echo __('Histórico de Leilões Realizados'); ?></option>
-                                                </optgroup>
-
-                                                <optgroup label="<?php echo __('Outros'); ?>">
-                                                    <option value="relatorio_centro_de_custo.php" data-periodo="true">62 - <?php echo __('Centros de Custo (Lista)'); ?></option>
-                                                    <option value="relatorio_cc_detalhado.php" data-periodo="true">63 - <?php echo __('Centros de Custo (Detalhado)'); ?></option>
-                                                    <option value="relatorio_resumo_geral.php" data-periodo="true">64 - <?php echo __('Resumo Geral do Sistema'); ?></option>
-                                                </optgroup>
-                                            <?php endif; ?>
-                                        </select>
-
-                                        <!-- Filtro de Período -->
-                                        <div id="dateFilters" class="align-items-center mr-3" style="display: none;">
-                                            <input type="date" id="startDate" class="form-control mr-2" style="height: 50px; width: 170px;" title="<?php echo __('Data Inicial'); ?>">
-                                            <span class="mr-2"><?php echo __('até'); ?></span>
-                                            <input type="date" id="endDate" class="form-control" style="height: 50px; width: 170px;" title="<?php echo __('Data Final'); ?>">
+                                            </select>
                                         </div>
-                                        <select id="reportFormat" class="form-control mr-3"
-                                            style="height: 50px; width: 150px;">
-                                            <option value="pdf" data-periodo="true">PDF</option>
-                                            <option value="xlsx" data-periodo="true">XLSX</option>
-                                        </select>
-                                        <button class="btn btn-success active text-white pulse animated btn-user"
-                                            type="button" onclick="generateReport()"
-                                            style="background: rgb(44,64,74);border-radius: 10px;height: 50px; white-space: nowrap;">
-                                            <?php echo __('Gerar Relatório'); ?>
-                                        </button>
+                                        <div class="col-md-2 mb-3">
+                                                <label for="reportFormat" class="font-weight-bold small text-gray-600 mb-1"><?php echo __('Formato'); ?></label>
+                                                <select id="reportFormat" class="form-control" style="height: 40px;">
+                                                    <option value="pdf">PDF</option>
+                                                    <option value="xlsx">XLSX</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-3 mb-3">
+                                                <button class="btn btn-primary btn-block text-white"
+                                                    type="button" onclick="generateReport()"
+                                                    style="background: #2c404a; border: none; border-radius: 8px; height: 40px; font-weight: 600;">
+                                                    <i class="fas fa-file-download mr-2"></i><?php echo __('Gerar Relatório'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Filtro de Período (Expande abaixo se necessário) -->
+                                        <div id="dateFilters" class="row mt-2" style="display: none;">
+                                            <div class="col-md-5 mb-2">
+                                                <label class="font-weight-bold small text-gray-600 mb-1"><?php echo __('Data Inicial'); ?></label>
+                                                <input type="date" id="startDate" class="form-control" style="height: 40px;">
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-center justify-content-center mb-2 pt-4">
+                                                <span class="font-weight-bold text-gray-500 small"><?php echo __('até'); ?></span>
+                                            </div>
+                                            <div class="col-md-5 mb-2">
+                                                <label class="font-weight-bold small text-gray-600 mb-1"><?php echo __('Data Final'); ?></label>
+                                                <input type="date" id="endDate" class="form-control" style="height: 40px;">
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>

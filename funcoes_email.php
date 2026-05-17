@@ -194,4 +194,32 @@ function enviarAlertaEstoque($itensCriticos)
     }
     return $sucessoGeral;
 }
+
+function enviarRelatorioZabbix($destinatario, $corpoHtml, $nomeEmpresa)
+{
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USER;
+        $mail->Password = SMTP_PASS;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = SMTP_PORT;
+        $mail->CharSet = 'UTF-8';
+
+        $mail->setFrom(SMTP_USER, "Zabbix Analytics - " . SMTP_FROM_NAME);
+        $mail->addAddress($destinatario);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Relatório de Saúde Zabbix (Top 10) - " . $nomeEmpresa;
+        $mail->Body = $corpoHtml;
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Erro ao enviar relatório Zabbix para {$destinatario}: {$mail->ErrorInfo}");
+        return false;
+    }
+}
 ?>

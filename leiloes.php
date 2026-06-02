@@ -406,7 +406,7 @@ if ($result) {
                     </div>
 
                     <!-- Lotes Fechados -->
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4" id="lotes-fechados-card">
                         <div class="card-header py-3 bg-light">
                             <h6 class="text-secondary m-0 font-weight-bold"><i class="fas fa-lock mr-2"></i><?php echo __('Lotes Fechados (Aguardando Leilão)'); ?></h6>
                         </div>

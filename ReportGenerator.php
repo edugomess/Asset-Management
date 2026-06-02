@@ -29,17 +29,41 @@ class ReportGenerator extends FPDF
 
     public function __construct($title, $columns, $conn, $orientation = 'P')
     {
-        // ... (auth check remains the same) ...
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['nivelUsuario']) || ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Suporte')) {
             die($this->utf8_to_iso88591('⚠️ Acesso Negado.'));
         }
 
         parent::__construct($orientation, 'mm', 'A4');
-        $this->SetMargins(6, 6, 6);
-        $this->SetAutoPageBreak(true, 10);
+        
+        // Define margins (12mm is visually pleasing)
+        $margin = 12;
+        $this->SetMargins($margin, $margin, $margin);
+        $this->SetAutoPageBreak(true, 15);
+        
         $this->reportTitle = $title;
-        $this->columns = $columns;
         $this->conn = $conn;
+
+        // Auto-scale columns to perfectly fit the page width
+        $pageWidth = ($orientation === 'L' || $orientation === 'l') ? 297 : 210;
+        $printable_width = $pageWidth - ($margin * 2);
+        
+        $total_defined_width = 0;
+        foreach ($columns as $col) {
+            $total_defined_width += isset($col['width']) ? $col['width'] : 0;
+        }
+
+        if ($total_defined_width > 0) {
+            $scale = $printable_width / $total_defined_width;
+            foreach ($columns as &$col) {
+                if (isset($col['width'])) {
+                    $col['width'] = $col['width'] * $scale;
+                }
+            }
+        }
+        $this->columns = $columns;
 
         // Captura datas do período se disponíveis
         $this->startDate = isset($_GET['start']) ? $this->conn->real_escape_string($_GET['start']) : null;
@@ -52,7 +76,7 @@ class ReportGenerator extends FPDF
         $logo = self::getLogoPath($this->conn);
 
         // Layout de Cabeçalho Profissional
-        $this->Image($logo, 6, 6, 12);
+        $this->Image($logo, 12, 6, 12);
         
         $this->SetFont('Arial', 'B', 15);
         $this->SetTextColor(44, 64, 74); // Cor primária do dashboard
@@ -80,7 +104,8 @@ class ReportGenerator extends FPDF
             $this->Ln(2);
         }
         
-        $this->Line(6, 23, 204, 23); // Linha horizontal moderna (210 - 6 - 6 = 198 span)
+        $pageW = $this->GetPageWidth();
+        $this->Line(12, 23, $pageW - 12, 23); // Linha horizontal considerando margem de 12mm
         $this->Ln(5);
 
         // Table Header

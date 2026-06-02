@@ -3,6 +3,7 @@ $userName = htmlspecialchars($_SESSION['nome_usuario']);
 $fotoPerfil = !empty($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '/assets/img/avatars/avatar5.jpeg';
 $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
 ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 <style>
 /* Estilo Premium para Ícones da Topbar */
 .nav-link-utility {
@@ -113,12 +114,7 @@ $isAdminOrSuporte = $_SESSION['nivelUsuario'] !== 'Usuário';
                 </a>
             </li>
 
-            <!-- Botão de Ajuda Interativo -->
-            <li class="nav-item mx-1 align-self-center d-none d-sm-block">
-                <a class="nav-link nav-link-utility btn-help-manual" href="javascript:void(0);" id="start-manual" title="<?php echo __('Ajuda Interativa'); ?>">
-                    <i class="fas fa-question-circle fa-fw"></i>
-                </a>
-            </li>
+            <!-- Botão de Ajuda Interativo removido do topbar (agora é flutuante) -->
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -188,6 +184,61 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(pollSystemNotifications, 60000); // Verifica a cada minuto
 });
 </script>
+
+<style>
+.floating-manual-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    height: 55px;
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 9999;
+    font-size: 24px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding: 0 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 55px;
+}
+.floating-manual-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.3);
+    color: white;
+    max-width: 280px;
+}
+.floating-manual-btn i {
+    transition: transform 0.3s ease;
+    margin: 0;
+}
+.floating-manual-btn:hover i {
+    transform: rotate(15deg) scale(1.1);
+}
+.floating-manual-text {
+    max-width: 0;
+    opacity: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    transition: all 0.4s ease;
+    margin-left: 0;
+}
+.floating-manual-btn:hover .floating-manual-text {
+    max-width: 230px;
+    opacity: 1;
+    margin-left: 10px;
+}
+</style>
+<div class="floating-manual-btn animate__animated animate__bounceIn" id="start-manual">
+    <i class="fas fa-question"></i>
+    <span class="floating-manual-text"><?php echo __('Guia interativo da Página'); ?></span>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
-<script src="/assets/js/system_manual.js"></script>
+<script src="/assets/js/system_manual.js?v=<?= time() ?>"></script>
 <?php include_once 'mobile_menu.php'; ?>

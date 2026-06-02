@@ -23,32 +23,32 @@ document.addEventListener('DOMContentLoaded', function() {
             // DASHBOARD DO USUÁRIO
             steps = [
                 {
-                    title: '👋 Bem-vindo ao Asset MGT!',
-                    intro: 'Este é o seu portal central. Além de ser funcional para o dia a dia, ele foi projetado para garantir a **integridade dos dados** e a **rastreabilidade total** dos ativos da empresa.'
+                    title: '👋 Bem-vindo(a) ao Asset MGT!',
+                    intro: 'Neste pequeno tour, vamos te mostrar como é fácil usar o sistema. O **Dashboard** é a sua tela inicial, onde você tem um resumo rápido de tudo o que importa.'
                 },
                 {
                     element: '.sidebar',
-                    title: 'Navegação Estrutural (Manual Não Funcional)',
-                    intro: 'A barra lateral é a espinha dorsal do sistema. Ela reflete a separação de responsabilidades (SoD), permitindo que cada perfil acesse apenas o que lhe compete.'
+                    title: 'Navegação Principal',
+                    intro: 'Aqui no menu lateral você encontra todos os módulos do sistema. Sinta-se livre para explorar: Inventário, Chamados, Relatórios e muito mais!'
                 },
                 {
-                    title: '🚀 Painel de Controle',
-                    intro: 'Acompanhe aqui seus chamados em aberto e ativos vinculados. O sistema monitora automaticamente o tempo de resposta (SLA) para garantir eficiência técnica.'
+                    title: '🚀 Seus Chamados e Ativos',
+                    intro: 'Logo de cara, mostramos os chamados que precisam da sua atenção e os equipamentos que estão sob a sua responsabilidade.'
                 },
                 {
                     element: '#globalSearchInput',
-                    title: 'Busca Inteligente',
-                    intro: 'Pesquisa indexada que varre o banco de dados em tempo real para localizar etiquetas (Tags), números de série ou usuários.'
+                    title: 'Busca Rápida',
+                    intro: 'Precisa encontrar algo depressa? Digite a etiqueta (Tag) do equipamento, número de série ou até mesmo o nome de um usuário aqui.'
                 },
                 {
                     element: '#alertsDropdown',
-                    title: 'Central de Alertas',
-                    intro: 'Monitoramento proativo: o sistema alerta sobre o estoque atingindo o limite crítico antes que falte o insumo na operação.'
+                    title: 'Central de Notificações',
+                    intro: 'Fique de olho aqui! O sistema vai te avisar sempre que houver algum alerta importante, como equipamentos precisando de manutenção ou estoque baixo.'
                 },
                 {
                     element: '#messagesDropdown',
-                    title: 'Comunicação Segura',
-                    intro: 'Chat interno criptografado para evitar o uso de ferramentas externas e manter o histórico de suporte centralizado.'
+                    title: 'Chat da Equipe',
+                    intro: 'Fale com os técnicos e membros da equipe rapidamente através do nosso chat interno, sem precisar abrir outro aplicativo.'
                 }
             ];
         } 
@@ -56,23 +56,43 @@ document.addEventListener('DOMContentLoaded', function() {
             // CONSOLE OPERACIONAL (ADMIN)
             steps = [
                 {
-                    title: '📊 Console de Governança',
-                    intro: 'Visão executiva baseada em KPIs (Key Performance Indicators). Aqui transformamos dados técnicos em decisões estratégicas.'
+                    title: '📊 Console Operacional',
+                    intro: 'Esta é a visão gerencial. Aqui você acompanha a saúde geral da TI e do inventário através de gráficos fáceis de ler.'
                 },
                 {
                     element: '#dashboard-stock-alert',
-                    title: 'Mitigação de Riscos',
-                    intro: 'Itens em vermelho indicam risco operacional por falta de estoque. O sistema calcula a necessidade de compra baseado no histórico de consumo.'
+                    title: 'Alertas de Estoque',
+                    intro: 'Se algum item estiver acabando, ele aparecerá em vermelho aqui para que você possa comprar mais antes que falte.'
                 },
                 {
                     element: '.border-left-primary',
-                    title: 'Taxa de Disponibilidade',
-                    intro: 'Proporção de ativos prontos para uso vs ativos em manutenção. Um índice alto indica uma TI eficiente.'
+                    title: 'Ativos em Operação',
+                    intro: 'Este cartão mostra a quantidade total de ativos que estão atualmente sob a responsabilidade de algum usuário.'
                 },
                 {
                     element: '.border-left-success',
-                    title: 'Gestão Patrimonial',
-                    intro: 'Valor total do inventário. Esta função não funcional auxilia na contabilidade e no cálculo de impostos e depreciação anual.'
+                    title: 'Patrimônio Atualizado',
+                    intro: 'Acompanhe aqui o valor real (já descontada a depreciação) de todo o seu parque tecnológico.'
+                },
+                {
+                    element: '.border-left-warning',
+                    title: 'Elegíveis para Baixa',
+                    intro: 'Quantidade de equipamentos que já podem ser doados ou enviados para leilão, baseados na vida útil.'
+                },
+                {
+                    element: '.border-left-danger',
+                    title: 'Desvalorização Média',
+                    intro: 'A porcentagem média de perda patrimonial do parque desde o momento da compra.'
+                },
+                {
+                    element: '#dataTable',
+                    title: 'Ativos Elegíveis',
+                    intro: 'Esta tabela lista os ativos com foco operacional. Se o botão "Doar" estiver verde, significa que o equipamento já cumpriu seu tempo de carência e pode ser doado.'
+                },
+                {
+                    element: '.btn-premium-cadastro',
+                    title: 'Histórico de Doações',
+                    intro: 'Clicando aqui, você vai para a galeria que registra todas as doações oficiais já feitas pela empresa.'
                 }
             ];
         }
@@ -80,23 +100,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // INVENTÁRIO
             steps = [
                 {
-                    title: '📦 Gestão de Ciclo de Vida',
-                    intro: 'Gerencie o ativo desde a aquisição até o descarte. O foco aqui é o **Compliance** e a proteção do patrimônio.'
+                    title: '📦 Inventário de Ativos',
+                    intro: 'Aqui é onde controlamos todos os equipamentos da empresa, desde computadores e monitores até teclados.'
                 },
                 {
                     element: '.btn-premium-cadastro',
-                    title: 'Input de Dados',
-                    intro: 'Adicione novos itens. Cada registro gera um hash único para etiquetação física.'
+                    title: 'Adicionar Novo',
+                    intro: 'Clique aqui para registrar um novo equipamento. O sistema vai gerar automaticamente uma etiqueta (Tag) única para ele.'
                 },
                 {
                     element: '#assetsDataTable',
-                    title: 'Base de Dados de Ativos',
-                    intro: 'Tabela relacional. Cada linha permite rastrear quem usou o equipamento, quando foi para manutenção e qual o custo acumulado.'
+                    title: 'Lista Completa',
+                    intro: 'Nesta tabela você vê todos os equipamentos. Você pode clicar em um deles para ver o histórico de quem usou e as manutenções.'
                 },
                 {
                     element: '.dataTables_filter',
-                    title: 'Filtros de Auditoria',
-                    intro: 'Filtre rapidamente para auditorias surpresa ou conferência de estoque por setor.'
+                    title: 'Filtrar Lista',
+                    intro: 'Use esta caixinha para procurar um equipamento específico no meio da lista.'
                 }
             ];
         }
@@ -104,18 +124,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // USUÁRIOS
             steps = [
                 {
-                    title: '👤 Identidade e Acesso (IAM)',
-                    intro: 'Controle quem pode fazer o quê. O sistema utiliza RBAC (Role-Based Access Control) para garantir segurança.'
+                    title: '👤 Controle de Usuários',
+                    intro: 'Gerencie todos os colaboradores que têm acesso ao sistema e veja quais equipamentos estão com eles.'
                 },
                 {
                     element: '.btn-premium-cadastro',
-                    title: 'Provisionamento',
-                    intro: 'Crie novos perfis. Lembre-se: o tipo de usuário define a autoridade dele sobre o inventário.'
-                },
-                {
-                    element: '#userTable',
-                    title: 'Matriz de Responsabilidade',
-                    intro: 'Visualize ativos sob custódia de cada colaborador. Essencial para processos de Onboarding e Offboarding.'
+                    title: 'Novo Colaborador',
+                    intro: 'Cadastre novas pessoas aqui. Você pode definir se a pessoa é apenas um Usuário comum, um Técnico de Suporte ou um Administrador.'
                 }
             ];
         }
@@ -123,18 +138,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // LICENÇAS
             steps = [
                 {
-                    title: '🔑 Compliance de Software',
-                    intro: 'Evite multas e garanta o uso legal. Este módulo foca na **Gestão de Ativos de Software (SAM)**.'
+                    title: '🔑 Licenças de Software',
+                    intro: 'Controle os softwares pagos da empresa (como Office, Antivírus, etc) para garantir que você não está pagando por licenças sem uso.'
+                },
+                {
+                    element: '.btn-premium-cadastro',
+                    title: 'Nova Licença',
+                    intro: 'Clique aqui para registrar a compra de um novo software ou serviço de assinatura.'
+                },
+                {
+                    element: '#licencasTable',
+                    title: 'Inventário de Software',
+                    intro: 'Aqui você acompanha todas as licenças que a empresa possui, e quantas ainda estão disponíveis para uso.'
                 },
                 {
                     element: '.btn-info-system',
-                    title: 'Vinculação de Direito de Uso',
-                    intro: 'Atribua licenças a usuários. O sistema audita automaticamente se o número de instalações excede o comprado.'
-                },
-                {
-                    element: '.progress',
-                    title: 'Ocupação de Seats',
-                    intro: 'Visão não funcional: Identifique subutilização de licenças pagas para otimizar custos de subscrição.'
+                    title: 'Distribuir Licenças',
+                    intro: 'Use este botão para associar uma licença a um usuário ou a um computador específico.'
                 }
             ];
         }
@@ -142,18 +162,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // CHAMADOS
             steps = [
                 {
-                    title: '🎫 Gestão de Incidentes e Requisições',
-                    intro: 'Centralize o suporte. O objetivo principal aqui é a **Restauração Rápida do Serviço**.'
+                    title: '🎫 Central de Chamados',
+                    intro: 'Este é o coração do suporte! Todos os problemas relatados pelos usuários chegam aqui na forma de um "Ticket" (Chamado).'
                 },
                 {
                     element: '.sla-container',
-                    title: 'Acordo de Nível de Serviço (SLA)',
-                    intro: 'Conceito Não Funcional: É a promessa de entrega. As cores indicam se estamos cumprindo o contrato de suporte com o usuário.'
+                    title: 'Tempo de Atendimento (SLA)',
+                    intro: 'As barrinhas coloridas ajudam a entender a urgência. Elas avisam se o tempo para resolver um problema está acabando.'
                 },
                 {
                     element: '#filtro_status',
-                    title: 'Fila de Atendimento',
-                    intro: 'Organize o trabalho por urgência e impacto. Priorize chamados P1 (Críticos) para evitar paradas na operação.'
+                    title: 'Organize o Trabalho',
+                    intro: 'Filtre os chamados para ver apenas os "Abertos" ou filtre por "Prioridade Alta" para saber o que resolver primeiro.'
                 }
             ];
         }
@@ -161,18 +181,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // RELATÓRIOS
             steps = [
                 {
-                    title: '📑 Business Intelligence',
-                    intro: 'Converta dados brutos em conhecimento. Relatórios são fundamentais para auditorias externas (ISO/IEC 27001).'
+                    title: '📑 Emissão de Relatórios',
+                    intro: 'Precisa apresentar dados em uma reunião? Escolha o modelo aqui e gere um relatório completo com apenas um clique.'
                 },
                 {
                     element: '#reportType',
-                    title: 'Taxonomia de Relatórios',
-                    intro: 'Modelos prontos que cobrem desde a saúde financeira até o inventário físico detalhado.'
+                    title: 'Tipos de Relatório',
+                    intro: 'Temos relatórios de doações, de equipamentos em uso, histórico de manutenções e muito mais.'
                 },
                 {
                     element: '#reportFormat',
-                    title: 'Integridade dos Dados',
-                    intro: 'Exportação em PDF para documentos IMUTÁVEIS (oficiais) ou XLSX para análise de tendências.'
+                    title: 'Formato do Arquivo',
+                    intro: 'Você pode escolher se prefere baixar um arquivo PDF bonito e bloqueado para edição, ou uma planilha de Excel (XLSX) para editar.'
                 }
             ];
         }
@@ -180,18 +200,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // IA INSIGHTS
             steps = [
                 {
-                    title: '🤖 Análise Preditiva (IA)',
-                    intro: 'Utilizamos modelos avançados para prever falhas antes que elas ocorram, permitindo a manutenção proativa.'
+                    title: '🤖 Dicas da Inteligência Artificial',
+                    intro: 'Nossa IA analisa todo o seu sistema e dá dicas automáticas para melhorar a operação de TI.'
                 },
                 {
                     element: '#ai-analysis-text',
-                    title: 'Insights Estratégicos',
-                    intro: 'A IA analisa padrões de chamados e sugere melhorias na infraestrutura para reduzir a recorrência de problemas.'
-                },
-                {
-                    element: '.border-bottom-danger',
-                    title: 'Gestão de Obsolescência',
-                    intro: 'Identificamos automaticamente equipamentos que geram custo de manutenção superior ao valor de mercado.'
+                    title: 'Sugestões Estratégicas',
+                    intro: 'Leia aqui os conselhos da IA. Por exemplo, ela pode avisar se um modelo específico de impressora está quebrando demais.'
                 }
             ];
         }
@@ -199,13 +214,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // LOCAIS
             steps = [
                 {
-                    title: '📍 Topologia da Infraestrutura',
-                    intro: 'Organize logicamente seu espaço físico. Um inventário preciso depende de saber EXATAMENTE onde cada ativo está localizado.'
+                    title: '📍 Locais e Infraestrutura',
+                    intro: 'Organize as salas, andares e prédios da empresa. Saber exatamente onde um equipamento está facilita muito os inventários físicos.'
                 },
                 {
-                    element: '.col-md-4',
-                    title: 'Hierarquia de Locais',
-                    intro: 'Crie estruturas em árvore (ex: Empresa > Prédio > CPD > Rack). Isso permite gerar relatórios de valor por unidade física.'
+                    element: '.col-md-4 .card',
+                    title: 'Adicionar Local',
+                    intro: 'Use este formulário para cadastrar novos prédios, andares, salas ou até mesmo racks e baias.'
+                },
+                {
+                    element: '.col-md-8',
+                    title: 'Árvore de Locais',
+                    intro: 'Aqui fica a hierarquia visual. Por exemplo: Prédio Central -> Andar 2 -> Sala de Reunião.'
                 }
             ];
         }
@@ -213,18 +233,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // CHAT
             steps = [
                 {
-                    title: '💬 Colaboração em Tempo Real',
-                    intro: 'A agilidade no suporte depende de uma comunicação rápida. Utilize o chat para esclarecer dúvidas sobre chamados sem sair do contexto do sistema.'
-                },
-                {
-                    element: '.chat-sidebar',
-                    title: 'Segurança da Informação',
-                    intro: 'Conceito Não Funcional: Manter conversas técnicas dentro do ambiente corporativo protege dados sensíveis da empresa contra vazamentos.'
+                    title: '💬 Chat Interno',
+                    intro: 'Converse com os técnicos do suporte por aqui. Assim, toda a comunicação técnica fica salva e organizada dentro do sistema.'
                 },
                 {
                     element: '#myStatusBtn',
-                    title: 'Disponibilidade Técnica',
-                    intro: 'Informe seu estado. Isso ajuda na distribuição de tarefas e no gerenciamento da expectativa de resposta dos usuários.'
+                    title: 'Seu Status',
+                    intro: 'Você pode mudar seu status para "Ocupado" ou "Ausente" para que os outros saibam se você pode ajudar no momento.'
                 }
             ];
         }
@@ -232,22 +247,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // BASE DE CONHECIMENTO
             steps = [
                 {
-                    title: '📚 Gestão do Conhecimento',
-                    intro: 'Evite o "Silo de Informação". Documentar soluções recorrentes reduz o tempo médio de reparo (MTTR) em até 40%.'
+                    title: '📚 Base de Conhecimento (Wiki)',
+                    intro: 'Uma biblioteca de soluções! Se você resolveu um problema difícil, crie um artigo aqui para ajudar outros técnicos no futuro.'
                 },
                 {
-                    element: '.btn-primary[href="adicionar_artigo.php"]',
-                    title: 'Padronização Técnica',
-                    intro: 'Ao criar um artigo, você funcionalmente ajuda outros técnicos a seguirem o mesmo procedimento operacional para um problema comum.'
-                }
-            ];
-        }
-        else if (path.includes('centro_de_custo.php') || path.includes('fornecedores.php')) {
-            // CADASTROS AUXILIARES
-            steps = [
+                    element: '.btn-primary',
+                    title: 'Novo Artigo',
+                    intro: 'Clique aqui para escrever um novo manual ou tutorial.'
+                },
                 {
-                    title: '📋 Governança Financeira',
-                    intro: 'Crucial para o ciclo de vida do ativo. O vínculo com Centros de Custo permite saber qual departamento está gerando maior gasto tecnológico.'
+                    element: '.table',
+                    title: 'Lista de Artigos',
+                    intro: 'Aqui ficam todos os artigos já publicados. Você pode editar ou apagar os mais antigos.'
                 }
             ];
         }
@@ -255,13 +266,214 @@ document.addEventListener('DOMContentLoaded', function() {
             // CONFIGURAÇÕES
             steps = [
                 {
-                    title: '⚙️ Parametrizar Sistema',
-                    intro: 'Ajuste fino do Asset MGT.'
+                    title: '⚙️ Configurações do Sistema',
+                    intro: 'Ajuste o sistema para ficar com a cara da sua empresa.'
                 },
                 {
                     element: '#settingsTabs',
-                    title: 'Menu de Abas',
-                    intro: 'Configure Branding, SMTP, IA, e as regras exclusivas de SLA.'
+                    title: 'Abas de Configuração',
+                    intro: 'Navegue pelas abas para trocar o logotipo, configurar os tempos de SLA ou alterar configurações avançadas.'
+                }
+            ];
+        }
+        else if (path.includes('leiloes.php')) {
+            steps = [
+                {
+                    title: '🔨 Lotes de Leilão',
+                    intro: 'Aqui você organiza os equipamentos antigos que serão vendidos. Agrupe-os em lotes para facilitar a venda.'
+                },
+                {
+                    element: '#dataTable',
+                    title: 'Ativos Elegíveis',
+                    intro: 'Esta tabela mostra os equipamentos que atingiram 100% de depreciação e estão prontos para serem leiloados.'
+                },
+                {
+                    element: '.btn-warning',
+                    title: 'Criar Novo Lote',
+                    intro: 'Você pode criar um lote vazio e depois ir adicionando vários equipamentos dentro dele.'
+                },
+                {
+                    element: '#lotes-fechados-card',
+                    title: 'Lotes Aguardando Leilão',
+                    intro: 'Aqui ficam os lotes já fechados e prontos. Eles aguardam o processo de leilão para serem vendidos.'
+                }
+            ];
+        }
+        else if (path.includes('ativos_doados.php')) {
+            steps = [
+                {
+                    title: '🤝 Ativos Doados',
+                    intro: 'Esta é a galeria de boas ações! Aqui fica o registro permanente de todos os equipamentos que a empresa doou para ONGs ou instituições.'
+                },
+                {
+                    element: '#dataTable',
+                    title: 'Histórico de Doações',
+                    intro: 'Aqui estão os detalhes de cada doação. Ter este registro é importante para prestação de contas da empresa.'
+                },
+                {
+                    element: '.btn-danger',
+                    title: 'Exportar Relatório PDF',
+                    intro: 'Você pode gerar um PDF com todas as doações clicando aqui.'
+                },
+                {
+                    element: '.btn-success',
+                    title: 'Exportar Planilha XLSX',
+                    intro: 'Se preferir trabalhar com os dados, gere uma planilha do Excel.'
+                }
+            ];
+        }
+        else if (path.includes('ativos_leiloados.php')) {
+            steps = [
+                {
+                    title: '💰 Ativos Leiloados',
+                    intro: 'Veja o histórico de tudo que já foi vendido nos leilões. Aqui você confere o valor arrecadado com cada equipamento antigo.'
+                },
+                {
+                    element: '#dataTable',
+                    title: 'Tabela de Vendas',
+                    intro: 'Esta lista é imutável e serve para auditorias fiscais sobre o desfazimento do patrimônio.'
+                },
+                {
+                    element: '.btn-danger',
+                    title: 'Relatório Oficial PDF',
+                    intro: 'Gera o relatório de vendas completo formatado em PDF para auditoria.'
+                },
+                {
+                    element: '.btn-success',
+                    title: 'Planilha Contábil XLSX',
+                    intro: 'Gera uma planilha em Excel para sua equipe financeira processar os valores arrecadados.'
+                }
+            ];
+        }
+        else if (path.includes('centro_de_custo.php')) {
+            steps = [
+                {
+                    title: '🏢 Centros de Custo',
+                    intro: 'Cadastre os departamentos ou projetos da empresa. Isso ajuda a saber qual setor gasta mais com tecnologia!'
+                },
+                {
+                    element: '.btn-premium-cadastro',
+                    title: 'Novo Departamento',
+                    intro: 'Clique aqui para adicionar um novo setor ou centro de custo.'
+                },
+                {
+                    element: '#dataTable',
+                    title: 'Lista de Setores',
+                    intro: 'Aqui você vê todos os setores. Você pode editar ou excluir os centros de custo existentes.'
+                }
+            ];
+        }
+        else if (path.includes('fornecedores.php')) {
+            steps = [
+                {
+                    title: '🤝 Fornecedores',
+                    intro: 'Cadastre as lojas e distribuidores de onde você compra equipamentos. É sempre bom ter o contato rápido quando precisar acionar uma garantia.'
+                },
+                {
+                    element: '.btn-premium-cadastro',
+                    title: 'Novo Fornecedor',
+                    intro: 'Adicione um novo parceiro comercial aqui.'
+                },
+                {
+                    element: '#fornecedoresDataTable',
+                    title: 'Contatos Rápidos',
+                    intro: 'Aqui ficam os e-mails e telefones dos seus fornecedores.'
+                }
+            ];
+        }
+        else if (path.includes('agent.php')) {
+            steps = [
+                {
+                    title: '🧠 Assistente IA',
+                    intro: 'Precisa de uma ajuda inteligente? Converse com o nosso Assistente de Inteligência Artificial para tirar dúvidas sobre o sistema ou equipamentos.'
+                },
+                {
+                    element: '#chat-history',
+                    title: 'Histórico da Conversa',
+                    intro: 'Aqui você verá as respostas da nossa IA.'
+                },
+                {
+                    element: '#user-input',
+                    title: 'Faça sua Pergunta',
+                    intro: 'Digite o que você precisa saber. Por exemplo: "Como eu crio um chamado?" ou "Quais ativos estão em manutenção?".'
+                }
+            ];
+        }
+        else if (path.includes('suporte.php')) {
+            steps = [
+                {
+                    title: '🛠️ Suporte Técnico',
+                    intro: 'Está com algum problema no sistema? Aqui você encontra os canais oficiais para falar com a nossa equipe de suporte avançado.'
+                },
+                {
+                    element: '#supportForm',
+                    title: 'Abertura de Ticket',
+                    intro: 'Preencha este formulário detalhando a sua dúvida ou problema técnico. Nossa equipe entrará em contato o mais rápido possível.'
+                }
+            ];
+        }
+        else if (path.includes('documentacao.php')) {
+            steps = [
+                {
+                    title: '📖 Documentação',
+                    intro: 'Manuais técnicos e guias completos sobre como o sistema funciona nos mínimos detalhes.'
+                },
+                {
+                    element: '.accordion',
+                    title: 'Tópicos de Ajuda',
+                    intro: 'Clique em cada categoria para expandir e ler o conteúdo.'
+                }
+            ];
+        }
+        else if (path.includes('cadastro_de_')) {
+            // TELAS DE CADASTRO
+            steps = [
+                {
+                    title: '📝 Tela de Cadastro',
+                    intro: 'Aqui você pode registrar novas informações no sistema. Preencha os campos obrigatórios com atenção.'
+                },
+                {
+                    element: '.card-body form, .card form',
+                    title: 'Dica de Preenchimento',
+                    intro: 'Certifique-se de preencher corretamente todos os dados do formulário. Isso é fundamental para manter a integridade do inventário!'
+                },
+                {
+                    element: 'button[type="submit"]',
+                    title: 'Salvar Registro',
+                    intro: 'Após preencher tudo, não se esqueça de clicar aqui para salvar!'
+                }
+            ];
+        }
+        else if (path.includes('editar_')) {
+            // TELAS DE EDIÇÃO
+            steps = [
+                {
+                    title: '✏️ Edição de Registro',
+                    intro: 'Você está editando um registro existente. Altere apenas as informações necessárias.'
+                },
+                {
+                    element: '.card-body form, .card form',
+                    title: 'Formulário de Edição',
+                    intro: 'Revise os dados antes de confirmar. Lembre-se de verificar se não há nada incorreto.'
+                },
+                {
+                    element: 'button[type="submit"]',
+                    title: 'Atualizar',
+                    intro: 'Clique aqui para aplicar e salvar as alterações no banco de dados.'
+                }
+            ];
+        }
+        else if (path.includes('perfil_') || path.includes('detalhes_')) {
+            // TELAS DE PERFIL / DETALHES
+            steps = [
+                {
+                    title: '🔍 Visão Detalhada',
+                    intro: 'Esta é a página de detalhes completos. Aqui você pode ver todo o histórico e as informações aprofundadas sobre este item.'
+                },
+                {
+                    element: '.card',
+                    title: 'Resumo das Informações',
+                    intro: 'Os cartões abaixo agrupam informações vitais, registros vinculados e histórico de movimentações.'
                 }
             ];
         }
@@ -270,8 +482,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (steps.length === 0) {
             steps = [
                 {
-                    title: 'Explorar Módulo',
-                    intro: 'Utilize as ferramentas desta tela para gerenciar seus ativos. Em caso de dúvidas, consulte o administrador do sistema.'
+                    title: 'Explore a Ferramenta',
+                    intro: 'Esta é uma tela do sistema. Use os botões principais para interagir com as informações. Se precisar de ajuda, clique no botão de interrogação no topo da página.'
                 }
             ];
         }
@@ -279,9 +491,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Iniciar Intro.js com opções customizadas
         intro.setOptions({
             steps: steps,
-            nextLabel: 'Próximo →',
-            prevLabel: '← Anterior',
-            doneLabel: 'Entendi!',
+            nextLabel: 'Entendi, próximo →',
+            prevLabel: '← Voltar',
+            doneLabel: 'Pronto, vamos começar!',
             showProgress: true,
             showBullets: false,
             overlayOpacity: 0.8,
@@ -307,11 +519,8 @@ document.addEventListener('DOMContentLoaded', function() {
         runSystemManual(true);
     });
 
-    // Auto-disparo: Apenas no Dashboard (index.php) no primeiro acesso
+    // Auto-disparo: Em qualquer página na primeira vez
     setTimeout(() => {
-        const path = window.location.pathname;
-        if (path.includes('index.php') || path.endsWith('/') || path.endsWith('/htdocs/')) {
-            runSystemManual(false);
-        }
+        runSystemManual(false);
     }, 1200); 
 });

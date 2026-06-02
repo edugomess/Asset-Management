@@ -38,8 +38,20 @@ if (!$ativo) {
     exit();
 }
 
-// UI Helpers
-$status_class = ($ativo['status'] === 'Ativo') ? 'success' : (($ativo['status'] === 'Manutencao' || $ativo['status'] === 'Manutenção') ? 'warning' : 'danger');
+// Mapeamento de cores de status (UI Helpers)
+$status_normalized = trim($ativo['status']);
+if ($status_normalized === 'Disponível' || $status_normalized === 'Ativo') {
+    $status_class = 'success'; // Verde
+} elseif ($status_normalized === 'Em uso') {
+    $status_class = 'primary'; // Azul
+} elseif ($status_normalized === 'Manutencao' || $status_normalized === 'Manutenção' || $status_normalized === 'Em manutenção') {
+    $status_class = 'warning text-dark'; // Amarelo
+} elseif ($status_normalized === 'Inativo' || $status_normalized === 'Baixado') {
+    $status_class = 'danger'; // Vermelho
+} else {
+    $status_class = 'secondary'; // Cinza para Doado, Vendido, etc.
+}
+
 $foto = !empty($ativo['imagem']) ? htmlspecialchars($ativo['imagem']) : '/assets/img/no-image.png';
 ?>
 <!DOCTYPE html>

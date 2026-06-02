@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
-<link rel="stylesheet" href="/assets/css/responsive_fix.css">
+<link rel="stylesheet" href="/assets/css/responsive_fix.css?v=<?php echo time(); ?>">
 <style>
     /* NProgress Premium Colorization */
     #nprogress .bar { background: #1cc88a !important; height: 3px !important; }
@@ -161,15 +161,17 @@
     }
 
     /* NAV ITEMS & LINKS */
-    .nav-item { margin: 0.2rem 1rem !important; }
+    .nav-item { margin: clamp(0.05rem, 0.4vh, 0.2rem) 1rem !important; }
     .nav-link {
         color: var(--sidebar-text) !important;
-        padding: 0.75rem 1rem !important;
-        border-radius: 12px !important;
+        padding: clamp(0.5rem, 1.2vh, 0.8rem) 1rem !important;
+        border-radius: 10px !important;
         display: flex !important;
         align-items: center !important;
         transition: all 0.2s ease !important;
     }
+    .sidebar-divider { margin: clamp(0.2rem, 1vh, 0.5rem) 1rem !important; opacity: 0.5; }
+    .sidebar-heading { padding: clamp(0.3rem, 0.8vh, 0.6rem) 1rem 0.2rem 1rem !important; font-size: 0.65rem !important; }
     .nav-link:hover {
         background: var(--sidebar-hover) !important;
         color: #fff !important;
@@ -335,6 +337,40 @@
         display: none !important;
     }
 
+    /* Sticky Footer Global */
+    #wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    #content-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        flex: 1;
+        margin-left: 15rem; /* Sidebar width */
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (max-width: 768px) {
+        #content-wrapper {
+            margin-left: 0 !important;
+        }
+    }
+
+    .sidebar.toggled+#content-wrapper {
+        margin-left: 6.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar.toggled+#content-wrapper {
+            margin-left: 0 !important;
+        }
+        nav.sidebar {
+            display: none !important;
+            box-shadow: none !important;
+        }
+    }
 
     #content {
         flex: 1 0 auto;

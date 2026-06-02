@@ -5,6 +5,19 @@
  */
 include 'auth.php';    // Validação de sessão obrigatória
 include 'conexao.php'; // Conexão com o banco de dados
+/**
+ * Adiciona uma coluna caso ela não exista (compatível com MySQL padrão).
+ */
+if (!function_exists('addColumnIfNotExist')) {
+    function addColumnIfNotExist($conn, $table, $column, $definition) {
+        $result = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+        if ($result && $result->num_rows == 0) {
+            return $conn->query("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+        }
+        return true;
+    }
+}
+
 
 // Restrição de acesso: Apenas Administrador pode acessar as configurações
 if ($_SESSION['nivelUsuario'] !== 'Admin') {

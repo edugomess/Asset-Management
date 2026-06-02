@@ -146,9 +146,24 @@ document.addEventListener('DOMContentLoaded', function() {
         closeBtn.addEventListener('click', toggleMenu);
     }
 
+    // Move o menu para o body para evitar problemas de CSS transform e z-index
+    if (mobileMenu && mobileMenu.parentNode !== document.body) {
+        document.body.appendChild(mobileMenu);
+    }
+
     // Fechar ao clicar fora do grid
-    mobileMenu.addEventListener('click', function(e) {
-        if (e.target === mobileMenu) toggleMenu();
+    if (mobileMenu) {
+        mobileMenu.addEventListener('click', function(e) {
+            if (e.target === mobileMenu) toggleMenu();
+        });
+    }
+
+    // Limpar o estado do menu mobile se a janela for redimensionada para desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileMenu) {
+            mobileMenu.classList.remove('active');
+            document.body.classList.remove('mobile-menu-open');
+        }
     });
 });
 </script>

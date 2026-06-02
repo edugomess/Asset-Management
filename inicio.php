@@ -323,13 +323,16 @@ if ($_SESSION['nivelUsuario'] !== 'Admin' && $_SESSION['nivelUsuario'] !== 'Supo
                     </div>
 
                     <div class="card shadow">
-                        <div class="col-md-6 col-xl-3 text-nowrap mb-3">
-                            <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div><a
-                                class="btn btn-success btn-block active text-white animate__animated animate__pulse btn-user btn-premium-cadastro"
-                                role="button"
-                                href="/ativos_doados.php"><?php echo __('Ver Doações'); ?></a>
-                        </div>
                         <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap: 15px;">
+                                <div class="d-flex align-items-center flex-wrap mb-3 mb-md-0">
+                                    <a class="btn-premium-cadastro pulse animated w-xs-100 mb-2 mb-sm-0 mr-sm-2"
+                                        role="button"
+                                        href="/ativos_doados.php">
+                                        <i class="fas fa-hand-holding-heart mr-2"></i><?php echo __('Ver Doações'); ?>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="table-responsive mt-2">
                                 <table class="table my-0" id="dataTable">
                                     <thead>
